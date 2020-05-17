@@ -1,0 +1,14 @@
+server:
+    port: 8080
+spring:
+    datasource:
+        url: 'jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1'
+        driver-class-name: org.hsqldb.jdbc.JDBCDriver
+        username: 'zufar'
+        password: 'qwerty'
+    jpa:
+        hibernate:
+            ddl-auto: create
+        database: hsql
+    banner:
+        location: 'classpath:/static/banner.txt'
