@@ -1,4 +1,5 @@
-<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
     <meta http-equiv="content-type" content="text/html"/>
@@ -37,7 +38,7 @@
 
 <div class="main">
 
-    <div class="addNewItem">
+    <div class="addNewItem" sec:authorize="hasRole('ROLE_ADMIN')">
         <form action="#" th:action="@{/addAuthorView}" method="get">
             <input type="submit" value="Add new author">
         </form>
@@ -67,17 +68,20 @@
                         </form>
                     </div>
 
-                    <div class="learn">
-                        <form th:object="${author}" action="#" th:action="@{/updateAuthorView/__${author.id}__}"
-                              method="get"><input type="submit" value="Update">
-                        </form>
+                    <div sec:authorize="hasRole('ROLE_ADMIN')">
+                        <div class="learn">
+                            <form th:object="${author}" action="#" th:action="@{/updateAuthorView/__${author.id}__}"
+                                  method="get"><input type="submit" value="Update">
+                            </form>
+                        </div>
+
+                        <div class="learn">
+                            <form th:object="${author}" action="#" th:action="@{/deleteAuthor/__${author.id}__}"
+                                  method="get"><input type="submit" value="Delete">
+                            </form>
+                        </div>
                     </div>
 
-                    <div class="learn">
-                        <form th:object="${author}" action="#" th:action="@{/deleteAuthor/__${author.id}__}"
-                              method="get"><input type="submit" value="Delete">
-                        </form>
-                    </div>
                 </div>
             </article>
         </div>
