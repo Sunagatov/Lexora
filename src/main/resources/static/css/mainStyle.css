@@ -169,6 +169,13 @@ padding-bottom: 9px;
     0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
 
+#menuButton2:hover {
+    color: white;
+    background: #d169e0;
+    box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
 .navigation a {
   text-decoration: none; /*убираем подчеркивание текста ссылок*/
   padding: 1rem 3rem;

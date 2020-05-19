@@ -1,0 +1,96 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html"/>
+    <meta name="author" content=""/>
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/registration.css">
+    <script type="text/javascript" src="/js/signIn.js"></script>
+    <title th:text="${author.fullName}"></title>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <form action="#" th:action="@{/home}" method="get">
+            <input id="mainButton" value="book_search" type="submit"/>
+            <h2>easy way to find a favourite book</h2>
+        </form>
+    </div>
+    <div class="search">
+        <div class="registrationButtons">
+            <a href="http://localhost:8081/logout">Sign Out</a>
+        </div>
+    </div>
+</div>
+
+
+<div class='navigation'>
+    <ul>
+        <li>
+            <form action="#" th:action="@{/authors}" method="get">
+                <input id="menuButton" value="Authors" type="submit"/>
+            </form>
+        </li>
+        <li>
+            <form action="#" th:action="@{/books}" method="get">
+                <input id="menuButton" value="Books" type="submit"/>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="main">
+    <form th:object="${author}" action="#" th:action="@{/updateAuthor}" method="post">
+        <div class="registration">
+
+            <h2>Update an author</h2>
+            <hr id="line">
+
+            <label for="imageLink">Image link:</label>
+            <input th:field="*{imageLink}" type="text" id="imageLink" name="imageLink" placeholder="Your image link..">
+
+            <label for="fullName">Name:</label>
+            <input th:field="*{fullName}" type="text" id="fullName" name="fullName" placeholder="Your full name..">
+
+            <label for="nickName">Nickname:</label>
+            <input th:field="*{nickName}" type="text" id="nickName" name="nickName" placeholder="Your nickname..">
+
+            <label for="country">Country:</label>
+            <select id="country" th:field="*{country}" name="country">
+                <option value="">Nothing selected</option>
+                <option th:each="country : ${countries}" th:value="${{country.id}}" th:text="${country.name}">
+                    Country
+                </option>
+            </select>
+
+            <label for="books">Books:</label>
+            <select id="books" th:field="*{books}" multiple="multiple">
+                <option value="">Nothing selected</option>
+                <option th:each="book : ${books}" th:value="${{book}}" th:text="${book.title}">Books</option>
+            </select>
+
+            <label for="birthday">Birthday:</label>
+            <div class="publicationDate">
+                <input type="date" id="birthday" name="birthday" value="" min="1920-01-01" th:field="*{birthday}">
+            </div>
+
+            <label for="deathDay">Death day:</label>
+            <div class="publicationDate">
+                <div class="publicationDate">
+                    <input type="date" id="deathDay" name="deathDay" value="" min="1920-01-01" th:field="*{deathDay}">
+                </div>
+            </div>
+
+            <div class="SubmitButton">
+                <input type="submit" value="Update">
+            </div>
+        </div>
+    </form>
+</div>
+<footer>
+    Made by Zufar
+</footer>
+</body>
+</html>

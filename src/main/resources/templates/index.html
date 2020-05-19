@@ -1,42 +1,50 @@
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="">
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
     <script type="text/javascript" src="/js/signIn.js"></script>
+    <title></title>
 </head>
+
 <body>
+
 <div class="header">
     <div class="logo">
-        <form action="/home" method="get">
+        <form action="#" th:action="@{/home}" method="get">
             <input id="mainButton" value="book_search" type="submit"/>
             <h2>easy way to find a favourite book</h2>
         </form>
     </div>
     <div class="search">
         <div class="registrationButtons">
-            <a href="http://localhost:8081/logout">Sign Out</a> 
+            <a href="http://localhost:8081/logout">Sign Out</a>
         </div>
     </div>
-    </div>
 </div>
+
+
+
 <div class='navigation'>
     <ul>
         <li>
-            <form action="/authors" method="get">
+            <form action="#" th:action="@{/authors}" method="get">
                 <input id="menuButton" value="Authors" type="submit"/>
             </form>
         </li>
         <li>
-            <form action="/books" method="get">
+            <form action="#" th:action="@{/books}" method="get">
                 <input id="menuButton" value="Books" type="submit"/>
             </form>
         </li>
     </ul>
 </div>
+
 <div class="main">
     <h3>Book Search is a book site for users of all ages</h3>
     <p>Welcome to Book Search - a large book portal dedicated to literature and the selection of booksIds.
-        Not sure what to do? Read booksIds! Use the search for booksIds on the site, with which you will find exactly what
+        Not sure what to do? Read booksIds! Use the search for booksIds on the site, with which you will find exactly
+        what
         suits you, and a flexible rating system will allow you to choose from what you find - the best.</p>
     <p>World bestsellers, the best new products, favorite works of world importance - all of this is collected from us
         on
@@ -54,7 +62,8 @@
         <li>- fantasy;</li>
         <li>- fiction and other booksIds;</li>
     </ul>
-    <p>The location of e-booksIds is such that finding the right version of reading is quite simple. In addition, the site
+    <p>The location of e-booksIds is such that finding the right version of reading is quite simple. In addition, the
+        site
         provides readers with lists of the most interesting works presented on the portal. Similar ratings compiled by
         voting our users.</p>
     <p>Lists of the most interesting and popular book copies are constantly updated, updated with new ones, recently

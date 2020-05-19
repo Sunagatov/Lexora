@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html"/>
+    <meta name="author" content=""/>
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/registration.css">
+    <script type="text/javascript" src="/js/signIn.js"></script>
+    <title>New book</title>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <form action="#" th:action="@{/home}" method="get">
+            <input id="mainButton" value="book_search" type="submit"/>
+            <h2>easy way to find a favourite book</h2>
+        </form>
+    </div>
+    <div class="search">
+        <div class="registrationButtons">
+            <a href="http://localhost:8081/logout">Sign Out</a>
+        </div>
+    </div>
+</div>
+
+
+<div class='navigation'>
+    <ul>
+        <li>
+            <form action="#" th:action="@{/authors}" method="get">
+                <input id="menuButton" value="Authors" type="submit"/>
+            </form>
+        </li>
+        <li>
+            <form action="#" th:action="@{/books}" method="get">
+                <input id="menuButton" value="Books" type="submit"/>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="main">
+    <form th:object="${book}" action="#" th:action="@{/addBook}" method="post">
+        <div class="registration">
+
+            <h2>Add new book</h2>
+            <hr id="line">
+
+            <label for="imageLink">Image link:</label>
+            <input type="text" id="imageLink" name="imageLink" placeholder="Your image link..">
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" placeholder="title..">
+
+            <label for="country">Country:</label>
+            <select id="country" th:field="*{country}" name="country">
+                <option value="">Nothing selected</option>
+                <option th:each="country : ${countries}" th:value="${{country.id}}" th:text="${country.name}">
+                    Country
+                </option>
+            </select>
+
+            <label for="authors">Authors:</label>
+            <select id="authors" th:field="*{authors}" multiple="multiple">
+                <option value="">Nothing selected</option>
+                <option th:each="author : ${authors}" th:value="${{author}}" th:text="${author.fullName}">Books</option>
+            </select>
+
+            <label for="pageCount">Page count:</label>
+            <input type="text" id="pageCount" name="pageCount" placeholder="pageCount..">
+
+            <label for="pdfLink">pdf link:</label>
+            <input type="text" id="pdfLink" name="pdfLink">
+
+            <label for="epubLink">epub link:</label>
+            <input type="text" id="epubLink" name="epubLink">
+
+            <label for="fb2Link">fb2 link:</label>
+            <input type="text" id="fb2Link" name="fb2Link">
+
+            <label for="publicationDate">Publication date:</label>
+            <div class="publicationDate">
+                <div class="publicationDate">
+                    <input type="date" id="publicationDate" name="publicationDate" value="" min="2015-01-01"
+                           th:field="*{publicationDate}">
+                </div>
+            </div>
+
+            <div class="SubmitButton">
+                <input type="submit" value="Add">
+            </div>
+        </div>
+    </form>
+</div>
+<footer>
+    Made by Zufar
+</footer>
+</body>
+</html>

@@ -5,7 +5,6 @@ import com.zufar.bookshelf.entity.Book;
 import com.zufar.bookshelf.entity.Country;
 import com.zufar.bookshelf.repository.AuthorRepository;
 import com.zufar.bookshelf.repository.BookRepository;
-import com.zufar.bookshelf.repository.CountryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,29 +20,27 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
-    private final CountryRepository countryRepository;
-    private final BookRepository bookRepository;
+    private final CountryService countryService;
+    private final BookRepository bookRepository ;
 
     @Autowired
-    public AuthorService(AuthorRepository authorRepository, CountryRepository countryRepository, BookRepository bookRepository) {
+    public AuthorService(AuthorRepository authorRepository,
+                         CountryService countryService,
+                         BookRepository bookRepository) {
         this.authorRepository = authorRepository;
-        this.countryRepository = countryRepository;
+        this.countryService = countryService;
         this.bookRepository = bookRepository;
     }
 
-    public void delete(Author author) {
-        List<Long> bookIds = author.getBooks().stream().map(Book::getId).collect(Collectors.toList());
-        bookIds.forEach(bookRepository::deleteById);
-        authorRepository.delete(author);
-        log.info("Deleting {} was successful", author);
-
-    }
-
-    public Long update(Long id, String fullName, String nickName, int birthYear, int birthMonth, int birthDay, int deathYear, int deathMonth, int deathDay, Long countryId, List<Long> booksIds, String imageLink) {
-        Author author = authorRepository.getOne(id);
+    public Author save(Long id, String fullName, String nickName, int birthYear, int birthMonth, int birthDay,
+                       int deathYear, int deathMonth, int deathDay, Long countryId, List<Long> booksIds, String imageLink) {
+        Author author = new Author();
+        if (id != null) {
+            author = authorRepository.getOne(id);
+        }
         LocalDate birthday = LocalDate.of(birthYear, birthMonth, birthDay);
         LocalDate deathday = LocalDate.of(deathYear, deathMonth, deathDay);
-        Country country = countryRepository.getOne(countryId);
+        Country country = countryService.get(countryId);
         author.setFullName(fullName);
         author.setNickName(nickName);
         author.setBirthday(birthday);
@@ -62,7 +59,7 @@ public class AuthorService {
         Author savedAuthor = authorRepository.save(author);
 
         log.info("Updating {} was successful", savedAuthor);
-        return savedAuthor.getId();
+        return savedAuthor;
     }
 
     public Author get(Long id) {
@@ -73,33 +70,39 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public List<Author> getAll(List<Long> authorIds) {
-        return authorRepository.findAllById(authorIds);
+    public Author save(Author author) {
+        Author savedAuthor = this.authorRepository.save(author);
+        log.info("Saving {} was successful", savedAuthor);
+        return savedAuthor;
     }
 
-    public Long save(String fullName, String nickName, int birthYear, int birthMonth, int birthDay, int deathYear, int deathMonth, int deathDay, Long countryId, List<Long> booksIds, String imageLink) {
-        LocalDate birthday = LocalDate.of(birthYear, birthMonth, birthDay);
-        LocalDate deathday = LocalDate.of(deathYear, deathMonth, deathDay);
-        Country country = countryRepository.getOne(countryId);
-        Author author = new Author();
-        author.setFullName(fullName);
-        author.setNickName(nickName);
-        author.setBirthday(birthday);
-        author.setImageLink(imageLink);
-        author.setDeathDay(deathday);
-        if (booksIds != null) {
-            List<Book> books = bookRepository.findAllById(booksIds);
-            author.setBooks(books);
-            for (Book book : books) {
-                book.getAuthors().add(author);
-                bookRepository.save(book);
-            }
-        }
-        author.setCountry(country);
+    public Author update(Author author) {
+        Author updatedAuthor = this.authorRepository.save(author);
+        log.info("Updating {} was successful", updatedAuthor);
+        return updatedAuthor;
+    }
 
-        Author savedAuthor = authorRepository.save(author);
-        log.info("Saving {} was successful", savedAuthor);
+    public void delete(Author author) {
+        this.deleteAuthorInAllBooks(author);
+        authorRepository.delete(author);
+        log.info("Deleting {} was successful", author);
 
-        return savedAuthor.getId();
+    }
+
+    public void delete(long id) {
+        this.delete(this.get(id));
+    }
+
+    public void deleteAuthorInAllBooks(Author author) {
+        author.getBooks()
+                .stream()
+                .peek(book -> {
+                    List<Author> lastAuthors = book
+                            .getAuthors()
+                            .stream()
+                            .filter(current -> current.getId() != null && !current.getId().equals(author.getId())).collect(Collectors.toList());
+                    book.setAuthors(lastAuthors);
+                })
+                .forEach(this.bookRepository::save);
     }
 }

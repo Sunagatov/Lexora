@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -30,8 +31,8 @@ public class BookService {
             CountryRepository countryRepository
     ) {
         this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
         this.countryRepository = countryRepository;
+        this.authorRepository = authorRepository;
     }
 
     public Book get(Long id) {
@@ -42,18 +43,11 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public List<Book> getAll(List<Long> bookIds) {
-        return bookRepository.findAllById(bookIds);
-    }
-
-    public void save(String title,
-                     List<Long> authorIds,
-                     int publicationYear, int publicationMonth, int publicationDay,
-                     Long countryId,
-                     int page_count,
-                     String image_link,
-                     String fb2Link, String epubLink, String pdf_link) {
+    public void save(Long id, String title, List<Long> authorIds, int publicationYear, int publicationMonth, int publicationDay, Long countryId, int page_count, String image_link, String fb2Link, String epubLink, String pdf_link) {
         Book book = new Book();
+        if (id != null) {
+            book = bookRepository.getOne(id);
+        }
         book.setTitle(title);
         book.setPublicationDate(LocalDate.of(publicationYear, publicationMonth, publicationDay));
         book.setFb2Link(fb2Link);
@@ -69,40 +63,41 @@ public class BookService {
             author.getBooks().add(book);
             authorRepository.save(author);
         }
-        log.info("Saving {} was successful", book);
     }
 
-    public void update(Long id, String title, List<Long> authorIds, int publicationYear, int publicationMonth, int publicationDay, Long countryId, int page_count, String image_link, String fb2Link, String epubLink, String pdf_link) {
-        Book book = bookRepository.getOne(id);
-        book.setTitle(title);
-        book.setPublicationDate(LocalDate.of(publicationYear, publicationMonth, publicationDay));
-        book.setFb2Link(fb2Link);
-        book.setImageLink(image_link);
-        book.setEpubLink(epubLink);
-        book.setPageCount(page_count);
-        book.setPdfLink(pdf_link);
-        book.setCountry(countryRepository.getOne(countryId));
-        List<Author> authors = authorRepository.findAllById(authorIds);
-        book.setAuthors(authors);
-        bookRepository.save(book);
-        for (Author author : authors) {
-            author.getBooks().add(book);
-            authorRepository.save(author);
-        }
-        log.info("Updating {} was successful", book);
+    public Book save(Book book) {
+        Book savedBook = this.bookRepository.save(book);
+        log.info("Saving {} was successful", savedBook);
+        return savedBook;
     }
 
-    public void delete(Book book) {
-        for (Author author : book.getAuthors()) {
-            author.getBooks().remove(book);
-            authorRepository.save(author);
-        }
-        bookRepository.delete(book);
-        log.info("Deleting {} was successful", book);
+    public Book update(Book book) {
+        Book savedBook = this.bookRepository.save(book);
+        log.info("Updating {} was successful", savedBook);
+        return savedBook;
     }
 
     public void delete(Long id) {
         Book book = this.bookRepository.getOne(id);
         this.delete(book);
+    }
+
+    public void delete(Book book) {
+        this.deleteBookInAllAuthors(book);
+        bookRepository.delete(book);
+        log.info("Deleting {} was successful", book);
+    }
+
+    public void deleteBookInAllAuthors(Book book) {
+        book.getAuthors()
+                .stream()
+                .peek(author -> {
+                    List<Book> lastBooks = author
+                            .getBooks()
+                            .stream()
+                            .filter(currentBook -> currentBook.getId() != null && !currentBook.getId().equals(book.getId())).collect(Collectors.toList());
+                    author.setBooks(lastBooks);
+                })
+                .forEach(this.authorRepository::save);
     }
 }

@@ -1,5 +1,6 @@
 package com.zufar.bookshelf.populator;
 
+import com.zufar.bookshelf.entity.Author;
 import com.zufar.bookshelf.entity.Country;
 import com.zufar.bookshelf.service.AuthorService;
 import com.zufar.bookshelf.service.BookService;
@@ -24,25 +25,29 @@ class LoadDatabase {
             countryService.save(russian_federation);
             countryService.save(new Country("British India"));
             countryService.save(new Country("USA"));
-            Long orwelId = authorService.save(
+            Author orwel = authorService.save(
+                    null,
                     "Eric Blair Arthur", "George Orwell",
                     1903, 6, 25, 1950, 1, 21,
                     russian_federation.getId(),
                     null,
                     "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
-            Long bradburyId = authorService.save(
+            Author bradbury = authorService.save(
+                    null,
                     "Ray Bradbury", "Ray",
                     1903, 6, 25, 1950, 1, 21,
                     russian_federation.getId(),
                     null,
                     "https://cdn.fishki.net/upload/post/2019/06/07/3000736/84232741-custom-3e54d21f7e32261f9866964be484ce23dee6d17f-s800.jpg");
-            Long coelhoId = authorService.save(
+            Author coelho = authorService.save(
+                    null,
                     "Coelho", "Coelho",
                     1903, 6, 25, 1950, 1, 21,
                     russian_federation.getId(),
                     null,
                     "https://24smi.org/public/media/resize/800x-/celebrity/2017/08/11/WfzUTQ8NvHbj_aizek-azimov.jpg");
-            Long asimovId = authorService.save(
+            Author asimov = authorService.save(
+                    null,
                     "Isaac Asimov", "Isaac",
                     1903, 6, 25, 1950, 1, 21,
                     russian_federation.getId(),
@@ -50,12 +55,13 @@ class LoadDatabase {
                     "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
 
             List<Long> authorsIds = new ArrayList<>();
-            authorsIds.add(orwelId);
-            authorsIds.add(coelhoId);
-            authorsIds.add(bradburyId);
-            authorsIds.add(asimovId);
+            authorsIds.add(orwel.getId());
+            authorsIds.add(coelho.getId());
+            authorsIds.add(bradbury.getId());
+            authorsIds.add(asimov.getId());
 
             bookService.save(
+                    null,
                     "Nineteen Eighty-Four",
                     authorsIds,
                     1934, 6, 8,
@@ -68,6 +74,7 @@ class LoadDatabase {
             );
 
             bookService.save(
+                    null,
                     "A Clergyman's Daughter",
                     authorsIds,
                     1934, 6, 8,
@@ -80,6 +87,7 @@ class LoadDatabase {
             );
 
             bookService.save(
+                    null,
                     "Veronika Decides to Die",
                     authorsIds,
                     1934, 6, 8,

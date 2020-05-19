@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html"/>
+    <meta name="author" content=""/>
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/booklist.css">
+    <script type="text/javascript" src="/js/signIn.js"></script>
+    <title>Author list</title>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <form action="#" th:action="@{/home}" method="get">
+            <input id="mainButton" value="book_search" type="submit"/>
+            <h2>easy way to find a favourite book</h2>
+        </form>
+    </div>
+    <div class="search">
+        <div class="registrationButtons">
+            <a href="http://localhost:8081/logout">Sign Out</a>
+        </div>
+    </div>
+</div>
+
+<div class='navigation'>
+    <ul>
+        <li>
+            <form action="#" th:action="@{/books}" method="get">
+                <input id="menuButton" value="Books" type="submit"/>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <div class="addNewItem">
+        <form action="#" th:action="@{/addAuthorView}" method="get">
+            <input type="submit" value="Add new author">
+        </form>
+    </div>
+
+    <main class="cards">
+        <div th:each="author: ${authors}">
+            <article class="card">
+
+                <img th:src="${author.imageLink}" alt="Sample photo" src="">
+
+                <div class="text">
+                    <div class="info">
+                        <h3>Full Name:</h3>
+                        <p th:text="${author.fullName}"></p>
+
+                        <h3>Nickname:</h3>
+                        <p th:text="${author.nickName}"></p>
+
+                        <h3>Country:</h3>
+                        <p th:text="${author.country.name}"></p>
+                    </div>
+
+                    <div class="learn">
+                        <form th:object="${author}" action="#" th:action="@{/author/__${author.id}__}" method="get">
+                            <input type="submit" value="Learn">
+                        </form>
+                    </div>
+
+                    <div class="learn">
+                        <form th:object="${author}" action="#" th:action="@{/updateAuthorView/__${author.id}__}"
+                              method="get"><input type="submit" value="Update">
+                        </form>
+                    </div>
+
+                    <div class="learn">
+                        <form th:object="${author}" action="#" th:action="@{/deleteAuthor/__${author.id}__}"
+                              method="get"><input type="submit" value="Delete">
+                        </form>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+</div>
+<footer>
+    Made by Zufar
+</footer>
+</body>
+</html>

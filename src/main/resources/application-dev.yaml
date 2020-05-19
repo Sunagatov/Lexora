@@ -10,5 +10,18 @@ spring:
         hibernate:
             ddl-auto: create
         database: hsql
+    thymeleaf:
+        suffix: '.html'
+        cache: false
+        check-template: true
+        check-template-location: true
+        encoding: UTF-8
     banner:
         location: 'classpath:/static/banner.txt'
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: true
+        remote:
+            secret: 'somesecret'

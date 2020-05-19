@@ -3,6 +3,4 @@ spring:
         active: "dev"
     application:
         name: Bookshelf
-    freemarker:
-        template-loader-path: classpath:/templates
-        suffix: .ftl
+

@@ -1,0 +1,110 @@
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/bookProfile.css">
+    <link rel="stylesheet" type="text/css" href="/css/review.css">
+    <script type="text/javascript" src="/js/signIn.js"></script>
+    <title th:text="${book.title}"></title>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <form action="#" th:action="@{/home}" method="get">
+            <input id="mainButton" value="book_search" type="submit"/>
+            <h2>easy way to find a favourite book</h2>
+        </form>
+    </div>
+    <div class="search">
+        <div class="registrationButtons">
+            <a href="http://localhost:8081/logout">Sign Out</a>
+        </div>
+    </div>
+</div>
+
+<div class='navigation'>
+    <ul>
+        <li>
+            <form action="#" th:action="@{/authors}" method="get">
+                <input id="menuButton" value="Authors" type="submit"/>
+            </form>
+        </li>
+        <li>
+            <form action="#" th:action="@{/books}" method="get">
+                <input id="menuButton" value="Books" type="submit"/>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="main" th:object="${book}">
+    <div class="profile">
+
+        <h2 th:text="${book.title}"></h2>
+        <hr id="line">
+
+        <div class="ffff">
+            <div class="photo">
+                <img src="" th:src="${book.imageLink}" alt="bookPhoto">
+            </div>
+
+            <div class="hrrrrr">
+                <div class="wrapp">
+                    <label>Authors:</label>
+                    <div th:each="author: ${book.authors}">
+                        <p th:text="${author.nickName}"></p><br/>
+                    </div>
+                </div>
+
+                <div class="wrapp">
+                    <label>Country:</label>
+                    <p th:text="${book.country.name}"></p>
+                </div>
+
+                <div class="wrapp">
+                    <label>Publication date:</label>
+                    <p th:text="${book.publicationDate}"></p>
+                </div>
+
+                <div class="wrapp">
+                    <label>Page:</label>
+                    <p th:text="${book.pageCount}"></p>
+                </div>
+
+                <div class="wrapp">
+                    <a class="btn" th:href="${book.pdfLink}" href="" title="скачать книгу в формате PDF"
+                       data-format="pdf" target="_blank"> PDF </a>
+                </div>
+
+                <div class="wrapp">
+                    <a class="btn" th:href="${book.epubLink}" href="" title="скачать книгу в формате EPUB"
+                       data-format="pdf" target="_blank"> EPUB </a>
+                </div>
+
+                <div class="wrapp">
+                    <a class="btn" th:href="${book.fb2Link}" href="" title="скачать книгу в формате FB2"
+                       data-format="pdf" target="_blank"> FB2 </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="briefInfo">
+        <div class="wrapp">
+            <label style="color: rgb(116, 14, 99);">Biography:</label>
+        </div>
+        <p>
+            Info About book Info About book Info About book Info About book Info About book Info About book.
+            Info About book Info About book Info About book Info About book Info About book Info About book.
+            Info About book Info About book Info About book Info About book Info About book Info About book.
+            Info About book Info About book Info About book Info About book Info About book Info About book.
+        </p>
+    </div>
+</div>
+</body>
+<footer>
+    Made by Zufar
+</footer>
+</html>

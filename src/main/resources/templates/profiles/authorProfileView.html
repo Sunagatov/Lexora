@@ -1,15 +1,19 @@
-<html>
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
     <link rel="stylesheet" type="text/css" href="/css/userProfile.css">
     <link rel="stylesheet" type="text/css" href="/css/review.css">
     <script type="text/javascript" src="/js/signIn.js"></script>
+    <title th:text="${author.fullName}"></title>
 </head>
+
 <body>
+
 <div class="header">
     <div class="logo">
-        <form action="/home" method="get">
+        <form action="#" th:action="@{/home}" method="get">
             <input id="mainButton" value="book_search" type="submit"/>
             <h2>easy way to find a favourite book</h2>
         </form>
@@ -20,57 +24,65 @@
         </div>
     </div>
 </div>
-</div>
+
 <div class='navigation'>
     <ul>
         <li>
-            <form action="/authors" method="get">
+            <form action="#" th:action="@{/authors}" method="get">
                 <input id="menuButton" value="Authors" type="submit"/>
             </form>
         </li>
         <li>
-            <form action="/books" method="get">
+            <form action="#" th:action="@{/books}" method="get">
                 <input id="menuButton" value="Books" type="submit"/>
             </form>
         </li>
     </ul>
 </div>
-<div class="main">
+
+<div class="main" th:object="${author}">
     <div class="profile">
-        <h2>${author.nickName}</h2>
+
+        <h2 th:text="${author.nickName}"></h2>
         <hr id="line">
+
         <div class="ffff">
+
             <div class="photo">
-                <img src="${author.getImageLink()}" alt="userPhoto">
+                <img src="" th:src="${author.imageLink}" alt="userPhoto">
             </div>
+
             <div class="hrrrrr">
                 <div class="wrapp">
                     <label>Books:</label>
-                    <p>
-                        <#list books as book>
-                            ${book.title}<br>
-                        </#list>
-                    </p>
+                    <div th:each="book: ${author.books}">
+                        <p th:text="${book.title}"></p><br/>
+                    </div>
                 </div>
+
                 <div class="wrapp">
                     <label>Full name:</label>
-                    <p>${author.fullName}</p>
+                    <p th:text="${author.fullName}"></p>
                 </div>
+
                 <div class="wrapp">
                     <label>Country:</label>
-                    <p>${author.country.name}</p>
+                    <p th:text="${author.country.name}"></p>
                 </div>
+
                 <div class="wrapp">
                     <label>Birthday:</label>
-                    <p>${author.birthday}</p>
+                    <p th:text="${author.birthday}"></p>
                 </div>
+
                 <div class="wrapp">
                     <label>DeathDay:</label>
-                    <p>${author.deathDay}</p>
+                    <p th:text="${author.deathDay}"></p>
                 </div>
             </div>
         </div>
         <div class="Biography">
+
             <div class="wrapp">
                 <label style="color: rgb(116, 14, 99);">Biography:</label>
             </div>
@@ -79,17 +91,6 @@
                 Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
                 Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
                 Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-                Info About authorInfo About authorInfo About authorInfo About authorInfo About authorInfo About author.
-
             </p>
         </div>
     </div>

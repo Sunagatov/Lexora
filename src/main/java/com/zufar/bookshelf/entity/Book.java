@@ -3,6 +3,7 @@ package com.zufar.bookshelf.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -38,7 +39,7 @@ public class Book {
     @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private List<Author> authors;
 
-    @Column
+    @Column @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
     @OneToOne

@@ -1,0 +1,89 @@
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html"/>
+    <meta name="author" content=""/>
+    <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/booklist.css">
+    <script type="text/javascript" src="/js/signIn.js"></script>
+    <title>Book list</title>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <form action="#" th:action="@{/home}" method="get">
+            <input id="mainButton" value="book_search" type="submit"/>
+            <h2>easy way to find a favourite book</h2>
+        </form>
+    </div>
+    <div class="search">
+        <div class="registrationButtons">
+            <a href="http://localhost:8081/logout">Sign Out</a>
+        </div>
+    </div>
+</div>
+
+<div class='navigation'>
+    <ul>
+        <li>
+            <form action="#" th:action="@{/authors}" method="get">
+                <input id="menuButton" value="Authors" type="submit"/>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="addNewItem">
+        <form action="#" th:action="@{/getAddBookView}" method="get">
+            <input type="submit" value="Add new Book">
+        </form>
+    </div>
+    <main class="cards">
+        <div th:each="book: ${books}">
+            <article class="card">
+
+                <img th:src="${book.imageLink}" alt="Sample photo" src="">
+
+                <div class="text">
+
+                    <div class="info">
+                        <h3>Title:</h3>
+                        <p th:text="${book.title}"></p>
+
+                        <h3>Publication date:</h3>
+                        <p th:text="${book.publicationDate}"></p>
+
+                        <h3>Country:</h3>
+                        <p th:text="${book.country.name}"></p>
+                    </div>
+
+                    <div class="learn">
+                        <form action="#" th:action="@{/book/__${book.id}__}" method="get">
+                            <input type="submit" value="Learn">
+                        </form>
+                    </div>
+
+                    <div class="learn">
+                        <form action="#" th:action="@{/updateBookView/__${book.id}__}" method="get">
+                            <input type="submit" value="Update">
+                        </form>
+                    </div>
+
+                    <div class="learn">
+                        <form action="#" th:action="@{/deleteBook/__${book.id}__}" method="get">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+</div>
+<footer>
+    Made by Zufar
+</footer>
+</body>
+</html>
