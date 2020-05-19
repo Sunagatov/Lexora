@@ -1,27 +1,30 @@
 server:
-    port: 8080
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
 spring:
-    datasource:
-        url: 'jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1'
-        driver-class-name: org.hsqldb.jdbc.JDBCDriver
-        username: 'zufar'
-        password: 'qwerty'
-    jpa:
-        hibernate:
-            ddl-auto: create
-        database: hsql
-    thymeleaf:
-        suffix: '.html'
-        cache: false
-        check-template: true
-        check-template-location: true
-        encoding: UTF-8
-    banner:
-        location: 'classpath:/static/banner.txt'
-    devtools:
-        restart:
-            enabled: true
-        livereload:
-            enabled: true
-        remote:
-            secret: 'somesecret'
+  datasource:
+    url: 'jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1'
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: 'zufar'
+    password: 'qwerty'
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: hsql
+  thymeleaf:
+    suffix: '.html'
+    cache: false
+    check-template: true
+    check-template-location: true
+    encoding: UTF-8
+  banner:
+    location: 'classpath:/static/banner.txt'
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+    remote:
+      secret: 'somesecret'

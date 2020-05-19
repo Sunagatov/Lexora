@@ -1,15 +1,15 @@
 server:
-    port: 8082
+  port: 8082
 spring:
-    datasource:
-        url: 'jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1'
-        driver-class-name: org.hsqldb.jdbc.JDBCDriver
-        username: 'zufar'
-        password: 'qwerty'
-    jpa:
-        hibernate:
-            ddl-auto: create
-        database: hsql
-        show-sql: true
-    banner:
-        location: 'classpath:/static/banner.txt'
+  datasource:
+    url: 'jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1'
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: 'zufar'
+    password: 'qwerty'
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: hsql
+    show-sql: true
+  banner:
+    location: 'classpath:/static/banner.txt'

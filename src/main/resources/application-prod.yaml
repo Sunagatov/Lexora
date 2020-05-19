@@ -1,17 +1,17 @@
 server:
-    port: 8081
+  port: 8081
 spring:
-    datasource:
-        url: 'jdbc:postgresql://localhost:5432/bookshelf'
-        driver-class-name: org.postgresql.Driver
-        username: 'Zufar'
-        password: 'zufar'
-    jpa:
-        hibernate:
-            ddl-auto: create
-        database: postgresql
-        properties:
-            hibernate:
-                dialect: 'org.hibernate.dialect.PostgreSQLDialect'
-    main:
-        banner-mode: "off"
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/bookshelf'
+    driver-class-name: org.postgresql.Driver
+    username: 'Zufar'
+    password: 'zufar'
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    properties:
+      hibernate:
+        dialect: 'org.hibernate.dialect.PostgreSQLDialect'
+  main:
+    banner-mode: "off"

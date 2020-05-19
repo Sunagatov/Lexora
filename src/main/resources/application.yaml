@@ -1,6 +1,6 @@
 spring:
-    profiles:
-        active: "dev"
-    application:
-        name: Bookshelf
+  profiles:
+    active: "dev"
+  application:
+    name: Bookshelf
 
