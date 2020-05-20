@@ -6,7 +6,6 @@
     <meta name="author" content=""/>
     <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
     <link rel="stylesheet" type="text/css" href="/css/booklist.css">
-    <script type="text/javascript" src="/js/signIn.js"></script>
     <title>Author list</title>
 </head>
 
@@ -21,7 +20,12 @@
     </div>
     <div class="search">
         <div class="registrationButtons">
-            <a href="http://localhost:8081/logout">Sign Out</a>
+            <form th:action="@{/login}" method="post"  sec:authorize="!isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign in"/>
+            </form>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign Out"/>
+            </form>
         </div>
     </div>
 </div>
@@ -63,7 +67,7 @@
                     </div>
 
                     <div class="learn">
-                        <form th:object="${author}" action="#" th:action="@{/author/__${author.id}__}" method="get">
+                        <form th:object="${author}" action="#" th:action="@{/authors/__${author.id}__}" method="get">
                             <input type="submit" value="Learn">
                         </form>
                     </div>

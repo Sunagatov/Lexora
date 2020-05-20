@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+
+    <div class="container">
+        <form th:action="@{/login}" method="post">
+            <h1 style="text-align: center">Sign in</h1>
+
+            <label for="login"><b>Login</b></label>
+            <input type="text" placeholder="Enter your login.." id="login" name="login"/>
+
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter your password.." id="password" name="password"/>
+
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <p><a href="/" th:href="@{/}">Back to home page</a></p>
+
+</div>
+</body>
+</html>

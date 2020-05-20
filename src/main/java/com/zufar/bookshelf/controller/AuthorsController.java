@@ -7,7 +7,9 @@ import com.zufar.bookshelf.service.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller("authors")
 public class AuthorsController {
@@ -31,7 +33,7 @@ public class AuthorsController {
         return "lists/authorListView";
     }
 
-    @GetMapping("/author/{id}")
+    @GetMapping("/authors/{id}")
     public String getAuthor(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("author", authorService.get(id));
         return "profiles/authorProfileView";

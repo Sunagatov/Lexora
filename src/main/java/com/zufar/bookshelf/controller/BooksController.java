@@ -35,7 +35,7 @@ public class BooksController {
         return "lists/bookListView";
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/books/{id}")
     public String getBook(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("book", bookService.get(id));
         return "profiles/bookProfileView";

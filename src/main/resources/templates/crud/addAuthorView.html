@@ -1,11 +1,10 @@
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
     <meta http-equiv="content-type" content="text/html"/>
     <meta name="author" content=""/>
     <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
     <link rel="stylesheet" type="text/css" href="/css/registration.css">
-    <script type="text/javascript" src="/js/signIn.js"></script>
     <title>New author</title>
 </head>
 
@@ -19,9 +18,9 @@
         </form>
     </div>
     <div class="search">
-        <div class="registrationButtons">
-            <a href="http://localhost:8081/logout">Sign Out</a>
-        </div>
+        <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+            <input id="signUpButton" type="submit" value="Sign Out"/>
+        </form>
     </div>
 </div>
 

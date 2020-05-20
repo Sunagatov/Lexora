@@ -314,6 +314,7 @@ input[type="text"], input[type="password"], input[type="email"] {
     
     .container {
         padding: 16px;
+        background-color: #f7d9e6;
     }
     
     span.psw {

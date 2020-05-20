@@ -1,11 +1,11 @@
-<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
     <meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
     <link rel="stylesheet" type="text/css" href="/css/bookProfile.css">
     <link rel="stylesheet" type="text/css" href="/css/review.css">
-    <script type="text/javascript" src="/js/signIn.js"></script>
     <title th:text="${book.title}"></title>
 </head>
 
@@ -20,7 +20,12 @@
     </div>
     <div class="search">
         <div class="registrationButtons">
-            <a href="http://localhost:8081/logout">Sign Out</a>
+            <form th:action="@{/login}" method="post"  sec:authorize="!isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign in"/>
+            </form>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign Out"/>
+            </form>
         </div>
     </div>
 </div>

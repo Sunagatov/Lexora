@@ -1,9 +1,8 @@
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="">
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/mainStyle.css">
-    <script type="text/javascript" src="/js/signIn.js"></script>
     <title></title>
 </head>
 
@@ -18,11 +17,15 @@
     </div>
     <div class="search">
         <div class="registrationButtons">
-            <a href="http://localhost:8081/logout">Sign Out</a>
+            <form th:action="@{/login}" method="post"  sec:authorize="!isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign in"/>
+            </form>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign Out"/>
+            </form>
         </div>
     </div>
 </div>
-
 
 
 <div class='navigation'>
@@ -88,13 +91,16 @@
     <div class="imgcontainer">
     </div>
     <div class="container">
-        <form action="signIn" method="post">
+        <form th:action="@{/login}" method="post">
             <h1 style="text-align: center">Sign in</h1>
-            <label><b>Login</b></label>
-            <input type="email" placeholder="Enter your login.." name="login">
-            <label><b>Password</b></label>
-            <input type="password" placeholder="Enter your password.." name="psw">
-            <button type="submit">Login</button>
+
+            <label for="login"><b>Login</b></label>
+            <input type="text" placeholder="Enter your login.." id="login" name="login">
+
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter your password.." id="password" name="password">
+
+            <button type="submit">Sign In</button>
         </form>
     </div>
 </div>
