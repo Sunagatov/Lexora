@@ -15,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Autowired
-    public CustomUserDetailsService(BCryptPasswordEncoder passwordEncoder) {
+    public CustomUserDetailsService(BCryptPasswordEncoder passwordEncoder, UserService userService) {
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         final User user;
         try {
-            user = UserService.getByLogin(login);
+            user = userService.getByLogin(login);
         } catch (Exception exc) {
             final String errorMessage = "Loading user details is impossible.";
             throw new UsernameNotFoundException(errorMessage, exc);
@@ -34,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(
                 user.getRoles(),
                 passwordEncoder.encode(user.getPassword()),
-                user.getName(),
+                user.getFullName(),
                 true,
                 true,
                 true,

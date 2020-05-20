@@ -34,19 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/css/**", "/", "/home", "/authors", "/books", "/authors/*", "/books/*").permitAll()
+                .antMatchers("/css/**", "/", "/home",  "/addUser", "/registration", "/authors", "/books", "/authors/*", "/books/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
-
                 .formLogin()
-                .loginPage("/login")
-                .usernameParameter("login")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/home").permitAll()
+                .loginPage("/login").usernameParameter("login").passwordParameter("password").defaultSuccessUrl("/home").permitAll()
                 .and()
-
-                .logout().permitAll().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/home");
-        http.csrf().disable();
+                .logout().permitAll().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/home")
+                .and()
+                .csrf().disable();
     }
 }
 

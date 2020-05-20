@@ -1,6 +1,5 @@
 package com.zufar.bookshelf.entity;
 
-import com.zufar.bookshelf.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

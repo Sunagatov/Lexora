@@ -56,14 +56,13 @@
             <label for="country">Country:</label>
             <select id="country" th:field="*{country}" name="country">
                 <option value="">Nothing selected</option>
-                <option th:each="country : ${countries}" th:value="${{country.id}}" th:text="${country.name}">Country
-                </option>
+                <option th:each="country : ${countries}" th:value="${{country.id}}" th:text="${country.name}"></option>
             </select>
 
             <label for="authors">Authors:</label>
             <select id="authors" th:field="*{authors}" multiple="multiple">
                 <option value="">Nothing selected</option>
-                <option th:each="author : ${authors}" th:value="${{author}}" th:text="${author.fullName}">Books</option>
+                <option th:each="author : ${authors}" th:value="${{author}}" th:text="${author.fullName}"></option>
             </select>
 
             <label for="pageCount">Page count:</label>

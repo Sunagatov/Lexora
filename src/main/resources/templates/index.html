@@ -20,6 +20,9 @@
             <form th:action="@{/login}" method="post"  sec:authorize="!isAuthenticated()">
                 <input id="signUpButton" type="submit" value="Sign in"/>
             </form>
+            <form th:action="@{/registration}" method="post"  sec:authorize="!isAuthenticated()">
+                <input id="signUpButton" type="submit" value="Sign up"/>
+            </form>
             <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
                 <input id="signUpButton" type="submit" value="Sign Out"/>
             </form>
