@@ -30,6 +30,6 @@ public class UserController {
     @PostMapping("/addUser")
     public String addUser(User user) {
         this.userService.save(user);
-        return "index";
+        return "home";
     }
 }
