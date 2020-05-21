@@ -30,33 +30,26 @@ public class BooksController {
     }
 
     @GetMapping("/books")
-    public String getBooks(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         modelMap.addAttribute("books", bookService.getAll());
         return "lists/bookListView";
     }
 
     @GetMapping("/books/{id}")
-    public String getBook(@PathVariable(value = "id") long id, ModelMap modelMap) {
+    public String get(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("book", bookService.get(id));
         return "profiles/bookProfileView";
     }
 
-    @GetMapping("/getAddBookView")
-    public String getAddBookView(ModelMap modelMap) {
+    @GetMapping("/addBookForm")
+    public String getAddForm(ModelMap modelMap) {
         modelMap.addAttribute("book", new Book());
         modelMap.addAttribute("authors", authorService.getAll());
         modelMap.addAttribute("countries", countryService.getAll());
         return "crud/addBookView";
     }
 
-    @PostMapping("/addBook")
-    public String addBook(Book book, ModelMap modelMap) {
-        bookService.save(book);
-        modelMap.addAttribute("books", bookService.getAll());
-        return "lists/bookListView";
-    }
-
-    @GetMapping("/updateBookView/{id}")
+    @GetMapping("/updateBookForm/{id}")
     public String getUpdateBookView(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("book", bookService.get(id));
         modelMap.addAttribute("authors", authorService.getAll());
@@ -64,15 +57,23 @@ public class BooksController {
         return "crud/updateBookView";
     }
 
-    @PostMapping("/updateBook")
-    public String updateBook(Book book, ModelMap modelMap) {
+    @PostMapping("/books")
+    public String add(Book book, ModelMap modelMap) throws Exception {
+        bookService.save(book);
+        modelMap.addAttribute("books", bookService.getAll());
+        return "lists/bookListView";
+    }
+
+    @PostMapping("/books/{id}")
+    public String update(@PathVariable(value = "id") long id, Book book, ModelMap modelMap) throws Exception {
+        book.setId(id);
         bookService.update(book);
         modelMap.addAttribute("books", bookService.getAll());
         return "lists/bookListView";
     }
 
-    @GetMapping("/deleteBook/{id}")
-    public String deleteBook(@PathVariable(value = "id") long id, ModelMap modelMap) {
+    @PostMapping("/deleteBook/{id}")
+    public String delete(@PathVariable(value = "id") long id, ModelMap modelMap) {
         bookService.delete(id);
         modelMap.addAttribute("books", bookService.getAll());
         return "lists/bookListView";

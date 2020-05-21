@@ -21,7 +21,7 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final CountryService countryService;
-    private final BookRepository bookRepository ;
+    private final BookRepository bookRepository;
 
     @Autowired
     public AuthorService(AuthorRepository authorRepository,
@@ -76,10 +76,12 @@ public class AuthorService {
         return savedAuthor;
     }
 
-    public Author update(Author author) {
-        Author updatedAuthor = this.authorRepository.save(author);
-        log.info("Updating {} was successful", updatedAuthor);
-        return updatedAuthor;
+    public Author update(Author author) throws Exception {
+        Author oldAuthor = this.get(author.getId());
+        if (oldAuthor == null) throw new Exception();
+        oldAuthor.update(author);
+        log.info("Updating {} was successful", oldAuthor);
+        return oldAuthor;
     }
 
     public void delete(Author author) {
@@ -100,7 +102,9 @@ public class AuthorService {
                     List<Author> lastAuthors = book
                             .getAuthors()
                             .stream()
-                            .filter(current -> current.getId() != null && !current.getId().equals(author.getId())).collect(Collectors.toList());
+                            .filter(current ->
+                                    current.getId() != null && !current.getId().equals(author.getId()))
+                            .collect(Collectors.toList());
                     book.setAuthors(lastAuthors);
                 })
                 .forEach(this.bookRepository::save);

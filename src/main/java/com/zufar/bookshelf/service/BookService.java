@@ -65,16 +65,20 @@ public class BookService {
         }
     }
 
-    public Book save(Book book) {
-        Book savedBook = this.bookRepository.save(book);
-        log.info("Saving {} was successful", savedBook);
-        return savedBook;
+    public Book save(Book book) throws Exception {
+        Book oldBook = this.get(book.getId());
+        if (oldBook == null) throw new Exception();
+        oldBook.update(book);
+        log.info("Saving {} was successful", oldBook);
+        return oldBook;
     }
 
-    public Book update(Book book) {
-        Book savedBook = this.bookRepository.save(book);
-        log.info("Updating {} was successful", savedBook);
-        return savedBook;
+    public Book update(Book book) throws Exception {
+        Book oldBook = this.get(book.getId());
+        if (oldBook == null) throw new Exception();
+        oldBook.update(book);
+        log.info("Updating {} was successful", oldBook);
+        return oldBook;
     }
 
     public void delete(Long id) {
@@ -95,7 +99,9 @@ public class BookService {
                     List<Book> lastBooks = author
                             .getBooks()
                             .stream()
-                            .filter(currentBook -> currentBook.getId() != null && !currentBook.getId().equals(book.getId())).collect(Collectors.toList());
+                            .filter(currentBook ->
+                                    currentBook.getId() != null && !currentBook.getId().equals(book.getId()))
+                            .collect(Collectors.toList());
                     author.setBooks(lastBooks);
                 })
                 .forEach(this.authorRepository::save);

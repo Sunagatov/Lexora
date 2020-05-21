@@ -39,7 +39,8 @@ public class Book {
     @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private List<Author> authors;
 
-    @Column @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
     @OneToOne
@@ -49,12 +50,24 @@ public class Book {
     @Column
     private int pageCount;
 
+    public void update(Book book) {
+        this.title = book.getTitle();
+        this.imageLink = book.getImageLink();
+        this.epubLink = book.getEpubLink();
+        this.fb2Link = book.getFb2Link();
+        this.pdfLink = book.getPdfLink();
+        this.authors = book.getAuthors();
+        this.publicationDate = book.getPublicationDate();
+        this.country = book.getCountry();
+        this.pageCount = book.getPageCount();
+    }
+
     @Override
     public String toString() {
-       List<String> authorNames = new ArrayList<>();
-       if (this.authors != null) {
-           authors.forEach(author -> authorNames.add(author.getFullName()));
-       }
+        List<String> authorNames = new ArrayList<>();
+        if (this.authors != null) {
+            authors.forEach(author -> authorNames.add(author.getFullName()));
+        }
         return "Book{" +
                 "id=" + id +
                 ", title='" + title + '\'' +

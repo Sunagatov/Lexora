@@ -1,9 +1,8 @@
 package com.zufar.bookshelf.populator;
 
-import com.zufar.bookshelf.entity.Author;
-import com.zufar.bookshelf.entity.Country;
-import com.zufar.bookshelf.entity.Role;
+import com.zufar.bookshelf.entity.*;
 import com.zufar.bookshelf.repository.RoleRepository;
+import com.zufar.bookshelf.repository.UserRepository;
 import com.zufar.bookshelf.service.AuthorService;
 import com.zufar.bookshelf.service.BookService;
 import com.zufar.bookshelf.service.CountryService;
@@ -12,7 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -23,14 +24,19 @@ class LoadDatabase {
     CommandLineRunner initDatabase(AuthorService authorService,
                                    BookService bookService,
                                    CountryService countryService,
-                                   RoleRepository roleRepository) {
+                                   RoleRepository roleRepository,
+                                   UserRepository userRepository) {
         return args -> {
-            roleRepository .save(new Role(1L, "ROLE_ADMIN"));
-            roleRepository .save(new Role(2L, "ROLE_USER"));
-
-
+            Role role_admin = new Role(1L, "ROLE_ADMIN");
+            roleRepository.save(new Role(1L, "ROLE_ADMIN"));
+            roleRepository.save(new Role(2L, "ROLE_USER"));
 
             Country russian_federation = new Country("Russian Federation");
+
+            User user = new User(1L, "Admin", "Admin", LocalDate.now(), russian_federation, Gender.MALE, "admin", "admin", new HashSet<>());
+            user.addRole(role_admin);
+            userRepository .save(user);
+
             countryService.save(russian_federation);
             countryService.save(new Country("British India"));
             countryService.save(new Country("USA"));

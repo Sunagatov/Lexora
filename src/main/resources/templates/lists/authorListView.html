@@ -20,7 +20,7 @@
     </div>
     <div class="search">
         <div class="registrationButtons">
-            <form th:action="@{/login}" method="post"  sec:authorize="!isAuthenticated()">
+            <form th:action="@{/login}" method="post" sec:authorize="!isAuthenticated()">
                 <input id="signUpButton" type="submit" value="Sign in"/>
             </form>
             <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
@@ -72,20 +72,17 @@
                         </form>
                     </div>
 
-                    <div sec:authorize="hasRole('ROLE_ADMIN')">
-                        <div class="learn">
-                            <form th:object="${author}" action="#" th:action="@{/updateAuthorView/__${author.id}__}"
-                                  method="get"><input type="submit" value="Update">
-                            </form>
-                        </div>
-
-                        <div class="learn">
-                            <form th:object="${author}" action="#" th:action="@{/deleteAuthor/__${author.id}__}"
-                                  method="get"><input type="submit" value="Delete">
-                            </form>
-                        </div>
+                    <div class="learn" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <form th:object="${author}" action="#" th:action="@{/updateAuthorForm/__${author.id}__}"
+                              method="get"><input type="submit" value="Update">
+                        </form>
                     </div>
 
+                    <div class="learn" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <form th:object="${author}" action="#" th:action="@{/deleteAuthor/__${author.id}__}"
+                              method="post"><input type="submit" value="Delete">
+                        </form>
+                    </div>
                 </div>
             </article>
         </div>

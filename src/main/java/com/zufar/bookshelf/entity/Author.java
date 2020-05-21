@@ -47,6 +47,17 @@ public class Author {
     )
     private List<Book> books;
 
+    public void update(Author author) {
+        this.id = author.getId();
+        this.imageLink = author.getImageLink();
+        this.fullName = author.getFullName();
+        this.nickName = author.getNickName();
+        this.birthday = author.getBirthday();
+        this.deathDay = author.getDeathDay();
+        this.country = author.getCountry();
+        this.books = author.getBooks();
+    }
+
     @Override
     public String toString() {
         List<String> bookTitles = new ArrayList<>();
@@ -64,4 +75,6 @@ public class Author {
                 ", books=" + bookTitles +
                 '}';
     }
+
+
 }

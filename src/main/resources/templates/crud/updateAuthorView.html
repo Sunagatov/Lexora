@@ -41,7 +41,7 @@
 </div>
 
 <div class="main">
-    <form th:object="${author}" action="#" th:action="@{/updateAuthor}" method="post">
+    <form th:object="${author}" action="#" th:action="@{/authors/__${author.id}__}" method="post">
         <div class="registration">
 
             <h2>Update an author</h2>

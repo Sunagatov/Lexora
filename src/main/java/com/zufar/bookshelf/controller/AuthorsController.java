@@ -28,26 +28,26 @@ public class AuthorsController {
     }
 
     @GetMapping("/authors")
-    public String getAuthors(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         modelMap.addAttribute("authors", authorService.getAll());
         return "lists/authorListView";
     }
 
     @GetMapping("/authors/{id}")
-    public String getAuthor(@PathVariable(value = "id") long id, ModelMap modelMap) {
+    public String get(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("author", authorService.get(id));
         return "profiles/authorProfileView";
     }
 
-    @GetMapping("/addAuthorView")
-    public String getAddAuthorView(ModelMap modelMap) {
+    @GetMapping("/addAuthorForm")
+    public String getAddForm(ModelMap modelMap) {
         modelMap.addAttribute("author", new Author());
         modelMap.addAttribute("books", bookService.getAll());
         modelMap.addAttribute("countries", countryService.getAll());
         return "crud/addAuthorView";
     }
 
-    @GetMapping("/updateAuthorView/{id}")
+    @GetMapping("/updateAuthorForm/{id}")
     public String getUpdateAuthorView(@PathVariable(value = "id") long id, ModelMap modelMap) {
         modelMap.addAttribute("author", authorService.get(id));
         modelMap.addAttribute("books", bookService.getAll());
@@ -55,22 +55,23 @@ public class AuthorsController {
         return "crud/updateAuthorView";
     }
 
-    @PostMapping("/addAuthor")
-    public String addAuthor(Author author, ModelMap modelMap) {
+    @PostMapping("/authors")
+    public String add(Author author, ModelMap modelMap) {
         authorService.save(author);
         modelMap.addAttribute("authors", authorService.getAll());
         return "lists/authorListView";
     }
 
-    @PostMapping("/updateAuthor")
-    public String updateAuthor(Author author, ModelMap modelMap) {
+    @PostMapping("/authors/{id}")
+    public String update(@PathVariable(value = "id") long id, Author author, ModelMap modelMap) throws Exception {
+        author.setId(id);
         authorService.update(author);
         modelMap.addAttribute("authors", authorService.getAll());
         return "lists/authorListView";
     }
 
-    @GetMapping("/deleteAuthor/{id}")
-    public String deleteAuthor(@PathVariable(value = "id") long id, ModelMap modelMap) {
+    @PostMapping("/deleteAuthor/{id}")
+    public String delete(@PathVariable(value = "id") long id, ModelMap modelMap) {
         authorService.delete(id);
         modelMap.addAttribute("authors", authorService.getAll());
         return "lists/authorListView";
