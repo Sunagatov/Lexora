@@ -1,5 +1,6 @@
 package com.zufar.bookshelf.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -13,17 +14,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private BCryptPasswordEncoder passwordEncoder;
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    public SecurityConfig(BCryptPasswordEncoder passwordEncoder,
-                          @Qualifier("customUserDetailsService") UserDetailsService userDetailsService) {
-        this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
-    }
+    private final BCryptPasswordEncoder passwordEncoder;
+    @Qualifier("customUserDetailsService")
+    private final UserDetailsService userDetailsService;
 
     @Autowired
     public void configureUserDetails(AuthenticationManagerBuilder auth) throws Exception {

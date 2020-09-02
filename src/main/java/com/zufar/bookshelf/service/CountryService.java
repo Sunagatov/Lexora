@@ -2,8 +2,8 @@ package com.zufar.bookshelf.service;
 
 import com.zufar.bookshelf.entity.Country;
 import com.zufar.bookshelf.repository.CountryRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,14 +12,10 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CountryService {
 
     private final CountryRepository countryRepository;
-
-    @Autowired
-    public CountryService(CountryRepository countryRepository) {
-        this.countryRepository = countryRepository;
-    }
 
     public Country get(Long id) {
         return countryRepository.getOne(id);
@@ -35,10 +31,5 @@ public class CountryService {
 
     public void update(Country country) {
         log.info("Updating {} was successful", countryRepository.save(country));
-    }
-
-    public void delete(Country country) {
-        countryRepository.delete(country);
-        log.info("Deleting {} was successful", country);
     }
 }

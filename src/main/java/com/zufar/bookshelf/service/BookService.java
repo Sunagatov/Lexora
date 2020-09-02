@@ -5,8 +5,8 @@ import com.zufar.bookshelf.entity.Book;
 import com.zufar.bookshelf.repository.AuthorRepository;
 import com.zufar.bookshelf.repository.BookRepository;
 import com.zufar.bookshelf.repository.CountryRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,22 +18,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CountryRepository countryRepository;
 
-    @Autowired
-    public BookService(
-            BookRepository bookRepository,
-            AuthorRepository authorRepository,
-            CountryRepository countryRepository
-    ) {
-        this.bookRepository = bookRepository;
-        this.countryRepository = countryRepository;
-        this.authorRepository = authorRepository;
-    }
 
     public Book get(Long id) {
         return bookRepository.getOne(id);
@@ -43,7 +34,9 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public void save(Long id, String title, List<Long> authorIds, int publicationYear, int publicationMonth, int publicationDay, Long countryId, int page_count, String image_link, String fb2Link, String epubLink, String pdf_link) {
+    public void save(Long id, String title, List<Long> authorIds, int publicationYear, int publicationMonth,
+                     int publicationDay, Long countryId, int page_count, String image_link, String fb2Link,
+                     String epubLink, String pdf_link) {
         Book book = new Book();
         if (id != null) {
             book = bookRepository.getOne(id);

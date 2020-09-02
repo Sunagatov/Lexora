@@ -5,8 +5,8 @@ import com.zufar.bookshelf.entity.Book;
 import com.zufar.bookshelf.entity.Country;
 import com.zufar.bookshelf.repository.AuthorRepository;
 import com.zufar.bookshelf.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +17,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final CountryService countryService;
     private final BookRepository bookRepository;
 
-    @Autowired
-    public AuthorService(AuthorRepository authorRepository,
-                         CountryService countryService,
-                         BookRepository bookRepository) {
-        this.authorRepository = authorRepository;
-        this.countryService = countryService;
-        this.bookRepository = bookRepository;
-    }
-
     public Author save(Long id, String fullName, String nickName, int birthYear, int birthMonth, int birthDay,
-                       int deathYear, int deathMonth, int deathDay, Long countryId, List<Long> booksIds, String imageLink) {
+                       int deathYear, int deathMonth, int deathDay, Long countryId, List<Long> booksIds,
+                       String imageLink) {
         Author author = new Author();
         if (id != null) {
             author = authorRepository.getOne(id);
@@ -88,7 +81,6 @@ public class AuthorService {
         this.deleteAuthorInAllBooks(author);
         authorRepository.delete(author);
         log.info("Deleting {} was successful", author);
-
     }
 
     public void delete(long id) {
@@ -96,8 +88,7 @@ public class AuthorService {
     }
 
     public void deleteAuthorInAllBooks(Author author) {
-        author.getBooks()
-                .stream()
+        author.getBooks().stream()
                 .peek(book -> {
                     List<Author> lastAuthors = book
                             .getAuthors()

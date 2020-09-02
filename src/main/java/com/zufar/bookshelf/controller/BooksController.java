@@ -4,7 +4,7 @@ import com.zufar.bookshelf.entity.Book;
 import com.zufar.bookshelf.service.AuthorService;
 import com.zufar.bookshelf.service.BookService;
 import com.zufar.bookshelf.service.CountryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,22 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class BooksController {
 
     private final BookService bookService;
     private final AuthorService authorService;
     private final CountryService countryService;
-
-    @Autowired
-    public BooksController(
-            BookService bookService,
-            AuthorService authorService,
-            CountryService countryService
-    ) {
-        this.bookService = bookService;
-        this.authorService = authorService;
-        this.countryService = countryService;
-    }
 
     @GetMapping("/books")
     public String getAll(ModelMap modelMap) {
