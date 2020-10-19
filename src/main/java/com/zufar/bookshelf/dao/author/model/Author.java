@@ -16,26 +16,28 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Authors")
+@Table(name = "authors")
 public class Author {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "image_link", nullable = false)
     private String imageLink;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "full_name", nullable = false, length = 50)
     private String fullName;
 
-    @Column(length = 50)
+    @Column(name = "nick_name", length = 50)
     private String nickName;
 
-    @Column(nullable = false) @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    @Column @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "death_day")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate deathDay;
 
     @OneToOne

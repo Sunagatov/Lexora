@@ -15,17 +15,17 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(nullable = false)
+    @Column(name = "nick_name", nullable = false)
     private String nickName;
 
     @Column(nullable = false)
@@ -36,6 +36,7 @@ public class User {
     @JoinColumn(name = "country_id")
     private Country country;
 
+    @Column(nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

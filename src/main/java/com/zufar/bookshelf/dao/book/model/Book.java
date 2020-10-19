@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Books")
+@Table(name = "books")
 public class Book {
 
     @Id
@@ -26,22 +26,22 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(name = "image_link")
     private String imageLink;
 
-    @Column
+    @Column(name = "epub_link")
     private String epubLink;
 
-    @Column
+    @Column(name = "fb2_link")
     private String fb2Link;
 
-    @Column
+    @Column(name = "pdf_link")
     private String pdfLink;
 
     @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private List<Author> authors;
 
-    @Column
+    @Column(name = "publication_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
@@ -49,7 +49,7 @@ public class Book {
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @Column
+    @Column(name = "page_count")
     private int pageCount;
 
     public void update(Book book) {
