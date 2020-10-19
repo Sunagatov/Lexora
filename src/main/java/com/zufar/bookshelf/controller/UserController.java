@@ -1,6 +1,6 @@
 package com.zufar.bookshelf.controller;
 
-import com.zufar.bookshelf.entity.User;
+import com.zufar.bookshelf.dao.user.model.User;
 import com.zufar.bookshelf.service.CountryService;
 import com.zufar.bookshelf.service.UserService;
 import lombok.RequiredArgsConstructor;

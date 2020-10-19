@@ -1,6 +1,6 @@
 package com.zufar.bookshelf.controller;
 
-import com.zufar.bookshelf.entity.Author;
+import com.zufar.bookshelf.dao.author.model.Author;
 import com.zufar.bookshelf.service.AuthorService;
 import com.zufar.bookshelf.service.BookService;
 import com.zufar.bookshelf.service.CountryService;

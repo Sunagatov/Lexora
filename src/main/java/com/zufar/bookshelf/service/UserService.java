@@ -1,9 +1,9 @@
 package com.zufar.bookshelf.service;
 
-import com.zufar.bookshelf.entity.Role;
-import com.zufar.bookshelf.entity.User;
-import com.zufar.bookshelf.repository.RoleRepository;
-import com.zufar.bookshelf.repository.UserRepository;
+import com.zufar.bookshelf.dao.user.model.Role;
+import com.zufar.bookshelf.dao.user.model.User;
+import com.zufar.bookshelf.dao.user.RoleRepository;
+import com.zufar.bookshelf.dao.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

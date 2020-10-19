@@ -1,8 +1,12 @@
-package com.zufar.bookshelf.populator;
+package com.zufar.bookshelf.service;
 
-import com.zufar.bookshelf.entity.*;
-import com.zufar.bookshelf.repository.RoleRepository;
-import com.zufar.bookshelf.repository.UserRepository;
+import com.zufar.bookshelf.dao.author.model.Author;
+import com.zufar.bookshelf.dao.country.model.Country;
+import com.zufar.bookshelf.dao.user.model.Gender;
+import com.zufar.bookshelf.dao.user.model.Role;
+import com.zufar.bookshelf.dao.user.model.User;
+import com.zufar.bookshelf.dao.user.RoleRepository;
+import com.zufar.bookshelf.dao.user.UserRepository;
 import com.zufar.bookshelf.service.AuthorService;
 import com.zufar.bookshelf.service.BookService;
 import com.zufar.bookshelf.service.CountryService;

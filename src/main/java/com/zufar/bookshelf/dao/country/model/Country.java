@@ -1,4 +1,4 @@
-package com.zufar.bookshelf.entity;
+package com.zufar.bookshelf.dao.country.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

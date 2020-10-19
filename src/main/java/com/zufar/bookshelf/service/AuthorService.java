@@ -1,10 +1,10 @@
 package com.zufar.bookshelf.service;
 
-import com.zufar.bookshelf.entity.Author;
-import com.zufar.bookshelf.entity.Book;
-import com.zufar.bookshelf.entity.Country;
-import com.zufar.bookshelf.repository.AuthorRepository;
-import com.zufar.bookshelf.repository.BookRepository;
+import com.zufar.bookshelf.dao.author.model.Author;
+import com.zufar.bookshelf.dao.book.model.Book;
+import com.zufar.bookshelf.dao.country.model.Country;
+import com.zufar.bookshelf.dao.author.AuthorRepository;
+import com.zufar.bookshelf.dao.book.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

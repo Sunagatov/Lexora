@@ -1,5 +1,6 @@
-package com.zufar.bookshelf.entity;
+package com.zufar.bookshelf.dao.user.model;
 
+import com.zufar.bookshelf.dao.country.model.Country;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
