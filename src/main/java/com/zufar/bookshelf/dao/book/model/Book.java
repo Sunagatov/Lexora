@@ -2,9 +2,7 @@ package com.zufar.bookshelf.dao.book.model;
 
 import com.zufar.bookshelf.dao.author.model.Author;
 import com.zufar.bookshelf.dao.country.model.Country;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -12,9 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "books")
 public class Book {
@@ -38,7 +35,7 @@ public class Book {
     @Column(name = "pdf_link")
     private String pdfLink;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Author> authors;
 
     @Column(name = "publication_date")

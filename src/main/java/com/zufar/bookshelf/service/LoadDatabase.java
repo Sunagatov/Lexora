@@ -1,15 +1,14 @@
 package com.zufar.bookshelf.service;
 
+import com.zufar.bookshelf.dao.author.AuthorRepository;
 import com.zufar.bookshelf.dao.author.model.Author;
+import com.zufar.bookshelf.dao.country.CountryRepository;
 import com.zufar.bookshelf.dao.country.model.Country;
 import com.zufar.bookshelf.dao.user.model.Gender;
 import com.zufar.bookshelf.dao.user.model.Role;
 import com.zufar.bookshelf.dao.user.model.User;
 import com.zufar.bookshelf.dao.user.RoleRepository;
 import com.zufar.bookshelf.dao.user.UserRepository;
-import com.zufar.bookshelf.service.AuthorService;
-import com.zufar.bookshelf.service.BookService;
-import com.zufar.bookshelf.service.CountryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +24,9 @@ import java.util.List;
 class LoadDatabase {
 
     @Bean
-    CommandLineRunner initDatabase(AuthorService authorService,
+    CommandLineRunner initDatabase(AuthorRepository authorService,
                                    BookService bookService,
-                                   CountryService countryService,
+                                   CountryRepository countryRepository,
                                    RoleRepository roleRepository,
                                    UserRepository userRepository) {
         return args -> {
@@ -41,16 +40,20 @@ class LoadDatabase {
             user.addRole(role_admin);
             userRepository .save(user);
 
-            countryService.save(russian_federation);
-            countryService.save(new Country("British India"));
-            countryService.save(new Country("USA"));
+            countryRepository.save(russian_federation);
+            countryRepository.save(new Country("British India"));
+            countryRepository.save(new Country("USA"));
+
+            new Author()
+.setCountry(null);
             Author orwel = authorService.save(
-                    null,
-                    "Eric Blair Arthur", "George Orwell",
-                    1903, 6, 25, 1950, 1, 21,
-                    russian_federation.getId(),
-                    null,
-                    "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
+                   ;
+//                    null,
+//                    "Eric Blair Arthur", "George Orwell",
+//                    1903, 6, 25, 1950, 1, 21,
+//                    russian_federation.getId(),
+//                    null,
+//                    "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
             Author bradbury = authorService.save(
                     null,
                     "Ray Bradbury", "Ray",

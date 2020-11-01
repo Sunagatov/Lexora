@@ -2,9 +2,7 @@ package com.zufar.bookshelf.dao.author.model;
 
 import com.zufar.bookshelf.dao.book.model.Book;
 import com.zufar.bookshelf.dao.country.model.Country;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -12,9 +10,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "authors")
 public class Author {
@@ -44,7 +41,7 @@ public class Author {
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "Authors_Books",
             joinColumns = {@JoinColumn(name = "author_id")},
             inverseJoinColumns = {@JoinColumn(name = "book_id")}
@@ -79,6 +76,4 @@ public class Author {
                 ", books=" + bookTitles +
                 '}';
     }
-
-
 }

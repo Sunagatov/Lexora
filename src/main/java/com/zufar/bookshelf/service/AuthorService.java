@@ -2,6 +2,7 @@ package com.zufar.bookshelf.service;
 
 import com.zufar.bookshelf.dao.author.model.Author;
 import com.zufar.bookshelf.dao.book.model.Book;
+import com.zufar.bookshelf.dao.country.CountryRepository;
 import com.zufar.bookshelf.dao.country.model.Country;
 import com.zufar.bookshelf.dao.author.AuthorRepository;
 import com.zufar.bookshelf.dao.book.BookRepository;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
-    private final CountryService countryService;
+    private final CountryRepository countryRepository;
     private final BookRepository bookRepository;
 
     public Author save(Long id, String fullName, String nickName, int birthYear, int birthMonth, int birthDay,
@@ -33,7 +34,7 @@ public class AuthorService {
         }
         LocalDate birthday = LocalDate.of(birthYear, birthMonth, birthDay);
         LocalDate deathday = LocalDate.of(deathYear, deathMonth, deathDay);
-        Country country = countryService.get(countryId);
+        Country country = countryRepository.findById(countryId).get();
         author.setFullName(fullName);
         author.setNickName(nickName);
         author.setBirthday(birthday);
@@ -55,49 +56,4 @@ public class AuthorService {
         return savedAuthor;
     }
 
-    public Author get(Long id) {
-        return authorRepository.getOne(id);
-    }
-
-    public List<Author> getAll() {
-        return authorRepository.findAll();
-    }
-
-    public Author save(Author author) {
-        Author savedAuthor = this.authorRepository.save(author);
-        log.info("Saving {} was successful", savedAuthor);
-        return savedAuthor;
-    }
-
-    public Author update(Author author) throws Exception {
-        Author oldAuthor = this.get(author.getId());
-        if (oldAuthor == null) throw new Exception();
-        oldAuthor.update(author);
-        log.info("Updating {} was successful", oldAuthor);
-        return oldAuthor;
-    }
-
-    public void delete(Author author) {
-        this.deleteAuthorInAllBooks(author);
-        authorRepository.delete(author);
-        log.info("Deleting {} was successful", author);
-    }
-
-    public void delete(long id) {
-        this.delete(this.get(id));
-    }
-
-    public void deleteAuthorInAllBooks(Author author) {
-        author.getBooks().stream()
-                .peek(book -> {
-                    List<Author> lastAuthors = book
-                            .getAuthors()
-                            .stream()
-                            .filter(current ->
-                                    current.getId() != null && !current.getId().equals(author.getId()))
-                            .collect(Collectors.toList());
-                    book.setAuthors(lastAuthors);
-                })
-                .forEach(this.bookRepository::save);
-    }
 }
