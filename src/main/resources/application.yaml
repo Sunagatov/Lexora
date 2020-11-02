@@ -3,4 +3,3 @@ spring:
     active: "test"
   application:
     name: Bookshelf
-

@@ -1,9 +1,7 @@
 package com.zufar.bookshelf.dao.user.model;
 
 import com.zufar.bookshelf.dao.country.model.Country;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -11,10 +9,9 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "users")
 public class User {
 

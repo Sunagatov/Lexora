@@ -2,124 +2,101 @@ package com.zufar.bookshelf.service;
 
 import com.zufar.bookshelf.dao.author.AuthorRepository;
 import com.zufar.bookshelf.dao.author.model.Author;
+import com.zufar.bookshelf.dao.book.BookRepository;
+import com.zufar.bookshelf.dao.book.model.Book;
 import com.zufar.bookshelf.dao.country.CountryRepository;
 import com.zufar.bookshelf.dao.country.model.Country;
+import com.zufar.bookshelf.dao.user.RoleRepository;
+import com.zufar.bookshelf.dao.user.UserRepository;
 import com.zufar.bookshelf.dao.user.model.Gender;
 import com.zufar.bookshelf.dao.user.model.Role;
 import com.zufar.bookshelf.dao.user.model.User;
-import com.zufar.bookshelf.dao.user.RoleRepository;
-import com.zufar.bookshelf.dao.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Configuration
 class LoadDatabase {
 
     @Bean
-    CommandLineRunner initDatabase(AuthorRepository authorService,
-                                   BookService bookService,
+    CommandLineRunner initDatabase(AuthorRepository authorRepository,
+                                   BookRepository bookRepository,
                                    CountryRepository countryRepository,
                                    RoleRepository roleRepository,
                                    UserRepository userRepository) {
         return args -> {
+
             Role role_admin = new Role(1L, "ROLE_ADMIN");
-            roleRepository.save(new Role(1L, "ROLE_ADMIN"));
-            roleRepository.save(new Role(2L, "ROLE_USER"));
+            Role role_user = new Role(2L, "ROLE_USER");
+
+            roleRepository.save(role_admin);
+            roleRepository.save(role_user);
 
             Country russian_federation = new Country("Russian Federation");
 
-            User user = new User(1L, "Admin", "Admin", LocalDate.now(), russian_federation, Gender.MALE, "admin", "admin", new HashSet<>());
+            User user = new User()
+                    .setCountry(russian_federation)
+                    .setNickName("Admin")
+                    .setPassword("Admin")
+                    .setGender(Gender.MALE)
+                    .setLogin("Admin")
+                    .setFullName("Admin")
+                    .setRoles(Set.of(role_admin))
+                    .setBirthday(LocalDate.of(1903, 6, 25));
+
             user.addRole(role_admin);
-            userRepository .save(user);
+            userRepository.save(user);
 
             countryRepository.save(russian_federation);
             countryRepository.save(new Country("British India"));
             countryRepository.save(new Country("USA"));
 
-            new Author()
-.setCountry(null);
-            Author orwel = authorService.save(
-                   ;
-//                    null,
-//                    "Eric Blair Arthur", "George Orwell",
-//                    1903, 6, 25, 1950, 1, 21,
-//                    russian_federation.getId(),
-//                    null,
-//                    "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
-            Author bradbury = authorService.save(
-                    null,
-                    "Ray Bradbury", "Ray",
-                    1903, 6, 25, 1950, 1, 21,
-                    russian_federation.getId(),
-                    null,
-                    "https://cdn.fishki.net/upload/post/2019/06/07/3000736/84232741-custom-3e54d21f7e32261f9866964be484ce23dee6d17f-s800.jpg");
-            Author coelho = authorService.save(
-                    null,
-                    "Coelho", "Coelho",
-                    1903, 6, 25, 1950, 1, 21,
-                    russian_federation.getId(),
-                    null,
-                    "https://24smi.org/public/media/resize/800x-/celebrity/2017/08/11/WfzUTQ8NvHbj_aizek-azimov.jpg");
-            Author asimov = authorService.save(
-                    null,
-                    "Isaac Asimov", "Isaac",
-                    1903, 6, 25, 1950, 1, 21,
-                    russian_federation.getId(),
-                    null,
-                    "https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg");
-
-            List<Long> authorsIds = new ArrayList<>();
-            authorsIds.add(orwel.getId());
-            authorsIds.add(coelho.getId());
-            authorsIds.add(bradbury.getId());
-            authorsIds.add(asimov.getId());
-
-            bookService.save(
-                    null,
-                    "Nineteen Eighty-Four",
-                    authorsIds,
-                    1934, 6, 8,
-                    russian_federation.getId(),
-                    456,
-                    "https://ozon-st.cdn.ngenix.net/multimedia/books_covers/1011018318.jpg",
-                    "https://avidreaders.ru/download/1984.html?f=pdf",
-                    "https://avidreaders.ru/download/1984.html?f=epub",
-                    "https://avidreaders.ru/download/1984.html?f=fb2"
+            Author orwel = authorRepository.save(
+                    new Author()
+                            .setFullName("Eric Blair Arthur")
+                            .setNickName("George Orwell")
+                            .setBirthday(LocalDate.of(1903, 6, 25))
+                            .setDeathDay(LocalDate.of(1903, 6, 25))
+                            .setCountry(russian_federation)
+                            .setImageLink("https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg")
             );
 
-            bookService.save(
-                    null,
-                    "A Clergyman's Daughter",
-                    authorsIds,
-                    1934, 6, 8,
-                    russian_federation.getId(),
-                    456,
-                    "https://kbimages1-a.akamaihd.net/af813f5a-5e9c-41b0-993f-9e4c93f78a50/1200/1200/False/the-clergyman-s-daughter-2.jpg",
-                    "http://www.arvindguptatoys.com/arvindgupta/orwelldaughter.pdf",
-                    "https://www.globalgreyebooks.com/content/books/ebooks/clergymans-daughter.epub",
-                    "https://readli.net/getfile.php?id=493328&format=fb2"
+            Author bradbury = authorRepository.save(
+                    new Author()
+                            .setFullName("Ray Bradbury")
+                            .setNickName("авпрврвр варврварв")
+                            .setBirthday(LocalDate.of(1903, 6, 25))
+                            .setDeathDay(LocalDate.of(1903, 6, 25))
+                            .setCountry(russian_federation)
+                            .setImageLink("https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg")
             );
 
-            bookService.save(
-                    null,
-                    "Veronika Decides to Die",
-                    authorsIds,
-                    1934, 6, 8,
-                    russian_federation.getId(),
-                    456,
-                    "https://1.bp.blogspot.com/-KV6Bw0vxYAI/Vu6adPzd_vI/AAAAAAAAAtE/uo8-0C1ziMgtTEESJJd1r_fN1_fRPslyw/s1600/paulo_koelo_veronika_reshaet_umeret_audiokniga_mp3_96_kbps.jpg",
-                    "https://www.google.ru/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=2ahUKEwiY2LbnlKvmAhXSl4sKHaOqCfsQFjABegQIBRAB&url=https%3A%2F%2Fwww.academia.edu%2F38132827%2FVeronika_decides_to_die_by_Paulo_Coelho.pdf&usg=AOvVaw1_wR1za4yPABCO4vJIaxA5",
-                    "https://avidreaders.ru/download/veronika-decides-to-die.html?f=epub",
-                    "https://avidreaders.ru/download/veronika-decides-to-die.html?f=fb2"
+            Book book_1984 = bookRepository.save(
+                    new Book()
+                            .setTitle("Nineteen Eighty-Four")
+                            .setAuthors(List.of(bradbury))
+                            .setEpubLink("https://avidreaders.ru/download/1984.html?f=epub")
+                            .setPageCount(456)
+                            .setCountry(russian_federation)
+                            .setPublicationDate(LocalDate.of(1903, 6, 25))
+                            .setImageLink("https://mtdata.ru/u19/photoA884/20446828934-0/original.jpg")
             );
+            Book book_2 = bookRepository.save(
+                    new Book()
+                            .setTitle("dsgfsgsgsgsg")
+                            .setAuthors(List.of(orwel))
+                            .setEpubLink("https://avidreaders.ru/download/1984.html?f=epub")
+                            .setPageCount(456)
+                            .setCountry(russian_federation)
+                            .setPublicationDate(LocalDate.of(1903, 6, 25))
+            );
+
         };
     }
 }

@@ -13,3 +13,8 @@ spring:
     show-sql: true
   banner:
     location: 'classpath:/static/banner.txt'
+  data:
+    rest:
+      base-path: /api
+      default-media-type: application/json
+      detection-strategy: all
