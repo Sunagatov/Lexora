@@ -35,7 +35,7 @@ public class Book {
     @Column(name = "pdf_link")
     private String pdfLink;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private List<Author> authors;
 
     @Column(name = "publication_date")
