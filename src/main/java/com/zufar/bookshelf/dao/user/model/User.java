@@ -1,5 +1,6 @@
 package com.zufar.bookshelf.dao.user.model;
 
+import com.zufar.bookshelf.dao.AbstractAuditingEntity;
 import com.zufar.bookshelf.dao.country.model.Country;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Getter
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue

@@ -1,5 +1,6 @@
 package com.zufar.bookshelf.dao.book.model;
 
+import com.zufar.bookshelf.dao.AbstractAuditingEntity;
 import com.zufar.bookshelf.dao.author.model.Author;
 import com.zufar.bookshelf.dao.country.model.Country;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "books")
-public class Book {
+public class Book extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue
