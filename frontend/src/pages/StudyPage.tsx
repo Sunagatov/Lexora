@@ -101,6 +101,8 @@ export function StudyPage() {
   const [levelFilter, setLevelFilter] = useState<'all' | WordKnowledgeLevel>('all')
   const [sortBy, setSortBy] = useState<SortOption>('level-asc')
   const [onlyIrregular, setOnlyIrregular] = useState(false)
+  const [isTopicPanelOpen, setIsTopicPanelOpen] = useState(false)
+  const [frozenWordOrderIds, setFrozenWordOrderIds] = useState<number[] | null>(null)
 
   const topicsQuery = useQuery({
     queryKey: ['topics'],
@@ -127,37 +129,9 @@ export function StudyPage() {
     }
   }, [topics, selectedTopicId])
 
-  const updateLevelMutation = useMutation({
-    mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
-      updateWordKnowledgeLevel(wordId, knowledgeLevel),
-    onMutate: async ({wordId, knowledgeLevel}) => {
-      await queryClient.cancelQueries({queryKey: ['words']})
-
-      const previousWords = queryClient.getQueryData<Word[]>(['words'])
-
-      queryClient.setQueryData<Word[]>(['words'], (currentWords = []) =>
-        currentWords.map((word) =>
-          word.id === wordId
-            ? {
-                ...word,
-                knowledge_level: knowledgeLevel,
-                updated_at: new Date().toISOString(),
-              }
-            : word,
-        ),
-      )
-
-      return {previousWords}
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previousWords) {
-        queryClient.setQueryData(['words'], context.previousWords)
-      }
-    },
-    onSettled: async () => {
-      await queryClient.invalidateQueries({queryKey: ['words']})
-    },
-  })
+  useEffect(() => {
+    setFrozenWordOrderIds(null)
+  }, [selectedTopicId, wordSearch, levelFilter, sortBy, onlyIrregular])
 
   const topicCounts = useMemo(() => {
     const counts = new Map<number, number>()
@@ -198,6 +172,26 @@ export function StudyPage() {
     return words.filter((word) => word.topic_id === selectedTopicId)
   }, [selectedTopicId, words])
 
+  const topicSummary = useMemo<Record<WordKnowledgeLevel, number>>(() => {
+    const summary: Record<WordKnowledgeLevel, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    }
+
+    for (const word of selectedTopicWords) {
+      const level = word.knowledge_level
+
+      if (level && level >= 1 && level <= 5) {
+        summary[level as WordKnowledgeLevel] += 1
+      }
+    }
+
+    return summary
+  }, [selectedTopicWords])
+
   const filteredWords = useMemo(() => {
     const result = selectedTopicWords
       .filter((word) => matchesSearch(word, wordSearch))
@@ -223,28 +217,74 @@ export function StudyPage() {
       }
     })
 
-    return result
-  }, [levelFilter, onlyIrregular, selectedTopicWords, sortBy, wordSearch])
-
-  const topicSummary = useMemo<Record<WordKnowledgeLevel, number>>(() => {
-    const summary: Record<WordKnowledgeLevel, number> = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-      5: 0,
+    if (!frozenWordOrderIds) {
+      return result
     }
 
-    for (const word of selectedTopicWords) {
-      const level = word.knowledge_level
+    const frozenOrderIndex = new Map(
+      frozenWordOrderIds.map((wordId, index) => [wordId, index]),
+    )
 
-      if (level && level >= 1 && level <= 5) {
-        summary[level as WordKnowledgeLevel] += 1
+    return [...result].sort((left, right) => {
+      const leftFrozenIndex = frozenOrderIndex.get(left.id)
+      const rightFrozenIndex = frozenOrderIndex.get(right.id)
+
+      if (leftFrozenIndex !== undefined && rightFrozenIndex !== undefined) {
+        return leftFrozenIndex - rightFrozenIndex
       }
-    }
 
-    return summary
-  }, [selectedTopicWords])
+      if (leftFrozenIndex !== undefined) {
+        return -1
+      }
+
+      if (rightFrozenIndex !== undefined) {
+        return 1
+      }
+
+      return 0
+    })
+  }, [
+    selectedTopicWords,
+    wordSearch,
+    levelFilter,
+    onlyIrregular,
+    sortBy,
+    frozenWordOrderIds,
+  ])
+
+  const updateLevelMutation = useMutation({
+    mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
+      updateWordKnowledgeLevel(wordId, knowledgeLevel),
+    onMutate: async ({wordId, knowledgeLevel}) => {
+      setFrozenWordOrderIds((current) => current ?? filteredWords.map((word) => word.id))
+
+      await queryClient.cancelQueries({queryKey: ['words']})
+
+      const previousWords = queryClient.getQueryData<Word[]>(['words'])
+
+      queryClient.setQueryData<Word[]>(['words'], (currentWords = []) =>
+        currentWords.map((word) =>
+          word.id === wordId
+            ? {
+                ...word,
+                knowledge_level: knowledgeLevel,
+                updated_at: new Date().toISOString(),
+              }
+            : word,
+        ),
+      )
+
+      return {previousWords}
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousWords) {
+        queryClient.setQueryData(['words'], context.previousWords)
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({queryKey: ['words']})
+    },
+  })
 
   const pendingWordId = updateLevelMutation.variables?.wordId ?? null
 
@@ -287,8 +327,29 @@ export function StudyPage() {
         </div>
       </section>
 
+      <section className="panel-card mobile-only mobile-topic-bar">
+        <div className="mobile-topic-bar-row">
+          <div>
+            <h3 className="mobile-topic-title">{selectedTopic?.name ?? 'Choose topic'}</h3>
+            <p className="muted mobile-topic-subtitle">
+              {selectedTopicWords.length} words in selected topic
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => setIsTopicPanelOpen((current) => !current)}
+          >
+            {isTopicPanelOpen ? 'Hide topics' : 'Choose topic'}
+          </button>
+        </div>
+      </section>
+
       <section className="study-layout">
-        <aside className="panel-card topics-panel">
+        <aside
+          className={`panel-card topics-panel ${isTopicPanelOpen ? 'topics-panel-open' : ''}`}
+        >
           <div className="panel-header">
             <div>
               <h3>Topics</h3>
@@ -319,7 +380,10 @@ export function StudyPage() {
                     key={topic.id}
                     type="button"
                     className={isSelected ? 'topic-item topic-item-active' : 'topic-item'}
-                    onClick={() => setSelectedTopicId(topic.id)}
+                    onClick={() => {
+                      setSelectedTopicId(topic.id)
+                      setIsTopicPanelOpen(false)
+                    }}
                   >
                     <div className="topic-item-top">
                       <strong>{topic.name}</strong>
@@ -432,103 +496,187 @@ export function StudyPage() {
                 <p>Try another level, search phrase, or remove the irregular-only filter.</p>
               </div>
             ) : (
-              <div className="word-table-wrap">
-                <table className="word-table">
-                  <thead>
-                    <tr>
-                      <th>Word</th>
-                      <th>Translation / details</th>
-                      <th>Knowledge</th>
-                      <th>Updated</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredWords.map((word) => {
-                      const level = word.knowledge_level
-                      const levelClassName = getKnowledgeClassName(level)
-                      const isPending = pendingWordId === word.id && updateLevelMutation.isPending
+              <>
+                <div className="word-table-wrap desktop-only">
+                  <table className="word-table">
+                    <thead>
+                      <tr>
+                        <th>Word</th>
+                        <th>Translation / details</th>
+                        <th>Knowledge</th>
+                        <th>Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredWords.map((word) => {
+                        const level = word.knowledge_level
+                        const levelClassName = getKnowledgeClassName(level)
+                        const isPending = pendingWordId === word.id && updateLevelMutation.isPending
 
-                      return (
-                        <tr key={word.id} className={`word-row ${levelClassName}`}>
-                          <td className="word-primary-cell">
-                            <div className="word-primary">
-                              <strong className="word-term">{word.term}</strong>
+                        return (
+                          <tr key={word.id} className={`word-row ${levelClassName}`}>
+                            <td className="word-primary-cell">
+                              <div className="word-primary">
+                                <strong className="word-term">{word.term}</strong>
 
-                              <div className="word-inline-meta">
-                                {word.part_of_speech ? (
-                                  <span className="mini-chip">{word.part_of_speech}</span>
-                                ) : null}
-                                {word.countability ? (
-                                  <span className="mini-chip">{word.countability}</span>
-                                ) : null}
-                                {word.pattern ? <span className="mini-chip">{word.pattern}</span> : null}
+                                <div className="word-inline-meta">
+                                  {word.part_of_speech ? (
+                                    <span className="mini-chip">{word.part_of_speech}</span>
+                                  ) : null}
+                                  {word.countability ? (
+                                    <span className="mini-chip">{word.countability}</span>
+                                  ) : null}
+                                  {word.pattern ? <span className="mini-chip">{word.pattern}</span> : null}
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          <td>
-                            <div className="word-details">
-                              <div className="word-translation">{word.translations}</div>
+                            <td>
+                              <div className="word-details">
+                                <div className="word-translation">{word.translations}</div>
 
-                              {(word.past_simple || word.past_participle) && (
-                                <div className="word-extra">
-                                  <strong>Irregular:</strong>{' '}
-                                  {[word.past_simple, word.past_participle].filter(Boolean).join(' · ')}
-                                </div>
-                              )}
+                                {(word.past_simple || word.past_participle) && (
+                                  <div className="word-extra">
+                                    <strong>Irregular:</strong>{' '}
+                                    {[word.past_simple, word.past_participle].filter(Boolean).join(' · ')}
+                                  </div>
+                                )}
 
-                              {word.example ? (
-                                <div className="word-extra">
-                                  <strong>Example:</strong> {word.example}
-                                </div>
-                              ) : null}
+                                {word.example ? (
+                                  <div className="word-extra">
+                                    <strong>Example:</strong> {word.example}
+                                  </div>
+                                ) : null}
 
-                              {word.notes ? (
-                                <div className="word-extra muted">
-                                  <strong>Notes:</strong> {word.notes}
-                                </div>
-                              ) : null}
-                            </div>
-                          </td>
-
-                          <td>
-                            <div className="knowledge-cell">
-                              <span className={`level-badge ${levelClassName}`}>
-                                {getKnowledgeLabel(level)}
-                              </span>
-
-                              <div className="level-switcher">
-                                {LEVELS.map((buttonLevel) => (
-                                  <button
-                                    key={buttonLevel}
-                                    type="button"
-                                    className={
-                                      buttonLevel === level
-                                        ? `level-button level-button-active ${getKnowledgeClassName(buttonLevel)}`
-                                        : 'level-button'
-                                    }
-                                    disabled={isPending}
-                                    onClick={() =>
-                                      updateLevelMutation.mutate({
-                                        wordId: word.id,
-                                        knowledgeLevel: buttonLevel,
-                                      })
-                                    }
-                                  >
-                                    {buttonLevel}
-                                  </button>
-                                ))}
+                                {word.notes ? (
+                                  <div className="word-extra muted">
+                                    <strong>Notes:</strong> {word.notes}
+                                  </div>
+                                ) : null}
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          <td className="muted">{formatDate(word.updated_at)}</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            <td>
+                              <div className="knowledge-cell">
+                                <span className={`level-badge ${levelClassName}`}>
+                                  {getKnowledgeLabel(level)}
+                                </span>
+
+                                <div className="level-switcher">
+                                  {LEVELS.map((buttonLevel) => (
+                                    <button
+                                      key={buttonLevel}
+                                      type="button"
+                                      className={
+                                        buttonLevel === level
+                                          ? `level-button level-button-active ${getKnowledgeClassName(buttonLevel)}`
+                                          : 'level-button'
+                                      }
+                                      disabled={isPending}
+                                      onClick={() =>
+                                        updateLevelMutation.mutate({
+                                          wordId: word.id,
+                                          knowledgeLevel: buttonLevel,
+                                        })
+                                      }
+                                    >
+                                      {buttonLevel}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="muted">{formatDate(word.updated_at)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mobile-only word-card-list">
+                  {filteredWords.map((word) => {
+                    const level = word.knowledge_level
+                    const levelClassName = getKnowledgeClassName(level)
+                    const isPending = pendingWordId === word.id && updateLevelMutation.isPending
+
+                    return (
+                      <article key={word.id} className={`word-card ${levelClassName}`}>
+                        <div className="word-card-header">
+                          <div className="word-card-main">
+                            <h4 className="word-card-title">{word.term}</h4>
+
+                            <div className="word-inline-meta">
+                              {word.part_of_speech ? (
+                                <span className="mini-chip">{word.part_of_speech}</span>
+                              ) : null}
+                              {word.countability ? (
+                                <span className="mini-chip">{word.countability}</span>
+                              ) : null}
+                              {word.pattern ? <span className="mini-chip">{word.pattern}</span> : null}
+                            </div>
+                          </div>
+
+                          <span className={`level-badge ${levelClassName}`}>
+                            {getKnowledgeLabel(level)}
+                          </span>
+                        </div>
+
+                        <div className="word-card-section">
+                          <div className="word-translation">{word.translations}</div>
+
+                          {(word.past_simple || word.past_participle) && (
+                            <div className="word-extra">
+                              <strong>Irregular:</strong>{' '}
+                              {[word.past_simple, word.past_participle].filter(Boolean).join(' · ')}
+                            </div>
+                          )}
+
+                          {word.example ? (
+                            <div className="word-extra">
+                              <strong>Example:</strong> {word.example}
+                            </div>
+                          ) : null}
+
+                          {word.notes ? (
+                            <div className="word-extra muted">
+                              <strong>Notes:</strong> {word.notes}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="word-card-footer">
+                          <span className="muted">Updated: {formatDate(word.updated_at)}</span>
+                        </div>
+
+                        <div className="level-switcher mobile-level-switcher">
+                          {LEVELS.map((buttonLevel) => (
+                            <button
+                              key={buttonLevel}
+                              type="button"
+                              className={
+                                buttonLevel === level
+                                  ? `level-button level-button-active ${getKnowledgeClassName(buttonLevel)}`
+                                  : 'level-button'
+                              }
+                              disabled={isPending}
+                              onClick={() =>
+                                updateLevelMutation.mutate({
+                                  wordId: word.id,
+                                  knowledgeLevel: buttonLevel,
+                                })
+                              }
+                            >
+                              {buttonLevel}
+                            </button>
+                          ))}
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </section>
         </div>
