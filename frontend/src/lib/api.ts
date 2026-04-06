@@ -27,11 +27,7 @@ export type Word = {
 }
 
 async function request<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  const response = await fetch(`${API_BASE_URL}${path}`)
 
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} ${response.statusText}`)

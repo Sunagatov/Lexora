@@ -29,3 +29,5 @@ frontend/dist/
 
 # Docker / local data
 postgres-data/
+/frontend/package-lock.json
+/package-lock.json

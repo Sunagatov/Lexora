@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import {useQuery} from '@tanstack/react-query'
 
-import { fetchWords } from '../lib/api'
+import {fetchWords} from '../lib/api'
 
 export function WordsPage() {
   const wordsQuery = useQuery({

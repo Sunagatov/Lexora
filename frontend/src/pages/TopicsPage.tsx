@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import {useQuery} from '@tanstack/react-query'
 
-import { fetchTopics } from '../lib/api'
+import {fetchTopics} from '../lib/api'
 
 export function TopicsPage() {
   const topicsQuery = useQuery({

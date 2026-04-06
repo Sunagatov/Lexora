@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import {useQuery} from '@tanstack/react-query'
+import {Link} from 'react-router-dom'
 
-import { fetchHealth, fetchTopics, fetchWords } from '../lib/api'
+import {fetchHealth, fetchTopics, fetchWords} from '../lib/api'
 
 export function HomePage() {
   const healthQuery = useQuery({
