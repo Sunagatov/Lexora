@@ -1,5 +1,0 @@
-spring:
-  profiles:
-    active: "test"
-  application:
-    name: Bookshelf
