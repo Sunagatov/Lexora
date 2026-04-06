@@ -6,6 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field
 class WordBase(BaseModel):
     topic_id: int = Field(gt=0)
     term: str = Field(min_length=1, max_length=255)
+    past_simple: str | None = Field(default=None, max_length=255)
+    past_participle: str | None = Field(default=None, max_length=255)
     translations: str = Field(min_length=1)
     part_of_speech: str | None = Field(default=None, max_length=50)
     knowledge_level: int | None = Field(default=None, ge=1, le=5)
@@ -25,6 +27,8 @@ class WordCreate(WordBase):
 class WordUpdate(BaseModel):
     topic_id: int | None = Field(default=None, gt=0)
     term: str | None = Field(default=None, min_length=1, max_length=255)
+    past_simple: str | None = Field(default=None, max_length=255)
+    past_participle: str | None = Field(default=None, max_length=255)
     translations: str | None = Field(default=None, min_length=1)
     part_of_speech: str | None = Field(default=None, max_length=50)
     knowledge_level: int | None = Field(default=None, ge=1, le=5)

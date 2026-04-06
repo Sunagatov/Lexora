@@ -14,6 +14,8 @@ class Word(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     topic_id: Mapped[int] = mapped_column(ForeignKey("topics.id", ondelete="CASCADE"), index=True)
     term: Mapped[str] = mapped_column(String(255), index=True)
+    past_simple: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    past_participle: Mapped[str | None] = mapped_column(String(255), nullable=True)
     translations: Mapped[str] = mapped_column(Text())
     part_of_speech: Mapped[str | None] = mapped_column(String(50), nullable=True)
     knowledge_level: Mapped[int | None] = mapped_column(Integer(), nullable=True)
