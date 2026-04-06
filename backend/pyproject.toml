@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "english-learning-app-backend"
+name = "lexora-backend"
 version = "0.1.0"
-description = "FastAPI backend for a personal English learning app"
+description = "FastAPI backend for Lexora"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0,<1.0.0",
@@ -15,6 +15,7 @@ dependencies = [
     "alembic>=1.13.0,<2.0.0",
     "pydantic>=2.7.0,<3.0.0",
     "pydantic-settings>=2.3.0,<3.0.0",
+    "python-dotenv>=1.0.1,<2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -24,8 +25,9 @@ dev = [
     "ruff>=0.6.0,<1.0.0",
 ]
 
-[tool.setuptools]
-packages = ["app"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
 
 [tool.ruff]
 line-length = 100
