@@ -1,25 +1,22 @@
-# English Learning App
+# Lexora
 
-Starter monorepo for a personal English vocabulary learning application.
+Lexora is a personal English vocabulary learning application.
 
-## Current scope
+## Current stack
 
-- Python backend with FastAPI
-- PostgreSQL database
-- SQLAlchemy 2.0 ORM
-- Alembic migrations
-- Topic CRUD
-- Word CRUD
-- Healthcheck endpoint
+- Python 3.12+
+- FastAPI
+- PostgreSQL
+- SQLAlchemy 2.0
+- Alembic
 
-## Planned next steps
+## Current backend scope
 
-- review sessions
-- flashcard / quiz APIs
-- spaced repetition logic
-- frontend UI
+- healthcheck endpoint
+- topic CRUD
+- word CRUD
 
-## Structure
+## Project structure
 
 - `backend/` — FastAPI backend
 - `frontend/` — frontend placeholder
