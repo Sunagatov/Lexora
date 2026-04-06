@@ -8,6 +8,8 @@ export function TopicsPage() {
     queryFn: fetchTopics,
   })
 
+  const topics = topicsQuery.data ?? []
+
   if (topicsQuery.isLoading) {
     return <p>Loading topics...</p>
   }
@@ -23,14 +25,14 @@ export function TopicsPage() {
         <p>These are loaded from `GET /api/topics`.</p>
       </div>
 
-      {topicsQuery.data.length === 0 ? (
+      {topics.length === 0 ? (
         <div className="empty-state">
           <p>No topics yet.</p>
           <p>Create a topic in Swagger UI first.</p>
         </div>
       ) : (
         <div className="grid grid-2">
-          {topicsQuery.data.map((topic) => (
+          {topics.map((topic) => (
             <article key={topic.id} className="card">
               <h3>{topic.name}</h3>
               <p className="muted">Slug: {topic.slug}</p>

@@ -8,6 +8,8 @@ export function WordsPage() {
     queryFn: fetchWords,
   })
 
+  const words = wordsQuery.data ?? []
+
   if (wordsQuery.isLoading) {
     return <p>Loading words...</p>
   }
@@ -23,7 +25,7 @@ export function WordsPage() {
         <p>These are loaded from `GET /api/words`.</p>
       </div>
 
-      {wordsQuery.data.length === 0 ? (
+      {words.length === 0 ? (
         <div className="empty-state">
           <p>No words yet.</p>
           <p>Create a topic and a word in Swagger UI first.</p>
@@ -42,7 +44,7 @@ export function WordsPage() {
               </tr>
             </thead>
             <tbody>
-              {wordsQuery.data.map((word) => (
+              {words.map((word) => (
                 <tr key={word.id}>
                   <td>{word.id}</td>
                   <td>{word.topic_id}</td>
