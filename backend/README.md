@@ -1,33 +1,21 @@
-# Lexora
+# Lexora Backend
 
-Starter monorepo for a personal English vocabulary learning application.
+FastAPI backend for Lexora.
 
-## Current scope
+## Tech stack
 
-- Python backend with FastAPI
-- PostgreSQL database
-- SQLAlchemy 2.0 ORM
-- Alembic migrations
-- Topic CRUD
-- Word CRUD
-- Healthcheck endpoint
+- FastAPI
+- SQLAlchemy 2.0
+- Alembic
+- PostgreSQL
+- Pydantic Settings
 
-## Planned next steps
-
-- review sessions
-- flashcard / quiz APIs
-- spaced repetition logic
-- frontend UI
-
-## Structure
-
-- `backend/` — FastAPI backend
-- `frontend/` — frontend placeholder
-- `.env.example` — local environment template
-- `docker-compose.yml` — local development stack
-
-## Quick start
+## Local run without Docker
 
 ```bash
-cp .env.example .env
-docker compose up --build
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+cp ../.env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
