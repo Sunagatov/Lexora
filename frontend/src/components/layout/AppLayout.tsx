@@ -14,21 +14,21 @@ export function AppLayout() {
             <NavLink
               to="/"
               end
-              className={({ isActive }) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
+              className={({isActive}) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
             >
-              Home
+              Study
             </NavLink>
 
             <NavLink
               to="/topics"
-              className={({ isActive }) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
+              className={({isActive}) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
             >
               Topics
             </NavLink>
 
             <NavLink
               to="/words"
-              className={({ isActive }) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
+              className={({isActive}) => (isActive ? 'nav-link nav-link-active' : 'nav-link')}
             >
               Words
             </NavLink>
