@@ -1,3 +1,5 @@
+import {useEffect, useRef, useState} from 'react'
+
 import type {WordKnowledgeLevel} from '../../lib/api'
 import {LEVELS, LEVEL_LABELS, type SortOption} from '../../lib/words'
 
@@ -13,45 +15,165 @@ type Props = {
   totalCount: number
 }
 
-export function Toolbar({wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter, onReset, filteredCount, totalCount}: Props) {
+type DropdownOption<T extends string> = {
+  value: T
+  label: string
+}
+
+function CompactDropdown<T extends string>({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+  className = '',
+}: {
+  value: T
+  options: DropdownOption<T>[]
+  onChange: (value: T) => void
+  ariaLabel: string
+  className?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+
+  const selected = options.find((option) => option.value === value) ?? options[0]
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  return (
+    <div ref={rootRef} className={`dropdown ${open ? 'dropdown-open' : ''} ${className}`.trim()}>
+      <button
+        type="button"
+        className="dropdown-trigger"
+        aria-label={ariaLabel}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span className="dropdown-trigger-label">{selected.label}</span>
+        <span className="dropdown-trigger-icon" aria-hidden="true">▾</span>
+      </button>
+
+      {open && (
+        <div className="dropdown-menu" role="listbox" aria-label={ariaLabel}>
+          {options.map((option) => {
+            const isActive = option.value === value
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={isActive}
+                className={`dropdown-option ${isActive ? 'dropdown-option-active' : ''}`}
+                onClick={() => {
+                  onChange(option.value)
+                  setOpen(false)
+                }}
+              >
+                <span className="dropdown-option-label">{option.label}</span>
+                {isActive ? <span className="dropdown-check">✓</span> : null}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function Toolbar({
+  wordSearch,
+  setWordSearch,
+  sortBy,
+  setSortBy,
+  levelFilter,
+  setLevelFilter,
+  onReset,
+  filteredCount,
+  totalCount,
+}: Props) {
   const levelActive = levelFilter !== 'all'
+
+  const sortOptions: DropdownOption<SortOption>[] = levelActive
+    ? [
+        {value: 'term-asc', label: 'A → Z'},
+        {value: 'term-desc', label: 'Z → A'},
+      ]
+    : [
+        {value: 'level-asc', label: 'Level ↑'},
+        {value: 'level-desc', label: 'Level ↓'},
+        {value: 'term-asc', label: 'A → Z'},
+        {value: 'term-desc', label: 'Z → A'},
+      ]
+
+  const levelOptions: DropdownOption<'all' | `${WordKnowledgeLevel}`>[] = [
+    {value: 'all', label: 'All levels'},
+    ...LEVELS.map((level) => ({
+      value: String(level) as `${WordKnowledgeLevel}`,
+      label: `Level ${level} — ${LEVEL_LABELS[level]}`,
+    })),
+  ]
 
   return (
     <div className="card toolbar-card">
-      <input
-        className="search-input"
-        type="text"
-        placeholder="Search word, translation, example, notes…"
-        value={wordSearch}
-        onChange={(e) => setWordSearch(e.target.value)}
-      />
+      <div className="toolbar-search-row">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search word, translation, example, notes…"
+          value={wordSearch}
+          onChange={(e) => setWordSearch(e.target.value)}
+        />
+      </div>
 
-      <div className="toolbar-row">
+      <div className="toolbar-controls-row">
         {!levelActive && (
-          <select className="field-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
-            <option value="level-asc">Level ↑</option>
-            <option value="level-desc">Level ↓</option>
-            <option value="term-asc">A → Z</option>
-            <option value="term-desc">Z → A</option>
-          </select>
+          <CompactDropdown
+            value={sortBy}
+            options={sortOptions}
+            onChange={setSortBy}
+            ariaLabel="Sort words"
+            className="toolbar-control toolbar-control-sort"
+          />
         )}
 
-        <select
-          className="field-select"
-          value={String(levelFilter)}
-          onChange={(e) => {
-            const v = e.target.value
-            setLevelFilter(v === 'all' ? 'all' : (Number(v) as WordKnowledgeLevel))
+        <CompactDropdown
+          value={String(levelFilter) as 'all' | `${WordKnowledgeLevel}`}
+          options={levelOptions}
+          onChange={(value) => {
+            setLevelFilter(value === 'all' ? 'all' : (Number(value) as WordKnowledgeLevel))
           }}
-        >
-          <option value="all">All levels</option>
-          {LEVELS.map((l) => (
-            <option key={l} value={l}>Level {l} — {LEVEL_LABELS[l]}</option>
-          ))}
-        </select>
+          ariaLabel="Filter words by level"
+          className="toolbar-control toolbar-control-level"
+        />
 
-        <button type="button" className="btn btn-ghost" onClick={onReset}>Reset</button>
+        <button type="button" className="btn btn-ghost toolbar-reset-btn" onClick={onReset}>
+          Reset
+        </button>
+      </div>
 
+      <div className="toolbar-meta-row">
         <span className="results-meta">
           <strong>{filteredCount}</strong> / <strong>{totalCount}</strong> words
         </span>

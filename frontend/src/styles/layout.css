@@ -21,10 +21,10 @@
   top: 0;
   z-index: 10;
   background: var(--bg);
-  padding: 14px 0 6px;
+  padding: 14px 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 /* Topic header — compact single row */
@@ -80,28 +80,53 @@
 .toolbar-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 12px;
+  padding: 12px 14px;
 }
 
-.toolbar-row {
+.toolbar-search-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.toolbar-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-wrap: nowrap;
 }
 
-.search-input {
-  flex: 1;
+.toolbar-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 20px;
+}
+
+.toolbar-control {
   min-width: 0;
-  height: 40px;
+}
+
+.toolbar-control-sort {
+  flex: 0 0 190px;
+}
+
+.toolbar-control-level {
+  flex: 0 0 220px;
+}
+
+.search-input {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface-2);
   color: var(--text);
   padding: 0 14px;
-  font-size: 0.9rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  font-size: 0.92rem;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
 .search-input::placeholder { color: var(--text-3); }
@@ -110,28 +135,114 @@
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  background: var(--surface);
 }
 
-.field-select {
-  height: 40px;
-  min-width: 160px;
+.dropdown {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface-2);
   color: var(--text);
-  padding: 0 12px;
-  font-size: 0.88rem;
+  padding: 0 14px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
-.field-select:focus { outline: none; border-color: var(--accent); }
+.dropdown-trigger:hover {
+  background: #f4f7fc;
+}
+
+.dropdown-open .dropdown-trigger,
+.dropdown-trigger:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  background: var(--surface);
+}
+
+.dropdown-trigger-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.dropdown-trigger-icon {
+  flex-shrink: 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+}
+
+.dropdown-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.dropdown-option:hover {
+  background: #f4f7fc;
+}
+
+.dropdown-option-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dropdown-option-label {
+  min-width: 0;
+}
+
+.dropdown-check {
+  flex-shrink: 0;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
 
 .btn {
-  height: 40px;
+  height: 42px;
   padding: 0 14px;
   border-radius: 12px;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -145,9 +256,23 @@
   color: var(--text-2);
 }
 
-.btn-ghost:hover { background: var(--accent-light); color: var(--accent-dark); border-color: #c7d2fe; }
+.btn-ghost:hover {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: #c7d2fe;
+}
 
-.results-meta { font-size: 0.85rem; color: var(--text-3); margin-left: auto; white-space: nowrap; }
+.toolbar-reset-btn {
+  flex: 0 0 auto;
+}
+
+.results-meta {
+  font-size: 0.85rem;
+  color: var(--text-3);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
 .results-meta strong { color: var(--text-2); }
 
 /* Pagination bar — sticky at the bottom of the scroll container */
