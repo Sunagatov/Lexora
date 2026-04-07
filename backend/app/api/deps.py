@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from fastapi import Cookie, HTTPException, status
+from fastapi import Cookie, Header, HTTPException, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,11 @@ def verify_session(session: str | None = Cookie(default=None)) -> None:
         jwt.decode(session, settings.secret_key, algorithms=[ALGORITHM])
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+
+
+def verify_api_key(x_api_key: str | None = Header(default=None)) -> None:
+    if x_api_key != settings.api_key:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
 
 
 def get_db() -> Generator[Session, None, None]:

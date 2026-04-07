@@ -1,10 +1,16 @@
+import re
+import unicodedata
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db, verify_api_key
 from app.crud.topic import topic_crud
 from app.crud.word import word_crud
-from app.schemas.word import WordCreate, WordResponse, WordUpdate
+from app.models.word import Word
+from app.schemas.topic import TopicCreate
+from app.schemas.word import BulkImportResponse, WordBulkCreate, WordCreate, WordInput, WordResponse, WordUpdate
 
 router = APIRouter(prefix="/api/words", tags=["words"])
 
@@ -54,3 +60,35 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
     word_crud.delete(db, word)
+
+
+def _slugify(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", normalized.encode("ascii", "ignore").decode()).strip("-").lower()
+    return slug[:200] or "topic"
+
+
+@router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(verify_api_key)])
+def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
+    """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
+    slug = _slugify(payload.topic_name)
+    topic = topic_crud.get_by_slug(db, slug)
+    if topic is None:
+        topic = topic_crud.create(db, TopicCreate(name=payload.topic_name, slug=slug))
+
+    existing = {t.lower() for t in db.scalars(
+        select(Word.term).where(Word.topic_id == topic.id)
+    ).all()}
+
+    added = skipped = 0
+    for w in payload.words:
+        if w.term.lower() in existing:
+            skipped += 1
+            continue
+        db.add(Word(**w.model_dump(), topic_id=topic.id))
+        existing.add(w.term.lower())
+        added += 1
+
+    db.commit()
+    return BulkImportResponse(topic_id=topic.id, topic_name=topic.name, added=added, skipped=skipped)
