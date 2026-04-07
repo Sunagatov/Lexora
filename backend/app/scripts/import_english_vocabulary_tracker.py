@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from openpyxl import load_workbook
-from sqlalchemy import delete, func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal
@@ -76,28 +76,20 @@ class SheetConfig:
 def normalize_text(value: Any) -> str | None:
     if value is None:
         return None
-
     text = str(value).strip()
     return text or None
 
 
 def normalize_headers(row: tuple[Any, ...]) -> tuple[str, ...]:
-    headers: list[str] = []
-    for value in row:
-        text = normalize_text(value)
-        if text is not None:
-            headers.append(text)
-    return tuple(headers)
+    return tuple(t for v in row if (t := normalize_text(v)) is not None)
 
 
 def slugify(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value)
     ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", ascii_value).strip("-").lower()
-
     if not slug:
         raise ValueError(f"Cannot build slug from sheet name: {value}")
-
     return slug[:200]
 
 
@@ -105,33 +97,20 @@ def parse_knowledge_level(value: Any, *, sheet_name: str, row_number: int) -> in
     text = normalize_text(value)
     if text is None:
         raise ValueError(f"{sheet_name} row {row_number}: Knowledge is required")
-
     try:
         numeric = float(text)
     except ValueError as exc:
-        raise ValueError(
-            f"{sheet_name} row {row_number}: invalid Knowledge value '{text}'"
-        ) from exc
-
+        raise ValueError(f"{sheet_name} row {row_number}: invalid Knowledge value '{text}'") from exc
     if not numeric.is_integer():
-        raise ValueError(
-            f"{sheet_name} row {row_number}: Knowledge must be an integer between 1 and 5"
-        )
-
+        raise ValueError(f"{sheet_name} row {row_number}: Knowledge must be an integer between 1 and 5")
     knowledge_level = int(numeric)
     if knowledge_level not in SUPPORTED_KNOWLEDGE_LEVELS:
-        raise ValueError(
-            f"{sheet_name} row {row_number}: Knowledge must be between 1 and 5"
-        )
-
+        raise ValueError(f"{sheet_name} row {row_number}: Knowledge must be between 1 and 5")
     return knowledge_level
 
 
 def row_to_dict(headers: tuple[str, ...], row: tuple[Any, ...]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for index, header in enumerate(headers):
-        result[header] = row[index] if index < len(row) else None
-    return result
+    return {header: (row[i] if i < len(row) else None) for i, header in enumerate(headers)}
 
 
 def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConfig:
@@ -143,7 +122,6 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             pattern_header="Typical prepositions / patterns",
             example_header="Examples (EN + RU)",
         )
-
     if headers == NOUN_HEADERS:
         return SheetConfig(
             part_of_speech="noun",
@@ -151,7 +129,6 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             translations_header="Russian translations",
             countability_header="Countability",
         )
-
     if headers == PHRASE_HEADERS:
         return SheetConfig(
             part_of_speech="phrase",
@@ -159,7 +136,6 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             translations_header="Russian translations",
             notes_header="Meaning / usage note",
         )
-
     if headers == PLAIN_WORD_HEADERS:
         part_of_speech = "preposition" if sheet_name == "Prepositions" else "adjective"
         return SheetConfig(
@@ -167,7 +143,6 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             term_header="Word",
             translations_header="Russian translations",
         )
-
     if headers == IRREGULAR_VERB_HEADERS:
         return SheetConfig(
             part_of_speech="verb",
@@ -178,7 +153,6 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             past_simple_header="Past Simple",
             past_participle_header="Past Participle",
         )
-
     if headers == ADVERB_HEADERS:
         return SheetConfig(
             part_of_speech="adverb",
@@ -186,120 +160,51 @@ def resolve_sheet_config(sheet_name: str, headers: tuple[str, ...]) -> SheetConf
             translations_header="Russian translations",
             pattern_header="Typical position / usage",
         )
-
-    raise ValueError(
-        f"Unsupported sheet structure for '{sheet_name}'. Headers found: {headers}"
-    )
+    raise ValueError(f"Unsupported sheet structure for '{sheet_name}'. Headers found: {headers}")
 
 
 def is_effectively_empty_row(row_data: dict[str, Any], config: SheetConfig) -> bool:
-    relevant_headers = [
-        config.term_header,
-        config.translations_header,
-        config.countability_header,
-        config.pattern_header,
-        config.example_header,
-        config.notes_header,
-        config.past_simple_header,
-        config.past_participle_header,
+    relevant = [
+        config.term_header, config.translations_header, config.countability_header,
+        config.pattern_header, config.example_header, config.notes_header,
+        config.past_simple_header, config.past_participle_header,
     ]
-    return all(normalize_text(row_data.get(header)) is None for header in relevant_headers if header)
+    return all(normalize_text(row_data.get(h)) is None for h in relevant if h)
 
 
 def is_repeated_header_row(row_data: dict[str, Any]) -> bool:
-    return all(normalize_text(value) == header for header, value in row_data.items())
+    return all(normalize_text(v) == h for h, v in row_data.items())
 
 
-def ensure_database_is_empty(db: Session) -> None:
-    topic_count = db.scalar(select(func.count(Topic.id))) or 0
-    word_count = db.scalar(select(func.count(Word.id))) or 0
-
-    if topic_count > 0 or word_count > 0:
-        raise ValueError(
-            "Database already contains vocabulary data. "
-            "Run the importer with --truncate-first to replace it safely."
-        )
-
-
-def create_topic(db: Session, sheet_name: str) -> Topic:
-    topic = Topic(
-        name=sheet_name,
-        slug=slugify(sheet_name),
-        description=None,
-        is_active=True,
-    )
+def get_or_create_topic(db: Session, sheet_name: str) -> tuple[Topic, bool]:
+    """Return (topic, created). Matches by slug so re-runs are safe."""
+    slug = slugify(sheet_name)
+    topic = db.scalar(select(Topic).where(Topic.slug == slug))
+    if topic:
+        return topic, False
+    topic = Topic(name=sheet_name, slug=slug, description=None, is_active=True)
     db.add(topic)
     db.flush()
-    return topic
+    return topic, True
 
 
-def create_word(
-    *,
-    topic_id: int,
-    config: SheetConfig,
-    row_data: dict[str, Any],
-    sheet_name: str,
-    row_number: int,
-) -> Word:
-    term = normalize_text(row_data.get(config.term_header))
-    translations = normalize_text(row_data.get(config.translations_header))
-
-    if term is None:
-        raise ValueError(f"{sheet_name} row {row_number}: term is required")
-
-    if translations is None:
-        raise ValueError(f"{sheet_name} row {row_number}: Russian translations are required")
-
-    return Word(
-        topic_id=topic_id,
-        term=term,
-        past_simple=normalize_text(
-            row_data.get(config.past_simple_header) if config.past_simple_header else None
-        ),
-        past_participle=normalize_text(
-            row_data.get(config.past_participle_header) if config.past_participle_header else None
-        ),
-        translations=translations,
-        part_of_speech=config.part_of_speech,
-        knowledge_level=parse_knowledge_level(
-            row_data.get("Knowledge"),
-            sheet_name=sheet_name,
-            row_number=row_number,
-        ),
-        countability=normalize_text(
-            row_data.get(config.countability_header) if config.countability_header else None
-        ),
-        pattern=normalize_text(
-            row_data.get(config.pattern_header) if config.pattern_header else None
-        ),
-        example=normalize_text(
-            row_data.get(config.example_header) if config.example_header else None
-        ),
-        notes=normalize_text(
-            row_data.get(config.notes_header) if config.notes_header else None
-        ),
-        is_active=True,
-    )
+def build_existing_terms(db: Session, topic_id: int) -> set[str]:
+    """Lower-cased terms already in DB for this topic."""
+    rows = db.scalars(select(Word.term).where(Word.topic_id == topic_id)).all()
+    return {t.lower() for t in rows}
 
 
-def import_workbook(file_path: Path, truncate_first: bool) -> None:
+def import_workbook(file_path: Path) -> None:
     if not file_path.exists():
         raise FileNotFoundError(f"Workbook not found: {file_path}")
 
     workbook = load_workbook(filename=file_path, data_only=True)
 
-    imported_topics = 0
-    imported_words = 0
+    topics_created = topics_existing = 0
+    words_added = words_skipped = 0
 
     with SessionLocal() as db:
         try:
-            if truncate_first:
-                db.execute(delete(Word))
-                db.execute(delete(Topic))
-                db.flush()
-            else:
-                ensure_database_is_empty(db)
-
             for worksheet in workbook.worksheets:
                 if worksheet.title in IGNORED_SHEETS:
                     continue
@@ -308,55 +213,87 @@ def import_workbook(file_path: Path, truncate_first: bool) -> None:
                 headers = normalize_headers(header_row)
                 config = resolve_sheet_config(worksheet.title, headers)
 
-                topic = create_topic(db, worksheet.title)
-                imported_topics += 1
+                topic, created = get_or_create_topic(db, worksheet.title)
+                if created:
+                    topics_created += 1
+                else:
+                    topics_existing += 1
+
+                existing_terms = build_existing_terms(db, topic.id)
 
                 for row_number, row in enumerate(worksheet.iter_rows(min_row=2, values_only=True), start=2):
                     row_data = row_to_dict(headers, row)
 
                     if is_effectively_empty_row(row_data, config):
                         continue
-
                     if is_repeated_header_row(row_data):
                         continue
 
-                    word = create_word(
+                    term = normalize_text(row_data.get(config.term_header))
+                    if term is None:
+                        continue
+
+                    # Skip if this term already exists in this topic (case-insensitive)
+                    if term.lower() in existing_terms:
+                        words_skipped += 1
+                        continue
+
+                    translations = normalize_text(row_data.get(config.translations_header))
+                    if translations is None:
+                        continue
+
+                    word = Word(
                         topic_id=topic.id,
-                        config=config,
-                        row_data=row_data,
-                        sheet_name=worksheet.title,
-                        row_number=row_number,
+                        term=term,
+                        translations=translations,
+                        part_of_speech=config.part_of_speech,
+                        knowledge_level=parse_knowledge_level(
+                            row_data.get("Knowledge"),
+                            sheet_name=worksheet.title,
+                            row_number=row_number,
+                        ),
+                        past_simple=normalize_text(
+                            row_data.get(config.past_simple_header) if config.past_simple_header else None
+                        ),
+                        past_participle=normalize_text(
+                            row_data.get(config.past_participle_header) if config.past_participle_header else None
+                        ),
+                        countability=normalize_text(
+                            row_data.get(config.countability_header) if config.countability_header else None
+                        ),
+                        pattern=normalize_text(
+                            row_data.get(config.pattern_header) if config.pattern_header else None
+                        ),
+                        example=normalize_text(
+                            row_data.get(config.example_header) if config.example_header else None
+                        ),
+                        notes=normalize_text(
+                            row_data.get(config.notes_header) if config.notes_header else None
+                        ),
+                        is_active=True,
                     )
                     db.add(word)
-                    imported_words += 1
+                    existing_terms.add(term.lower())  # prevent duplicates within the same file
+                    words_added += 1
 
             db.commit()
         except Exception:
             db.rollback()
             raise
 
-    print(f"Workbook imported successfully: {file_path}")
-    print(f"Topics imported: {imported_topics}")
-    print(f"Words imported: {imported_words}")
-    print(f"Ignored helper sheets: {', '.join(sorted(IGNORED_SHEETS))}")
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Import the English Vocabulary Tracker workbook into the Lexora database"
-    )
-    parser.add_argument("file", type=Path, help="Path to the .xlsx workbook")
-    parser.add_argument(
-        "--truncate-first",
-        action="store_true",
-        help="Delete existing topics and words before importing the workbook",
-    )
-    return parser.parse_args()
+    print(f"\nImport complete: {file_path}")
+    print(f"  Topics  — created: {topics_created}, already existed: {topics_existing}")
+    print(f"  Words   — added:   {words_added}, skipped (duplicates): {words_skipped}")
 
 
 def main() -> None:
-    args = parse_args()
-    import_workbook(file_path=args.file, truncate_first=args.truncate_first)
+    parser = argparse.ArgumentParser(
+        description="Sync the English Vocabulary Tracker workbook into the Lexora database. "
+                    "Safe to run multiple times — only new words are added, existing ones are never touched."
+    )
+    parser.add_argument("file", type=Path, help="Path to the .xlsx workbook")
+    args = parser.parse_args()
+    import_workbook(file_path=args.file)
 
 
 if __name__ == "__main__":
