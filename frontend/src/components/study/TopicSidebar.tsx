@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {createPortal} from 'react-dom'
-import type {Topic, Word} from '../../lib/api'
+import type {Topic} from '../../lib/api'
 
 type Props = {
   topics: Topic[]
