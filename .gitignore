@@ -18,6 +18,8 @@ venv/
 # Env files
 .env
 backend/.env
+.env.prod
+maintaner/.env.prod
 
 # Alembic / coverage
 .coverage
