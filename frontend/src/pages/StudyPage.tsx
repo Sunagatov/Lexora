@@ -19,6 +19,8 @@ export function StudyPage() {
     onSelect: s.selectTopic,
   }
 
+  const showWordListHeader = s.selectedTopicId !== null && s.filteredWords.length > 0
+
   if (s.isLoading) {
     return <div className="study-loading">Loading…</div>
   }
@@ -83,6 +85,14 @@ export function StudyPage() {
               pageStart={s.pageStart}
               pageEnd={s.pageEnd}
             />
+
+            {showWordListHeader && (
+              <div className="word-list-header" aria-hidden="true">
+                <span className="word-list-header-cell word-list-header-word">Word</span>
+                <span className="word-list-header-cell word-list-header-details">Translation / details</span>
+                <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
+              </div>
+            )}
           </div>
 
           {s.selectedTopicId === null ? (
