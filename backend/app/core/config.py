@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_debug: bool = True
 
+    app_password: str
+    secret_key: str
+    cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

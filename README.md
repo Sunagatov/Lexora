@@ -1,30 +1,22 @@
 # Lexora
 
-Lexora is a personal English vocabulary learning application.
+**A modern English vocabulary learning app focused on topic-based study, fast review, and practical progress tracking.**
 
-## Current stack
+Lexora is a personal learning project for studying English vocabulary in a clean workspace: choose a topic, browse its words, search and filter quickly, and update your knowledge level word by word.
 
-- Python 3.12+
-- FastAPI
-- PostgreSQL
-- SQLAlchemy 2.0
-- Alembic
+---
 
-## Current backend scope
+## 🚀 Quick Start
 
-- healthcheck endpoint
-- topic CRUD
-- word CRUD
+### Prerequisites
 
-## Project structure
+- Docker Desktop
+- Node.js 20+
+- npm
+- Python 3.12+ only if you want to run the backend outside Docker
 
-- `backend/` — FastAPI backend
-- `frontend/` — frontend placeholder
-- `.env.example` — local environment template
-- `docker-compose.yml` — local development stack
-
-## Quick start
+### 1. Clone the repository
 
 ```bash
-cp .env.example .env
-docker compose up --build
+git clone https://github.com/Sunagatov/Lexora.git
+cd Lexora

@@ -40,7 +40,13 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers,
+    credentials: 'include',
   })
+
+  if (response.status === 401) {
+    window.location.href = '/login'
+    throw new Error('Not authenticated')
+  }
 
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} ${response.statusText}`)
@@ -51,6 +57,17 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export function fetchHealth() {
   return request<{ status: string }>('/health')
+}
+
+export function login(password: string) {
+  return request<{ ok: boolean }>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  })
+}
+
+export function logout() {
+  return request<{ ok: boolean }>('/auth/logout', { method: 'POST' })
 }
 
 export function fetchTopics() {

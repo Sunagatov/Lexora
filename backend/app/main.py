@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.deps import verify_session
+from app.routes.auth import router as auth_router
 from app.routes.health import router as health_router
 from app.routes.topics import router as topics_router
 from app.routes.words import router as words_router
@@ -23,5 +25,6 @@ app.add_middleware(
 )
 
 app.include_router(health_router)
-app.include_router(topics_router)
-app.include_router(words_router)
+app.include_router(auth_router)
+app.include_router(topics_router, dependencies=[Depends(verify_session)])
+app.include_router(words_router, dependencies=[Depends(verify_session)])

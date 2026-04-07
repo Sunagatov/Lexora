@@ -77,3 +77,60 @@ button, input, select, textarea { font: inherit; }
 .level-3     { background: #fefce8; color: #a16207; border-color: #fde68a; }
 .level-4     { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
 .level-5     { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
+
+/* Login */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--bg);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+}
+
+.login-input:focus { border-color: var(--accent); }
+
+.login-error {
+  font-size: 0.85rem;
+  color: #c81e1e;
+  text-align: center;
+}
+
+.login-btn {
+  padding: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.login-btn:hover:not(:disabled) { background: var(--accent-dark); }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
