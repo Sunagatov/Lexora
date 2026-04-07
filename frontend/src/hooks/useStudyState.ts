@@ -3,6 +3,8 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {fetchTopics, fetchWords, type Word, type WordKnowledgeLevel, updateWordKnowledgeLevel} from '../lib/api'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../lib/words'
 
+const PAGE_SIZE = 50
+
 export function useStudyState() {
   const queryClient = useQueryClient()
 
@@ -13,6 +15,7 @@ export function useStudyState() {
   const [sortBy, setSortBy]                   = useState<SortOption>('level-asc')
   const [drawerOpen, setDrawerOpen]           = useState(false)
   const [frozenIds, setFrozenIds]             = useState<number[] | null>(null)
+  const [page, setPage]                       = useState(1)
 
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const wordsQuery  = useQuery({queryKey: ['words'],  queryFn: () => fetchWords()})
@@ -28,8 +31,8 @@ export function useStudyState() {
     }
   }, [topics, selectedTopicId])
 
-  // Reset frozen order when filters change
-  useEffect(() => { setFrozenIds(null) }, [selectedTopicId, wordSearch, levelFilter, sortBy])
+  // Reset frozen order and page when filters change
+  useEffect(() => { setFrozenIds(null); setPage(1) }, [selectedTopicId, wordSearch, levelFilter, sortBy])
 
   const topicCounts = useMemo(() => {
     const m = new Map<number, number>()
@@ -63,6 +66,13 @@ export function useStudyState() {
     [topicWords, wordSearch, levelFilter, sortBy, frozenIds],
   )
 
+  const totalPages = Math.max(1, Math.ceil(filteredWords.length / PAGE_SIZE))
+  const safePage   = Math.min(page, totalPages)
+  const pageWords  = useMemo(
+    () => filteredWords.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filteredWords, safePage],
+  )
+
   const updateMutation = useMutation({
     mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
       updateWordKnowledgeLevel(wordId, knowledgeLevel),
@@ -85,7 +95,7 @@ export function useStudyState() {
 
   return {
     // data
-    topics, words, visibleTopics, selectedTopic, topicWords, topicCounts, levelSummary, filteredWords,
+    topics, words, visibleTopics, selectedTopic, topicWords, topicCounts, levelSummary, filteredWords, pageWords,
     // filters
     topicSearch, setTopicSearch,
     wordSearch, setWordSearch,
@@ -97,6 +107,8 @@ export function useStudyState() {
     selectTopic: (id: number) => { setSelectedTopicId(id); setDrawerOpen(false) },
     // ui
     drawerOpen, setDrawerOpen,
+    // pagination
+    page: safePage, totalPages, setPage,
     // mutation
     updateLevel: (wordId: number, knowledgeLevel: WordKnowledgeLevel) =>
       updateMutation.mutate({wordId, knowledgeLevel}),

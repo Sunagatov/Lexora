@@ -7,8 +7,9 @@
 }
 
 .main-inner {
+  flex: 1;
   width: 100%;
-  padding: 0 28px 42px;
+  padding: 0 28px 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -78,11 +79,9 @@
 /* Toolbar */
 .toolbar-card {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
   padding: 10px 14px;
-  flex-wrap: nowrap;
 }
 
 .toolbar-row {
@@ -93,7 +92,8 @@
 }
 
 .search-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 40px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -149,3 +149,66 @@
 
 .results-meta { font-size: 0.85rem; color: var(--text-3); margin-left: auto; white-space: nowrap; }
 .results-meta strong { color: var(--text-2); }
+
+/* Pagination bar — sticky at the bottom of the scroll container */
+.pagination-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 10px 0 12px;
+  margin-top: auto;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: #c7d2fe;
+}
+
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.page-btn-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.page-btn-active:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+
+.page-ellipsis {
+  min-width: 28px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.9rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+.page-nav { min-width: 64px; font-size: 0.82rem; }

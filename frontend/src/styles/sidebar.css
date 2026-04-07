@@ -138,10 +138,9 @@
   flex: 1;
 }
 
-/* Floating tooltip rendered via React, works on touch too */
+/* Floating tooltip — rendered via React portal into document.body */
 .topic-tooltip {
   position: fixed;
-  left: calc(var(--sidebar-w) + 10px);
   transform: translateY(-50%);
   background: #1e293b;
   color: #f1f5f9;
@@ -153,9 +152,9 @@
   word-break: break-word;
   line-height: 1.4;
   pointer-events: none;
-  z-index: 200;
+  z-index: 9999;
   box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  animation: tooltip-in 0.12s ease;
+  animation: tooltip-in 0.1s ease;
 }
 
 @keyframes tooltip-in {

@@ -4,6 +4,7 @@ import {TopicSidebar} from '../components/study/TopicSidebar'
 import {Toolbar} from '../components/study/Toolbar'
 import {WordTable} from '../components/study/WordTable'
 import {WordCardList} from '../components/study/WordCardList'
+import {Pagination} from '../components/study/Pagination'
 
 export function StudyPage() {
   const s = useStudyState()
@@ -27,9 +28,12 @@ export function StudyPage() {
       {/* Mobile topbar */}
       <div className="mobile-topbar">
         <span className="mobile-brand">Lexora</span>
-        <button type="button" className="mobile-topic-btn" onClick={() => s.setDrawerOpen(true)}
-          data-tooltip={s.selectedTopic?.name ?? 'Topics'}
-          title={s.selectedTopic?.name ?? 'Topics'}>
+        <button
+          type="button"
+          className="mobile-topic-btn"
+          title={s.selectedTopic?.name ?? 'Topics'}
+          onClick={() => s.setDrawerOpen(true)}
+        >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="2" y1="4" x2="14" y2="4"/>
             <line x1="2" y1="8" x2="14" y2="8"/>
@@ -55,13 +59,9 @@ export function StudyPage() {
         <div className="main-inner">
 
           <div className="sticky-controls">
-            {/* Topic header */}
             <div className="card topic-header-card">
               <div className="topic-header-main">
                 <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
-                {s.selectedTopic?.description && (
-                  <div className="topic-header-desc">{s.selectedTopic.description}</div>
-                )}
               </div>
               <div className="level-summary">
                 {LEVELS.map((l) => (
@@ -73,7 +73,6 @@ export function StudyPage() {
               </div>
             </div>
 
-            {/* Toolbar */}
             <Toolbar
               wordSearch={s.wordSearch}
               setWordSearch={s.setWordSearch}
@@ -87,24 +86,24 @@ export function StudyPage() {
             />
           </div>
 
-          {/* Word list */}
           {s.selectedTopicId === null ? (
             <div className="empty-state">Select a topic to start reviewing words.</div>
           ) : s.filteredWords.length === 0 ? (
             <div className="empty-state">No words match the current filters.</div>
           ) : (
             <>
-              <WordTable
-                words={s.filteredWords}
-                pendingWordId={s.pendingWordId}
-                onUpdate={s.updateLevel}
-              />
-              <WordCardList
-                words={s.filteredWords}
-                pendingWordId={s.pendingWordId}
-                onUpdate={s.updateLevel}
-              />
+              <WordTable words={s.pageWords} pendingWordId={s.pendingWordId} onUpdate={s.updateLevel} />
+              <WordCardList words={s.pageWords} pendingWordId={s.pendingWordId} onUpdate={s.updateLevel} />
             </>
+          )}
+
+          {s.totalPages > 1 && (
+            <div className="pagination-bar">
+              <Pagination page={s.page} totalPages={s.totalPages} onPage={(p) => {
+                s.setPage(p)
+                document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'})
+              }} />
+            </div>
           )}
 
         </div>

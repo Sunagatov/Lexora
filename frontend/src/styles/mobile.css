@@ -72,7 +72,7 @@
 
   .main-content { flex: 1; overflow-y: auto; min-height: 0; }
 
-  .main-inner { padding: 0 12px 32px; gap: 12px; }
+  .main-inner { padding: 0 12px 0; gap: 12px; }
 
   .sticky-controls { padding: 10px 0 4px; gap: 6px; }
 
@@ -100,9 +100,6 @@
   .word-table-wrap { display: none; }
   .word-card-list  { display: block; }
   .card:has(.word-table-wrap) { display: none; }
-
-  /* Tooltip in drawer: anchor to right edge of drawer */
-  .topic-tooltip { left: calc(min(300px, 88vw) + 10px); }
 }
 
 @media (max-width: 480px) {
