@@ -18,7 +18,7 @@ export function LevelSwitcher({level, wordId, isPending, onUpdate, btnSize = 'sm
           type="button"
           className={`level-btn ${l === level ? `level-btn-active ${levelClass(l)}` : ''}`}
           disabled={isPending}
-          onClick={() => onUpdate(wordId, l)}
+          onClick={() => l !== level && onUpdate(wordId, l)}
           title={LEVEL_LABELS[l]}
         >
           {l}

@@ -18,7 +18,7 @@ export function WordTable({words, pendingWordId, onUpdate}: Props) {
               const lc = levelClass(word.knowledge_level)
 
               return (
-                <tr key={word.id} className={`word-row ${lc}`}>
+                <tr key={word.id} className="word-row">
                   <td className="word-cell-word">
                     <strong className="word-term">{word.term}</strong>
 
