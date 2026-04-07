@@ -10,6 +10,9 @@ import {
 } from '../lib/api'
 
 const LEVELS: WordKnowledgeLevel[] = [1, 2, 3, 4, 5]
+const MOBILE_BREAKPOINT = 860
+const DESKTOP_PAGE_SIZE = 20
+const MOBILE_PAGE_SIZE = 12
 
 type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
 
@@ -24,6 +27,8 @@ type DropdownOption<T extends string> = {
   value: T
   label: string
 }
+
+type PageToken = number | 'ellipsis-left' | 'ellipsis-right'
 
 const LEVEL_LABELS: Record<number, string> = {
   1: 'Weak',
@@ -74,6 +79,34 @@ function matchesSearch(word: Word, search: string): boolean {
   ]
     .filter(Boolean)
     .some((value) => normalize(value).includes(needle))
+}
+
+function buildPageTokens(currentPage: number, totalPages: number): PageToken[] {
+  if (totalPages <= 1) {
+    return [1]
+  }
+
+  const tokens: PageToken[] = [1]
+  const windowStart = Math.max(2, currentPage - 1)
+  const windowEnd = Math.min(totalPages - 1, currentPage + 1)
+
+  if (windowStart > 2) {
+    tokens.push('ellipsis-left')
+  }
+
+  for (let page = windowStart; page <= windowEnd; page += 1) {
+    tokens.push(page)
+  }
+
+  if (windowEnd < totalPages - 1) {
+    tokens.push('ellipsis-right')
+  }
+
+  if (totalPages > 1) {
+    tokens.push(totalPages)
+  }
+
+  return tokens
 }
 
 function CompactDropdown<T extends string>({
@@ -225,12 +258,48 @@ export function StudyPage() {
   const [sortBy, setSortBy] = useState<SortOption>('level-asc')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [frozenIds, setFrozenIds] = useState<number[] | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(() => {
+    if (typeof window === 'undefined') {
+      return DESKTOP_PAGE_SIZE
+    }
+
+    return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
+      ? MOBILE_PAGE_SIZE
+      : DESKTOP_PAGE_SIZE
+  })
 
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const wordsQuery = useQuery({queryKey: ['words'], queryFn: () => fetchWords()})
 
   const topics = (topicsQuery.data ?? []) as Topic[]
   const words = wordsQuery.data ?? []
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
+
+    const syncPageSize = () => {
+      setPageSize(media.matches ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE)
+    }
+
+    syncPageSize()
+
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', syncPageSize)
+
+      return () => {
+        media.removeEventListener('change', syncPageSize)
+      }
+    }
+
+    media.addListener(syncPageSize)
+
+    return () => {
+      media.removeListener(syncPageSize)
+    }
+  }, [])
 
   useEffect(() => {
     if (!topics.length) return
@@ -248,6 +317,7 @@ export function StudyPage() {
 
   useEffect(() => {
     setFrozenIds(null)
+    setCurrentPage(1)
   }, [selectedTopicId, wordSearch, levelFilter, sortBy])
 
   const topicCounts = useMemo(() => {
@@ -352,6 +422,29 @@ export function StudyPage() {
     })
   }, [topicWords, wordSearch, levelFilter, sortBy, frozenIds])
 
+  const totalPages = Math.max(1, Math.ceil(filteredWords.length / pageSize))
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages])
+
+  const paginatedWords = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    const endIndex = startIndex + pageSize
+
+    return filteredWords.slice(startIndex, endIndex)
+  }, [filteredWords, currentPage, pageSize])
+
+  const pageTokens = useMemo(
+    () => buildPageTokens(currentPage, totalPages),
+    [currentPage, totalPages],
+  )
+
+  const pageStart = filteredWords.length === 0 ? 0 : (currentPage - 1) * pageSize + 1
+  const pageEnd = filteredWords.length === 0 ? 0 : Math.min(currentPage * pageSize, filteredWords.length)
+
   const updateMutation = useMutation({
     mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
       updateWordKnowledgeLevel(wordId, knowledgeLevel),
@@ -386,6 +479,10 @@ export function StudyPage() {
   })
 
   const pendingId = updateMutation.variables?.wordId ?? null
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages))
+  }
 
   if (topicsQuery.isLoading || wordsQuery.isLoading) {
     return (
@@ -499,9 +596,66 @@ export function StudyPage() {
               </div>
 
               <div className="toolbar-meta-row">
-                <span className="results-meta">
-                  <strong>{filteredWords.length}</strong> / <strong>{topicWords.length}</strong> words
-                </span>
+                <div className="results-meta-wrap">
+                  <span className="results-meta">
+                    Showing <strong>{pageStart}-{pageEnd}</strong> of <strong>{filteredWords.length}</strong> filtered / <strong>{topicWords.length}</strong> total
+                  </span>
+                  <span className="page-status">
+                    Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+                  </span>
+                </div>
+
+                {filteredWords.length > 0 ? (
+                  <nav className="pagination" aria-label="Word list pagination">
+                    <button
+                      type="button"
+                      className="pagination-btn pagination-nav"
+                      disabled={currentPage === 1}
+                      onClick={() => goToPage(currentPage - 1)}
+                    >
+                      Prev
+                    </button>
+
+                    <div className="pagination-pages">
+                      {pageTokens.map((token) => {
+                        if (typeof token !== 'number') {
+                          return (
+                            <span
+                              key={token}
+                              className="pagination-ellipsis"
+                              aria-hidden="true"
+                            >
+                              …
+                            </span>
+                          )
+                        }
+
+                        const isActive = token === currentPage
+
+                        return (
+                          <button
+                            key={token}
+                            type="button"
+                            className={`pagination-btn ${isActive ? 'pagination-btn-active' : ''}`}
+                            aria-current={isActive ? 'page' : undefined}
+                            onClick={() => goToPage(token)}
+                          >
+                            {token}
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pagination-btn pagination-nav"
+                      disabled={currentPage === totalPages}
+                      onClick={() => goToPage(currentPage + 1)}
+                    >
+                      Next
+                    </button>
+                  </nav>
+                ) : null}
               </div>
             </div>
           </div>
@@ -523,7 +677,7 @@ export function StudyPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredWords.map((word) => {
+                      {paginatedWords.map((word) => {
                         const currentLevelClass = levelClass(word.knowledge_level)
                         const isPending = pendingId === word.id && updateMutation.isPending
 
@@ -599,7 +753,7 @@ export function StudyPage() {
               </div>
 
               <div className="word-card-list">
-                {filteredWords.map((word) => {
+                {paginatedWords.map((word) => {
                   const currentLevelClass = levelClass(word.knowledge_level)
                   const isPending = pendingId === word.id && updateMutation.isPending
 
