@@ -66,15 +66,24 @@ export function Toolbar({
 
   return (
     <div className="card toolbar-card">
+      <div className="toolbar-search-row toolbar-search-row-desktop">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search word, translation, example, notes…"
+          value={wordSearch}
+          onChange={(e) => setWordSearch(e.target.value)}
+        />
+      </div>
+
       {searchVisible && (
-        <div className="toolbar-search-row">
+        <div className="toolbar-search-row toolbar-search-row-mobile">
           <input
             className="search-input"
             type="text"
-            placeholder="Search word, translation, example, notes…"
+            placeholder="Search…"
             value={wordSearch}
             onChange={(e) => setWordSearch(e.target.value)}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
           />
         </div>
@@ -106,7 +115,10 @@ export function Toolbar({
             setSearchOpen((v) => !v)
           }}
         >
-          {searchVisible ? '✕' : '🔍'}
+          {searchVisible
+            ? <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>
+            : <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
+          }
         </button>
 
         <button type="button" className="btn btn-ghost toolbar-reset-btn" onClick={onReset}>

@@ -42,8 +42,7 @@
   flex: 0 0 auto;
 }
 
-.toolbar-search-toggle {
-  display: none;
+.toolbar-search-row-mobile { display: none; }
   flex: 0 0 auto;
   min-width: 36px;
   padding-inline: 0;

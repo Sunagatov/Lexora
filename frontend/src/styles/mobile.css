@@ -144,6 +144,9 @@
     display: inline-flex;
   }
 
+  .toolbar-search-row-desktop { display: none; }
+  .toolbar-search-row-mobile  { display: flex; }
+
   .toolbar-reset-btn {
     width: auto;
     min-width: 80px;
