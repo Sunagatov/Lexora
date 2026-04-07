@@ -52,6 +52,8 @@ class BulkImportResponse(BaseModel):
     topic_name: str
     added: int
     skipped: int
+    added_terms: list[str]
+    skipped_terms: list[str]
 
 
 class WordUpdate(BaseModel):

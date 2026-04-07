@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db, verify_api_key
 from app.crud.topic import topic_crud
 from app.crud.word import word_crud
+from app.models.topic import Topic
 from app.models.word import Word
 from app.schemas.topic import TopicCreate
 from app.schemas.word import BulkImportResponse, WordBulkCreate, WordCreate, WordInput, WordResponse, WordUpdate
@@ -80,7 +81,11 @@ def _normalize_term(term: str) -> str:
 def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     slug = _slugify(payload.topic_name)
-    topic = topic_crud.get_by_slug(db, slug)
+
+    # Match by exact name first to avoid slug collision between different topic names
+    topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name))
+    if topic is None:
+        topic = topic_crud.get_by_slug(db, slug)
     if topic is None:
         topic = topic_crud.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
@@ -88,14 +93,22 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
         select(Word.term).where(Word.topic_id == topic.id)
     ).all()}
 
-    added = skipped = 0
+    added_terms: list[str] = []
+    skipped_terms: list[str] = []
     for w in payload.words:
         if _normalize_term(w.term) in existing:
-            skipped += 1
+            skipped_terms.append(w.term)
             continue
         db.add(Word(**w.model_dump(), topic_id=topic.id))
         existing.add(_normalize_term(w.term))
-        added += 1
+        added_terms.append(w.term)
 
     db.commit()
-    return BulkImportResponse(topic_id=topic.id, topic_name=topic.name, added=added, skipped=skipped)
+    return BulkImportResponse(
+        topic_id=topic.id,
+        topic_name=topic.name,
+        added=len(added_terms),
+        skipped=len(skipped_terms),
+        added_terms=added_terms,
+        skipped_terms=skipped_terms,
+    )
