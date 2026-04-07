@@ -53,11 +53,6 @@ export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSe
 
   return (
     <>
-      <div className="sidebar-brand">
-        <div className="sidebar-brand-name">Lexora</div>
-        <div className="sidebar-brand-sub">English vocabulary</div>
-      </div>
-
       <div className="sidebar-stats">
         <div className="sidebar-stat">
           <span className="sidebar-stat-value">{topics.length}</span>

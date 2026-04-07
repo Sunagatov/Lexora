@@ -50,6 +50,8 @@
   min-width: 36px;
   padding-inline: 0;
   font-size: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .toolbar-search-toggle-active {
