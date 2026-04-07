@@ -16,7 +16,7 @@ export function HomePage() {
 
   const wordsQuery = useQuery({
     queryKey: ['words'],
-    queryFn: fetchWords,
+    queryFn: () => fetchWords(),
   })
 
   return (

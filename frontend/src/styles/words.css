@@ -1,0 +1,127 @@
+/* Desktop table */
+.word-table-wrap { overflow-x: auto; }
+
+.word-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.word-table th {
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.word-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.word-row:last-child td { border-bottom: none; }
+.word-row { transition: background 0.12s; }
+.word-row:hover { background: #fafbff; }
+
+.word-row.level-1 td:first-child { box-shadow: inset 3px 0 0 #ef4444; }
+.word-row.level-2 td:first-child { box-shadow: inset 3px 0 0 #f97316; }
+.word-row.level-3 td:first-child { box-shadow: inset 3px 0 0 #eab308; }
+.word-row.level-4 td:first-child { box-shadow: inset 3px 0 0 #10b981; }
+.word-row.level-5 td:first-child { box-shadow: inset 3px 0 0 #8b5cf6; }
+
+.word-cell-word      { min-width: 160px; }
+.word-cell-details   { min-width: 260px; }
+.word-cell-knowledge { min-width: 200px; }
+
+.word-term { display: block; font-size: 0.96rem; font-weight: 700; }
+
+.word-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.word-translation { font-size: 0.92rem; font-weight: 600; }
+
+.word-extra { font-size: 0.83rem; color: var(--text-2); margin-top: 4px; }
+.word-extra strong { color: var(--text); }
+
+/* Level badge */
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+/* Level switcher */
+.level-switcher { display: flex; gap: 5px; margin-top: 8px; }
+
+.level-switcher-md { gap: 6px; }
+.level-switcher-md .level-btn { width: 36px; height: 36px; font-size: 0.88rem; }
+
+.level-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.12s;
+}
+
+.level-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.level-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.level-btn-active { border-color: currentColor !important; }
+
+/* Mobile word cards */
+.word-card-list { display: none; }
+
+.word-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.word-card + .word-card { margin-top: 10px; }
+
+.word-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.word-card-body { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }

@@ -1,831 +1,108 @@
-import {useEffect, useMemo, useRef, useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-
-import {
-  fetchTopics,
-  fetchWords,
-  type Word,
-  type WordKnowledgeLevel,
-  updateWordKnowledgeLevel,
-} from '../lib/api'
-
-const LEVELS: WordKnowledgeLevel[] = [1, 2, 3, 4, 5]
-const MOBILE_BREAKPOINT = 860
-const DESKTOP_PAGE_SIZE = 20
-const MOBILE_PAGE_SIZE = 12
-
-type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
-
-type Topic = {
-  id: number
-  name: string
-  slug?: string | null
-  description?: string | null
-}
-
-type DropdownOption<T extends string> = {
-  value: T
-  label: string
-}
-
-type PageToken = number | 'ellipsis-left' | 'ellipsis-right'
-
-const LEVEL_LABELS: Record<number, string> = {
-  1: 'Weak',
-  2: 'Basic',
-  3: 'Okay',
-  4: 'Strong',
-  5: 'Master',
-}
-
-const SUMMARY_LABELS: Record<number, string> = {
-  1: 'Weak',
-  2: 'Basic',
-  3: 'Okay',
-  4: 'Strong',
-  5: 'Master',
-}
-
-const ALL_SORT_OPTIONS: DropdownOption<SortOption>[] = [
-  {value: 'level-asc', label: 'Level ↑'},
-  {value: 'level-desc', label: 'Level ↓'},
-  {value: 'term-asc', label: 'A → Z'},
-  {value: 'term-desc', label: 'Z → A'},
-]
-
-function normalize(v: string | null | undefined) {
-  return v?.toLowerCase().trim() ?? ''
-}
-
-function levelClass(level: number | null) {
-  if (!level) return 'level-unset'
-  return `level-${level}`
-}
-
-function matchesSearch(word: Word, search: string): boolean {
-  if (!search.trim()) return true
-
-  const needle = normalize(search)
-
-  return [
-    word.term,
-    word.translations,
-    word.part_of_speech,
-    word.pattern,
-    word.example,
-    word.notes,
-    word.past_simple,
-    word.past_participle,
-  ]
-    .filter(Boolean)
-    .some((value) => normalize(value).includes(needle))
-}
-
-function buildPageTokens(currentPage: number, totalPages: number): PageToken[] {
-  if (totalPages <= 1) {
-    return [1]
-  }
-
-  const tokens: PageToken[] = [1]
-  const windowStart = Math.max(2, currentPage - 1)
-  const windowEnd = Math.min(totalPages - 1, currentPage + 1)
-
-  if (windowStart > 2) {
-    tokens.push('ellipsis-left')
-  }
-
-  for (let page = windowStart; page <= windowEnd; page += 1) {
-    tokens.push(page)
-  }
-
-  if (windowEnd < totalPages - 1) {
-    tokens.push('ellipsis-right')
-  }
-
-  if (totalPages > 1) {
-    tokens.push(totalPages)
-  }
-
-  return tokens
-}
-
-function CompactDropdown<T extends string>({
-  value,
-  options,
-  onChange,
-  className = '',
-}: {
-  value: T
-  options: DropdownOption<T>[]
-  onChange: (value: T) => void
-  className?: string
-}) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef<HTMLDivElement | null>(null)
-
-  const selected = options.find((option) => option.value === value) ?? options[0]
-
-  useEffect(() => {
-    function handlePointerDown(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    document.addEventListener('keydown', handleEscape)
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [])
-
-  return (
-    <div ref={rootRef} className={`dropdown ${open ? 'dropdown-open' : ''} ${className}`.trim()}>
-      <button
-        type="button"
-        className="dropdown-trigger"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
-      >
-        <span className="dropdown-trigger-label">{selected.label}</span>
-        <span className="dropdown-trigger-icon" aria-hidden="true">▾</span>
-      </button>
-
-      {open && (
-        <div className="dropdown-menu" role="listbox">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={`dropdown-option ${option.value === value ? 'dropdown-option-active' : ''}`}
-              onClick={() => {
-                onChange(option.value)
-                setOpen(false)
-              }}
-            >
-              <span>{option.label}</span>
-              {option.value === value ? <span className="dropdown-check">✓</span> : null}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function TopicSidebar({
-  topics,
-  topicCounts,
-  totalWords,
-  topicSearch,
-  setTopicSearch,
-  selectedTopicId,
-  onSelect,
-}: {
-  topics: Topic[]
-  topicCounts: Map<number, number>
-  totalWords: number
-  topicSearch: string
-  setTopicSearch: (value: string) => void
-  selectedTopicId: number | null
-  onSelect: (id: number) => void
-}) {
-  return (
-    <>
-      <div className="sidebar-brand">
-        <div className="sidebar-brand-name">Lexora</div>
-        <div className="sidebar-brand-sub">English vocabulary</div>
-      </div>
-
-      <div className="sidebar-stats">
-        <div className="sidebar-stat">
-          <span className="sidebar-stat-value">{topics.length}</span>
-          <span className="sidebar-stat-label">Topics</span>
-        </div>
-        <div className="sidebar-stat">
-          <span className="sidebar-stat-value">{totalWords}</span>
-          <span className="sidebar-stat-label">Words</span>
-        </div>
-      </div>
-
-      <div className="sidebar-search-wrap">
-        <input
-          className="sidebar-search"
-          type="text"
-          placeholder="Search topics…"
-          value={topicSearch}
-          onChange={(e) => setTopicSearch(e.target.value)}
-        />
-      </div>
-
-      <div className="sidebar-topic-list">
-        {topics.length === 0 ? (
-          <div className="sidebar-empty">No topics found.</div>
-        ) : (
-          topics.map((topic) => (
-            <button
-              key={topic.id}
-              type="button"
-              className={`topic-item ${topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
-              onClick={() => onSelect(topic.id)}
-            >
-              <span className="topic-item-name">{topic.name}</span>
-              <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
-            </button>
-          ))
-        )}
-      </div>
-    </>
-  )
-}
+import {useStudyState} from '../hooks/useStudyState'
+import {LEVELS, LEVEL_LABELS, levelClass} from '../lib/words'
+import {TopicSidebar} from '../components/study/TopicSidebar'
+import {Toolbar} from '../components/study/Toolbar'
+import {WordTable} from '../components/study/WordTable'
+import {WordCardList} from '../components/study/WordCardList'
 
 export function StudyPage() {
-  const queryClient = useQueryClient()
-
-  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
-  const [topicSearch, setTopicSearch] = useState('')
-  const [wordSearch, setWordSearch] = useState('')
-  const [levelFilter, setLevelFilter] = useState<'all' | WordKnowledgeLevel>('all')
-  const [sortBy, setSortBy] = useState<SortOption>('level-asc')
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [frozenIds, setFrozenIds] = useState<number[] | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(() => {
-    if (typeof window === 'undefined') {
-      return DESKTOP_PAGE_SIZE
-    }
-
-    return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
-      ? MOBILE_PAGE_SIZE
-      : DESKTOP_PAGE_SIZE
-  })
-
-  const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
-  const wordsQuery = useQuery({queryKey: ['words'], queryFn: () => fetchWords()})
-
-  const topics = (topicsQuery.data ?? []) as Topic[]
-  const words = wordsQuery.data ?? []
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
-
-    const syncPageSize = () => {
-      setPageSize(media.matches ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE)
-    }
-
-    syncPageSize()
-
-    if (typeof media.addEventListener === 'function') {
-      media.addEventListener('change', syncPageSize)
-
-      return () => {
-        media.removeEventListener('change', syncPageSize)
-      }
-    }
-
-    media.addListener(syncPageSize)
-
-    return () => {
-      media.removeListener(syncPageSize)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!topics.length) return
-
-    if (selectedTopicId === null || !topics.some((topic) => topic.id === selectedTopicId)) {
-      setSelectedTopicId(topics[0].id)
-    }
-  }, [topics, selectedTopicId])
-
-  useEffect(() => {
-    if (levelFilter !== 'all' && (sortBy === 'level-asc' || sortBy === 'level-desc')) {
-      setSortBy('term-asc')
-    }
-  }, [levelFilter, sortBy])
-
-  useEffect(() => {
-    setFrozenIds(null)
-    setCurrentPage(1)
-  }, [selectedTopicId, wordSearch, levelFilter, sortBy])
-
-  const topicCounts = useMemo(() => {
-    const counts = new Map<number, number>()
-
-    for (const word of words) {
-      counts.set(word.topic_id, (counts.get(word.topic_id) ?? 0) + 1)
-    }
-
-    return counts
-  }, [words])
-
-  const visibleTopics = useMemo(() => {
-    const needle = normalize(topicSearch)
-
-    return topics.filter((topic) => {
-      return (
-        !needle ||
-        normalize(topic.name).includes(needle) ||
-        normalize(topic.description).includes(needle) ||
-        normalize(topic.slug).includes(needle)
-      )
-    })
-  }, [topicSearch, topics])
-
-  const selectedTopic = useMemo(
-    () => topics.find((topic) => topic.id === selectedTopicId) ?? null,
-    [topics, selectedTopicId],
-  )
-
-  const topicWords = useMemo(
-    () => (selectedTopicId === null ? [] : words.filter((word) => word.topic_id === selectedTopicId)),
-    [selectedTopicId, words],
-  )
-
-  const levelSummary = useMemo(() => {
-    const summary: Record<WordKnowledgeLevel, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-
-    for (const word of topicWords) {
-      const level = word.knowledge_level
-      if (level && level >= 1 && level <= 5) {
-        summary[level as WordKnowledgeLevel]++
-      }
-    }
-
-    return summary
-  }, [topicWords])
-
-  const availableSortOptions = useMemo(() => {
-    if (levelFilter !== 'all') {
-      return ALL_SORT_OPTIONS.filter((option) => option.value === 'term-asc' || option.value === 'term-desc')
-    }
-
-    return ALL_SORT_OPTIONS
-  }, [levelFilter])
-
-  const levelFilterOptions: DropdownOption<'all' | `${WordKnowledgeLevel}`>[] = useMemo(
-    () => [
-      {value: 'all', label: 'All levels'},
-      ...LEVELS.map((level) => ({
-        value: String(level) as `${WordKnowledgeLevel}`,
-        label: `Level ${level} — ${LEVEL_LABELS[level]}`,
-      })),
-    ],
-    [],
-  )
-
-  const filteredWords = useMemo(() => {
-    const result = topicWords
-      .filter((word) => matchesSearch(word, wordSearch))
-      .filter((word) => levelFilter === 'all' || word.knowledge_level === levelFilter)
-
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'term-asc':
-          return a.term.localeCompare(b.term)
-        case 'term-desc':
-          return b.term.localeCompare(a.term)
-        case 'level-asc':
-          return (a.knowledge_level ?? 99) - (b.knowledge_level ?? 99)
-        case 'level-desc':
-          return (b.knowledge_level ?? 0) - (a.knowledge_level ?? 0)
-        default:
-          return 0
-      }
-    })
-
-    if (!frozenIds) {
-      return result
-    }
-
-    const frozenIndex = new Map(frozenIds.map((id, index) => [id, index]))
-
-    return [...result].sort((a, b) => {
-      const aIndex = frozenIndex.get(a.id)
-      const bIndex = frozenIndex.get(b.id)
-
-      if (aIndex !== undefined && bIndex !== undefined) return aIndex - bIndex
-      if (aIndex !== undefined) return -1
-      if (bIndex !== undefined) return 1
-      return 0
-    })
-  }, [topicWords, wordSearch, levelFilter, sortBy, frozenIds])
-
-  const totalPages = Math.max(1, Math.ceil(filteredWords.length / pageSize))
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages)
-    }
-  }, [currentPage, totalPages])
-
-  const paginatedWords = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize
-    const endIndex = startIndex + pageSize
-
-    return filteredWords.slice(startIndex, endIndex)
-  }, [filteredWords, currentPage, pageSize])
-
-  const pageTokens = useMemo(
-    () => buildPageTokens(currentPage, totalPages),
-    [currentPage, totalPages],
-  )
-
-  const pageStart = filteredWords.length === 0 ? 0 : (currentPage - 1) * pageSize + 1
-  const pageEnd = filteredWords.length === 0 ? 0 : Math.min(currentPage * pageSize, filteredWords.length)
-
-  const updateMutation = useMutation({
-    mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
-      updateWordKnowledgeLevel(wordId, knowledgeLevel),
-
-    onMutate: async ({wordId, knowledgeLevel}) => {
-      setFrozenIds((current) => current ?? filteredWords.map((word) => word.id))
-
-      await queryClient.cancelQueries({queryKey: ['words']})
-
-      const previousWords = queryClient.getQueryData<Word[]>(['words'])
-
-      queryClient.setQueryData<Word[]>(['words'], (current = []) =>
-        current.map((word) =>
-          word.id === wordId
-            ? {...word, knowledge_level: knowledgeLevel, updated_at: new Date().toISOString()}
-            : word,
-        ),
-      )
-
-      return {previousWords}
-    },
-
-    onError: (_error, _variables, context) => {
-      if (context?.previousWords) {
-        queryClient.setQueryData(['words'], context.previousWords)
-      }
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({queryKey: ['words']})
-    },
-  })
-
-  const pendingId = updateMutation.variables?.wordId ?? null
-
-  const goToPage = (page: number) => {
-    setCurrentPage(Math.min(Math.max(page, 1), totalPages))
-  }
-
-  if (topicsQuery.isLoading || wordsQuery.isLoading) {
-    return (
-      <div className="study-loading">
-        Loading study workspace…
-      </div>
-    )
-  }
+  const s = useStudyState()
 
   const sidebarProps = {
-    topics: visibleTopics,
-    topicCounts,
-    totalWords: words.length,
-    topicSearch,
-    setTopicSearch,
-    selectedTopicId,
-    onSelect: (id: number) => {
-      setSelectedTopicId(id)
-      setDrawerOpen(false)
-    },
+    topics: s.visibleTopics,
+    topicCounts: s.topicCounts,
+    totalWords: s.words.length,
+    topicSearch: s.topicSearch,
+    setTopicSearch: s.setTopicSearch,
+    selectedTopicId: s.selectedTopicId,
+    onSelect: s.selectTopic,
+  }
+
+  if (s.isLoading) {
+    return <div className="study-loading">Loading…</div>
   }
 
   return (
     <>
+      {/* Mobile topbar */}
       <div className="mobile-topbar">
         <span className="mobile-brand">Lexora</span>
-
-        <button
-          type="button"
-          className="mobile-topic-btn"
-          onClick={() => setDrawerOpen(true)}
-        >
+        <button type="button" className="mobile-topic-btn" onClick={() => s.setDrawerOpen(true)}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="2" y1="4" x2="14" y2="4" />
-            <line x1="2" y1="8" x2="14" y2="8" />
-            <line x1="2" y1="12" x2="14" y2="12" />
+            <line x1="2" y1="4" x2="14" y2="4"/>
+            <line x1="2" y1="8" x2="14" y2="8"/>
+            <line x1="2" y1="12" x2="14" y2="12"/>
           </svg>
-          <span className="mobile-topic-btn-name">{selectedTopic?.name ?? 'Topics'}</span>
+          <span className="mobile-topic-btn-name">{s.selectedTopic?.name ?? 'Topics'}</span>
         </button>
       </div>
 
-      <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
-      <div className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}>
+      {/* Mobile drawer */}
+      <div className={`mobile-drawer-overlay ${s.drawerOpen ? 'open' : ''}`} onClick={() => s.setDrawerOpen(false)} />
+      <div className={`mobile-drawer ${s.drawerOpen ? 'open' : ''}`}>
         <TopicSidebar {...sidebarProps} />
       </div>
 
-      <aside className="sidebar desktop-sidebar">
+      {/* Desktop sidebar */}
+      <aside className="desktop-sidebar">
         <TopicSidebar {...sidebarProps} />
       </aside>
 
+      {/* Main */}
       <div className="main-content">
         <div className="main-inner">
-          <div className="sticky-stack">
-            <div className="card topic-header-card">
-              <div className="topic-header-main">
-                <div className="topic-header-title">{selectedTopic?.name ?? 'No topic selected'}</div>
-                {selectedTopic?.description ? (
-                  <div className="topic-header-desc">{selectedTopic.description}</div>
-                ) : null}
-              </div>
 
-              <div className="level-summary">
-                {LEVELS.map((level) => (
-                  <div key={level} className={`level-chip ${levelClass(level)}`}>
-                    <span className="level-chip-label">{SUMMARY_LABELS[level]}</span>
-                    <span className="level-chip-value">{levelSummary[level]}</span>
-                  </div>
-                ))}
-              </div>
+          {/* Topic header */}
+          <div className="card topic-header-card">
+            <div className="topic-header-main">
+              <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
+              {s.selectedTopic?.description && (
+                <div className="topic-header-desc">{s.selectedTopic.description}</div>
+              )}
             </div>
-
-            <div className="card toolbar-card">
-              <div className="toolbar-search-row">
-                <input
-                  className="search-input"
-                  type="text"
-                  placeholder="Search word, translation, example, notes…"
-                  value={wordSearch}
-                  onChange={(e) => setWordSearch(e.target.value)}
-                />
-              </div>
-
-              <div className="toolbar-controls-row">
-                <CompactDropdown
-                  value={sortBy}
-                  options={availableSortOptions}
-                  onChange={setSortBy}
-                  className="toolbar-control"
-                />
-
-                <CompactDropdown
-                  value={levelFilter === 'all' ? 'all' : String(levelFilter) as `${WordKnowledgeLevel}`}
-                  options={levelFilterOptions}
-                  onChange={(value) => {
-                    setLevelFilter(value === 'all' ? 'all' : (Number(value) as WordKnowledgeLevel))
-                  }}
-                  className="toolbar-control"
-                />
-
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-reset"
-                  onClick={() => {
-                    setWordSearch('')
-                    setLevelFilter('all')
-                    setSortBy('level-asc')
-                  }}
-                >
-                  Reset
-                </button>
-              </div>
-
-              <div className="toolbar-meta-row">
-                <div className="results-meta-wrap">
-                  <span className="results-meta">
-                    Showing <strong>{pageStart}-{pageEnd}</strong> of <strong>{filteredWords.length}</strong> filtered / <strong>{topicWords.length}</strong> total
-                  </span>
-                  <span className="page-status">
-                    Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
-                  </span>
+            <div className="level-summary">
+              {LEVELS.map((l) => (
+                <div key={l} className={`level-chip ${levelClass(l)}`}>
+                  <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
+                  <span className="level-chip-value">{s.levelSummary[l]}</span>
                 </div>
-
-                {filteredWords.length > 0 ? (
-                  <nav className="pagination" aria-label="Word list pagination">
-                    <button
-                      type="button"
-                      className="pagination-btn pagination-nav"
-                      disabled={currentPage === 1}
-                      onClick={() => goToPage(currentPage - 1)}
-                    >
-                      Prev
-                    </button>
-
-                    <div className="pagination-pages">
-                      {pageTokens.map((token) => {
-                        if (typeof token !== 'number') {
-                          return (
-                            <span
-                              key={token}
-                              className="pagination-ellipsis"
-                              aria-hidden="true"
-                            >
-                              …
-                            </span>
-                          )
-                        }
-
-                        const isActive = token === currentPage
-
-                        return (
-                          <button
-                            key={token}
-                            type="button"
-                            className={`pagination-btn ${isActive ? 'pagination-btn-active' : ''}`}
-                            aria-current={isActive ? 'page' : undefined}
-                            onClick={() => goToPage(token)}
-                          >
-                            {token}
-                          </button>
-                        )
-                      })}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="pagination-btn pagination-nav"
-                      disabled={currentPage === totalPages}
-                      onClick={() => goToPage(currentPage + 1)}
-                    >
-                      Next
-                    </button>
-                  </nav>
-                ) : null}
-              </div>
+              ))}
             </div>
           </div>
 
-          {selectedTopicId === null ? (
+          {/* Toolbar */}
+          <Toolbar
+            wordSearch={s.wordSearch}
+            setWordSearch={s.setWordSearch}
+            sortBy={s.sortBy}
+            setSortBy={s.setSortBy}
+            levelFilter={s.levelFilter}
+            setLevelFilter={s.setLevelFilter}
+            onReset={s.resetFilters}
+            filteredCount={s.filteredWords.length}
+            totalCount={s.topicWords.length}
+          />
+
+          {/* Word list */}
+          {s.selectedTopicId === null ? (
             <div className="empty-state">Select a topic to start reviewing words.</div>
-          ) : filteredWords.length === 0 ? (
+          ) : s.filteredWords.length === 0 ? (
             <div className="empty-state">No words match the current filters.</div>
           ) : (
             <>
-              <div className="card desktop-word-table-card">
-                <div className="word-table-wrap">
-                  <table className="word-table">
-                    <thead>
-                      <tr>
-                        <th>Word</th>
-                        <th>Translation / details</th>
-                        <th>Knowledge</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedWords.map((word) => {
-                        const currentLevelClass = levelClass(word.knowledge_level)
-                        const isPending = pendingId === word.id && updateMutation.isPending
-
-                        return (
-                          <tr key={word.id} className={`word-row ${currentLevelClass}`}>
-                            <td className="word-cell-word">
-                              <strong className="word-term">{word.term}</strong>
-
-                              <div className="word-chips">
-                                {word.part_of_speech ? <span className="chip">{word.part_of_speech}</span> : null}
-                                {word.countability ? <span className="chip">{word.countability}</span> : null}
-                                {word.pattern ? <span className="chip">{word.pattern}</span> : null}
-                              </div>
-                            </td>
-
-                            <td className="word-cell-details">
-                              <div className="word-translation">{word.translations}</div>
-
-                              {word.past_simple || word.past_participle ? (
-                                <div className="word-extra">
-                                  <strong>Irregular:</strong>{' '}
-                                  {[word.past_simple, word.past_participle].filter(Boolean).join(' · ')}
-                                </div>
-                              ) : null}
-
-                              {word.example ? (
-                                <div className="word-extra">
-                                  <strong>Example:</strong> {word.example}
-                                </div>
-                              ) : null}
-
-                              {word.notes ? (
-                                <div className="word-extra">
-                                  <strong>Notes:</strong> {word.notes}
-                                </div>
-                              ) : null}
-                            </td>
-
-                            <td className="word-cell-knowledge">
-                              <span className={`level-badge ${currentLevelClass}`}>
-                                {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
-                              </span>
-
-                              <div className="level-switcher">
-                                {LEVELS.map((buttonLevel) => (
-                                  <button
-                                    key={buttonLevel}
-                                    type="button"
-                                    className={`level-btn ${
-                                      buttonLevel === word.knowledge_level
-                                        ? `level-btn-active ${levelClass(buttonLevel)}`
-                                        : ''
-                                    }`}
-                                    disabled={isPending}
-                                    onClick={() =>
-                                      updateMutation.mutate({
-                                        wordId: word.id,
-                                        knowledgeLevel: buttonLevel,
-                                      })
-                                    }
-                                  >
-                                    {buttonLevel}
-                                  </button>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="word-card-list">
-                {paginatedWords.map((word) => {
-                  const currentLevelClass = levelClass(word.knowledge_level)
-                  const isPending = pendingId === word.id && updateMutation.isPending
-
-                  return (
-                    <article key={word.id} className="word-card">
-                      <div className="word-card-header">
-                        <div>
-                          <strong className="word-term">{word.term}</strong>
-
-                          <div className="word-chips word-chips-mobile">
-                            {word.part_of_speech ? <span className="chip">{word.part_of_speech}</span> : null}
-                            {word.countability ? <span className="chip">{word.countability}</span> : null}
-                            {word.pattern ? <span className="chip">{word.pattern}</span> : null}
-                          </div>
-                        </div>
-
-                        <span className={`level-badge ${currentLevelClass}`}>
-                          {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
-                        </span>
-                      </div>
-
-                      <div className="word-card-body">
-                        <div className="word-translation">{word.translations}</div>
-
-                        {word.past_simple || word.past_participle ? (
-                          <div className="word-extra">
-                            <strong>Irregular:</strong>{' '}
-                            {[word.past_simple, word.past_participle].filter(Boolean).join(' · ')}
-                          </div>
-                        ) : null}
-
-                        {word.example ? (
-                          <div className="word-extra">
-                            <strong>Example:</strong> {word.example}
-                          </div>
-                        ) : null}
-
-                        {word.notes ? (
-                          <div className="word-extra">
-                            <strong>Notes:</strong> {word.notes}
-                          </div>
-                        ) : null}
-                      </div>
-
-                      <div className="word-card-switcher">
-                        {LEVELS.map((buttonLevel) => (
-                          <button
-                            key={buttonLevel}
-                            type="button"
-                            className={`level-btn ${
-                              buttonLevel === word.knowledge_level
-                                ? `level-btn-active ${levelClass(buttonLevel)}`
-                                : ''
-                            }`}
-                            disabled={isPending}
-                            onClick={() =>
-                              updateMutation.mutate({
-                                wordId: word.id,
-                                knowledgeLevel: buttonLevel,
-                              })
-                            }
-                          >
-                            {buttonLevel}
-                          </button>
-                        ))}
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
+              <WordTable
+                words={s.filteredWords}
+                pendingWordId={s.pendingWordId}
+                onUpdate={s.updateLevel}
+              />
+              <WordCardList
+                words={s.filteredWords}
+                pendingWordId={s.pendingWordId}
+                onUpdate={s.updateLevel}
+              />
             </>
           )}
+
         </div>
       </div>
     </>

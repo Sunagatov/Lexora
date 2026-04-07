@@ -5,7 +5,7 @@ import {fetchWords} from '../lib/api'
 export function WordsPage() {
   const wordsQuery = useQuery({
     queryKey: ['words'],
-    queryFn: fetchWords,
+    queryFn: () => fetchWords(),
   })
 
   const words = wordsQuery.data ?? []
