@@ -8,10 +8,22 @@
 
 .main-inner {
   width: 100%;
-  padding: 18px 28px 42px;
+  padding: 0 28px 42px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+/* Sticky header + toolbar */
+.sticky-controls {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 18px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* Topic header */
@@ -93,6 +105,7 @@
 
 .field-select {
   height: 40px;
+  min-width: 160px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface-2);

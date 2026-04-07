@@ -27,7 +27,8 @@ export function StudyPage() {
       {/* Mobile topbar */}
       <div className="mobile-topbar">
         <span className="mobile-brand">Lexora</span>
-        <button type="button" className="mobile-topic-btn" onClick={() => s.setDrawerOpen(true)}>
+        <button type="button" className="mobile-topic-btn" onClick={() => s.setDrawerOpen(true)}
+          data-tooltip={s.selectedTopic?.name ?? 'Topics'}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="2" y1="4" x2="14" y2="4"/>
             <line x1="2" y1="8" x2="14" y2="8"/>
@@ -52,36 +53,38 @@ export function StudyPage() {
       <div className="main-content">
         <div className="main-inner">
 
-          {/* Topic header */}
-          <div className="card topic-header-card">
-            <div className="topic-header-main">
-              <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
-              {s.selectedTopic?.description && (
-                <div className="topic-header-desc">{s.selectedTopic.description}</div>
-              )}
+          <div className="sticky-controls">
+            {/* Topic header */}
+            <div className="card topic-header-card">
+              <div className="topic-header-main">
+                <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
+                {s.selectedTopic?.description && (
+                  <div className="topic-header-desc">{s.selectedTopic.description}</div>
+                )}
+              </div>
+              <div className="level-summary">
+                {LEVELS.map((l) => (
+                  <div key={l} className={`level-chip ${levelClass(l)}`}>
+                    <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
+                    <span className="level-chip-value">{s.levelSummary[l]}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="level-summary">
-              {LEVELS.map((l) => (
-                <div key={l} className={`level-chip ${levelClass(l)}`}>
-                  <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
-                  <span className="level-chip-value">{s.levelSummary[l]}</span>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Toolbar */}
-          <Toolbar
-            wordSearch={s.wordSearch}
-            setWordSearch={s.setWordSearch}
-            sortBy={s.sortBy}
-            setSortBy={s.setSortBy}
-            levelFilter={s.levelFilter}
-            setLevelFilter={s.setLevelFilter}
-            onReset={s.resetFilters}
-            filteredCount={s.filteredWords.length}
-            totalCount={s.topicWords.length}
-          />
+            {/* Toolbar */}
+            <Toolbar
+              wordSearch={s.wordSearch}
+              setWordSearch={s.setWordSearch}
+              sortBy={s.sortBy}
+              setSortBy={s.setSortBy}
+              levelFilter={s.levelFilter}
+              setLevelFilter={s.setLevelFilter}
+              onReset={s.resetFilters}
+              filteredCount={s.filteredWords.length}
+              totalCount={s.topicWords.length}
+            />
+          </div>
 
           {/* Word list */}
           {s.selectedTopicId === null ? (

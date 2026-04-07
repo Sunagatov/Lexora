@@ -48,6 +48,7 @@ export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setT
               key={topic.id}
               type="button"
               className={`topic-item ${topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
+              data-tooltip={topic.name}
               onClick={() => onSelect(topic.id)}
             >
               <span className="topic-item-name">{topic.name}</span>

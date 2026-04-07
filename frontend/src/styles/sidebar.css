@@ -118,6 +118,7 @@
   transition: background 0.12s;
   color: var(--sidebar-text);
   margin-bottom: 2px;
+  position: relative;
 }
 
 .topic-item:hover { background: rgba(255, 255, 255, 0.06); }
@@ -134,6 +135,34 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
+}
+
+/* Tooltip showing full topic name on hover */
+.topic-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  max-width: 260px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.topic-item:hover::after {
+  opacity: 1;
 }
 
 .topic-count {

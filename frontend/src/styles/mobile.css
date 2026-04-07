@@ -29,9 +29,34 @@
   cursor: pointer;
   max-width: 200px;
   overflow: hidden;
+  position: relative;
 }
 
 .mobile-topic-btn-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Tooltip for mobile topic button */
+.mobile-topic-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 220px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.mobile-topic-btn:hover::after { opacity: 1; }
 
 /* Drawer overlay */
 .mobile-drawer-overlay {
@@ -71,7 +96,9 @@
 
   .main-content { flex: 1; overflow-y: auto; min-height: 0; }
 
-  .main-inner { padding: 14px 14px 32px; gap: 14px; }
+  .main-inner { padding: 0 14px 32px; gap: 14px; }
+
+  .sticky-controls { padding: 12px 0 4px; gap: 8px; }
 
   .topic-header-card { flex-direction: column; align-items: stretch; gap: 12px; }
 
@@ -80,6 +107,8 @@
   .toolbar-card { gap: 8px; padding: 12px 14px 10px; }
 
   .toolbar-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .field-select { min-width: 0; width: 100%; }
 
   .search-input { grid-column: 1 / -1; }
 
@@ -93,6 +122,15 @@
 
   /* Also hide the card wrapper that wraps the table */
   .card:has(.word-table-wrap) { display: none; }
+
+  /* Tooltip on sidebar items: show below on mobile (drawer is full-height) */
+  .topic-item::after {
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    transform: none;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
