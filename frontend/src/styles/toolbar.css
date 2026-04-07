@@ -42,6 +42,20 @@
   flex: 0 0 auto;
 }
 
+.toolbar-search-toggle {
+  display: none;
+  flex: 0 0 auto;
+  min-width: 36px;
+  padding-inline: 0;
+  font-size: 1rem;
+}
+
+.toolbar-search-toggle-active {
+  background: var(--accent-light);
+  border-color: #c7d2fe;
+  color: var(--accent-dark);
+}
+
 /* Search input */
 .search-input {
   width: 100%;

@@ -5,16 +5,16 @@
   top: 0;
   z-index: 30;
   background: var(--sidebar-bg);
-  padding: 12px 16px;
+  padding: 8px 14px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
 }
 
 .mobile-brand {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #fff;
 }
@@ -22,13 +22,13 @@
 .mobile-topic-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--sidebar-text);
-  padding: 7px 12px;
-  font-size: 0.83rem;
+  padding: 5px 10px;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   max-width: 200px;
@@ -98,12 +98,12 @@
 
   .main-inner {
     padding: 0 12px 0;
-    gap: 10px;
+    gap: 6px;
   }
 
   .sticky-controls {
-    padding: 8px 0 4px;
-    gap: 6px;
+    padding: 4px 0 2px;
+    gap: 4px;
   }
 
   /* Desktop header card is too large for mobile */
@@ -117,8 +117,8 @@
 
   /* Toolbar */
   .toolbar-card {
-    padding: 10px;
-    gap: 8px;
+    padding: 8px;
+    gap: 6px;
   }
 
   .toolbar-search-row {
@@ -127,8 +127,8 @@
 
   .toolbar-controls-row {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto;
-    gap: 8px;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto auto;
+    gap: 6px;
     align-items: stretch;
   }
 
@@ -140,23 +140,27 @@
     flex: initial;
   }
 
+  .toolbar-search-toggle {
+    display: inline-flex;
+  }
+
   .toolbar-reset-btn {
     width: auto;
-    min-width: 86px;
-    padding-inline: 12px;
+    min-width: 80px;
+    padding-inline: 10px;
     justify-self: end;
   }
 
   .toolbar-meta-row {
     justify-content: flex-start;
-    min-height: 18px;
+    min-height: 16px;
   }
 
   .results-meta {
     margin-left: 0;
     gap: 2px 6px;
-    font-size: 0.8rem;
-    line-height: 1.25;
+    font-size: 0.76rem;
+    line-height: 1.2;
     white-space: normal;
   }
 
@@ -168,21 +172,21 @@
   .search-input,
   .dropdown-trigger,
   .btn {
-    height: 42px;
-    font-size: 0.9rem;
-    border-radius: 12px;
+    height: 36px;
+    font-size: 0.86rem;
+    border-radius: 10px;
   }
 
   .search-input {
-    padding: 0 14px;
-  }
-
-  .dropdown-trigger {
     padding: 0 12px;
   }
 
+  .dropdown-trigger {
+    padding: 0 10px;
+  }
+
   .dropdown-trigger-label {
-    font-size: 0.88rem;
+    font-size: 0.84rem;
   }
 
   .dropdown-menu {
@@ -243,45 +247,45 @@
 
 @media (max-width: 480px) {
   .main-inner {
-    padding: 0 8px 28px;
+    padding: 0 8px 24px;
   }
 
   .mobile-topbar {
-    padding: 10px 12px;
+    padding: 6px 10px;
   }
 
   .card {
-    padding: 12px 12px;
-    border-radius: 16px;
+    padding: 10px;
+    border-radius: 14px;
   }
 
-.toolbar-card {
-    padding: 9px;
+  .toolbar-card {
+    padding: 7px;
   }
 
   .toolbar-controls-row {
-    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.08fr) auto;
-    gap: 7px;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.08fr) auto auto;
+    gap: 5px;
   }
 
   .toolbar-reset-btn {
-    min-width: 80px;
-    padding-inline: 10px;
+    min-width: 72px;
+    padding-inline: 8px;
   }
 
   .search-input,
   .dropdown-trigger,
   .btn {
-    height: 40px;
-    font-size: 0.86rem;
+    height: 34px;
+    font-size: 0.82rem;
   }
 
   .dropdown-trigger {
-    padding: 0 10px;
+    padding: 0 8px;
   }
 
   .dropdown-trigger-label {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
   }
 
   .dropdown-menu {
@@ -290,12 +294,12 @@
   }
 
   .dropdown-option {
-    min-height: 40px;
-    font-size: 0.86rem;
+    min-height: 38px;
+    font-size: 0.84rem;
   }
 
   .results-meta {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
   }
 
   .page-btn {

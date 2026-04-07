@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 
 import type {WordKnowledgeLevel} from '../../lib/api'
 import {LEVELS, LEVEL_LABELS, type SortOption} from '../../lib/words'
@@ -57,21 +57,28 @@ export function Toolbar({
     })),
   ]
 
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchVisible = searchOpen || !!wordSearch
+
   const hasRows = pageStart > 0 && pageEnd > 0
   const showingLabel = hasRows ? `${pageStart}–${pageEnd}` : '0'
   const isFiltered = filteredCount !== topicTotalCount
 
   return (
     <div className="card toolbar-card">
-      <div className="toolbar-search-row">
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search word, translation, example, notes…"
-          value={wordSearch}
-          onChange={(e) => setWordSearch(e.target.value)}
-        />
-      </div>
+      {searchVisible && (
+        <div className="toolbar-search-row">
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search word, translation, example, notes…"
+            value={wordSearch}
+            onChange={(e) => setWordSearch(e.target.value)}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
+          />
+        </div>
+      )}
 
       <div className="toolbar-controls-row">
         <CompactDropdown
@@ -89,6 +96,18 @@ export function Toolbar({
           ariaLabel="Filter words by level"
           className="toolbar-control toolbar-control-level"
         />
+
+        <button
+          type="button"
+          className={`btn btn-ghost toolbar-search-toggle ${searchVisible ? 'toolbar-search-toggle-active' : ''}`}
+          aria-label="Toggle search"
+          onClick={() => {
+            if (searchOpen && wordSearch) setWordSearch('')
+            setSearchOpen((v) => !v)
+          }}
+        >
+          {searchVisible ? '✕' : '🔍'}
+        </button>
 
         <button type="button" className="btn btn-ghost toolbar-reset-btn" onClick={onReset}>
           Reset
