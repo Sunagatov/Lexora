@@ -20,7 +20,7 @@ export function Pagination({page, totalPages, onPage}: Props) {
 
   return (
     <div className="pagination-shell">
-      <div className="pagination pagination-desktop">
+      <div className="pagination">
         <button className="page-btn page-nav" disabled={page === 1} onClick={() => onPage(page - 1)}>
           ← Prev
         </button>
@@ -40,29 +40,6 @@ export function Pagination({page, totalPages, onPage}: Props) {
         )}
 
         <button className="page-btn page-nav" disabled={page === totalPages} onClick={() => onPage(page + 1)}>
-          Next →
-        </button>
-      </div>
-
-      <div className="pagination-mobile">
-        <button
-          className="page-btn page-mobile-nav"
-          disabled={page === 1}
-          onClick={() => onPage(page - 1)}
-        >
-          ← Prev
-        </button>
-
-        <div className="page-mobile-status">
-          <strong>{page}</strong>
-          <span>/ {totalPages}</span>
-        </div>
-
-        <button
-          className="page-btn page-mobile-nav"
-          disabled={page === totalPages}
-          onClick={() => onPage(page + 1)}
-        >
           Next →
         </button>
       </div>

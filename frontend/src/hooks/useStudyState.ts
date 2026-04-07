@@ -1,188 +1,72 @@
-import {useEffect, useMemo, useState} from 'react'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {fetchTopics, fetchWords, type Word, type WordKnowledgeLevel, updateWordKnowledgeLevel} from '../lib/api'
-import {filterAndSort, buildLevelSummary, type SortOption} from '../lib/words'
-
-const MOBILE_BREAKPOINT = 860
-const PAGE_SIZE_DESKTOP = 20
-const PAGE_SIZE_MOBILE  = 12
-
-function getPageSize() {
-  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
-    ? PAGE_SIZE_MOBILE
-    : PAGE_SIZE_DESKTOP
-}
+import {useMemo} from 'react'
+import {useQuery} from '@tanstack/react-query'
+import {fetchTopics, fetchWords} from '../lib/api'
+import {useTopicState} from './useTopicState'
+import {useWordFilter} from './useWordFilter'
+import {useWordUpdate} from './useWordUpdate'
 
 export function useStudyState() {
-  const queryClient = useQueryClient()
-
-  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
-  const [topicSearch, setTopicSearch]         = useState('')
-  const [wordSearch, setWordSearch]           = useState('')
-  const [levelFilter, setLevelFilter]         = useState<'all' | WordKnowledgeLevel>('all')
-  const [sortBy, setSortBy]                   = useState<SortOption>('level-asc')
-  const [drawerOpen, setDrawerOpen]           = useState(false)
-  const [frozenIds, setFrozenIds]             = useState<number[] | null>(null)
-  const [page, setPage]                       = useState(1)
-  const [pageSize, setPageSize]               = useState(getPageSize)
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
-    const handler = () => {
-      setPageSize(mq.matches ? PAGE_SIZE_MOBILE : PAGE_SIZE_DESKTOP)
-      setPage(1)
-    }
-
-    mq.addEventListener('change', handler)
-
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const wordsQuery  = useQuery({queryKey: ['words'],  queryFn: () => fetchWords()})
 
   const topics = topicsQuery.data ?? []
   const words  = wordsQuery.data  ?? []
 
-  useEffect(() => {
-    if (!topics.length) return
-
-    if (selectedTopicId === null || !topics.some((t) => t.id === selectedTopicId)) {
-      setSelectedTopicId(topics[0].id)
-    }
-  }, [topics, selectedTopicId])
-
-  useEffect(() => {
-    setFrozenIds(null)
-    setPage(1)
-  }, [selectedTopicId, wordSearch, levelFilter, sortBy])
-
-  const topicCounts = useMemo(() => {
-    const m = new Map<number, number>()
-
-    for (const w of words) {
-      m.set(w.topic_id, (m.get(w.topic_id) ?? 0) + 1)
-    }
-
-    return m
-  }, [words])
-
-  const visibleTopics = useMemo(() => {
-    const needle = topicSearch.toLowerCase().trim()
-
-    return topics.filter((t) =>
-      !needle ||
-      t.name.toLowerCase().includes(needle) ||
-      (t.description ?? '').toLowerCase().includes(needle),
-    )
-  }, [topicSearch, topics])
-
-  const selectedTopic = useMemo(
-    () => topics.find((t) => t.id === selectedTopicId) ?? null,
-    [topics, selectedTopicId],
-  )
+  const topic  = useTopicState(topics, words)
 
   const topicWords = useMemo(
-    () => words.filter((w) => w.topic_id === selectedTopicId),
-    [words, selectedTopicId],
+    () => words.filter((w) => w.topic_id === topic.selectedTopicId),
+    [words, topic.selectedTopicId],
   )
 
-  const levelSummary = useMemo(() => buildLevelSummary(topicWords), [topicWords])
+  const filter = useWordFilter(topicWords, topic.pageSize, topic.selectedTopicId)
 
-  const filteredWords = useMemo(
-    () => filterAndSort(topicWords, wordSearch, levelFilter, sortBy, frozenIds),
-    [topicWords, wordSearch, levelFilter, sortBy, frozenIds],
+  const update = useWordUpdate(() =>
+    filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
   )
-
-  const totalPages = Math.max(1, Math.ceil(filteredWords.length / pageSize))
-  const safePage = Math.min(page, totalPages)
-
-  const pageWords = useMemo(
-    () => filteredWords.slice((safePage - 1) * pageSize, safePage * pageSize),
-    [filteredWords, safePage, pageSize],
-  )
-
-  const overallWordCount = words.length
-  const topicWordCount = topicWords.length
-  const filteredWordCount = filteredWords.length
-  const pageStart = pageWords.length > 0 ? (safePage - 1) * pageSize + 1 : 0
-  const pageEnd = pageWords.length > 0 ? pageStart + pageWords.length - 1 : 0
-
-  const updateMutation = useMutation({
-    mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
-      updateWordKnowledgeLevel(wordId, knowledgeLevel),
-
-    onMutate: async ({wordId, knowledgeLevel}) => {
-      setFrozenIds((cur) => cur ?? filteredWords.map((w) => w.id))
-
-      await queryClient.cancelQueries({queryKey: ['words']})
-
-      const prev = queryClient.getQueryData<Word[]>(['words'])
-
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
-        cur.map((w) => (w.id === wordId ? {...w, knowledge_level: knowledgeLevel} : w)),
-      )
-
-      return {prev}
-    },
-
-    onError: (_e, _v, ctx) => {
-      if (ctx?.prev) {
-        queryClient.setQueryData(['words'], ctx.prev)
-      }
-    },
-
-    onSettled: () => queryClient.invalidateQueries({queryKey: ['words']}),
-  })
-
-  const resetFilters = () => {
-    setWordSearch('')
-    setLevelFilter('all')
-    setSortBy('level-asc')
-  }
 
   return {
+    // data
     topics,
     words,
-    visibleTopics,
-    selectedTopic,
     topicWords,
-    topicCounts,
-    levelSummary,
-    filteredWords,
-    pageWords,
 
-    topicSearch,
-    setTopicSearch,
-    wordSearch,
-    setWordSearch,
-    levelFilter,
-    setLevelFilter,
-    sortBy,
-    setSortBy,
-    resetFilters,
+    // topic
+    visibleTopics:   topic.visibleTopics,
+    selectedTopic:   topic.selectedTopic,
+    selectedTopicId: topic.selectedTopicId,
+    topicCounts:     topic.topicCounts,
+    topicSearch:     topic.topicSearch,
+    setTopicSearch:  topic.setTopicSearch,
+    selectTopic:     topic.selectTopic,
+    drawerOpen:      topic.drawerOpen,
+    setDrawerOpen:   topic.setDrawerOpen,
 
-    selectedTopicId,
-    selectTopic: (id: number) => {
-      setSelectedTopicId(id)
-      setDrawerOpen(false)
-    },
+    // filter
+    wordSearch:      filter.wordSearch,
+    setWordSearch:   filter.setWordSearch,
+    levelFilter:     filter.levelFilter,
+    setLevelFilter:  filter.setLevelFilter,
+    sortBy:          filter.sortBy,
+    setSortBy:       filter.setSortBy,
+    levelSummary:    filter.levelSummary,
+    filteredWords:   filter.filteredWords,
+    pageWords:       filter.pageWords,
+    page:            filter.page,
+    totalPages:      filter.totalPages,
+    setPage:         filter.setPage,
+    pageStart:       filter.pageStart,
+    pageEnd:         filter.pageEnd,
+    resetFilters:    filter.resetFilters,
 
-    drawerOpen,
-    setDrawerOpen,
+    // counts
+    overallWordCount:  words.length,
+    topicWordCount:    topicWords.length,
+    filteredWordCount: filter.filteredWords.length,
 
-    page: safePage,
-    totalPages,
-    setPage,
-    overallWordCount,
-    topicWordCount,
-    filteredWordCount,
-    pageStart,
-    pageEnd,
-
-    updateLevel: (wordId: number, knowledgeLevel: WordKnowledgeLevel) =>
-      updateMutation.mutate({wordId, knowledgeLevel}),
-    pendingWordId: updateMutation.isPending ? (updateMutation.variables?.wordId ?? null) : null,
+    // update
+    updateLevel:   update.updateLevel,
+    pendingWordId: update.pendingWordId,
 
     isLoading: topicsQuery.isLoading || wordsQuery.isLoading,
   }

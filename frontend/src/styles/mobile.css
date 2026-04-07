@@ -112,25 +112,7 @@
   }
 
   .mobile-progress-strip {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 6px;
-    align-items: stretch;
-    margin-top: 8px;
-  }
-
-  .mobile-progress-pill {
-    min-width: 0;
-    padding: 7px 6px;
-    border-radius: 12px;
-  }
-
-  .mobile-progress-pill-short {
-    font-size: 0.62rem;
-  }
-
-  .mobile-progress-pill-value {
-    font-size: 0.78rem;
+    display: none;
   }
 
   /* Toolbar */
@@ -230,31 +212,19 @@
   }
 
   /* Compact mobile pagination */
-  .pagination-desktop {
-    display: none;
-  }
-
-  .pagination-mobile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
   .pagination-bar {
     padding: 8px 0 10px;
   }
 
-  .page-mobile-nav {
-    min-width: 78px;
-    height: 34px;
-    font-size: 0.8rem;
+  .page-btn {
+    min-width: 28px;
+    height: 30px;
+    font-size: 0.78rem;
+    padding: 0 6px;
   }
 
-  .page-mobile-status {
-    min-width: 64px;
-    height: 34px;
-    font-size: 0.82rem;
+  .page-nav {
+    min-width: 52px;
   }
 
   /* Hide table, show cards */
@@ -285,24 +255,7 @@
     border-radius: 16px;
   }
 
-  .mobile-progress-strip {
-    gap: 4px;
-  }
-
-  .mobile-progress-pill {
-    padding: 6px 4px;
-    border-radius: 10px;
-  }
-
-  .mobile-progress-pill-short {
-    font-size: 0.58rem;
-  }
-
-  .mobile-progress-pill-value {
-    font-size: 0.74rem;
-  }
-
-  .toolbar-card {
+.toolbar-card {
     padding: 9px;
   }
 
@@ -345,15 +298,14 @@
     font-size: 0.78rem;
   }
 
-  .page-mobile-nav {
-    min-width: 72px;
-    height: 32px;
-    font-size: 0.78rem;
+  .page-btn {
+    min-width: 26px;
+    height: 28px;
+    font-size: 0.76rem;
+    padding: 0 5px;
   }
 
-  .page-mobile-status {
-    min-width: 58px;
-    height: 32px;
-    font-size: 0.8rem;
+  .page-nav {
+    min-width: 48px;
   }
 }

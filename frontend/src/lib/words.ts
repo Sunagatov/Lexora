@@ -29,8 +29,10 @@ export function filterAndSort(
 ): Word[] {
   const needle = normalize(search)
 
+  const frozenSet = frozenIds ? new Set(frozenIds) : null
+
   let result = words.filter((w) => {
-    if (levelFilter !== 'all' && w.knowledge_level !== levelFilter) return false
+    if (levelFilter !== 'all' && w.knowledge_level !== levelFilter && !frozenSet?.has(w.id)) return false
     if (!needle) return true
     return [w.term, w.translations, w.part_of_speech, w.pattern, w.example, w.notes, w.past_simple, w.past_participle]
       .some((v) => normalize(v).includes(needle))

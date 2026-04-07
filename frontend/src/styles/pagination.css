@@ -1,0 +1,82 @@
+.pagination-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 10px 0 12px;
+  margin-top: auto;
+}
+
+.pagination-shell {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  min-width: max-content;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: #c7d2fe;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-btn-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.page-btn-active:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
+
+.page-ellipsis {
+  min-width: 24px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.88rem;
+  font-weight: 700;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.page-nav {
+  min-width: 60px;
+  font-size: 0.8rem;
+}
