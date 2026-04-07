@@ -37,6 +37,14 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     return m
   }, [words])
 
+  const topicPos = useMemo(() => {
+    const m = new Map<number, string>()
+    for (const w of words) {
+      if (!m.has(w.topic_id) && w.part_of_speech) m.set(w.topic_id, w.part_of_speech)
+    }
+    return m
+  }, [words])
+
   const visibleTopics = useMemo(() => {
     const needle = topicSearch.toLowerCase().trim()
     return topics.filter((t) =>
@@ -56,6 +64,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     selectedTopic,
     visibleTopics,
     topicCounts,
+    topicPos,
     topicSearch,
     setTopicSearch,
     pageSize,

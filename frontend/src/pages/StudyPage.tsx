@@ -12,6 +12,7 @@ export function StudyPage() {
   const sidebarProps = {
     topics: s.visibleTopics,
     topicCounts: s.topicCounts,
+    topicPos: s.topicPos,
     totalWords: s.words.length,
     topicSearch: s.topicSearch,
     setTopicSearch: s.setTopicSearch,

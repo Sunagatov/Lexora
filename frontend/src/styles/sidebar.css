@@ -181,3 +181,20 @@
   background: rgba(99, 102, 241, 0.3);
   color: #a5b4fc;
 }
+
+.sidebar-group + .sidebar-group {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-group-label {
+  padding: 4px 12px 2px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sidebar-text-2);
+  opacity: 0.6;
+}
+

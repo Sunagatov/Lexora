@@ -213,11 +213,6 @@
     border-radius: 10px;
   }
 
-  /* Remove sticky mobile list header: cards already explain themselves */
-  .word-list-header {
-    display: none;
-  }
-
   /* Compact mobile pagination */
   .pagination-bar {
     padding: 8px 0 10px;

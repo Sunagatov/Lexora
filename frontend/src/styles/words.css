@@ -221,10 +221,42 @@
 }
 
 @media (max-width: 860px) {
+  .word-card {
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .word-card + .word-card {
+    margin-top: 6px;
+  }
+
+  .word-card-body {
+    margin-top: 8px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .word-card {
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .word-card + .word-card {
+    margin-top: 5px;
+  }
+
+  .word-card-body {
+    margin-top: 6px;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 860px) {
   .word-list-header {
     grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr) minmax(92px, 0.7fr);
     gap: 10px;
-    padding: 10px 12px;
+    padding: 5px 12px;
     border-radius: 16px;
   }
 
@@ -242,7 +274,7 @@
   .word-list-header {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) minmax(82px, 0.7fr);
     gap: 8px;
-    padding: 9px 10px;
+    padding: 4px 10px;
   }
 
   .word-list-header-cell {

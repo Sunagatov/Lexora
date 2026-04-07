@@ -36,6 +36,7 @@ export function useStudyState() {
     selectedTopic:   topic.selectedTopic,
     selectedTopicId: topic.selectedTopicId,
     topicCounts:     topic.topicCounts,
+    topicPos:        topic.topicPos,
     topicSearch:     topic.topicSearch,
     setTopicSearch:  topic.setTopicSearch,
     selectTopic:     topic.selectTopic,

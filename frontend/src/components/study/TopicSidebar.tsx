@@ -1,10 +1,11 @@
 import {useState} from 'react'
 import {createPortal} from 'react-dom'
-import type {Topic} from '../../lib/api'
+import type {Topic, Word} from '../../lib/api'
 
 type Props = {
   topics: Topic[]
   topicCounts: Map<number, number>
+  topicPos: Map<number, string>
   totalWords: number
   topicSearch: string
   setTopicSearch: (v: string) => void
@@ -14,7 +15,14 @@ type Props = {
 
 type TooltipState = {name: string; x: number; y: number; anchor: 'left' | 'right'} | null
 
-export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setTopicSearch, selectedTopicId, onSelect}: Props) {
+const POS_ORDER = ['verb', 'noun', 'adjective', 'adverb', 'phrase', 'preposition', 'other']
+
+const POS_LABELS: Record<string, string> = {
+  verb: 'Verbs', noun: 'Nouns', adjective: 'Adjectives',
+  adverb: 'Adverbs', phrase: 'Phrases', preposition: 'Prepositions', other: 'Other',
+}
+
+export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSearch, setTopicSearch, selectedTopicId, onSelect}: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null)
 
   function handleMouseEnter(e: React.MouseEvent, name: string) {
@@ -30,9 +38,18 @@ export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setT
     } else {
       setTooltip({name, x: window.innerWidth - r.left + 10, y: r.top + r.height / 2, anchor: 'right'})
     }
-    // auto-hide after 2s on touch
     setTimeout(() => setTooltip(null), 2000)
   }
+
+  // Group topics by POS, preserving POS_ORDER
+  const grouped = new Map<string, Topic[]>()
+  for (const topic of topics) {
+    const pos = topicPos.get(topic.id) ?? 'other'
+    if (!grouped.has(pos)) grouped.set(pos, [])
+    grouped.get(pos)!.push(topic)
+  }
+  const groups = POS_ORDER.filter((pos) => grouped.has(pos))
+  const showGroups = !topicSearch.trim() && groups.length > 1
 
   return (
     <>
@@ -65,19 +82,36 @@ export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setT
       <div className="sidebar-topic-list" onMouseLeave={() => setTooltip(null)}>
         {topics.length === 0 ? (
           <div className="sidebar-empty">No topics found.</div>
+        ) : showGroups ? (
+          groups.map((pos) => (
+            <div key={pos} className="sidebar-group">
+              <div className="sidebar-group-label">{POS_LABELS[pos] ?? pos}</div>
+              {grouped.get(pos)!.map((topic) => (
+                <TopicButton
+                  key={topic.id}
+                  topic={topic}
+                  count={topicCounts.get(topic.id) ?? 0}
+                  isActive={topic.id === selectedTopicId}
+                  onMouseEnter={handleMouseEnter}
+                  onTouchStart={handleTouchStart}
+                  onSelect={onSelect}
+                  clearTooltip={() => setTooltip(null)}
+                />
+              ))}
+            </div>
+          ))
         ) : (
           topics.map((topic) => (
-            <button
+            <TopicButton
               key={topic.id}
-              type="button"
-              className={`topic-item ${topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
-              onMouseEnter={(e) => handleMouseEnter(e, topic.name)}
-              onTouchStart={(e) => handleTouchStart(e, topic.name)}
-              onClick={() => { setTooltip(null); onSelect(topic.id) }}
-            >
-              <span className="topic-item-name">{topic.name}</span>
-              <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
-            </button>
+              topic={topic}
+              count={topicCounts.get(topic.id) ?? 0}
+              isActive={topic.id === selectedTopicId}
+              onMouseEnter={handleMouseEnter}
+              onTouchStart={handleTouchStart}
+              onSelect={onSelect}
+              clearTooltip={() => setTooltip(null)}
+            />
           ))
         )}
       </div>
@@ -95,5 +129,28 @@ export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setT
         document.body,
       )}
     </>
+  )
+}
+
+function TopicButton({topic, count, isActive, onMouseEnter, onTouchStart, onSelect, clearTooltip}: {
+  topic: Topic
+  count: number
+  isActive: boolean
+  onMouseEnter: (e: React.MouseEvent, name: string) => void
+  onTouchStart: (e: React.TouchEvent, name: string) => void
+  onSelect: (id: number) => void
+  clearTooltip: () => void
+}) {
+  return (
+    <button
+      type="button"
+      className={`topic-item ${isActive ? 'topic-item-active' : ''}`}
+      onMouseEnter={(e) => onMouseEnter(e, topic.name)}
+      onTouchStart={(e) => onTouchStart(e, topic.name)}
+      onClick={() => { clearTooltip(); onSelect(topic.id) }}
+    >
+      <span className="topic-item-name">{topic.name}</span>
+      <span className="topic-count">{count}</span>
+    </button>
   )
 }
