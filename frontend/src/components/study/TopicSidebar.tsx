@@ -12,19 +12,24 @@ type Props = {
   onSelect: (id: number) => void
 }
 
-type TooltipState = {name: string; x: number; y: number} | null
+type TooltipState = {name: string; x: number; y: number; anchor: 'left' | 'right'} | null
 
 export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setTopicSearch, selectedTopicId, onSelect}: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null)
 
   function handleMouseEnter(e: React.MouseEvent, name: string) {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    setTooltip({name, x: r.right + 10, y: r.top + r.height / 2})
+    setTooltip({name, x: r.right + 10, y: r.top + r.height / 2, anchor: 'left'})
   }
 
   function handleTouchStart(e: React.TouchEvent, name: string) {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    setTooltip({name, x: r.right + 10, y: r.top + r.height / 2})
+    const spaceRight = window.innerWidth - r.right
+    if (spaceRight > 150) {
+      setTooltip({name, x: r.right + 10, y: r.top + r.height / 2, anchor: 'left'})
+    } else {
+      setTooltip({name, x: window.innerWidth - r.left + 10, y: r.top + r.height / 2, anchor: 'right'})
+    }
     // auto-hide after 2s on touch
     setTimeout(() => setTooltip(null), 2000)
   }
@@ -78,7 +83,13 @@ export function TopicSidebar({topics, topicCounts, totalWords, topicSearch, setT
       </div>
 
       {tooltip && createPortal(
-        <div className="topic-tooltip" style={{left: tooltip.x, top: tooltip.y}}>
+        <div
+          className="topic-tooltip"
+          style={tooltip.anchor === 'left'
+            ? {left: tooltip.x, top: tooltip.y}
+            : {right: tooltip.x, top: tooltip.y}
+          }
+        >
           {tooltip.name}
         </div>,
         document.body,
