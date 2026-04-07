@@ -100,7 +100,7 @@
 .toolbar-meta-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   min-height: 20px;
 }
 
@@ -267,13 +267,29 @@
 }
 
 .results-meta {
-  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   color: var(--text-3);
-  margin-left: auto;
-  white-space: nowrap;
+  font-size: 0.85rem;
+  line-height: 1.35;
 }
 
-.results-meta strong { color: var(--text-2); }
+.results-meta-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.results-meta-item strong {
+  color: var(--text-2);
+}
+
+.results-meta-separator {
+  color: var(--text-3);
+  opacity: 0.9;
+}
 
 /* Pagination bar — sticky at the bottom of the scroll container */
 .pagination-bar {

@@ -25,7 +25,6 @@ export function StudyPage() {
 
   return (
     <>
-      {/* Mobile topbar */}
       <div className="mobile-topbar">
         <span className="mobile-brand">Lexora</span>
         <button
@@ -35,34 +34,31 @@ export function StudyPage() {
           onClick={() => s.setDrawerOpen(true)}
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="2" y1="4" x2="14" y2="4"/>
-            <line x1="2" y1="8" x2="14" y2="8"/>
-            <line x1="2" y1="12" x2="14" y2="12"/>
+            <line x1="2" y1="4" x2="14" y2="4" />
+            <line x1="2" y1="8" x2="14" y2="8" />
+            <line x1="2" y1="12" x2="14" y2="12" />
           </svg>
           <span className="mobile-topic-btn-name">{s.selectedTopic?.name ?? 'Topics'}</span>
         </button>
       </div>
 
-      {/* Mobile drawer */}
       <div className={`mobile-drawer-overlay ${s.drawerOpen ? 'open' : ''}`} onClick={() => s.setDrawerOpen(false)} />
       <div className={`mobile-drawer ${s.drawerOpen ? 'open' : ''}`}>
         <TopicSidebar {...sidebarProps} />
       </div>
 
-      {/* Desktop sidebar */}
       <aside className="desktop-sidebar">
         <TopicSidebar {...sidebarProps} />
       </aside>
 
-      {/* Main */}
       <div className="main-content">
         <div className="main-inner">
-
           <div className="sticky-controls">
             <div className="card topic-header-card">
               <div className="topic-header-main">
                 <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
               </div>
+
               <div className="level-summary">
                 {LEVELS.map((l) => (
                   <div key={l} className={`level-chip ${levelClass(l)}`}>
@@ -81,8 +77,11 @@ export function StudyPage() {
               levelFilter={s.levelFilter}
               setLevelFilter={s.setLevelFilter}
               onReset={s.resetFilters}
-              filteredCount={s.filteredWords.length}
-              totalCount={s.topicWords.length}
+              totalWordsOverall={s.overallWordCount}
+              topicTotalCount={s.topicWordCount}
+              filteredCount={s.filteredWordCount}
+              pageStart={s.pageStart}
+              pageEnd={s.pageEnd}
             />
           </div>
 
@@ -99,13 +98,16 @@ export function StudyPage() {
 
           {s.totalPages > 1 && (
             <div className="pagination-bar">
-              <Pagination page={s.page} totalPages={s.totalPages} onPage={(p) => {
-                s.setPage(p)
-                document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'})
-              }} />
+              <Pagination
+                page={s.page}
+                totalPages={s.totalPages}
+                onPage={(p) => {
+                  s.setPage(p)
+                  document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'})
+                }}
+              />
             </div>
           )}
-
         </div>
       </div>
     </>

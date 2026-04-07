@@ -11,8 +11,11 @@ type Props = {
   levelFilter: 'all' | WordKnowledgeLevel
   setLevelFilter: (v: 'all' | WordKnowledgeLevel) => void
   onReset: () => void
+  totalWordsOverall: number
+  topicTotalCount: number
   filteredCount: number
-  totalCount: number
+  pageStart: number
+  pageEnd: number
 }
 
 type DropdownOption<T extends string> = {
@@ -110,8 +113,11 @@ export function Toolbar({
   levelFilter,
   setLevelFilter,
   onReset,
+  totalWordsOverall,
+  topicTotalCount,
   filteredCount,
-  totalCount,
+  pageStart,
+  pageEnd,
 }: Props) {
   const levelActive = levelFilter !== 'all'
 
@@ -140,6 +146,10 @@ export function Toolbar({
       label: `Level ${level} — ${LEVEL_LABELS[level]}`,
     })),
   ]
+
+  const hasVisibleRows = pageStart > 0 && pageEnd > 0
+  const showingLabel = hasVisibleRows ? `${pageStart}–${pageEnd}` : '0'
+  const isFiltered = filteredCount !== topicTotalCount
 
   return (
     <div className="card toolbar-card">
@@ -178,9 +188,30 @@ export function Toolbar({
       </div>
 
       <div className="toolbar-meta-row">
-        <span className="results-meta">
-          <strong>{filteredCount}</strong> / <strong>{totalCount}</strong> words
-        </span>
+        <div className="results-meta">
+          <span className="results-meta-item">
+            Showing <strong>{showingLabel}</strong>
+          </span>
+
+          {isFiltered ? (
+            <>
+              <span className="results-meta-separator">·</span>
+              <span className="results-meta-item">
+                <strong>{filteredCount}</strong> filtered
+              </span>
+            </>
+          ) : null}
+
+          <span className="results-meta-separator">·</span>
+          <span className="results-meta-item">
+            <strong>{topicTotalCount}</strong> in topic
+          </span>
+
+          <span className="results-meta-separator">·</span>
+          <span className="results-meta-item">
+            <strong>{totalWordsOverall}</strong> total
+          </span>
+        </div>
       </div>
     </div>
   )
