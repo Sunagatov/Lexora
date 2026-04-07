@@ -14,6 +14,8 @@ type Props = {
 }
 
 export function Toolbar({wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter, onReset, filteredCount, totalCount}: Props) {
+  const levelActive = levelFilter !== 'all'
+
   return (
     <div className="card toolbar-card">
       <input
@@ -25,12 +27,14 @@ export function Toolbar({wordSearch, setWordSearch, sortBy, setSortBy, levelFilt
       />
 
       <div className="toolbar-row">
-        <select className="field-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
-          <option value="level-asc">Level ↑</option>
-          <option value="level-desc">Level ↓</option>
-          <option value="term-asc">A → Z</option>
-          <option value="term-desc">Z → A</option>
-        </select>
+        {!levelActive && (
+          <select className="field-select" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
+            <option value="level-asc">Level ↑</option>
+            <option value="level-desc">Level ↓</option>
+            <option value="term-asc">A → Z</option>
+            <option value="term-desc">Z → A</option>
+          </select>
+        )}
 
         <select
           className="field-select"

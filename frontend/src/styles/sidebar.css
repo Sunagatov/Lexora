@@ -88,6 +88,7 @@
 .sidebar-topic-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: visible;
   padding: 6px 12px 16px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -137,32 +138,29 @@
   flex: 1;
 }
 
-/* Tooltip showing full topic name on hover */
-.topic-item::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: calc(100% + 10px);
-  top: 50%;
+/* Floating tooltip rendered via React, works on touch too */
+.topic-tooltip {
+  position: fixed;
+  left: calc(var(--sidebar-w) + 10px);
   transform: translateY(-50%);
   background: #1e293b;
   color: #f1f5f9;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  padding: 6px 10px;
+  padding: 7px 12px;
   border-radius: 8px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 50;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   max-width: 260px;
-  white-space: normal;
   word-break: break-word;
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  animation: tooltip-in 0.12s ease;
 }
 
-.topic-item:hover::after {
-  opacity: 1;
+@keyframes tooltip-in {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
 .topic-count {

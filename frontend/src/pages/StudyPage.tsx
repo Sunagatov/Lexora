@@ -28,7 +28,8 @@ export function StudyPage() {
       <div className="mobile-topbar">
         <span className="mobile-brand">Lexora</span>
         <button type="button" className="mobile-topic-btn" onClick={() => s.setDrawerOpen(true)}
-          data-tooltip={s.selectedTopic?.name ?? 'Topics'}>
+          data-tooltip={s.selectedTopic?.name ?? 'Topics'}
+          title={s.selectedTopic?.name ?? 'Topics'}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="2" y1="4" x2="14" y2="4"/>
             <line x1="2" y1="8" x2="14" y2="8"/>
