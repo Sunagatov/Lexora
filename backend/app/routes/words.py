@@ -66,7 +66,13 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
 def _slugify(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value)
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", normalized.encode("ascii", "ignore").decode()).strip("-").lower()
-    return slug[:200] or "topic"
+    if not slug:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{value}'")
+    return slug[:200]
+
+
+def _normalize_term(term: str) -> str:
+    return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", term)).strip().lower()
 
 
 @bulk_router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
@@ -78,17 +84,17 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
     if topic is None:
         topic = topic_crud.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
-    existing = {t.lower() for t in db.scalars(
+    existing = {_normalize_term(t) for t in db.scalars(
         select(Word.term).where(Word.topic_id == topic.id)
     ).all()}
 
     added = skipped = 0
     for w in payload.words:
-        if w.term.lower() in existing:
+        if _normalize_term(w.term) in existing:
             skipped += 1
             continue
         db.add(Word(**w.model_dump(), topic_id=topic.id))
-        existing.add(w.term.lower())
+        existing.add(_normalize_term(w.term))
         added += 1
 
     db.commit()

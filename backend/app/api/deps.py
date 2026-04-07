@@ -1,3 +1,5 @@
+import hmac
+
 from collections.abc import Generator
 
 from fastapi import Cookie, Header, HTTPException, status
@@ -20,7 +22,7 @@ def verify_session(session: str | None = Cookie(default=None)) -> None:
 
 
 def verify_api_key(x_api_key: str | None = Header(default=None)) -> None:
-    if x_api_key != settings.api_key:
+    if x_api_key is None or not hmac.compare_digest(x_api_key, settings.api_key):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
 
 
