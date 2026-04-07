@@ -16,8 +16,6 @@ type SortOption =
   | 'term-desc'
   | 'level-asc'
   | 'level-desc'
-  | 'updated-desc'
-  | 'updated-asc'
 
 function normalizeText(value: string | null | undefined): string {
   return value?.toLowerCase().trim() ?? ''
@@ -42,10 +40,6 @@ function matchesSearch(word: Word, search: string): boolean {
   ]
     .filter(Boolean)
     .some((value) => normalizeText(value).includes(needle))
-}
-
-function isIrregular(word: Word): boolean {
-  return Boolean(word.past_simple || word.past_participle)
 }
 
 function getKnowledgeLabel(level: number | null): string {
@@ -82,16 +76,6 @@ function getKnowledgeClassName(level: number | null): string {
   }
 }
 
-function formatDate(value: string): string {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return date.toLocaleDateString()
-}
-
 export function StudyPage() {
   const queryClient = useQueryClient()
 
@@ -100,7 +84,6 @@ export function StudyPage() {
   const [wordSearch, setWordSearch] = useState('')
   const [levelFilter, setLevelFilter] = useState<'all' | WordKnowledgeLevel>('all')
   const [sortBy, setSortBy] = useState<SortOption>('level-asc')
-  const [onlyIrregular, setOnlyIrregular] = useState(false)
   const [isTopicPanelOpen, setIsTopicPanelOpen] = useState(false)
   const [frozenWordOrderIds, setFrozenWordOrderIds] = useState<number[] | null>(null)
 
@@ -131,7 +114,7 @@ export function StudyPage() {
 
   useEffect(() => {
     setFrozenWordOrderIds(null)
-  }, [selectedTopicId, wordSearch, levelFilter, sortBy, onlyIrregular])
+  }, [selectedTopicId, wordSearch, levelFilter, sortBy])
 
   const topicCounts = useMemo(() => {
     const counts = new Map<number, number>()
@@ -196,7 +179,6 @@ export function StudyPage() {
     const result = selectedTopicWords
       .filter((word) => matchesSearch(word, wordSearch))
       .filter((word) => (levelFilter === 'all' ? true : word.knowledge_level === levelFilter))
-      .filter((word) => (onlyIrregular ? isIrregular(word) : true))
 
     result.sort((left, right) => {
       switch (sortBy) {
@@ -208,10 +190,6 @@ export function StudyPage() {
           return (left.knowledge_level ?? 99) - (right.knowledge_level ?? 99)
         case 'level-desc':
           return (right.knowledge_level ?? 0) - (left.knowledge_level ?? 0)
-        case 'updated-asc':
-          return new Date(left.updated_at).getTime() - new Date(right.updated_at).getTime()
-        case 'updated-desc':
-          return new Date(right.updated_at).getTime() - new Date(left.updated_at).getTime()
         default:
           return 0
       }
@@ -243,14 +221,7 @@ export function StudyPage() {
 
       return 0
     })
-  }, [
-    selectedTopicWords,
-    wordSearch,
-    levelFilter,
-    onlyIrregular,
-    sortBy,
-    frozenWordOrderIds,
-  ])
+  }, [selectedTopicWords, wordSearch, levelFilter, sortBy, frozenWordOrderIds])
 
   const updateLevelMutation = useMutation({
     mutationFn: ({wordId, knowledgeLevel}: {wordId: number; knowledgeLevel: WordKnowledgeLevel}) =>
@@ -292,7 +263,6 @@ export function StudyPage() {
     setWordSearch('')
     setLevelFilter('all')
     setSortBy('level-asc')
-    setOnlyIrregular(false)
   }
 
   if (topicsQuery.isLoading || wordsQuery.isLoading) {
@@ -347,9 +317,7 @@ export function StudyPage() {
       </section>
 
       <section className="study-layout">
-        <aside
-          className={`panel-card topics-panel ${isTopicPanelOpen ? 'topics-panel-open' : ''}`}
-        >
+        <aside className={`panel-card topics-panel ${isTopicPanelOpen ? 'topics-panel-open' : ''}`}>
           <div className="panel-header">
             <div>
               <h3>Topics</h3>
@@ -390,11 +358,6 @@ export function StudyPage() {
                       <span className="topic-count">{wordsCount}</span>
                     </div>
 
-                    <div className="topic-item-bottom">
-                      <span className="muted">{topic.slug}</span>
-                      <span className="muted">{topic.is_active ? 'Active' : 'Inactive'}</span>
-                    </div>
-
                     {topic.description ? (
                       <p className="topic-description muted">{topic.description}</p>
                     ) : null}
@@ -426,16 +389,18 @@ export function StudyPage() {
             </div>
           </section>
 
-          <section className="panel-card">
-            <div className="toolbar">
+          <section className="study-controls-sticky">
+            <div className="toolbar toolbar-primary">
               <input
-                className="field-input field-input-wide"
+                className="field-input study-search-input"
                 type="text"
                 placeholder="Search word, translation, example, notes..."
                 value={wordSearch}
                 onChange={(event) => setWordSearch(event.target.value)}
               />
+            </div>
 
+            <div className="toolbar toolbar-secondary">
               <select
                 className="field-select"
                 value={sortBy}
@@ -445,8 +410,6 @@ export function StudyPage() {
                 <option value="level-desc">Sort: Level descending</option>
                 <option value="term-asc">Sort: A → Z</option>
                 <option value="term-desc">Sort: Z → A</option>
-                <option value="updated-desc">Sort: Recently updated</option>
-                <option value="updated-asc">Sort: Oldest updated</option>
               </select>
 
               <select
@@ -465,15 +428,6 @@ export function StudyPage() {
                 <option value="5">Level 5</option>
               </select>
 
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={onlyIrregular}
-                  onChange={(event) => setOnlyIrregular(event.target.checked)}
-                />
-                <span>Irregular only</span>
-              </label>
-
               <button type="button" className="secondary-button" onClick={resetFilters}>
                 Reset
               </button>
@@ -485,7 +439,9 @@ export function StudyPage() {
                 <strong>{selectedTopicWords.length}</strong> words
               </span>
             </div>
+          </section>
 
+          <section className="panel-card">
             {selectedTopicId === null ? (
               <div className="empty-state">
                 <p>Select a topic to start reviewing words.</p>
@@ -493,7 +449,7 @@ export function StudyPage() {
             ) : filteredWords.length === 0 ? (
               <div className="empty-state">
                 <p>No words match the current filters.</p>
-                <p>Try another level, search phrase, or remove the irregular-only filter.</p>
+                <p>Try another level or another search phrase.</p>
               </div>
             ) : (
               <>
@@ -504,7 +460,6 @@ export function StudyPage() {
                         <th>Word</th>
                         <th>Translation / details</th>
                         <th>Knowledge</th>
-                        <th>Updated</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -586,8 +541,6 @@ export function StudyPage() {
                                 </div>
                               </div>
                             </td>
-
-                            <td className="muted">{formatDate(word.updated_at)}</td>
                           </tr>
                         )
                       })}
@@ -644,10 +597,6 @@ export function StudyPage() {
                               <strong>Notes:</strong> {word.notes}
                             </div>
                           ) : null}
-                        </div>
-
-                        <div className="word-card-footer">
-                          <span className="muted">Updated: {formatDate(word.updated_at)}</span>
                         </div>
 
                         <div className="level-switcher mobile-level-switcher">

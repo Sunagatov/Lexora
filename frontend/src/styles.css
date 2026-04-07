@@ -108,7 +108,7 @@ textarea {
 }
 
 .page-content {
-  padding: 32px 0 48px;
+  padding: 40px 0 48px;
 }
 
 .stack-lg {
@@ -193,6 +193,10 @@ textarea {
   color: #6b7280;
 }
 
+.study-page {
+  padding-top: 8px;
+}
+
 .study-layout {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
@@ -200,9 +204,14 @@ textarea {
   align-items: start;
 }
 
+.study-main {
+  padding-top: 10px;
+}
+
 .topics-panel {
   position: sticky;
-  top: 96px;
+  top: 116px;
+  margin-top: 10px;
 }
 
 .panel-header {
@@ -214,7 +223,7 @@ textarea {
   flex-direction: column;
   gap: 12px;
   margin-top: 16px;
-  max-height: calc(100vh - 220px);
+  max-height: calc(100vh - 240px);
   overflow: auto;
   padding-right: 4px;
 }
@@ -695,6 +704,11 @@ textarea {
 
   .topics-panel {
     position: static;
+    margin-top: 0;
+  }
+
+  .study-main {
+    padding-top: 0;
   }
 
   .topic-list {
@@ -713,11 +727,19 @@ textarea {
 
 @media (max-width: 860px) {
   .page-content {
-    padding: 20px 0 32px;
+    padding: 28px 0 32px;
+  }
+
+  .study-page {
+    padding-top: 10px;
   }
 
   .study-layout {
     gap: 16px;
+  }
+
+  .study-main {
+    padding-top: 0;
   }
 
   .mobile-only {
@@ -730,11 +752,13 @@ textarea {
 
   .mobile-topic-bar {
     display: block;
+    margin-top: 8px;
   }
 
   .topics-panel {
     display: none;
     position: static;
+    margin-top: 0;
   }
 
   .topics-panel.topics-panel-open {
@@ -775,9 +799,18 @@ textarea {
     width: min(100%, calc(100% - 20px));
   }
 
+  .page-content {
+    padding: 24px 0 28px;
+  }
+
+  .study-page {
+    padding-top: 12px;
+  }
+
   .topbar-inner {
     align-items: flex-start;
     flex-direction: column;
+    gap: 16px;
   }
 
   .nav {
@@ -804,6 +837,7 @@ textarea {
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
   .field-input-wide,
