@@ -32,7 +32,11 @@
   position: relative;
 }
 
-.mobile-topic-btn-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mobile-topic-btn-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* Drawer overlay */
 .mobile-drawer-overlay {
@@ -49,7 +53,9 @@
 /* Drawer panel */
 .mobile-drawer {
   position: fixed;
-  top: 0; left: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: min(300px, 88vw);
   background: var(--sidebar-bg);
   z-index: 26;
@@ -64,23 +70,44 @@
 
 /* ── Breakpoint: tablet / mobile ── */
 @media (max-width: 860px) {
-  .app-shell { flex-direction: column; height: 100dvh; }
+  .app-shell {
+    flex-direction: column;
+    height: 100dvh;
+  }
 
-  .desktop-sidebar { display: none; }
+  .desktop-sidebar {
+    display: none;
+  }
 
-  .mobile-topbar { display: flex; }
+  .mobile-topbar {
+    display: flex;
+  }
 
-  .main-content { flex: 1; overflow-y: auto; min-height: 0; }
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
 
-  .main-inner { padding: 0 12px 0; gap: 12px; }
+  .main-inner {
+    padding: 0 12px 0;
+    gap: 12px;
+  }
 
-  .sticky-controls { padding: 10px 0 4px; gap: 8px; }
+  .sticky-controls {
+    padding: 10px 0 4px;
+    gap: 8px;
+  }
 
-  /* Topic header: stack title above chips */
+  /* Topic header: hide duplicate title on mobile, keep only summary */
   .topic-header-card {
-    flex-wrap: wrap;
-    gap: 10px;
+    justify-content: center;
+    gap: 8px;
     padding: 10px 12px;
+  }
+
+  .topic-header-main {
+    display: none;
   }
 
   .level-summary {
@@ -178,19 +205,31 @@
 
   /* Hide table, show cards */
   .word-table-wrap { display: none; }
-  .word-card-list  { display: block; }
+  .word-card-list { display: block; }
   .card:has(.word-table-wrap) { display: none; }
 }
 
 @media (max-width: 480px) {
-  .main-inner { padding: 0 8px 28px; }
+  .main-inner {
+    padding: 0 8px 28px;
+  }
 
-  .mobile-topbar { padding: 10px 12px; }
+  .mobile-topbar {
+    padding: 10px 12px;
+  }
 
-  .card { padding: 12px 12px; border-radius: 16px; }
+  .card {
+    padding: 12px 12px;
+    border-radius: 16px;
+  }
 
-  .level-chip-label { font-size: 0.56rem; }
-  .level-chip-value { font-size: 0.8rem; }
+  .level-chip-label {
+    font-size: 0.56rem;
+  }
+
+  .level-chip-value {
+    font-size: 0.8rem;
+  }
 
   .toolbar-card {
     padding: 10px;
