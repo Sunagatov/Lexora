@@ -106,8 +106,8 @@
 
   .toolbar-controls-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto;
+    gap: 8px;
     align-items: stretch;
   }
 
@@ -120,7 +120,10 @@
   }
 
   .toolbar-reset-btn {
-    width: 100%;
+    width: auto;
+    min-width: 92px;
+    padding-inline: 14px;
+    justify-self: end;
   }
 
   .toolbar-meta-row {
@@ -145,7 +148,11 @@
   }
 
   .dropdown-trigger {
-    padding: 0 14px;
+    padding: 0 12px;
+  }
+
+  .dropdown-trigger-label {
+    font-size: 0.9rem;
   }
 
   .dropdown-menu {
@@ -190,8 +197,13 @@
   }
 
   .toolbar-controls-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.1fr) auto;
     gap: 8px;
+  }
+
+  .toolbar-reset-btn {
+    min-width: 86px;
+    padding-inline: 12px;
   }
 
   .search-input,
@@ -199,6 +211,14 @@
   .btn {
     height: 42px;
     font-size: 0.88rem;
+  }
+
+  .dropdown-trigger {
+    padding: 0 10px;
+  }
+
+  .dropdown-trigger-label {
+    font-size: 0.86rem;
   }
 
   .dropdown-menu {

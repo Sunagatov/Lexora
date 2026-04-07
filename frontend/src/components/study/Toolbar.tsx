@@ -115,6 +115,12 @@ export function Toolbar({
 }: Props) {
   const levelActive = levelFilter !== 'all'
 
+  useEffect(() => {
+    if (levelActive && (sortBy === 'level-asc' || sortBy === 'level-desc')) {
+      setSortBy('term-asc')
+    }
+  }, [levelActive, sortBy, setSortBy])
+
   const sortOptions: DropdownOption<SortOption>[] = levelActive
     ? [
         {value: 'term-asc', label: 'A → Z'},
@@ -148,15 +154,13 @@ export function Toolbar({
       </div>
 
       <div className="toolbar-controls-row">
-        {!levelActive && (
-          <CompactDropdown
-            value={sortBy}
-            options={sortOptions}
-            onChange={setSortBy}
-            ariaLabel="Sort words"
-            className="toolbar-control toolbar-control-sort"
-          />
-        )}
+        <CompactDropdown
+          value={sortBy}
+          options={sortOptions}
+          onChange={setSortBy}
+          ariaLabel="Sort words"
+          className="toolbar-control toolbar-control-sort"
+        />
 
         <CompactDropdown
           value={String(levelFilter) as 'all' | `${WordKnowledgeLevel}`}
