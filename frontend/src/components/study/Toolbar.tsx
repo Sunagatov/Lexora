@@ -189,26 +189,26 @@ export function Toolbar({
 
       <div className="toolbar-meta-row">
         <div className="results-meta">
-          <span className="results-meta-item">
+          <span className="results-meta-item results-meta-item-showing">
             Showing <strong>{showingLabel}</strong>
           </span>
 
           {isFiltered ? (
             <>
-              <span className="results-meta-separator">·</span>
-              <span className="results-meta-item">
+              <span className="results-meta-separator results-meta-separator-filtered">·</span>
+              <span className="results-meta-item results-meta-item-filtered">
                 <strong>{filteredCount}</strong> filtered
               </span>
             </>
           ) : null}
 
-          <span className="results-meta-separator">·</span>
-          <span className="results-meta-item">
+          <span className="results-meta-separator results-meta-separator-topic">·</span>
+          <span className="results-meta-item results-meta-item-topic">
             <strong>{topicTotalCount}</strong> in topic
           </span>
 
-          <span className="results-meta-separator">·</span>
-          <span className="results-meta-item">
+          <span className="results-meta-separator results-meta-separator-total">·</span>
+          <span className="results-meta-item results-meta-item-total">
             <strong>{totalWordsOverall}</strong> total
           </span>
         </div>

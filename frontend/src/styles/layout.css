@@ -27,7 +27,6 @@
   gap: 10px;
 }
 
-/* Topic header — compact single row */
 .topic-header-card {
   display: flex;
   align-items: center;
@@ -37,7 +36,10 @@
   flex-wrap: nowrap;
 }
 
-.topic-header-main { min-width: 0; flex: 1; }
+.topic-header-main {
+  min-width: 0;
+  flex: 1;
+}
 
 .topic-header-title {
   font-size: 0.95rem;
@@ -47,7 +49,9 @@
   text-overflow: ellipsis;
 }
 
-.topic-header-desc { display: none; }
+.topic-header-desc {
+  display: none;
+}
 
 .level-summary {
   display: flex;
@@ -74,7 +78,40 @@
   opacity: 0.75;
 }
 
-.level-chip-value { font-size: 0.85rem; font-weight: 800; }
+.level-chip-value {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* Compact mobile-only progress strip */
+.mobile-progress-strip {
+  display: none;
+}
+
+.mobile-progress-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mobile-progress-pill-short {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.82;
+}
+
+.mobile-progress-pill-value {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
 
 /* Toolbar */
 .toolbar-card {
@@ -129,7 +166,9 @@
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
-.search-input::placeholder { color: var(--text-3); }
+.search-input::placeholder {
+  color: var(--text-3);
+}
 
 .search-input:focus {
   outline: none;
@@ -333,7 +372,10 @@
   border-color: #c7d2fe;
 }
 
-.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 .page-btn-active {
   background: var(--accent);
@@ -341,7 +383,11 @@
   border-color: var(--accent);
 }
 
-.page-btn-active:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }
+.page-btn-active:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
 
 .page-ellipsis {
   min-width: 28px;
@@ -352,4 +398,7 @@
   user-select: none;
 }
 
-.page-nav { min-width: 64px; font-size: 0.82rem; }
+.page-nav {
+  min-width: 64px;
+  font-size: 0.82rem;
+}

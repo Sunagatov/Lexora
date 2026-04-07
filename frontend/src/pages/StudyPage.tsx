@@ -6,6 +6,14 @@ import {WordTable} from '../components/study/WordTable'
 import {WordCardList} from '../components/study/WordCardList'
 import {Pagination} from '../components/study/Pagination'
 
+const MOBILE_LEVEL_SHORT: Record<number, string> = {
+  1: 'W',
+  2: 'B',
+  3: 'O',
+  4: 'S',
+  5: 'M',
+}
+
 export function StudyPage() {
   const s = useStudyState()
 
@@ -56,7 +64,7 @@ export function StudyPage() {
       <div className="main-content">
         <div className="main-inner">
           <div className="sticky-controls">
-            <div className="card topic-header-card">
+            <div className="card topic-header-card topic-header-card-desktop">
               <div className="topic-header-main">
                 <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
               </div>
@@ -69,6 +77,19 @@ export function StudyPage() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="mobile-progress-strip" aria-label="Current topic progress summary">
+              {LEVELS.map((l) => (
+                <div
+                  key={l}
+                  className={`mobile-progress-pill ${levelClass(l)}`}
+                  title={`${LEVEL_LABELS[l]}: ${s.levelSummary[l]}`}
+                >
+                  <span className="mobile-progress-pill-short">{MOBILE_LEVEL_SHORT[l]}</span>
+                  <span className="mobile-progress-pill-value">{s.levelSummary[l]}</span>
+                </div>
+              ))}
             </div>
 
             <Toolbar

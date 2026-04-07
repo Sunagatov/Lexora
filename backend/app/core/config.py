@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
