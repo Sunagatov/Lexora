@@ -82,11 +82,14 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     slug = _slugify(payload.topic_name)
 
-    # Match by exact name first to avoid slug collision between different topic names
     topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name))
     if topic is None:
-        topic = topic_crud.get_by_slug(db, slug)
-    if topic is None:
+        existing_slug = topic_crud.get_by_slug(db, slug)
+        if existing_slug is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Topic name '{payload.topic_name}' conflicts with existing topic '{existing_slug.name}' (same slug '{slug}'). Use the exact existing name.",
+            )
         topic = topic_crud.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
     existing = {_normalize_term(t) for t in db.scalars(
