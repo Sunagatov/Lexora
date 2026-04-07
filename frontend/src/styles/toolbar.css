@@ -43,6 +43,9 @@
 }
 
 .toolbar-search-row-mobile { display: none; }
+
+.toolbar-search-toggle {
+  display: none;
   flex: 0 0 auto;
   min-width: 36px;
   padding-inline: 0;
