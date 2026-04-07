@@ -13,6 +13,7 @@ from app.schemas.topic import TopicCreate
 from app.schemas.word import BulkImportResponse, WordBulkCreate, WordCreate, WordInput, WordResponse, WordUpdate
 
 router = APIRouter(prefix="/api/words", tags=["words"])
+bulk_router = APIRouter(prefix="/api/words", tags=["words"])
 
 
 @router.get("", response_model=list[WordResponse])
@@ -68,8 +69,8 @@ def _slugify(value: str) -> str:
     return slug[:200] or "topic"
 
 
-@router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
-             dependencies=[Depends(verify_api_key)])
+@bulk_router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
+                  dependencies=[Depends(verify_api_key)])
 def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     slug = _slugify(payload.topic_name)
