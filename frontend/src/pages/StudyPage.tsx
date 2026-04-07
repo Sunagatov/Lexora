@@ -63,6 +63,19 @@ export function StudyPage() {
 
       <div className="main-content">
         <div className="main-inner">
+          <div className="mobile-progress-strip" aria-label="Current topic progress summary">
+            {LEVELS.map((l) => (
+              <div
+                key={l}
+                className={`mobile-progress-pill ${levelClass(l)}`}
+                title={`${LEVEL_LABELS[l]}: ${s.levelSummary[l]}`}
+              >
+                <span className="mobile-progress-pill-short">{MOBILE_LEVEL_SHORT[l]}</span>
+                <span className="mobile-progress-pill-value">{s.levelSummary[l]}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="sticky-controls">
             <div className="card topic-header-card topic-header-card-desktop">
               <div className="topic-header-main">
@@ -77,19 +90,6 @@ export function StudyPage() {
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="mobile-progress-strip" aria-label="Current topic progress summary">
-              {LEVELS.map((l) => (
-                <div
-                  key={l}
-                  className={`mobile-progress-pill ${levelClass(l)}`}
-                  title={`${LEVEL_LABELS[l]}: ${s.levelSummary[l]}`}
-                >
-                  <span className="mobile-progress-pill-short">{MOBILE_LEVEL_SHORT[l]}</span>
-                  <span className="mobile-progress-pill-value">{s.levelSummary[l]}</span>
-                </div>
-              ))}
             </div>
 
             <Toolbar

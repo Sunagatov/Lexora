@@ -330,7 +330,7 @@
   opacity: 0.9;
 }
 
-/* Pagination bar — sticky at the bottom of the scroll container */
+/* Pagination bar */
 .pagination-bar {
   position: sticky;
   bottom: 0;
@@ -341,12 +341,20 @@
   margin-top: auto;
 }
 
+.pagination-shell {
+  width: 100%;
+}
+
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.pagination-mobile {
+  display: none;
 }
 
 .page-btn {
@@ -401,4 +409,29 @@
 .page-nav {
   min-width: 64px;
   font-size: 0.82rem;
+}
+
+.page-mobile-status {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  min-width: 74px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.86rem;
+  font-weight: 600;
+  gap: 2px;
+}
+
+.page-mobile-status strong {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.page-mobile-nav {
+  min-width: 86px;
 }
