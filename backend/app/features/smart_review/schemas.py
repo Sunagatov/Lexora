@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.word import WordResponse
+from app.features.words.schemas import WordResponse
 
 
 class StudyQueueItemResponse(BaseModel):

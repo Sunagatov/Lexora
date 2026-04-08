@@ -3,9 +3,10 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
-from app.schemas.smart_review import StudyQueueResponse
-from app.services.smart_review import get_or_create_active_queue
+from app.shared.deps import get_db
+from app.features.smart_review.model import StudyQueue, StudyQueueItem
+from app.features.smart_review.schemas import StudyQueueResponse
+from app.features.smart_review.service import get_or_create_active_queue
 
 router = APIRouter(prefix="/api/smart-review", tags=["smart-review"])
 
@@ -20,9 +21,6 @@ def get_active_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
 
 @router.post("/items/{item_id}/complete", response_model=StudyQueueResponse)
 def complete_item(item_id: int, db: Session = Depends(get_db)) -> StudyQueueResponse:
-    from sqlalchemy import select
-    from app.models.smart_review import StudyQueue, StudyQueueItem
-
     item = db.get(StudyQueueItem, item_id)
     if item is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue item not found")

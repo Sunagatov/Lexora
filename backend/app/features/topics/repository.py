@@ -3,15 +3,14 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.topic import Topic
-from app.schemas.topic import TopicCreate, TopicUpdate
+from app.features.topics.model import Topic
+from app.features.topics.schemas import TopicCreate, TopicUpdate
 
 
-class TopicCRUD:
+class TopicRepository:
     @staticmethod
     def get_all(db: Session) -> list[Topic]:
-        stmt = select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())
-        return list(db.scalars(stmt).all())
+        return list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all())
 
     @staticmethod
     def get_by_id(db: Session, topic_id: int) -> Topic | None:
@@ -19,13 +18,11 @@ class TopicCRUD:
 
     @staticmethod
     def get_by_slug(db: Session, slug: str) -> Topic | None:
-        stmt = select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None))
-        return db.scalar(stmt)
+        return db.scalar(select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None)))
 
     @staticmethod
     def get_deleted(db: Session) -> list[Topic]:
-        stmt = select(Topic).where(Topic.deleted_at.is_not(None)).order_by(Topic.deleted_at.desc())
-        return list(db.scalars(stmt).all())
+        return list(db.scalars(select(Topic).where(Topic.deleted_at.is_not(None)).order_by(Topic.deleted_at.desc())).all())
 
     @staticmethod
     def create(db: Session, payload: TopicCreate) -> Topic:
@@ -74,4 +71,4 @@ class TopicCRUD:
         db.commit()
 
 
-topic_crud = TopicCRUD()
+topic_repo = TopicRepository()

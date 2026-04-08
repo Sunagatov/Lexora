@@ -17,7 +17,6 @@ class Settings(BaseSettings):
     cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
     api_key: str
 
-    # Smart Review
     smart_review_enabled: bool = True
     smart_review_size: int = 100
     smart_review_level_1_count: int = 25
@@ -29,7 +28,6 @@ class Settings(BaseSettings):
     smart_review_max_per_topic: int = 10
     smart_review_queue_ttl_hours: int = 24
 
-    # Trash
     trash_retention_days: int = 30
 
     model_config = SettingsConfigDict(

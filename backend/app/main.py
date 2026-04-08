@@ -1,13 +1,13 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.deps import verify_session
-from app.routes.auth import router as auth_router
-from app.routes.health import router as health_router
-from app.routes.smart_review import router as smart_review_router
-from app.routes.topics import router as topics_router
-from app.routes.trash import router as trash_router
-from app.routes.words import bulk_router, router as words_router
+from app.shared.deps import verify_session
+from app.features.auth.router import router as auth_router
+from app.features.health.router import router as health_router
+from app.features.topics.router import router as topics_router
+from app.features.words.router import bulk_router, router as words_router
+from app.features.smart_review.router import router as smart_review_router
+from app.features.trash.router import router as trash_router
 
 app = FastAPI(
     title="Lexora API",
@@ -30,7 +30,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(bulk_router)
-app.include_router(topics_router, dependencies=[Depends(verify_session)])
-app.include_router(words_router, dependencies=[Depends(verify_session)])
+app.include_router(topics_router,      dependencies=[Depends(verify_session)])
+app.include_router(words_router,       dependencies=[Depends(verify_session)])
 app.include_router(smart_review_router, dependencies=[Depends(verify_session)])
-app.include_router(trash_router, dependencies=[Depends(verify_session)])
+app.include_router(trash_router,       dependencies=[Depends(verify_session)])

@@ -3,17 +3,13 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class TopicBase(BaseModel):
+class TopicCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     slug: str = Field(min_length=1, max_length=200)
     description: str | None = None
     is_active: bool = True
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-
-
-class TopicCreate(TopicBase):
-    pass
 
 
 class TopicUpdate(BaseModel):
@@ -25,8 +21,12 @@ class TopicUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
-class TopicResponse(TopicBase):
+class TopicResponse(BaseModel):
     id: int
+    name: str
+    slug: str
+    description: str | None
+    is_active: bool
     deleted_at: datetime | None = None
     created_at: datetime
     updated_at: datetime

@@ -3,21 +3,18 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.word import Word
-from app.schemas.word import WordCreate, WordUpdate
+from app.features.words.model import Word
+from app.features.words.schemas import WordCreate, WordUpdate
 
 
-class WordCRUD:
+class WordRepository:
     @staticmethod
     def get_all(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
         stmt = select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc())
-
         if topic_id is not None:
             stmt = stmt.where(Word.topic_id == topic_id)
-
         if search:
             stmt = stmt.where(Word.term.ilike(f"%{search}%"))
-
         return list(db.scalars(stmt).all())
 
     @staticmethod
@@ -26,8 +23,7 @@ class WordCRUD:
 
     @staticmethod
     def get_deleted(db: Session) -> list[Word]:
-        stmt = select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc())
-        return list(db.scalars(stmt).all())
+        return list(db.scalars(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc())).all())
 
     @staticmethod
     def create(db: Session, payload: WordCreate) -> Word:
@@ -68,4 +64,4 @@ class WordCRUD:
         db.commit()
 
 
-word_crud = WordCRUD()
+word_repo = WordRepository()

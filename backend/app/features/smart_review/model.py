@@ -5,8 +5,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
-
+from app.shared.db import Base
 
 class StudyQueue(Base):
     __tablename__ = "study_queues"
@@ -21,7 +20,6 @@ class StudyQueue(Base):
     items: Mapped[list[StudyQueueItem]] = relationship(
         "StudyQueueItem", back_populates="queue", cascade="all, delete-orphan", order_by="StudyQueueItem.position"
     )
-
 
 class StudyQueueItem(Base):
     __tablename__ = "study_queue_items"

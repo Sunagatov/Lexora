@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, DateTime, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.shared.db import Base
 
 
 class Topic(Base):
@@ -17,9 +17,7 @@ class Topic(Base):
     description: Mapped[str | None] = mapped_column(Text(), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), default=True, server_default=text("true"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     words = relationship("Word", back_populates="topic", cascade="all, delete-orphan")

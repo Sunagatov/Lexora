@@ -3,8 +3,12 @@ import {useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
 
-export const PAGE_SIZES = [10, 20, 50, 100]
-const DEFAULT_PAGE_SIZE = 20
+export const PAGE_SIZES = (import.meta.env.VITE_PAGE_SIZES ?? '10,20,50,100')
+  .split(',')
+  .map(Number)
+  .filter((n) => n > 0)
+
+const DEFAULT_PAGE_SIZE = Number(import.meta.env.VITE_DEFAULT_PAGE_SIZE ?? 20)
 
 function parseLevel(v: string | null): 'all' | WordKnowledgeLevel {
   const n = parseInt(v ?? '', 10)

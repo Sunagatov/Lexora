@@ -7,13 +7,12 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.config import settings
-from app.models.smart_review import StudyQueue, StudyQueueItem
-from app.models.word import Word
+from app.shared.config import settings
+from app.features.smart_review.model import StudyQueue, StudyQueueItem
+from app.features.words.model import Word
 
 
 def _cooldown_word_ids(db: Session) -> set[int]:
-    """Return word IDs that appeared in any queue within the cooldown window."""
     if settings.smart_review_cooldown_days <= 0:
         return set()
     cutoff = datetime.now(timezone.utc) - timedelta(days=settings.smart_review_cooldown_days)
@@ -25,16 +24,6 @@ def _cooldown_word_ids(db: Session) -> set[int]:
     return set(db.scalars(stmt).all())
 
 
-def _level_bucket_sizes() -> dict[int, int]:
-    return {
-        1: settings.smart_review_level_1_count,
-        2: settings.smart_review_level_2_count,
-        3: settings.smart_review_level_3_count,
-        4: settings.smart_review_level_4_count,
-        5: settings.smart_review_level_5_count,
-    }
-
-
 def _pick_for_level(
     db: Session,
     level: int,
@@ -42,15 +31,13 @@ def _pick_for_level(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
 ) -> list[Word]:
-    """Pick up to `needed` words for a given level, respecting topic cap and exclusions."""
     if needed <= 0:
         return []
-
     stmt = (
         select(Word)
         .where(Word.is_active == True)  # noqa: E712
         .where(Word.knowledge_level == level)
-        .order_by(Word.updated_at.asc())  # least recently updated = highest priority
+        .order_by(Word.updated_at.asc())
     )
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
@@ -66,7 +53,6 @@ def _pick_for_level(
             continue
         picked.append(word)
         topic_counts[word.topic_id] += 1
-
     return picked
 
 
@@ -77,28 +63,29 @@ def _pick_for_level_with_fallback(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
 ) -> list[Word]:
-    """Try strict cooldown first; if bucket underfills, relax cooldown for the remainder."""
     picked = _pick_for_level(db, level, needed, excluded_ids, topic_counts)
-
     shortfall = needed - len(picked)
     if shortfall > 0:
-        already_picked_ids = {w.id for w in picked}
-        picked += _pick_for_level(db, level, shortfall, already_picked_ids, topic_counts)
-
+        picked += _pick_for_level(db, level, shortfall, {w.id for w in picked}, topic_counts)
     return picked
 
 
 def generate_queue(db: Session) -> StudyQueue:
-    """Generate a new Smart Review queue and persist it. Deactivates any previous active queue."""
-    cooldown_ids = _cooldown_word_ids(db)
+    cooldown_ids   = _cooldown_word_ids(db)
     topic_counts: dict[int, int] = defaultdict(int)
+    level_buckets  = {
+        1: settings.smart_review_level_1_count,
+        2: settings.smart_review_level_2_count,
+        3: settings.smart_review_level_3_count,
+        4: settings.smart_review_level_4_count,
+        5: settings.smart_review_level_5_count,
+    }
 
     selected: list[Word] = []
-    for level, needed in _level_bucket_sizes().items():
+    for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        already_selected_ids = cooldown_ids | {w.id for w in selected}
-        words = _pick_for_level_with_fallback(db, level, needed, already_selected_ids, topic_counts)
+        words = _pick_for_level_with_fallback(db, level, needed, cooldown_ids | {w.id for w in selected}, topic_counts)
         selected.extend(words)
 
     random.shuffle(selected)
@@ -118,13 +105,7 @@ def generate_queue(db: Session) -> StudyQueue:
     db.flush()
 
     for position, word in enumerate(selected):
-        db.add(StudyQueueItem(
-            queue_id=queue.id,
-            word_id=word.id,
-            position=position,
-            is_completed=False,
-            completed_at=None,
-        ))
+        db.add(StudyQueueItem(queue_id=queue.id, word_id=word.id, position=position, is_completed=False, completed_at=None))
 
     db.commit()
     db.refresh(queue)
@@ -132,17 +113,8 @@ def generate_queue(db: Session) -> StudyQueue:
 
 
 def get_or_create_active_queue(db: Session) -> StudyQueue | None:
-    """Return the current active queue if not expired, otherwise generate a new one."""
     if not settings.smart_review_enabled:
         return None
-
     now = datetime.now(timezone.utc)
-    queue = db.scalar(
-        select(StudyQueue)
-        .where(StudyQueue.is_active == True)  # noqa: E712
-        .where(StudyQueue.expires_at > now)
-    )
-    if queue is not None:
-        return queue
-
-    return generate_queue(db)
+    queue = db.scalar(select(StudyQueue).where(StudyQueue.is_active == True).where(StudyQueue.expires_at > now))  # noqa: E712
+    return queue if queue is not None else generate_queue(db)
