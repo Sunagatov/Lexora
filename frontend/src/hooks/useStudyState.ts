@@ -19,7 +19,7 @@ export function useStudyState() {
     [words, topic.selectedTopicId],
   )
 
-  const filter = useWordFilter(topicWords, topic.pageSize, topic.selectedTopicId)
+  const filter = useWordFilter(topicWords, 0, topic.selectedTopicId)
 
   const update = useWordUpdate(() =>
     filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),

@@ -1,4 +1,3 @@
-import {useState} from 'react'
 import {PAGE_SIZES} from '../../hooks/useWordFilter'
 import {CompactDropdown} from './CompactDropdown'
 

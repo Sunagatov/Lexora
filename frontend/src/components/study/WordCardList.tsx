@@ -34,8 +34,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
                 </button>
                 {isOpen && (
                   <LevelDropdown
-                    wordId={word.id}
-                    current={word.knowledge_level}
+                    current={word.knowledge_level as WordKnowledgeLevel | null}
                     onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
                     onClose={() => setOpenId(null)}
                   />
@@ -64,8 +63,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
   )
 }
 
-function LevelDropdown({wordId, current, onSelect, onClose}: {
-  wordId: number
+function LevelDropdown({current, onSelect, onClose}: {
   current: WordKnowledgeLevel | null
   onSelect: (l: WordKnowledgeLevel) => void
   onClose: () => void
