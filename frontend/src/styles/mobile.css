@@ -226,7 +226,17 @@
   }
 
   .word-list-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 4px 12px;
+  }
+
+  .word-list-header-cell:nth-child(2) {
     display: none;
+  }
+
+  .word-list-header-cell:last-child {
+    text-align: right;
   }
 
   .word-card-list {
