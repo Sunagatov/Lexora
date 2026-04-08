@@ -56,6 +56,8 @@ export function useStudyState() {
     page:            filter.page,
     totalPages:      filter.totalPages,
     setPage:         filter.setPage,
+    pageSize:        filter.pageSize,
+    setPageSize:     filter.setPageSize,
     pageStart:       filter.pageStart,
     pageEnd:         filter.pageEnd,
     resetFilters:    filter.resetFilters,

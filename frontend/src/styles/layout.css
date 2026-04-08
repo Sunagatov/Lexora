@@ -1,15 +1,14 @@
 .main-content {
   flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .main-inner {
-  flex: 1;
   width: 100%;
-  padding: 0 28px 0;
+  padding: 0 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -21,7 +20,7 @@
   top: 0;
   z-index: 10;
   background: var(--bg);
-  padding: 14px 0 8px;
+  padding: 14px 28px 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;

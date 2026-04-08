@@ -2,12 +2,30 @@ import {useEffect, useMemo, useState} from 'react'
 import type {Word, WordKnowledgeLevel} from '../lib/api'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../lib/words'
 
-export function useWordFilter(topicWords: Word[], pageSize: number, selectedTopicId: number | null) {
+const PAGE_SIZES = [10, 20, 50, 100]
+const STORAGE_KEY = 'lexora_page_size'
+const DEFAULT_PAGE_SIZE = 20
+
+function loadPageSize(): number {
+  const v = parseInt(localStorage.getItem(STORAGE_KEY) ?? '', 10)
+  return PAGE_SIZES.includes(v) ? v : DEFAULT_PAGE_SIZE
+}
+
+export {PAGE_SIZES}
+
+export function useWordFilter(topicWords: Word[], _unused: number, selectedTopicId: number | null) {
   const [wordSearch, setWordSearch] = useState('')
   const [levelFilter, setLevelFilter] = useState<'all' | WordKnowledgeLevel>('all')
   const [sortBy, setSortBy]           = useState<SortOption>('level-asc')
   const [frozenIds, setFrozenIds]     = useState<number[] | null>(null)
   const [page, setPage]               = useState(1)
+  const [pageSize, setPageSizeState]  = useState(loadPageSize)
+
+  const setPageSize = (n: number) => {
+    localStorage.setItem(STORAGE_KEY, String(n))
+    setPageSizeState(n)
+    setPage(1)
+  }
 
   useEffect(() => {
     setFrozenIds(null)
@@ -49,6 +67,8 @@ export function useWordFilter(topicWords: Word[], pageSize: number, selectedTopi
     page: safePage,
     totalPages,
     setPage,
+    pageSize,
+    setPageSize,
     pageStart,
     pageEnd,
     resetFilters,

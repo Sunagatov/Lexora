@@ -1,7 +1,7 @@
 .pagination-bar {
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  z-index: 20;
   background: var(--bg);
   border-top: 1px solid var(--border);
   padding: 10px 0 12px;
@@ -10,7 +10,7 @@
 
 .pagination-shell {
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .pagination {
@@ -19,7 +19,6 @@
   justify-content: center;
   gap: 4px;
   flex-wrap: nowrap;
-  min-width: max-content;
   margin: 0 auto;
   padding: 0 8px;
 }
@@ -79,4 +78,63 @@
 .page-nav {
   min-width: 60px;
   font-size: 0.8rem;
+}
+
+.page-size-dropdown {
+  flex: 0 0 120px;
+  margin-left: 8px;
+}
+
+.page-size-dropdown .dropdown-menu {
+  top: auto;
+  bottom: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  width: 120px;
+  min-width: unset;
+}
+
+.page-size-dropdown .dropdown-option {
+  white-space: nowrap;
+  padding: 8px 10px;
+  min-height: unset;
+}
+
+.page-size-dropdown .dropdown-trigger {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+
+.pagination-mobile .page-size-dropdown {
+  flex: 0 0 120px;
+  margin-left: 0;
+}
+
+.pagination-mobile .page-size-dropdown .dropdown-trigger {
+  height: 44px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+}
+
+.pagination-mobile { display: none; }
+
+.page-nav-mobile {
+  min-width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+.page-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .pagination-desktop { display: none; }
+  .pagination-mobile  { display: flex; }
 }

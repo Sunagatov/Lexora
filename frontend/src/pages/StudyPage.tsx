@@ -20,8 +20,6 @@ export function StudyPage() {
     onSelect: s.selectTopic,
   }
 
-  const showWordListHeader = s.selectedTopicId !== null && s.filteredWords.length > 0
-
   if (s.isLoading) {
     return <div className="study-loading">Loading…</div>
   }
@@ -55,48 +53,47 @@ export function StudyPage() {
       </aside>
 
       <div className="main-content">
-        <div className="main-inner">
-          <div className="sticky-controls">
-            <div className="card topic-header-card topic-header-card-desktop">
-              <div className="topic-header-main">
-                <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
-              </div>
-
-              <div className="level-summary">
-                {LEVELS.map((l) => (
-                  <div key={l} className={`level-chip ${levelClass(l)}`}>
-                    <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
-                    <span className="level-chip-value">{s.levelSummary[l]}</span>
-                  </div>
-                ))}
-              </div>
+        <div className="sticky-controls">
+          <div className="card topic-header-card topic-header-card-desktop">
+            <div className="topic-header-main">
+              <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
             </div>
-
-            <Toolbar
-              wordSearch={s.wordSearch}
-              setWordSearch={s.setWordSearch}
-              sortBy={s.sortBy}
-              setSortBy={s.setSortBy}
-              levelFilter={s.levelFilter}
-              setLevelFilter={s.setLevelFilter}
-              onReset={s.resetFilters}
-              totalWordsOverall={s.overallWordCount}
-              topicTotalCount={s.topicWordCount}
-              filteredCount={s.filteredWordCount}
-              pageStart={s.pageStart}
-              pageEnd={s.pageEnd}
-              levelSummary={s.levelSummary}
-            />
-
-            {showWordListHeader && (
-              <div className="word-list-header" aria-hidden="true">
-                <span className="word-list-header-cell word-list-header-word">Word</span>
-                <span className="word-list-header-cell word-list-header-details">Translation / details</span>
-                <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-              </div>
-            )}
+            <div className="level-summary">
+              {LEVELS.map((l) => (
+                <div key={l} className={`level-chip ${levelClass(l)}`}>
+                  <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
+                  <span className="level-chip-value">{s.levelSummary[l]}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
+          <Toolbar
+            wordSearch={s.wordSearch}
+            setWordSearch={s.setWordSearch}
+            sortBy={s.sortBy}
+            setSortBy={s.setSortBy}
+            levelFilter={s.levelFilter}
+            setLevelFilter={s.setLevelFilter}
+            onReset={s.resetFilters}
+            totalWordsOverall={s.overallWordCount}
+            topicTotalCount={s.topicWordCount}
+            filteredCount={s.filteredWordCount}
+            pageStart={s.pageStart}
+            pageEnd={s.pageEnd}
+            levelSummary={s.levelSummary}
+          />
+
+          {s.selectedTopicId !== null && s.filteredWords.length > 0 && (
+            <div className="word-list-header" aria-hidden="true">
+              <span className="word-list-header-cell">Word</span>
+              <span className="word-list-header-cell">Translation / details</span>
+              <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
+            </div>
+          )}
+        </div>
+
+        <div className="main-inner">
           {s.selectedTopicId === null ? (
             <div className="empty-state">Select a topic to start reviewing words.</div>
           ) : s.filteredWords.length === 0 ? (
@@ -108,11 +105,13 @@ export function StudyPage() {
             </>
           )}
 
-          {s.totalPages > 1 && (
+          {s.selectedTopicId !== null && (
             <div className="pagination-bar">
               <Pagination
                 page={s.page}
                 totalPages={s.totalPages}
+                pageSize={s.pageSize}
+                onPageSize={s.setPageSize}
                 onPage={(p) => {
                   s.setPage(p)
                   document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'})

@@ -93,6 +93,7 @@
 
   .main-content {
     flex: 1;
+    height: 100dvh;
     overflow-y: auto;
     min-height: 0;
   }
@@ -219,19 +220,12 @@
     padding: 8px 0 10px;
   }
 
-  .page-btn {
-    min-width: 28px;
-    height: 30px;
-    font-size: 0.78rem;
-    padding: 0 6px;
-  }
-
-  .page-nav {
-    min-width: 52px;
-  }
-
   /* Hide table, show cards */
   .word-table-wrap {
+    display: none;
+  }
+
+  .word-list-header {
     display: none;
   }
 
@@ -310,5 +304,4 @@
 
   .page-nav {
     min-width: 48px;
-  }
-}
+  }}

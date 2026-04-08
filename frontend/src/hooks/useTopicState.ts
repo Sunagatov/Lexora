@@ -1,28 +1,10 @@
 import {useEffect, useMemo, useState} from 'react'
 import type {Topic, Word} from '../lib/api'
 
-const MOBILE_BREAKPOINT = 860
-export const PAGE_SIZE_DESKTOP = 20
-export const PAGE_SIZE_MOBILE  = 12
-
-function getPageSize() {
-  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
-    ? PAGE_SIZE_MOBILE
-    : PAGE_SIZE_DESKTOP
-}
-
 export function useTopicState(topics: Topic[], words: Word[]) {
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
   const [topicSearch, setTopicSearch]         = useState('')
   const [drawerOpen, setDrawerOpen]           = useState(false)
-  const [pageSize, setPageSize]               = useState(getPageSize)
-
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
-    const handler = () => setPageSize(mq.matches ? PAGE_SIZE_MOBILE : PAGE_SIZE_DESKTOP)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
 
   useEffect(() => {
     if (!topics.length) return
@@ -67,7 +49,6 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     topicPos,
     topicSearch,
     setTopicSearch,
-    pageSize,
     drawerOpen,
     setDrawerOpen,
     selectTopic: (id: number) => { setSelectedTopicId(id); setDrawerOpen(false) },
