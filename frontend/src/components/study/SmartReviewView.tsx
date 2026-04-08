@@ -1,11 +1,12 @@
+import {useMemo} from 'react'
 import type {StudyQueue, WordKnowledgeLevel} from '../../lib/api'
 import {useSmartReview} from '../../hooks/useSmartReview'
 import {useWordUpdate} from '../../hooks/useWordUpdate'
+import {useWordFilter} from '../../hooks/useWordFilter'
 import {WordTable} from './WordTable'
 import {WordCardList} from './WordCardList'
 import {Pagination} from './Pagination'
-import {useWordFilter} from '../../hooks/useWordFilter'
-import {useMemo} from 'react'
+import {Toolbar} from './Toolbar'
 
 type Props = {
   queue: StudyQueue | null
@@ -62,6 +63,22 @@ export function SmartReviewView({queue, isLoading}: Props) {
           </div>
         </div>
 
+        <Toolbar
+          wordSearch={filter.wordSearch}
+          setWordSearch={filter.setWordSearch}
+          sortBy={filter.sortBy}
+          setSortBy={filter.setSortBy}
+          levelFilter={filter.levelFilter}
+          setLevelFilter={filter.setLevelFilter}
+          onReset={filter.resetFilters}
+          totalWordsOverall={words.length}
+          topicTotalCount={words.length}
+          filteredCount={filter.filteredWords.length}
+          pageStart={filter.pageStart}
+          pageEnd={filter.pageEnd}
+          levelSummary={filter.levelSummary}
+        />
+
         {filter.filteredWords.length > 0 && (
           <div className="word-list-header" aria-hidden="true">
             <span className="word-list-header-cell">Word</span>
@@ -73,7 +90,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
 
       <div className="main-inner">
         {filter.pageWords.length === 0 ? (
-          <div className="empty-state">No words in this queue.</div>
+          <div className="empty-state">No words match the current filters.</div>
         ) : (
           <>
             <WordTable words={filter.pageWords} pendingWordId={update.pendingWordId} onUpdate={handleUpdate} />
