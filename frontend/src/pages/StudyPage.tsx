@@ -1,3 +1,4 @@
+import {useEffect} from 'react'
 import {useStudyState} from '../hooks/useStudyState'
 import {LEVELS, LEVEL_LABELS, levelClass} from '../lib/words'
 import {TopicSidebar} from '../components/study/TopicSidebar'
@@ -6,9 +7,16 @@ import {WordTable} from '../components/study/WordTable'
 import {WordCardList} from '../components/study/WordCardList'
 import {Pagination} from '../components/study/Pagination'
 import {SmartReviewView} from '../components/study/SmartReviewView'
+import {useDrawer} from '../context/DrawerContext'
 
 export function StudyPage() {
   const s = useStudyState()
+  const {drawerOpen, setDrawerOpen, setHasDrawer} = useDrawer()
+
+  useEffect(() => {
+    setHasDrawer(true)
+    return () => setHasDrawer(false)
+  }, [setHasDrawer])
 
   const sidebarProps = {
     topics: s.visibleTopics,
@@ -29,27 +37,8 @@ export function StudyPage() {
 
   return (
     <>
-      <div className="mobile-topbar">
-        <span className="mobile-brand">Lexora</span>
-        <button
-          type="button"
-          className="mobile-topic-btn"
-          title={s.isSmartReview ? 'Smart Review' : (s.selectedTopic?.name ?? 'Topics')}
-          onClick={() => s.setDrawerOpen(true)}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="2" y1="4" x2="14" y2="4" />
-            <line x1="2" y1="8" x2="14" y2="8" />
-            <line x1="2" y1="12" x2="14" y2="12" />
-          </svg>
-          <span className="mobile-topic-btn-name">
-            {s.isSmartReview ? 'Smart Review' : (s.selectedTopic?.name ?? 'Topics')}
-          </span>
-        </button>
-      </div>
-
-      <div className={`mobile-drawer-overlay ${s.drawerOpen ? 'open' : ''}`} onClick={() => s.setDrawerOpen(false)} />
-      <div className={`mobile-drawer ${s.drawerOpen ? 'open' : ''}`}>
+      <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
+      <div className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}>
         <TopicSidebar {...sidebarProps} />
       </div>
 

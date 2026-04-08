@@ -157,57 +157,55 @@ export function WordPage() {
   return (
     <div className="word-page">
 
-      {/* Sticky header */}
-      <div className="word-page-header">
-        <button type="button" className="word-page-brand" onClick={() => navigate('/')}>
-          Lexora
-        </button>
-        {!editing && (
-          <button type="button" className="word-page-edit-btn" onClick={startEdit}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
-            </svg>
-            Edit
-          </button>
-        )}
-      </div>
-
-      <div className="word-page-inner">
-
-        {/* Back row */}
+      {/* Fixed hero — word term + back, never scrolls */}
+      <div className="word-page-hero-wrap">
         <div className="word-page-topbar">
-          <button type="button" className="word-page-back-btn" onClick={() => navigate(`/study/topics/${word.topic_id}`)}>
+          <button
+            type="button"
+            className="word-page-back-btn"
+            onClick={() => editing ? cancelEdit() : navigate(`/study/topics/${word.topic_id}`)}
+          >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
             Back
           </button>
+          {!editing && (
+            <button type="button" className="word-page-edit-btn" onClick={startEdit}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
+              </svg>
+              Edit
+            </button>
+          )}
         </div>
-
-        {/* Hero */}
         <div className={`word-page-hero ${lc}`}>
           <h1 className="word-page-term">{word.term}</h1>
         </div>
+      </div>
 
-        {/* View mode — all fields as rows */}
+      {/* Scrollable content only */}
+      <div className="word-page-inner">
+
+        {/* View mode */}
         {!editing && (
           <div className="word-page-view">
             <ViewRow label="Translation"    value={word.translations} />
             <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
             <ViewRow label="Topic"          value={topic?.name ?? '—'} />
             <ViewRow label="Knowledge"      value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
-            {word.countability  && <ViewRow label="Countability"   value={word.countability} />}
-            {word.example       && <ViewRow label="Example"        value={word.example} />}
-            {word.notes         && <ViewRow label="Notes"          value={word.notes} />}
-            {word.pattern       && <ViewRow label="Pattern"        value={word.pattern} />}
-            {word.past_simple   && <ViewRow label="Past simple"    value={word.past_simple} />}
+            {word.countability   && <ViewRow label="Countability"    value={word.countability} />}
+            {word.example        && <ViewRow label="Example"         value={word.example} />}
+            {word.notes          && <ViewRow label="Notes"           value={word.notes} />}
+            {word.pattern        && <ViewRow label="Pattern"         value={word.pattern} />}
+            {word.past_simple    && <ViewRow label="Past simple"     value={word.past_simple} />}
             {word.past_participle && <ViewRow label="Past participle" value={word.past_participle} />}
             <ViewRow label="Updated" value={new Date(word.updated_at).toLocaleDateString()} />
             <ViewRow label="Created" value={new Date(word.created_at).toLocaleDateString()} />
           </div>
         )}
 
-        {/* Edit mode */}
+        {/* Edit mode — only fields scroll */}
         {editing && draft && (
           <div className="word-page-edit-form">
 
@@ -280,49 +278,54 @@ export function WordPage() {
               <input className="wp-input" value={draft.pattern} onChange={(e) => set('pattern', e.target.value)} />
             </FormField>
 
-            <div className="word-page-edit-actions">
-              <button type="button" className="wp-btn-save" disabled={mutation.isPending} onClick={save}>
-                {mutation.isPending ? 'Saving…' : 'Save'}
-              </button>
-              <button type="button" className="wp-btn-cancel" onClick={cancelEdit}>Cancel</button>
-              <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>
-                Delete
-              </button>
-            </div>
-
           </div>
         )}
 
       </div>
 
-      {/* Word navigation footer */}
-      <div className="word-page-footer">
-        <button
-          type="button"
-          className="word-page-nav-btn"
-          disabled={!prevWord}
-          onClick={() => prevWord && navigate(`/words/${prevWord.id}`)}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <polyline points="9,2 4,7 9,12" />
-          </svg>
-          {prevWord ? prevWord.term : '—'}
-        </button>
-        <span className="word-page-nav-pos">
-          {currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}
-        </span>
-        <button
-          type="button"
-          className="word-page-nav-btn word-page-nav-btn-next"
-          disabled={!nextWord}
-          onClick={() => nextWord && navigate(`/words/${nextWord.id}`)}
-        >
-          {nextWord ? nextWord.term : '—'}
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <polyline points="5,2 10,7 5,12" />
-          </svg>
-        </button>
-      </div>
+      {/* Edit actions bar — fixed above footer, edit mode only */}
+      {editing && (
+        <div className="word-page-edit-actions">
+          <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
+          <div className="word-page-edit-actions-right">
+            <button type="button" className="wp-btn-cancel" onClick={cancelEdit}>Cancel</button>
+            <button type="button" className="wp-btn-save" disabled={mutation.isPending} onClick={save}>
+              {mutation.isPending ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Word navigation footer — view mode only */}
+      {!editing && (
+        <div className="word-page-footer">
+          <button
+            type="button"
+            className="word-page-nav-btn"
+            disabled={!prevWord}
+            onClick={() => prevWord && navigate(`/words/${prevWord.id}`)}
+          >
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="9,2 4,7 9,12" />
+            </svg>
+            Prev
+          </button>
+          <span className="word-page-nav-pos">
+            {currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}
+          </span>
+          <button
+            type="button"
+            className="word-page-nav-btn word-page-nav-btn-next"
+            disabled={!nextWord}
+            onClick={() => nextWord && navigate(`/words/${nextWord.id}`)}
+          >
+            Next
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <polyline points="5,2 10,7 5,12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {confirming && (
         <ConfirmModal

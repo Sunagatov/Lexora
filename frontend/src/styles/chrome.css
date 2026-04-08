@@ -1,13 +1,13 @@
 /* ── Desktop App Header ─────────────────────────────────── */
 .app-header {
-  display: none;
+  display: flex;
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--sidebar-bg);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 0 32px;
-  height: 52px;
+  padding: 0 20px;
+  height: 48px;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
@@ -26,22 +26,21 @@
 }
 .app-header-brand:hover { opacity: 0.75; }
 
-.app-header-logout {
+.app-header-burger {
+  display: none;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-sm);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 5px 14px;
+  border: none;
+  color: rgba(255,255,255,0.8);
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
+  padding: 4px;
+  line-height: 0;
+  transition: color 0.12s;
 }
-.app-header-logout:hover:not(:disabled) {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.4);
+.app-header-burger:hover { color: #fff; }
+
+@media (max-width: 860px) {
+  .app-header-burger { display: flex; align-items: center; }
 }
-.app-header-logout:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── App body (between header and footer) ───────────────── */
 .app-body {
@@ -106,7 +105,7 @@
 .word-page-nav-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -116,9 +115,6 @@
   padding: 6px 12px;
   cursor: pointer;
   transition: color 0.12s, border-color 0.12s;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .word-page-nav-btn:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
@@ -134,7 +130,7 @@
 
 /* ── Show on desktop ────────────────────────────────────── */
 @media (min-width: 861px) {
-  .app-header { display: flex; }
+  .app-header { padding: 0 32px; height: 52px; }
   .app-footer { display: flex; }
 
   .app-shell {
