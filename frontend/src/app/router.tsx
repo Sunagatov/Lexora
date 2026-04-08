@@ -1,4 +1,4 @@
-import {createBrowserRouter} from 'react-router-dom'
+import {createBrowserRouter, Navigate} from 'react-router-dom'
 
 import {AppLayout} from '../components/layout/AppLayout'
 import {LoginPage} from '../pages/LoginPage'
@@ -17,7 +17,15 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <StudyPage />,
+        element: <Navigate to="/study/smart-review" replace />,
+      },
+      {
+        path: 'study',
+        children: [
+          { index: true, element: <Navigate to="smart-review" replace /> },
+          { path: 'smart-review', element: <StudyPage /> },
+          { path: 'topics/:topicId', element: <StudyPage /> },
+        ],
       },
     ],
   },

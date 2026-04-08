@@ -1,11 +1,16 @@
 import {useMemo} from 'react'
+import {useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchTopics, fetchWords} from '../lib/api'
 import {useTopicState} from './useTopicState'
 import {useWordFilter} from './useWordFilter'
 import {useWordUpdate} from './useWordUpdate'
+import {useSmartReview} from './useSmartReview'
 
 export function useStudyState() {
+  const location = useLocation()
+  const isSmartReview = location.pathname === '/study/smart-review'
+
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const wordsQuery  = useQuery({queryKey: ['words'],  queryFn: () => fetchWords()})
 
@@ -13,6 +18,7 @@ export function useStudyState() {
   const words  = wordsQuery.data  ?? []
 
   const topic  = useTopicState(topics, words)
+  const smartReview = useSmartReview()
 
   const topicWords = useMemo(
     () => words.filter((w) => w.topic_id === topic.selectedTopicId),
@@ -26,22 +32,25 @@ export function useStudyState() {
   )
 
   return {
+    // mode
+    isSmartReview,
+
     // data
     topics,
     words,
     topicWords,
 
     // topic
-    visibleTopics:   topic.visibleTopics,
-    selectedTopic:   topic.selectedTopic,
-    selectedTopicId: topic.selectedTopicId,
-    topicCounts:     topic.topicCounts,
-    topicPos:        topic.topicPos,
-    topicSearch:     topic.topicSearch,
-    setTopicSearch:  topic.setTopicSearch,
-    selectTopic:     topic.selectTopic,
-    drawerOpen:      topic.drawerOpen,
-    setDrawerOpen:   topic.setDrawerOpen,
+    visibleTopics:    topic.visibleTopics,
+    selectedTopic:    topic.selectedTopic,
+    selectedTopicId:  topic.selectedTopicId,
+    topicCounts:      topic.topicCounts,
+    topicSearch:      topic.topicSearch,
+    setTopicSearch:   topic.setTopicSearch,
+    selectTopic:      topic.selectTopic,
+    selectSmartReview: topic.selectSmartReview,
+    drawerOpen:       topic.drawerOpen,
+    setDrawerOpen:    topic.setDrawerOpen,
 
     // filter
     wordSearch:      filter.wordSearch,
@@ -70,6 +79,9 @@ export function useStudyState() {
     // update
     updateLevel:   update.updateLevel,
     pendingWordId: update.pendingWordId,
+
+    // smart review
+    smartQueue: smartReview.queue,
 
     isLoading: topicsQuery.isLoading || wordsQuery.isLoading,
   }

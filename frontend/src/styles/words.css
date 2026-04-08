@@ -330,3 +330,30 @@
   }
 }
 
+/* Smart Review progress */
+.smart-review-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.smart-review-progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.smart-review-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.smart-review-progress-label {
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+

@@ -1,29 +1,58 @@
 import {useState} from 'react'
 import {createPortal} from 'react-dom'
-import type {Topic} from '../../lib/api'
+import type {StudyQueue, Topic} from '../../lib/api'
 
 type Props = {
   topics: Topic[]
   topicCounts: Map<number, number>
-  topicPos: Map<number, string>
   totalWords: number
   topicSearch: string
   setTopicSearch: (v: string) => void
   selectedTopicId: number | null
+  isSmartReview: boolean
   onSelect: (id: number) => void
+  onSelectSmartReview: () => void
+  smartQueue: StudyQueue | null
 }
 
 type TooltipState = {name: string; x: number; y: number; anchor: 'left' | 'right'} | null
 
-const POS_ORDER = ['verb', 'noun', 'adjective', 'adverb', 'phrase', 'preposition', 'other']
+const POS_NAMES = new Set([
+  'adjectives', 'adverbs', 'nouns', 'verbs', 'phrases',
+  'prepositions', 'irregular verbs',
+])
 
-const POS_LABELS: Record<string, string> = {
-  verb: 'Verbs', noun: 'Nouns', adjective: 'Adjectives',
-  adverb: 'Adverbs', phrase: 'Phrases', preposition: 'Prepositions', other: 'Other',
+function isPosGroup(topic: Topic): boolean {
+  return POS_NAMES.has(topic.name.toLowerCase().trim())
 }
 
-export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSearch, setTopicSearch, selectedTopicId, onSelect}: Props) {
+function loadCollapsed(key: string, def: boolean): boolean {
+  try { return JSON.parse(localStorage.getItem(key) ?? String(def)) } catch { return def }
+}
+
+function saveCollapsed(key: string, val: boolean) {
+  localStorage.setItem(key, JSON.stringify(val))
+}
+
+export function TopicSidebar({
+  topics, topicCounts, totalWords, topicSearch, setTopicSearch,
+  selectedTopicId, isSmartReview, onSelect, onSelectSmartReview, smartQueue,
+}: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null)
+  const [posCollapsed,    setPosCollapsed]    = useState(() => loadCollapsed('sidebar_pos_collapsed', false))
+  const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadCollapsed('sidebar_topics_collapsed', false))
+
+  function togglePos() {
+    const next = !posCollapsed
+    setPosCollapsed(next)
+    saveCollapsed('sidebar_pos_collapsed', next)
+  }
+
+  function toggleTopics() {
+    const next = !topicsCollapsed
+    setTopicsCollapsed(next)
+    saveCollapsed('sidebar_topics_collapsed', next)
+  }
 
   function handleMouseEnter(e: React.MouseEvent, name: string) {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -41,15 +70,25 @@ export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSe
     setTimeout(() => setTooltip(null), 2000)
   }
 
-  // Group topics by POS, preserving POS_ORDER
-  const grouped = new Map<string, Topic[]>()
-  for (const topic of topics) {
-    const pos = topicPos.get(topic.id) ?? 'other'
-    if (!grouped.has(pos)) grouped.set(pos, [])
-    grouped.get(pos)!.push(topic)
+  const needle = topicSearch.toLowerCase().trim()
+
+  const posTopics    = topics.filter((t) => isPosGroup(t) && (!needle || t.name.toLowerCase().includes(needle)))
+  const themeTopics  = topics.filter((t) => !isPosGroup(t) && (!needle || t.name.toLowerCase().includes(needle) || (t.description ?? '').toLowerCase().includes(needle)))
+
+  const remaining = smartQueue ? smartQueue.total_count - smartQueue.completed_count : null
+  const progress  = smartQueue && smartQueue.total_count > 0
+    ? Math.round((smartQueue.completed_count / smartQueue.total_count) * 100)
+    : 0
+
+  const topicButtonProps = {
+    selectedTopicId,
+    isSmartReview,
+    topicCounts,
+    onMouseEnter: handleMouseEnter,
+    onTouchStart: handleTouchStart,
+    onSelect,
+    clearTooltip: () => setTooltip(null),
   }
-  const groups = POS_ORDER.filter((pos) => grouped.has(pos))
-  const showGroups = !topicSearch.trim() && groups.length > 1
 
   return (
     <>
@@ -64,6 +103,26 @@ export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSe
         </div>
       </div>
 
+      <div className="sidebar-smart-review-wrap">
+        <button
+          type="button"
+          className={`sidebar-smart-review-btn ${isSmartReview ? 'active' : ''}`}
+          onClick={onSelectSmartReview}
+        >
+          <div className="sidebar-smart-review-top">
+            <span className="sidebar-smart-review-title">⚡ Smart Review</span>
+            {remaining !== null && (
+              <span className="sidebar-smart-review-count">{remaining} left</span>
+            )}
+          </div>
+          {smartQueue && (
+            <div className="sidebar-smart-review-bar">
+              <div className="sidebar-smart-review-fill" style={{width: `${progress}%`}} />
+            </div>
+          )}
+        </button>
+      </div>
+
       <div className="sidebar-search-wrap">
         <input
           className="sidebar-search"
@@ -75,39 +134,47 @@ export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSe
       </div>
 
       <div className="sidebar-topic-list" onMouseLeave={() => setTooltip(null)}>
-        {topics.length === 0 ? (
+
+        {posTopics.length > 0 && (
+          <div className="sidebar-group">
+            <button type="button" className="sidebar-group-toggle" onClick={togglePos}>
+              <svg
+                className={`sidebar-group-chevron ${posCollapsed ? 'collapsed' : ''}`}
+                width="12" height="12" viewBox="0 0 12 12" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+              >
+                <polyline points="2,4 6,8 10,4" />
+              </svg>
+              <span>Parts of Speech</span>
+              <span className="sidebar-group-count">{posTopics.length}</span>
+            </button>
+            {!posCollapsed && posTopics.map((topic) => (
+              <TopicButton key={topic.id} topic={topic} {...topicButtonProps} />
+            ))}
+          </div>
+        )}
+
+        {themeTopics.length > 0 && (
+          <div className="sidebar-group">
+            <button type="button" className="sidebar-group-toggle" onClick={toggleTopics}>
+              <svg
+                className={`sidebar-group-chevron ${topicsCollapsed ? 'collapsed' : ''}`}
+                width="12" height="12" viewBox="0 0 12 12" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+              >
+                <polyline points="2,4 6,8 10,4" />
+              </svg>
+              <span>Topics</span>
+              <span className="sidebar-group-count">{themeTopics.length}</span>
+            </button>
+            {!topicsCollapsed && themeTopics.map((topic) => (
+              <TopicButton key={topic.id} topic={topic} {...topicButtonProps} />
+            ))}
+          </div>
+        )}
+
+        {posTopics.length === 0 && themeTopics.length === 0 && (
           <div className="sidebar-empty">No topics found.</div>
-        ) : showGroups ? (
-          groups.map((pos) => (
-            <div key={pos} className="sidebar-group">
-              <div className="sidebar-group-label">{POS_LABELS[pos] ?? pos}</div>
-              {grouped.get(pos)!.map((topic) => (
-                <TopicButton
-                  key={topic.id}
-                  topic={topic}
-                  count={topicCounts.get(topic.id) ?? 0}
-                  isActive={topic.id === selectedTopicId}
-                  onMouseEnter={handleMouseEnter}
-                  onTouchStart={handleTouchStart}
-                  onSelect={onSelect}
-                  clearTooltip={() => setTooltip(null)}
-                />
-              ))}
-            </div>
-          ))
-        ) : (
-          topics.map((topic) => (
-            <TopicButton
-              key={topic.id}
-              topic={topic}
-              count={topicCounts.get(topic.id) ?? 0}
-              isActive={topic.id === selectedTopicId}
-              onMouseEnter={handleMouseEnter}
-              onTouchStart={handleTouchStart}
-              onSelect={onSelect}
-              clearTooltip={() => setTooltip(null)}
-            />
-          ))
         )}
       </div>
 
@@ -127,10 +194,11 @@ export function TopicSidebar({topics, topicCounts, topicPos, totalWords, topicSe
   )
 }
 
-function TopicButton({topic, count, isActive, onMouseEnter, onTouchStart, onSelect, clearTooltip}: {
+function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMouseEnter, onTouchStart, onSelect, clearTooltip}: {
   topic: Topic
-  count: number
-  isActive: boolean
+  topicCounts: Map<number, number>
+  selectedTopicId: number | null
+  isSmartReview: boolean
   onMouseEnter: (e: React.MouseEvent, name: string) => void
   onTouchStart: (e: React.TouchEvent, name: string) => void
   onSelect: (id: number) => void
@@ -139,13 +207,13 @@ function TopicButton({topic, count, isActive, onMouseEnter, onTouchStart, onSele
   return (
     <button
       type="button"
-      className={`topic-item ${isActive ? 'topic-item-active' : ''}`}
+      className={`topic-item ${!isSmartReview && topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
       onMouseEnter={(e) => onMouseEnter(e, topic.name)}
       onTouchStart={(e) => onTouchStart(e, topic.name)}
       onClick={() => { clearTooltip(); onSelect(topic.id) }}
     >
       <span className="topic-item-name">{topic.name}</span>
-      <span className="topic-count">{count}</span>
+      <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
     </button>
   )
 }
