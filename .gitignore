@@ -33,3 +33,4 @@ frontend/dist/
 postgres-data/
 /frontend/package-lock.json
 /package-lock.json
+/.codacy/codacy.yaml

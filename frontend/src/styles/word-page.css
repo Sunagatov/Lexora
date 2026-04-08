@@ -252,6 +252,10 @@
 .word-term-link:hover { color: var(--accent); }
 
 @media (max-width: 860px) {
+  .word-page {
+    padding-bottom: 60px;
+  }
+  
   .word-page-hero-wrap {
     padding: 10px 12px 0;
     gap: 8px;
@@ -263,7 +267,27 @@
   }
 
   .word-page-edit-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
     padding: 8px 12px;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .word-page-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 8px 12px;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
   }
 
   .wp-btn-save, .wp-btn-cancel {

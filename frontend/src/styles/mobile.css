@@ -57,28 +57,64 @@
   left: 0;
   bottom: 0;
   padding-top: 48px;
+  padding-bottom: 20px;
   width: min(300px, 88vw);
   background: var(--sidebar-bg);
   z-index: 26;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   transform: translateX(-100%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
 }
 
 .mobile-drawer.open {
   transform: translateX(0);
 }
 
+/* Ensure sidebar content fits in mobile drawer */
+.mobile-drawer .sidebar-topic-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 8px;
+}
+
+.mobile-drawer .sidebar-footer {
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--sidebar-bg);
+  padding: 0;
+}
+
+.mobile-drawer .sidebar-trash-btn {
+  background: transparent;
+  color: var(--sidebar-text-2);
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.mobile-drawer .sidebar-trash-btn:hover {
+  color: #f87171;
+}
+
 @media (max-width: 860px) {
   .app-shell {
     height: 100dvh;
+    display: flex;
+    flex-direction: column;
   }
 
   .app-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
     flex-direction: column;
-    overflow-y: auto;
   }
 
   .desktop-sidebar {
@@ -87,23 +123,34 @@
 
   .mobile-topbar {
     display: flex;
+    flex-shrink: 0;
   }
 
   .main-content {
     flex: 1;
-    height: 100dvh;
-    overflow-y: auto;
     min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
   }
 
   .main-inner {
-    padding: 0 12px 0;
+    flex: 1;
+    padding: 0 12px 60px;
     gap: 6px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sticky-controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
     padding: 4px 0 2px;
     gap: 4px;
+    flex-shrink: 0;
   }
 
   /* Desktop header card is too large for mobile */
@@ -215,7 +262,9 @@
 
   /* Compact mobile pagination */
   .pagination-bar {
-    padding: 8px 0 10px;
+    padding: 12px 0 16px;
+    flex-shrink: 0;
+    margin-top: auto;
   }
 
   /* Hide table, show cards */
@@ -248,7 +297,10 @@
 
 @media (max-width: 480px) {
   .main-inner {
-    padding: 0 8px 24px;
+    flex: 1;
+    padding: 0 8px 60px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .mobile-topbar {

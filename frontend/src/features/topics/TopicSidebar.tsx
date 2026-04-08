@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic} from './api'
 import type {StudyQueue, Topic} from '../../shared/http'
+import {ConfirmModal} from '../../shared/ConfirmModal'
 
 type Props = {
   topics: Topic[]
@@ -41,12 +42,16 @@ export function TopicSidebar({
   const [tooltip, setTooltip]         = useState<TooltipState>(null)
   const [posCollapsed, setPosCollapsed]       = useState(() => loadCollapsed('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadCollapsed('sidebar_topics_collapsed', false))
+  const [deleteTopicId, setDeleteTopicId] = useState<number | null>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
   const deleteTopicMutation = useMutation({
     mutationFn: (id: number) => deleteTopic(id, true),
-    onSuccess: () => queryClient.invalidateQueries({queryKey: ['topics']}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['topics']})
+      setDeleteTopicId(null)
+    },
   })
 
   function togglePos() {
@@ -85,7 +90,7 @@ export function TopicSidebar({
     onTouchStart: handleTouchStart,
     onSelect,
     clearTooltip: () => setTooltip(null),
-    onDelete: (id: number) => deleteTopicMutation.mutate(id),
+    onDelete: (id: number) => setDeleteTopicId(id),
   }
 
   return (
@@ -147,9 +152,11 @@ export function TopicSidebar({
         )}
       </div>
 
-      <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/trash')}>
-        🗑 Trash
-      </button>
+      <div className="sidebar-footer">
+        <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/trash')}>
+          🗑 Trash
+        </button>
+      </div>
 
       {tooltip && createPortal(
         <div
@@ -159,6 +166,17 @@ export function TopicSidebar({
           {tooltip.name}
         </div>,
         document.body,
+      )}
+
+      {deleteTopicId !== null && (
+        <ConfirmModal
+          title="Delete Topic?"
+          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? This will move the topic and all its words to trash.`}
+          confirmLabel="Delete"
+          danger
+          onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
+          onCancel={() => setDeleteTopicId(null)}
+        />
       )}
     </>
   )
