@@ -75,6 +75,7 @@ class WordUpdate(BaseModel):
 
 class WordResponse(WordBase):
     id: int
+    deleted_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -1,11 +1,12 @@
 import {useState, useMemo} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
-import {fetchWord, fetchTopics, updateWord} from '../lib/api'
+import {fetchWord, fetchTopics, updateWord, deleteWord} from '../lib/api'
 import type {Word} from '../lib/api'
 import {LEVEL_LABELS, levelClass} from '../lib/words'
 import {CompactDropdown} from '../components/study/CompactDropdown'
 import type {DropdownOption} from '../components/study/CompactDropdown'
+import {ConfirmModal} from '../components/ConfirmModal'
 
 const POS_OPTIONS: DropdownOption<string>[] = [
   {value: '',            label: '— not set —'},
@@ -71,6 +72,7 @@ export function WordPage() {
 
   const [editing, setEditing]   = useState(false)
   const [draft, setDraft]       = useState<EditState | null>(null)
+  const [confirming, setConfirming] = useState(false)
 
   const wordQuery   = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
@@ -84,6 +86,16 @@ export function WordPage() {
       )
       setEditing(false)
       setDraft(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteWord(Number(wordId)),
+    onSuccess: () => {
+      queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
+        cur.filter((w) => w.id !== Number(wordId)),
+      )
+      navigate(-1)
     },
   })
 
@@ -273,6 +285,9 @@ export function WordPage() {
                 {mutation.isPending ? 'Saving…' : 'Save'}
               </button>
               <button type="button" className="wp-btn-cancel" onClick={cancelEdit}>Cancel</button>
+              <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>
+                Delete
+              </button>
             </div>
 
           </div>
@@ -308,6 +323,17 @@ export function WordPage() {
           </svg>
         </button>
       </div>
+
+      {confirming && (
+        <ConfirmModal
+          title="Move to Trash?"
+          message={`"${word.term}" will be moved to Trash and permanently deleted after 30 days.`}
+          confirmLabel="Move to Trash"
+          danger
+          onConfirm={() => { setConfirming(false); deleteMutation.mutate() }}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
 
     </div>
   )

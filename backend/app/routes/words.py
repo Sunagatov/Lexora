@@ -61,7 +61,7 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
     word = word_crud.get_by_id(db, word_id)
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
-    word_crud.delete(db, word)
+    word_crud.soft_delete(db, word)
 
 
 def _slugify(value: str) -> str:

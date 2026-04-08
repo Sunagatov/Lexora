@@ -129,6 +129,37 @@ export function updateWord(wordId: number, payload: Partial<Omit<Word, 'id' | 'c
   })
 }
 
+export type TrashWord = Word & {deleted_at: string}
+export type TrashTopic = Topic & {deleted_at: string}
+
+export function fetchTrashWords() {
+  return request<TrashWord[]>('/api/trash/words')
+}
+
+export function fetchTrashTopics() {
+  return request<TrashTopic[]>('/api/trash/topics')
+}
+
+export function restoreWord(wordId: number) {
+  return request<Word>(`/api/trash/words/${wordId}/restore`, {method: 'POST'})
+}
+
+export function restoreTopic(topicId: number, restoreWords = false) {
+  return request<Topic>(`/api/trash/topics/${topicId}/restore?restore_words=${restoreWords}`, {method: 'POST'})
+}
+
+export function purgeTrash() {
+  return request<void>('/api/trash/purge', {method: 'DELETE'})
+}
+
+export function deleteWord(wordId: number) {
+  return request<void>(`/api/words/${wordId}`, {method: 'DELETE'})
+}
+
+export function deleteTopic(topicId: number, deleteWords = false) {
+  return request<void>(`/api/topics/${topicId}?delete_words=${deleteWords}`, {method: 'DELETE'})
+}
+
 export function fetchSmartReview() {
   return request<StudyQueue>('/api/smart-review')
 }

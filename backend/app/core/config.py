@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     smart_review_max_per_topic: int = 10
     smart_review_queue_ttl_hours: int = 24
 
+    # Trash
+    trash_retention_days: int = 30
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",

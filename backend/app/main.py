@@ -6,6 +6,7 @@ from app.routes.auth import router as auth_router
 from app.routes.health import router as health_router
 from app.routes.smart_review import router as smart_review_router
 from app.routes.topics import router as topics_router
+from app.routes.trash import router as trash_router
 from app.routes.words import bulk_router, router as words_router
 
 app = FastAPI(
@@ -32,3 +33,4 @@ app.include_router(bulk_router)
 app.include_router(topics_router, dependencies=[Depends(verify_session)])
 app.include_router(words_router, dependencies=[Depends(verify_session)])
 app.include_router(smart_review_router, dependencies=[Depends(verify_session)])
+app.include_router(trash_router, dependencies=[Depends(verify_session)])

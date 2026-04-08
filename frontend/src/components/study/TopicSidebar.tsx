@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {createPortal} from 'react-dom'
+import {useNavigate} from 'react-router-dom'
 import type {StudyQueue, Topic} from '../../lib/api'
 
 type Props = {
@@ -39,6 +40,7 @@ export function TopicSidebar({
   selectedTopicId, isSmartReview, onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null)
+  const navigate = useNavigate()
   const [posCollapsed,    setPosCollapsed]    = useState(() => loadCollapsed('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadCollapsed('sidebar_topics_collapsed', false))
 
@@ -177,6 +179,10 @@ export function TopicSidebar({
           <div className="sidebar-empty">No topics found.</div>
         )}
       </div>
+
+      <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/trash')}>
+        🗑 Trash
+      </button>
 
       {tooltip && createPortal(
         <div

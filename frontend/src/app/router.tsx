@@ -5,6 +5,7 @@ import {LoginPage} from '../pages/LoginPage'
 import {NotFoundPage} from '../pages/NotFoundPage'
 import {StudyPage} from '../pages/StudyPage'
 import {WordPage} from '../pages/WordPage'
+import {TrashPage} from '../pages/TrashPage'
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Navigate to="/study/smart-review" replace />,
+      },
+      {
+        path: 'trash',
+        element: <TrashPage />,
       },
       {
         path: 'words/:wordId',

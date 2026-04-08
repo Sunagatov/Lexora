@@ -44,8 +44,12 @@ def update_topic(topic_id: int, payload: TopicUpdate, db: Session = Depends(get_
 
 
 @router.delete("/{topic_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_topic(topic_id: int, db: Session = Depends(get_db)) -> None:
+def delete_topic(
+    topic_id: int,
+    delete_words: bool = False,
+    db: Session = Depends(get_db),
+) -> None:
     topic = topic_crud.get_by_id(db, topic_id)
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
-    topic_crud.delete(db, topic)
+    topic_crud.soft_delete(db, topic, delete_words=delete_words)
