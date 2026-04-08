@@ -1,33 +1,78 @@
-import {useState} from 'react'
+import {useState, useMemo} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, fetchTopics, updateWord} from '../lib/api'
 import type {Word} from '../lib/api'
-import {LEVELS, LEVEL_LABELS, levelClass} from '../lib/words'
+import {LEVEL_LABELS, levelClass} from '../lib/words'
+import {CompactDropdown} from '../components/study/CompactDropdown'
+import type {DropdownOption} from '../components/study/CompactDropdown'
 
-type EditableField = 'term' | 'translations' | 'part_of_speech' | 'example' | 'notes' | 'pattern' | 'countability' | 'past_simple' | 'past_participle'
+const POS_OPTIONS: DropdownOption<string>[] = [
+  {value: '',            label: '— not set —'},
+  {value: 'noun',        label: 'Noun'},
+  {value: 'verb',        label: 'Verb'},
+  {value: 'adjective',   label: 'Adjective'},
+  {value: 'adverb',      label: 'Adverb'},
+  {value: 'phrase',      label: 'Phrase'},
+  {value: 'preposition', label: 'Preposition'},
+  {value: 'other',       label: 'Other'},
+]
 
-const FIELD_LABELS: Record<EditableField, string> = {
-  term:             'Term',
-  translations:     'Translations',
-  part_of_speech:   'Part of speech',
-  example:          'Example',
-  notes:            'Notes',
-  pattern:          'Pattern',
-  countability:     'Countability',
-  past_simple:      'Past simple',
-  past_participle:  'Past participle',
+const COUNTABILITY_OPTIONS: DropdownOption<string>[] = [
+  {value: '',            label: '— not set —'},
+  {value: 'Countable',   label: 'Countable'},
+  {value: 'Uncountable', label: 'Uncountable'},
+  {value: 'Both',        label: 'Both'},
+]
+
+const LEVEL_OPTIONS: DropdownOption<string>[] = [
+  {value: '',  label: '— not set —'},
+  {value: '1', label: '1 — Weak'},
+  {value: '2', label: '2 — Basic'},
+  {value: '3', label: '3 — Okay'},
+  {value: '4', label: '4 — Strong'},
+  {value: '5', label: '5 — Master'},
+]
+
+type EditState = {
+  term: string
+  translations: string
+  knowledge_level: string
+  part_of_speech: string
+  topic_id: string
+  countability: string
+  past_simple: string
+  past_participle: string
+  example: string
+  notes: string
+  pattern: string
+}
+
+function toEditState(word: Word): EditState {
+  return {
+    term:            word.term,
+    translations:    word.translations,
+    knowledge_level: String(word.knowledge_level ?? ''),
+    part_of_speech:  word.part_of_speech ?? '',
+    topic_id:        String(word.topic_id),
+    countability:    word.countability ?? '',
+    past_simple:     word.past_simple ?? '',
+    past_participle: word.past_participle ?? '',
+    example:         word.example ?? '',
+    notes:           word.notes ?? '',
+    pattern:         word.pattern ?? '',
+  }
 }
 
 export function WordPage() {
-  const {wordId} = useParams<{wordId: string}>()
-  const navigate  = useNavigate()
+  const {wordId}    = useParams<{wordId: string}>()
+  const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
-  const [editingField, setEditingField] = useState<EditableField | null>(null)
-  const [editValue, setEditValue]       = useState('')
+  const [editing, setEditing]   = useState(false)
+  const [draft, setDraft]       = useState<EditState | null>(null)
 
-  const wordQuery  = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
+  const wordQuery   = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
 
   const mutation = useMutation({
@@ -37,7 +82,8 @@ export function WordPage() {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
         cur.map((w) => w.id === updated.id ? updated : w),
       )
-      setEditingField(null)
+      setEditing(false)
+      setDraft(null)
     },
   })
 
@@ -45,175 +91,242 @@ export function WordPage() {
   const topics = topicsQuery.data ?? []
   const topic  = topics.find((t) => t.id === word?.topic_id)
 
+  // Prev/next within same topic from cache
+  const allWords = queryClient.getQueryData<Word[]>(['words']) ?? []
+  const topicWords = useMemo(
+    () => word ? allWords.filter((w) => w.topic_id === word.topic_id).sort((a, b) => a.term.localeCompare(b.term)) : [],
+    [allWords, word],
+  )
+  const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
+  const prevWord   = currentIdx > 0 ? topicWords[currentIdx - 1] : null
+  const nextWord   = currentIdx >= 0 && currentIdx < topicWords.length - 1 ? topicWords[currentIdx + 1] : null
+
   if (wordQuery.isLoading) return <div className="word-page-loading">Loading…</div>
   if (!word) return <div className="word-page-loading">Word not found.</div>
 
-  function startEdit(field: EditableField) {
-    setEditingField(field)
-    setEditValue((word![field] as string) ?? '')
+  const lc = levelClass(word.knowledge_level)
+
+  function startEdit() {
+    setDraft(toEditState(word!))
+    setEditing(true)
   }
 
   function cancelEdit() {
-    setEditingField(null)
-    setEditValue('')
+    setEditing(false)
+    setDraft(null)
   }
 
-  function saveEdit() {
-    if (editingField === null) return
-    mutation.mutate({[editingField]: editValue || null})
+  function set(field: keyof EditState, value: string) {
+    setDraft((d) => d ? {...d, [field]: value} : d)
   }
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && editingField !== 'example' && editingField !== 'notes') saveEdit()
-    if (e.key === 'Escape') cancelEdit()
+  function save() {
+    if (!draft) return
+    const isVerb = draft.part_of_speech === 'verb'
+    const isNoun = draft.part_of_speech === 'noun'
+    mutation.mutate({
+      term:            draft.term.trim() || word.term,
+      translations:    draft.translations.trim() || word.translations,
+      knowledge_level: draft.knowledge_level ? Number(draft.knowledge_level) as 1|2|3|4|5 : null,
+      part_of_speech:  draft.part_of_speech || null,
+      topic_id:        Number(draft.topic_id),
+      countability:    isNoun && draft.countability ? draft.countability : null,
+      past_simple:     isVerb && draft.past_simple.trim() ? draft.past_simple.trim() : null,
+      past_participle: isVerb && draft.past_participle.trim() ? draft.past_participle.trim() : null,
+      example:         draft.example.trim() || null,
+      notes:           draft.notes.trim() || null,
+      pattern:         draft.pattern.trim() || null,
+    })
   }
 
-  const lc = levelClass(word.knowledge_level)
-
-  const fields: EditableField[] = [
-    'translations', 'part_of_speech', 'example', 'notes',
-    'pattern', 'countability', 'past_simple', 'past_participle',
-  ]
+  const isVerb = (draft?.part_of_speech ?? word.part_of_speech) === 'verb'
+  const isNoun = (draft?.part_of_speech ?? word.part_of_speech) === 'noun'
 
   return (
     <div className="word-page">
+
+      {/* Sticky header */}
+      <div className="word-page-header">
+        <button type="button" className="word-page-brand" onClick={() => navigate('/')}>
+          Lexora
+        </button>
+        {!editing && (
+          <button type="button" className="word-page-edit-btn" onClick={startEdit}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
+            </svg>
+            Edit
+          </button>
+        )}
+      </div>
+
       <div className="word-page-inner">
 
-        <div className="word-page-back">
+        {/* Back row */}
+        <div className="word-page-topbar">
           <button type="button" className="word-page-back-btn" onClick={() => navigate(-1)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
             Back
           </button>
-          {topic && (
-            <button type="button" className="word-page-topic-chip" onClick={() => navigate(`/study/topics/${topic.id}`)}>
-              {topic.name}
-            </button>
-          )}
         </div>
 
-        <div className={`word-page-card ${lc}`}>
-          <div className="word-page-term-row">
-            {editingField === 'term' ? (
-              <InlineInput
-                value={editValue}
-                onChange={setEditValue}
-                onSave={saveEdit}
-                onCancel={cancelEdit}
-                onKeyDown={handleKeyDown}
-                saving={mutation.isPending}
-                large
-              />
-            ) : (
-              <h1 className="word-page-term" onClick={() => startEdit('term')}>{word.term}</h1>
-            )}
-            <div className="word-page-level-wrap">
-              <LevelSwitcher
-                current={word.knowledge_level}
-                saving={mutation.isPending}
-                onSelect={(l) => mutation.mutate({knowledge_level: l})}
-              />
-            </div>
-          </div>
-
-          <div className="word-page-meta">
-            <span className="word-page-meta-item">Updated {new Date(word.updated_at).toLocaleDateString()}</span>
-            <span className="word-page-meta-sep">·</span>
-            <span className="word-page-meta-item">Created {new Date(word.created_at).toLocaleDateString()}</span>
-          </div>
+        {/* Hero */}
+        <div className={`word-page-hero ${lc}`}>
+          <h1 className="word-page-term">{word.term}</h1>
         </div>
 
-        <div className="word-page-fields">
-          {fields.map((field) => (
-            <div key={field} className="word-page-field">
-              <div className="word-page-field-label">{FIELD_LABELS[field]}</div>
-              {editingField === field ? (
-                <InlineInput
-                  value={editValue}
-                  onChange={setEditValue}
-                  onSave={saveEdit}
-                  onCancel={cancelEdit}
-                  onKeyDown={handleKeyDown}
-                  saving={mutation.isPending}
-                  multiline={field === 'example' || field === 'notes'}
+        {/* View mode — all fields as rows */}
+        {!editing && (
+          <div className="word-page-view">
+            <ViewRow label="Translation"    value={word.translations} />
+            <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
+            <ViewRow label="Topic"          value={topic?.name ?? '—'} />
+            <ViewRow label="Knowledge"      value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
+            {word.countability  && <ViewRow label="Countability"   value={word.countability} />}
+            {word.example       && <ViewRow label="Example"        value={word.example} />}
+            {word.notes         && <ViewRow label="Notes"          value={word.notes} />}
+            {word.pattern       && <ViewRow label="Pattern"        value={word.pattern} />}
+            {word.past_simple   && <ViewRow label="Past simple"    value={word.past_simple} />}
+            {word.past_participle && <ViewRow label="Past participle" value={word.past_participle} />}
+            <ViewRow label="Updated" value={new Date(word.updated_at).toLocaleDateString()} />
+            <ViewRow label="Created" value={new Date(word.created_at).toLocaleDateString()} />
+          </div>
+        )}
+
+        {/* Edit mode */}
+        {editing && draft && (
+          <div className="word-page-edit-form">
+
+            <FormField label="Term">
+              <input className="wp-input" value={draft.term} onChange={(e) => set('term', e.target.value)} />
+            </FormField>
+
+            <FormField label="Translations">
+              <input className="wp-input" value={draft.translations} onChange={(e) => set('translations', e.target.value)} />
+            </FormField>
+
+            <FormField label="Knowledge level">
+              <CompactDropdown
+                value={draft.knowledge_level}
+                options={LEVEL_OPTIONS}
+                onChange={(v) => set('knowledge_level', v)}
+                ariaLabel="Knowledge level"
+              />
+            </FormField>
+
+            <FormField label="Part of speech">
+              <CompactDropdown
+                value={draft.part_of_speech}
+                options={POS_OPTIONS}
+                onChange={(v) => set('part_of_speech', v)}
+                ariaLabel="Part of speech"
+              />
+            </FormField>
+
+            <FormField label="Topic">
+              <CompactDropdown
+                value={draft.topic_id}
+                options={topics.map((t) => ({value: String(t.id), label: t.name}))}
+                onChange={(v) => set('topic_id', v)}
+                ariaLabel="Topic"
+              />
+            </FormField>
+
+            {isNoun && (
+              <FormField label="Countability">
+                <CompactDropdown
+                  value={draft.countability}
+                  options={COUNTABILITY_OPTIONS}
+                  onChange={(v) => set('countability', v)}
+                  ariaLabel="Countability"
                 />
-              ) : (
-                <div
-                  className={`word-page-field-value ${!word[field] ? 'word-page-field-empty' : ''}`}
-                  onClick={() => startEdit(field)}
-                >
-                  {(word[field] as string) || 'Click to add…'}
-                </div>
-              )}
+              </FormField>
+            )}
+
+            {isVerb && (
+              <>
+                <FormField label="Past simple">
+                  <input className="wp-input" value={draft.past_simple} onChange={(e) => set('past_simple', e.target.value)} />
+                </FormField>
+                <FormField label="Past participle">
+                  <input className="wp-input" value={draft.past_participle} onChange={(e) => set('past_participle', e.target.value)} />
+                </FormField>
+              </>
+            )}
+
+            <FormField label="Example">
+              <textarea className="wp-input wp-textarea" rows={3} value={draft.example} onChange={(e) => set('example', e.target.value)} />
+            </FormField>
+
+            <FormField label="Notes">
+              <textarea className="wp-input wp-textarea" rows={3} value={draft.notes} onChange={(e) => set('notes', e.target.value)} />
+            </FormField>
+
+            <FormField label="Pattern">
+              <input className="wp-input" value={draft.pattern} onChange={(e) => set('pattern', e.target.value)} />
+            </FormField>
+
+            <div className="word-page-edit-actions">
+              <button type="button" className="wp-btn-save" disabled={mutation.isPending} onClick={save}>
+                {mutation.isPending ? 'Saving…' : 'Save'}
+              </button>
+              <button type="button" className="wp-btn-cancel" onClick={cancelEdit}>Cancel</button>
             </div>
-          ))}
-        </div>
+
+          </div>
+        )}
 
       </div>
-    </div>
-  )
-}
 
-function InlineInput({value, onChange, onSave, onCancel, onKeyDown, saving, large, multiline}: {
-  value: string
-  onChange: (v: string) => void
-  onSave: () => void
-  onCancel: () => void
-  onKeyDown: (e: React.KeyboardEvent) => void
-  saving: boolean
-  large?: boolean
-  multiline?: boolean
-}) {
-  return (
-    <div className="word-page-inline-edit">
-      {multiline ? (
-        <textarea
-          className={`word-page-input ${large ? 'word-page-input-large' : ''}`}
-          value={value}
-          autoFocus
-          rows={3}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
-      ) : (
-        <input
-          className={`word-page-input ${large ? 'word-page-input-large' : ''}`}
-          value={value}
-          autoFocus
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
-      )}
-      <div className="word-page-inline-actions">
-        <button type="button" className="word-page-save-btn" disabled={saving} onClick={onSave}>
-          {saving ? '…' : 'Save'}
-        </button>
-        <button type="button" className="word-page-cancel-btn" onClick={onCancel}>Cancel</button>
-      </div>
-    </div>
-  )
-}
-
-function LevelSwitcher({current, saving, onSelect}: {
-  current: number | null
-  saving: boolean
-  onSelect: (l: number) => void
-}) {
-  return (
-    <div className="word-page-levels">
-      {LEVELS.map((l) => (
+      {/* Word navigation footer */}
+      <div className="word-page-footer">
         <button
-          key={l}
           type="button"
-          disabled={saving}
-          className={`word-page-level-btn ${levelClass(l)} ${l === current ? 'active' : ''}`}
-          onClick={() => onSelect(l)}
+          className="word-page-nav-btn"
+          disabled={!prevWord}
+          onClick={() => prevWord && navigate(`/words/${prevWord.id}`)}
         >
-          <span className="word-page-level-num">{l}</span>
-          <span className="word-page-level-label">{LEVEL_LABELS[l]}</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polyline points="9,2 4,7 9,12" />
+          </svg>
+          {prevWord ? prevWord.term : '—'}
         </button>
-      ))}
+        <span className="word-page-nav-pos">
+          {currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}
+        </span>
+        <button
+          type="button"
+          className="word-page-nav-btn word-page-nav-btn-next"
+          disabled={!nextWord}
+          onClick={() => nextWord && navigate(`/words/${nextWord.id}`)}
+        >
+          {nextWord ? nextWord.term : '—'}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <polyline points="5,2 10,7 5,12" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  )
+}
+
+function ViewRow({label, value}: {label: string; value: string}) {
+  return (
+    <div className="word-page-view-row">
+      <span className="word-page-view-label">{label}</span>
+      <span className="word-page-view-value">{value}</span>
+    </div>
+  )
+}
+
+function FormField({label, children}: {label: string; children: React.ReactNode}) {
+  return (
+    <div className="wp-field">
+      <label className="wp-label">{label}</label>
+      {children}
     </div>
   )
 }

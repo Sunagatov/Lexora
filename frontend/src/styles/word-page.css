@@ -3,15 +3,21 @@
   min-width: 0;
   overflow-y: auto;
   background: var(--bg);
-  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  min-height: 100%;
 }
 
 .word-page-inner {
-  max-width: 680px;
+  max-width: 620px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  padding: 16px 28px 28px;
+  flex: 1;
 }
 
 .word-page-loading {
@@ -23,11 +29,26 @@
   font-size: 0.9rem;
 }
 
-/* Back row */
-.word-page-back {
+/* Sticky header */
+.word-page-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-shrink: 0;
+  display: flex;
+  background: var(--sidebar-bg);
+  padding: 8px 14px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Top bar (back button row) */
+.word-page-topbar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  margin-top: 4px;
 }
 
 .word-page-back-btn {
@@ -43,245 +64,192 @@
   padding: 4px 0;
   transition: color 0.12s;
 }
-
 .word-page-back-btn:hover { color: var(--text); }
 
-.word-page-topic-chip {
-  display: inline-flex;
-  align-items: center;
-  background: var(--accent-light);
-  color: var(--accent-dark);
+.word-page-brand {
+  background: transparent;
   border: none;
-  border-radius: 999px;
-  padding: 3px 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
   cursor: pointer;
+  padding: 0;
+  line-height: 1.5;
   transition: opacity 0.12s;
 }
+.word-page-brand:hover { opacity: 0.8; }
 
-.word-page-topic-chip:hover { opacity: 0.8; }
+.word-page-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+.word-page-edit-btn:hover { color: #fff; }
 
-/* Hero card */
-.word-page-card {
+/* Hero */
+.word-page-hero {
   background: var(--surface);
   border: 1px solid var(--border);
   border-left-width: 4px;
   border-radius: var(--radius-lg);
   padding: 20px 24px;
   box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.word-page-term-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
 }
 
 .word-page-term {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: var(--text);
-  cursor: pointer;
-  transition: color 0.12s;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-.word-page-term:hover { color: var(--accent); }
-
-.word-page-meta {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+/* View mode */
+.word-page-view {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-.word-page-meta-item {
-  font-size: 0.78rem;
+.word-page-view-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.word-page-view-row:last-child { border-bottom: none; }
+
+.word-page-view-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--text-3);
-}
-
-.word-page-meta-sep {
-  color: var(--text-3);
-  font-size: 0.78rem;
-}
-
-/* Level switcher */
-.word-page-level-wrap {
   flex-shrink: 0;
 }
 
-.word-page-levels {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+.word-page-view-value {
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.55;
 }
 
-.word-page-level-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: opacity 0.12s, transform 0.1s;
-  opacity: 0.5;
-  min-width: 52px;
+
+.word-page-edit-form .dropdown-menu {
+  max-height: 260px;
+  overflow-y: auto;
 }
 
-.word-page-level-btn:hover:not(:disabled) { opacity: 0.85; }
-.word-page-level-btn.active { opacity: 1; transform: scale(1.05); }
-.word-page-level-btn:disabled { cursor: not-allowed; }
-
-.word-page-level-num {
-  font-size: 1rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.word-page-level-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* Fields */
-.word-page-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.word-page-field {
+.word-page-edit-form {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 14px;
 }
 
-.word-page-field-label {
-  font-size: 0.68rem;
+.wp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wp-label {
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: var(--text-3);
 }
 
-.word-page-field-value {
-  font-size: 0.95rem;
-  color: var(--text);
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 2px 4px;
-  margin: -2px -4px;
-  transition: background 0.12s;
-  line-height: 1.5;
-}
-
-.word-page-field-value:hover { background: var(--surface-2); }
-
-.word-page-field-empty {
-  color: var(--text-3);
-  font-style: italic;
-}
-
-/* Inline edit */
-.word-page-inline-edit {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.word-page-input {
+.wp-input {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--accent);
+  padding: 9px 12px;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--surface-2);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   outline: none;
-  resize: vertical;
+  transition: border-color 0.12s;
 }
 
-.word-page-input-large {
-  font-size: 1.6rem;
-  font-weight: 700;
-  padding: 6px 8px;
-}
+.wp-input:focus { border-color: var(--accent); background: var(--surface); }
 
-.word-page-inline-actions {
+.wp-textarea { resize: vertical; min-height: 80px; }
+
+.word-page-edit-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  padding-top: 4px;
 }
 
-.word-page-save-btn {
-  padding: 5px 16px;
+.wp-btn-save {
+  padding: 9px 24px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.12s;
 }
+.wp-btn-save:hover:not(:disabled) { background: var(--accent-dark); }
+.wp-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.word-page-save-btn:hover:not(:disabled) { background: var(--accent-dark); }
-.word-page-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.word-page-cancel-btn {
-  padding: 5px 12px;
+.wp-btn-cancel {
+  padding: 9px 16px;
   background: transparent;
   color: var(--text-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
   transition: color 0.12s;
 }
-
-.word-page-cancel-btn:hover { color: var(--text); }
+.wp-btn-cancel:hover { color: var(--text); }
 
 /* Clickable term in lists */
 .word-term-link {
   cursor: pointer;
   transition: color 0.12s;
 }
-
 .word-term-link:hover { color: var(--accent); }
 
 @media (max-width: 860px) {
-  .word-page {
-    padding: 16px 14px;
+  .word-page-header {
+    padding: 8px 14px;
   }
 
-  .word-page-term {
-    font-size: 1.5rem;
+  .word-page-inner {
+    padding: 12px 12px 24px;
+    gap: 10px;
   }
 
-  .word-page-term-row {
-    flex-direction: column;
-    gap: 12px;
+  .word-page-term { font-size: 1.6rem; }
+
+  .word-page-view-row {
+    grid-template-columns: 90px 1fr;
+    padding: 12px 14px;
+    gap: 8px;
   }
 
-  .word-page-levels {
-    gap: 4px;
-  }
-
-  .word-page-level-btn {
-    min-width: 44px;
-    padding: 5px 8px;
-  }
+  .word-page-edit-form { padding: 14px; }
 }

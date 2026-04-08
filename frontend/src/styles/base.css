@@ -41,7 +41,7 @@ button, input, select, textarea { font: inherit; }
 
 .app-shell {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100vh;
   overflow: hidden;
 }

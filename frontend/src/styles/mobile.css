@@ -14,9 +14,10 @@
 }
 
 .mobile-brand {
-  font-size: 1rem;
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
+  line-height: 1.5;
 }
 
 .mobile-topic-btn {
@@ -79,8 +80,12 @@
 
 @media (max-width: 860px) {
   .app-shell {
-    flex-direction: column;
     height: 100dvh;
+  }
+
+  .app-body {
+    flex-direction: column;
+    overflow-y: auto;
   }
 
   .desktop-sidebar {
