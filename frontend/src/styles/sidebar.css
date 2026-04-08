@@ -291,3 +291,46 @@
   transition: width 0.3s ease;
 }
 
+.sidebar-trash-btn {
+  flex-shrink: 0;
+  margin: 8px 12px 12px;
+  width: calc(100% - 24px);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--sidebar-text-2);
+  font-size: 0.82rem;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+
+.sidebar-trash-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text);
+}
+
+.topic-item-delete {
+  flex-shrink: 0;
+  display: none;
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: var(--sidebar-text-2);
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+
+.topic-item:hover .topic-item-delete {
+  display: flex;
+  align-items: center;
+}
+
+.topic-item-delete:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+}
+

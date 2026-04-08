@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import {createPortal} from 'react-dom'
 import {useNavigate} from 'react-router-dom'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {deleteTopic} from '../../lib/api'
 import type {StudyQueue, Topic} from '../../lib/api'
 
 type Props = {
@@ -41,8 +43,14 @@ export function TopicSidebar({
 }: Props) {
   const [tooltip, setTooltip] = useState<TooltipState>(null)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [posCollapsed,    setPosCollapsed]    = useState(() => loadCollapsed('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadCollapsed('sidebar_topics_collapsed', false))
+
+  const deleteTopicMutation = useMutation({
+    mutationFn: (id: number) => deleteTopic(id, true),
+    onSuccess: () => queryClient.invalidateQueries({queryKey: ['topics']}),
+  })
 
   function togglePos() {
     const next = !posCollapsed
@@ -90,6 +98,7 @@ export function TopicSidebar({
     onTouchStart: handleTouchStart,
     onSelect,
     clearTooltip: () => setTooltip(null),
+    onDelete: (id: number) => deleteTopicMutation.mutate(id),
   }
 
   return (
@@ -200,7 +209,7 @@ export function TopicSidebar({
   )
 }
 
-function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMouseEnter, onTouchStart, onSelect, clearTooltip}: {
+function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMouseEnter, onTouchStart, onSelect, clearTooltip, onDelete}: {
   topic: Topic
   topicCounts: Map<number, number>
   selectedTopicId: number | null
@@ -209,6 +218,7 @@ function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMous
   onTouchStart: (e: React.TouchEvent, name: string) => void
   onSelect: (id: number) => void
   clearTooltip: () => void
+  onDelete: (id: number) => void
 }) {
   return (
     <button
@@ -220,6 +230,17 @@ function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMous
     >
       <span className="topic-item-name">{topic.name}</span>
       <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
+      <span
+        role="button"
+        className="topic-item-delete"
+        title="Delete topic"
+        onClick={(e) => { e.stopPropagation(); onDelete(topic.id) }}
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="2" y1="2" x2="10" y2="10" />
+          <line x1="10" y1="2" x2="2" y2="10" />
+        </svg>
+      </span>
     </button>
   )
 }
