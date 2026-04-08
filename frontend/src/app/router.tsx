@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/study/smart-review" replace />,
+        element: <Navigate to="/smart-review" replace />,
       },
       {
         path: 'trash',
@@ -30,12 +30,16 @@ export const router = createBrowserRouter([
         element: <WordPage />,
       },
       {
-        path: 'study',
-        children: [
-          { index: true, element: <Navigate to="smart-review" replace /> },
-          { path: 'smart-review', element: <StudyPage /> },
-          { path: 'topics/:topicId', element: <StudyPage /> },
-        ],
+        path: 'words/:wordId/edit',
+        element: <WordPage />,
+      },
+      {
+        path: 'smart-review',
+        element: <StudyPage />,
+      },
+      {
+        path: 'topics/:topicSlug',
+        element: <StudyPage />,
       },
     ],
   },

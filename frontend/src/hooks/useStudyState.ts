@@ -9,7 +9,7 @@ import {useSmartReview} from './useSmartReview'
 
 export function useStudyState() {
   const location = useLocation()
-  const isSmartReview = location.pathname === '/study/smart-review'
+  const isSmartReview = location.pathname === '/smart-review'
 
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const wordsQuery  = useQuery({queryKey: ['words'],  queryFn: () => fetchWords()})

@@ -3,20 +3,23 @@ import {useNavigate, useParams} from 'react-router-dom'
 import type {Topic, Word} from '../lib/api'
 
 export function useTopicState(topics: Topic[], words: Word[]) {
-  const {topicId} = useParams<{topicId?: string}>()
-  const navigate  = useNavigate()
+  const {topicSlug} = useParams<{topicSlug?: string}>()
+  const navigate    = useNavigate()
   const [topicSearch, setTopicSearch] = useState('')
   const [drawerOpen, setDrawerOpen]   = useState(false)
 
-  const selectedTopicId = topicId ? parseInt(topicId, 10) : null
+  const selectedTopic = useMemo(
+    () => topics.find((t) => t.slug === topicSlug) ?? null,
+    [topics, topicSlug],
+  )
+  const selectedTopicId = selectedTopic?.id ?? null
 
-  // When topics load and no topicId in URL, do not auto-select — smart-review is the default
   useEffect(() => {
-    if (!topics.length) return
-    if (selectedTopicId !== null && !topics.some((t) => t.id === selectedTopicId)) {
-      navigate('/study/smart-review', {replace: true})
+    if (!topics.length || !topicSlug) return
+    if (!topics.some((t) => t.slug === topicSlug)) {
+      navigate('/smart-review', {replace: true})
     }
-  }, [topics, selectedTopicId, navigate])
+  }, [topics, topicSlug, navigate])
 
   const topicCounts = useMemo(() => {
     const m = new Map<number, number>()
@@ -33,18 +36,14 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     )
   }, [topicSearch, topics])
 
-  const selectedTopic = useMemo(
-    () => topics.find((t) => t.id === selectedTopicId) ?? null,
-    [topics, selectedTopicId],
-  )
-
   function selectTopic(id: number) {
-    navigate(`/study/topics/${id}`)
+    const topic = topics.find((t) => t.id === id)
+    if (topic) navigate(`/topics/${topic.slug}`)
     setDrawerOpen(false)
   }
 
   function selectSmartReview() {
-    navigate('/study/smart-review')
+    navigate('/smart-review')
     setDrawerOpen(false)
   }
 

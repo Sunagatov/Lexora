@@ -1,5 +1,5 @@
-import {useState, useMemo} from 'react'
-import {useParams, useNavigate} from 'react-router-dom'
+import {useState, useMemo, useEffect} from 'react'
+import {useParams, useNavigate, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, fetchTopics, updateWord, deleteWord} from '../lib/api'
 import type {Word} from '../lib/api'
@@ -69,9 +69,9 @@ export function WordPage() {
   const {wordId}    = useParams<{wordId: string}>()
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
+  const editing     = useLocation().pathname.endsWith('/edit')
 
-  const [editing, setEditing]   = useState(false)
-  const [draft, setDraft]       = useState<EditState | null>(null)
+  const [draft, setDraft]           = useState<EditState | null>(null)
   const [confirming, setConfirming] = useState(false)
 
   const wordQuery   = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
@@ -84,7 +84,7 @@ export function WordPage() {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
         cur.map((w) => w.id === updated.id ? updated : w),
       )
-      setEditing(false)
+      navigate(`/words/${wordId}`, {replace: true})
       setDraft(null)
     },
   })
@@ -95,7 +95,8 @@ export function WordPage() {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
         cur.filter((w) => w.id !== Number(wordId)),
       )
-      navigate(`/study/topics/${word?.topic_id ?? ''}`)
+      const topic = topicsQuery.data?.find((t) => t.id === word?.topic_id)
+      navigate(topic ? `/topics/${topic.slug}` : '/')
     },
   })
 
@@ -113,19 +114,23 @@ export function WordPage() {
   const prevWord   = currentIdx > 0 ? topicWords[currentIdx - 1] : null
   const nextWord   = currentIdx >= 0 && currentIdx < topicWords.length - 1 ? topicWords[currentIdx + 1] : null
 
+  // Sync draft when entering edit mode via URL
+  useEffect(() => {
+    if (editing && word && !draft) setDraft(toEditState(word))
+    if (!editing) setDraft(null)
+  }, [editing, word])
+
   if (wordQuery.isLoading) return <div className="word-page-loading">Loading…</div>
   if (!word) return <div className="word-page-loading">Word not found.</div>
 
   const lc = levelClass(word.knowledge_level)
 
   function startEdit() {
-    setDraft(toEditState(word!))
-    setEditing(true)
+    navigate(`/words/${wordId}/edit`)
   }
 
   function cancelEdit() {
-    setEditing(false)
-    setDraft(null)
+    navigate(`/words/${wordId}`, {replace: true})
   }
 
   function set(field: keyof EditState, value: string) {
@@ -163,7 +168,7 @@ export function WordPage() {
           <button
             type="button"
             className="word-page-back-btn"
-            onClick={() => editing ? cancelEdit() : navigate(`/study/topics/${word.topic_id}`)}
+            onClick={() => editing ? cancelEdit() : navigate(`/topics/${topic?.slug ?? ''}`)}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />

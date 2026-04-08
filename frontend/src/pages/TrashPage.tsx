@@ -54,7 +54,7 @@ export function TrashPage() {
       <div className="trash-inner">
 
         <div className="trash-topbar">
-          <button type="button" className="word-page-back-btn" onClick={() => navigate('/study/smart-review')}>
+          <button type="button" className="word-page-back-btn" onClick={() => navigate('/smart-review')}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
