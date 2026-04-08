@@ -118,6 +118,17 @@ export type StudyQueue = {
   items: StudyQueueItem[]
 }
 
+export function fetchWord(wordId: number) {
+  return request<Word>(`/api/words/${wordId}`)
+}
+
+export function updateWord(wordId: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>>) {
+  return request<Word>(`/api/words/${wordId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
 export function fetchSmartReview() {
   return request<StudyQueue>('/api/smart-review')
 }

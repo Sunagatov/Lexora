@@ -1,4 +1,5 @@
 import {useRef, useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../lib/api'
 import {LEVELS, LEVEL_LABELS, levelClass} from '../../lib/words'
 
@@ -10,6 +11,7 @@ type Props = {
 
 export function WordCardList({words, pendingWordId, onUpdate}: Props) {
   const [openId, setOpenId] = useState<number | null>(null)
+  const navigate = useNavigate()
 
   return (
     <div className="word-card-list">
@@ -19,7 +21,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
         return (
           <article key={word.id} className={`word-card ${lc}`}>
             <div className="word-card-header">
-              <strong className="word-term">{word.term}</strong>
+              <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`)}>{word.term}</strong>
               <div className="word-card-level-wrap">
                 <button
                   type="button"

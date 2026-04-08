@@ -4,6 +4,7 @@ import {AppLayout} from '../components/layout/AppLayout'
 import {LoginPage} from '../pages/LoginPage'
 import {NotFoundPage} from '../pages/NotFoundPage'
 import {StudyPage} from '../pages/StudyPage'
+import {WordPage} from '../pages/WordPage'
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Navigate to="/study/smart-review" replace />,
+      },
+      {
+        path: 'words/:wordId',
+        element: <WordPage />,
       },
       {
         path: 'study',
