@@ -214,6 +214,13 @@
     white-space: normal;
   }
 
+  .results-meta-topic {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .results-meta-item-total,
   .results-meta-separator-total {
     display: none;

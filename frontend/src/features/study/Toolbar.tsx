@@ -11,11 +11,12 @@ type Props = {
   totalWordsOverall: number; topicTotalCount: number; filteredCount: number
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
+  topicName?: string
 }
 
 export function Toolbar({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
-  onReset, totalWordsOverall, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary,
+  onReset, totalWordsOverall, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, topicName,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(false)
   const levelActive    = levelFilter !== 'all'
@@ -80,7 +81,11 @@ export function Toolbar({
           <span className="results-meta-item">Showing <strong>{showingLabel}</strong></span>
           {isFiltered && (<><span className="results-meta-separator">·</span><span className="results-meta-item"><strong>{filteredCount}</strong> filtered</span></>)}
           <span className="results-meta-separator">·</span>
-          <span className="results-meta-item"><strong>{topicTotalCount}</strong> in topic</span>
+          {topicName ? (
+            <span className="results-meta-item results-meta-topic" title={topicName}><strong>{topicName}</strong></span>
+          ) : (
+            <span className="results-meta-item"><strong>{topicTotalCount}</strong> in topic</span>
+          )}
           <span className="results-meta-separator results-meta-separator-total">·</span>
           <span className="results-meta-item results-meta-item-total"><strong>{totalWordsOverall}</strong> total</span>
         </div>

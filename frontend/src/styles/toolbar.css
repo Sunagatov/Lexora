@@ -214,6 +214,13 @@
   line-height: 1.35;
 }
 
+.results-meta-topic {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .results-meta-item {
   display: inline-flex;
   align-items: baseline;

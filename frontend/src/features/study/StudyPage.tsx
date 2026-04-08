@@ -67,6 +67,7 @@ export function StudyPage() {
                 totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                 filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}
                 levelSummary={s.levelSummary}
+                topicName={s.selectedTopic?.name}
               />
 
               {s.selectedTopicId !== null && s.filteredWords.length > 0 && (
