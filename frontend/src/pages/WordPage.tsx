@@ -95,7 +95,7 @@ export function WordPage() {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
         cur.filter((w) => w.id !== Number(wordId)),
       )
-      navigate(-1)
+      navigate(`/study/topics/${word?.topic_id ?? ''}`)
     },
   })
 
@@ -176,7 +176,7 @@ export function WordPage() {
 
         {/* Back row */}
         <div className="word-page-topbar">
-          <button type="button" className="word-page-back-btn" onClick={() => navigate(-1)}>
+          <button type="button" className="word-page-back-btn" onClick={() => navigate(`/study/topics/${word.topic_id}`)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
