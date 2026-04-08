@@ -33,7 +33,9 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_BASE_URL: http://localhost:8000
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_PAGE_SIZES: ${VITE_PAGE_SIZES}
+        VITE_DEFAULT_PAGE_SIZE: ${VITE_DEFAULT_PAGE_SIZE}
     container_name: lexora-frontend
     ports:
       - "5173:80"
