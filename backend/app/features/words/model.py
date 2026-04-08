@@ -6,6 +6,9 @@ from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, fun
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.db import Base
+from app.shared.constraints import (
+    WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN, WORD_POS_MAX_LEN, WORD_COUNT_MAX_LEN,
+)
 
 
 class Word(Base):
@@ -13,13 +16,13 @@ class Word(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     topic_id: Mapped[int] = mapped_column(ForeignKey("topics.id", ondelete="CASCADE"), index=True)
-    term: Mapped[str] = mapped_column(String(255), index=True)
-    past_simple: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    past_participle: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    term: Mapped[str] = mapped_column(String(WORD_TERM_MAX_LEN), index=True)
+    past_simple: Mapped[str | None] = mapped_column(String(WORD_VERB_FORM_MAX_LEN), nullable=True)
+    past_participle: Mapped[str | None] = mapped_column(String(WORD_VERB_FORM_MAX_LEN), nullable=True)
     translations: Mapped[str] = mapped_column(Text())
-    part_of_speech: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    part_of_speech: Mapped[str | None] = mapped_column(String(WORD_POS_MAX_LEN), nullable=True)
     knowledge_level: Mapped[int | None] = mapped_column(Integer(), nullable=True)
-    countability: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    countability: Mapped[str | None] = mapped_column(String(WORD_COUNT_MAX_LEN), nullable=True)
     pattern: Mapped[str | None] = mapped_column(Text(), nullable=True)
     example: Mapped[str | None] = mapped_column(Text(), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text(), nullable=True)

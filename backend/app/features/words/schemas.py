@@ -2,16 +2,22 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.shared.constraints import (
+    BULK_WORDS_MAX, KNOWLEDGE_LEVEL_MAX, KNOWLEDGE_LEVEL_MIN,
+    TOPIC_NAME_MAX_LEN, WORD_COUNT_MAX_LEN, WORD_POS_MAX_LEN,
+    WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN,
+)
+
 
 class WordCreate(BaseModel):
     topic_id: int = Field(gt=0)
-    term: str = Field(min_length=1, max_length=255)
-    past_simple: str | None = Field(default=None, max_length=255)
-    past_participle: str | None = Field(default=None, max_length=255)
+    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
+    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
+    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str = Field(min_length=1)
-    part_of_speech: str | None = Field(default=None, max_length=50)
-    knowledge_level: int | None = Field(default=None, ge=1, le=5)
-    countability: str | None = Field(default=None, max_length=50)
+    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
+    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
     notes: str | None = None
@@ -22,13 +28,13 @@ class WordCreate(BaseModel):
 
 class WordUpdate(BaseModel):
     topic_id: int | None = Field(default=None, gt=0)
-    term: str | None = Field(default=None, min_length=1, max_length=255)
-    past_simple: str | None = Field(default=None, max_length=255)
-    past_participle: str | None = Field(default=None, max_length=255)
+    term: str | None = Field(default=None, min_length=1, max_length=WORD_TERM_MAX_LEN)
+    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
+    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str | None = Field(default=None, min_length=1)
-    part_of_speech: str | None = Field(default=None, max_length=50)
-    knowledge_level: int | None = Field(default=None, ge=1, le=5)
-    countability: str | None = Field(default=None, max_length=50)
+    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
+    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
     notes: str | None = None
@@ -60,13 +66,13 @@ class WordResponse(BaseModel):
 
 class WordInput(BaseModel):
     """Word data for bulk import — no topic_id, comes from WordBulkCreate."""
-    term: str = Field(min_length=1, max_length=255)
-    past_simple: str | None = Field(default=None, max_length=255)
-    past_participle: str | None = Field(default=None, max_length=255)
+    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
+    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
+    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str = Field(min_length=1)
-    part_of_speech: str | None = Field(default=None, max_length=50)
-    knowledge_level: int | None = Field(default=1, ge=1, le=5)
-    countability: str | None = Field(default=None, max_length=50)
+    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
+    knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
     notes: str | None = None
@@ -75,8 +81,8 @@ class WordInput(BaseModel):
 
 
 class WordBulkCreate(BaseModel):
-    topic_name: str = Field(min_length=1, max_length=200)
-    words: list[WordInput] = Field(min_length=1, max_length=500)
+    topic_name: str = Field(min_length=1, max_length=TOPIC_NAME_MAX_LEN)
+    words: list[WordInput] = Field(min_length=1, max_length=BULK_WORDS_MAX)
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

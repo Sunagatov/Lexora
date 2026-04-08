@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db, verify_api_key
+from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.topics.repository import topic_repo
 from app.features.topics.schemas import TopicCreate
@@ -64,7 +65,7 @@ def _slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", normalized.encode("ascii", "ignore").decode()).strip("-").lower()
     if not slug:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{value}'")
-    return slug[:200]
+    return slug[:TOPIC_SLUG_MAX_LEN]
 
 
 def _normalize_term(term: str) -> str:
