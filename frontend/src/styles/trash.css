@@ -76,7 +76,7 @@
 
 /* ── Delete button in word page ─────────────────────────── */
 .wp-btn-delete {
-  padding: 9px 16px;
+  padding: 4px 10px;
   background: transparent;
   color: #dc2626;
   border: 1px solid #fecaca;

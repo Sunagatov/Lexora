@@ -27,12 +27,7 @@
 }
 
 .topic-header-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 10px 16px;
-  flex-wrap: nowrap;
+  display: none;
 }
 
 .topic-header-main {
