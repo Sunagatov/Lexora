@@ -9,9 +9,23 @@ type Props = {
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
+const DROPDOWN_HEIGHT = 220
+
+function openUpward(buttonEl: HTMLElement): boolean {
+  const rect = buttonEl.getBoundingClientRect()
+  return window.innerHeight - rect.bottom < DROPDOWN_HEIGHT
+}
+
 export function WordCardList({words, pendingWordId, onUpdate}: Props) {
   const [openId, setOpenId] = useState<number | null>(null)
+  const [flipUp, setFlipUp] = useState(false)
   const navigate = useNavigate()
+
+  function handleToggle(e: React.MouseEvent<HTMLButtonElement>, wordId: number, isOpen: boolean) {
+    if (isOpen) { setOpenId(null); return }
+    setFlipUp(openUpward(e.currentTarget))
+    setOpenId(wordId)
+  }
 
   return (
     <div className="word-card-list">
@@ -27,7 +41,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
                   type="button"
                   className={`level-badge level-badge-btn ${lc}`}
                   disabled={pendingWordId === word.id}
-                  onClick={() => setOpenId(isOpen ? null : word.id)}
+                  onClick={(e) => handleToggle(e, word.id, isOpen)}
                 >
                   {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -37,6 +51,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
                 {isOpen && (
                   <LevelDropdown
                     current={word.knowledge_level as WordKnowledgeLevel | null}
+                    flipUp={flipUp}
                     onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
                     onClose={() => setOpenId(null)}
                   />
@@ -60,12 +75,12 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
   )
 }
 
-function LevelDropdown({current, onSelect, onClose}: {current: WordKnowledgeLevel | null; onSelect: (l: WordKnowledgeLevel) => void; onClose: () => void}) {
+function LevelDropdown({current, flipUp, onSelect, onClose}: {current: WordKnowledgeLevel | null; flipUp: boolean; onSelect: (l: WordKnowledgeLevel) => void; onClose: () => void}) {
   const ref = useRef<HTMLDivElement>(null)
   return (
     <>
       <div className="level-dropdown-overlay" onClick={onClose} />
-      <div ref={ref} className="level-dropdown">
+      <div ref={ref} className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}>
         {LEVELS.map((l) => (
           <button
             key={l}

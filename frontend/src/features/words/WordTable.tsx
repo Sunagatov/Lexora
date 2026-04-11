@@ -9,9 +9,24 @@ type Props = {
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
+// Approximate height of the dropdown (5 options × ~38px + padding)
+const DROPDOWN_HEIGHT = 220
+
+function openUpward(buttonEl: HTMLElement): boolean {
+  const rect = buttonEl.getBoundingClientRect()
+  return window.innerHeight - rect.bottom < DROPDOWN_HEIGHT
+}
+
 export function WordTable({words, pendingWordId, onUpdate}: Props) {
-  const [openId, setOpenId] = useState<number | null>(null)
+  const [openId, setOpenId]   = useState<number | null>(null)
+  const [flipUp, setFlipUp]   = useState(false)
   const navigate = useNavigate()
+
+  function handleToggle(e: React.MouseEvent<HTMLButtonElement>, wordId: number, isOpen: boolean) {
+    if (isOpen) { setOpenId(null); return }
+    setFlipUp(openUpward(e.currentTarget))
+    setOpenId(wordId)
+  }
 
   return (
     <div className="word-table-wrap">
@@ -39,7 +54,7 @@ export function WordTable({words, pendingWordId, onUpdate}: Props) {
                       type="button"
                       className={`level-badge level-badge-btn ${lc}`}
                       disabled={pendingWordId === word.id}
-                      onClick={() => setOpenId(isOpen ? null : word.id)}
+                      onClick={(e) => handleToggle(e, word.id, isOpen)}
                     >
                       {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -49,7 +64,7 @@ export function WordTable({words, pendingWordId, onUpdate}: Props) {
                     {isOpen && (
                       <>
                         <div className="level-dropdown-overlay" onClick={() => setOpenId(null)} />
-                        <div className="level-dropdown level-dropdown-table">
+                        <div className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}>
                           {LEVELS.map((l) => (
                             <button
                               key={l}

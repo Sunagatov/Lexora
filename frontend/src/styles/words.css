@@ -3,6 +3,17 @@
   bottom: calc(100% + 6px);
 }
 
+/* Smart dropdown positioning — flips up when near bottom of viewport */
+.level-dropdown-down {
+  top: calc(100% + 6px);
+  bottom: auto;
+}
+
+.level-dropdown-up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
 /* Column header — sticky above the table */
 .word-list-header {
   display: grid;
@@ -156,7 +167,6 @@
 
 .level-dropdown {
   position: absolute;
-  top: calc(100% + 6px);
   right: 0;
   z-index: 41;
   background: var(--surface);
