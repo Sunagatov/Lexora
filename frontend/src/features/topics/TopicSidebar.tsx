@@ -2,9 +2,10 @@ import {useState} from 'react'
 import {createPortal} from 'react-dom'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
-import {deleteTopic} from './api'
+import {deleteTopic, createTopic} from './api'
 import type {StudyQueue, Topic} from '../../shared/http'
 import {ConfirmModal} from '../../shared/ConfirmModal'
+import {slugify} from '../../shared/slugify'
 
 type Props = {
   topics: Topic[]
@@ -43,8 +44,23 @@ export function TopicSidebar({
   const [posCollapsed, setPosCollapsed]       = useState(() => loadCollapsed('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadCollapsed('sidebar_topics_collapsed', false))
   const [deleteTopicId, setDeleteTopicId] = useState<number | null>(null)
+  const [newTopicName, setNewTopicName]   = useState('')
+  const [addingTopic, setAddingTopic]     = useState(false)
+  const [topicError, setTopicError]       = useState<string | null>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
+
+  const createTopicMutation = useMutation({
+    mutationFn: () => createTopic(newTopicName.trim(), slugify(newTopicName.trim())),
+    onSuccess: (created) => {
+      queryClient.invalidateQueries({queryKey: ['topics']})
+      setNewTopicName('')
+      setAddingTopic(false)
+      setTopicError(null)
+      onSelect(created.id)
+    },
+    onError: () => setTopicError('Name already exists or is invalid.'),
+  })
 
   const deleteTopicMutation = useMutation({
     mutationFn: (id: number) => deleteTopic(id, true),
@@ -154,6 +170,41 @@ export function TopicSidebar({
       </div>
 
       <div className="sidebar-footer">
+        {addingTopic ? (
+          <div className="sidebar-new-topic-wrap">
+            <div className="sidebar-new-topic-form">
+              <input
+                className="sidebar-new-topic-input"
+                placeholder="Topic name…"
+                value={newTopicName}
+                autoFocus
+                onChange={(e) => { setNewTopicName(e.target.value); setTopicError(null) }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newTopicName.trim()) createTopicMutation.mutate()
+                  if (e.key === 'Escape') { setAddingTopic(false); setNewTopicName(''); setTopicError(null) }
+                }}
+              />
+              <button
+                type="button"
+                className="sidebar-new-topic-save"
+                disabled={!newTopicName.trim() || createTopicMutation.isPending}
+                onClick={() => createTopicMutation.mutate()}
+              >
+                {createTopicMutation.isPending ? '…' : 'Add'}
+              </button>
+              <button type="button" className="sidebar-new-topic-cancel" onClick={() => { setAddingTopic(false); setNewTopicName(''); setTopicError(null) }}>
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+                </svg>
+              </button>
+            </div>
+            {topicError && <div className="sidebar-new-topic-error">{topicError}</div>}
+          </div>
+        ) : (
+          <button type="button" className="sidebar-add-topic-btn" onClick={() => setAddingTopic(true)}>
+            + New topic
+          </button>
+        )}
         <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/trash')}>
           🗑 Trash
         </button>

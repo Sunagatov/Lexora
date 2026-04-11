@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {useStudyState} from './useStudyState'
 import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {TopicSidebar} from '../topics/TopicSidebar'
@@ -7,11 +7,13 @@ import {Pagination} from './Pagination'
 import {WordTable} from '../words/WordTable'
 import {WordCardList} from '../words/WordCardList'
 import {SmartReviewView} from '../smart-review/SmartReviewView'
+import {QuickAddSheet} from '../words/QuickAddSheet'
 import {useDrawer} from '../../shared/DrawerContext'
 
 export function StudyPage() {
   const s = useStudyState()
   const {drawerOpen, setDrawerOpen, setHasDrawer} = useDrawer()
+  const [quickAddOpen, setQuickAddOpen] = useState(false)
 
   useEffect(() => {
     setHasDrawer(true)
@@ -102,7 +104,21 @@ export function StudyPage() {
             </div>
           </>
         )}
+
+        <button
+          type="button"
+          className="fab"
+          aria-label="Add word"
+          onClick={() => setQuickAddOpen(true)}
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="11" y1="3" x2="11" y2="19" />
+            <line x1="3" y1="11" x2="19" y2="11" />
+          </svg>
+        </button>
       </div>
+
+      {quickAddOpen && <QuickAddSheet onClose={() => setQuickAddOpen(false)} />}
     </>
   )
 }
