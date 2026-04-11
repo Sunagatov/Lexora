@@ -5,6 +5,7 @@ import {LoginPage} from '../features/auth/LoginPage'
 import {StudyPage} from '../features/study/StudyPage'
 import {WordPage} from '../features/words/WordPage'
 import {TrashPage} from '../features/trash/TrashPage'
+import {StatsPage} from '../features/stats/StatsPage'
 
 export const router = createBrowserRouter([
   {path: '/login', element: <LoginPage />},
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     children: [
       {index: true,                  element: <Navigate to="/smart-review" replace />},
       {path: 'trash',                element: <TrashPage />},
+      {path: 'stats',                element: <StatsPage />},
       {path: 'words/:wordId',        element: <WordPage />},
       {path: 'words/:wordId/edit',   element: <WordPage />},
       {path: 'smart-review',         element: <StudyPage />},

@@ -207,6 +207,9 @@ export function TopicSidebar({
             + New topic
           </button>
         )}
+        <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/stats')}>
+          📊 Stats
+        </button>
         <button type="button" className="sidebar-trash-btn" onClick={() => navigate('/trash')}>
           🗑 Trash
         </button>
