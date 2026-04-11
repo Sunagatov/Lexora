@@ -35,7 +35,7 @@ export function useStudyState() {
     isSmartReview,
     topics, words, topicWords,
     visibleTopics: topic.visibleTopics, selectedTopic: topic.selectedTopic,
-    selectedTopicId: topic.selectedTopicId, topicCounts: topic.topicCounts,
+    selectedTopicId: topic.selectedTopicId, topicCounts: topic.topicCounts, topicProgress: topic.topicProgress,
     topicSearch: topic.topicSearch, setTopicSearch: topic.setTopicSearch,
     selectTopic: topic.selectTopic, selectSmartReview: topic.selectSmartReview,
     drawerOpen: topic.drawerOpen, setDrawerOpen: topic.setDrawerOpen,

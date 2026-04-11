@@ -21,7 +21,8 @@ export function StudyPage() {
   }, [setHasDrawer])
 
   const sidebarProps = {
-    topics: s.visibleTopics, topicCounts: s.topicCounts, totalWords: s.words.length,
+    topics: s.visibleTopics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
+    totalWords: s.words.length,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
     onSelect: s.selectTopic, onSelectSmartReview: s.selectSmartReview,

@@ -24,6 +24,27 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     return m
   }, [words])
 
+  // Progress per topic: weighted average of knowledge levels 1-4 (level 5 excluded).
+  // score per word = (level - 1) / 3  →  level1=0%, level2=33%, level3=67%, level4=100%
+  // topic progress = sum(scores) / count_of_active_words × 100
+  const topicProgress = useMemo(() => {
+    const scoreSum   = new Map<number, number>()
+    const activeCount = new Map<number, number>()
+    for (const w of words) {
+      const lvl = w.knowledge_level
+      if (!lvl || lvl < 1 || lvl > 4) continue   // skip null, unset, parked (5)
+      const score = (lvl - 1) / 3
+      for (const tid of w.topic_ids) {
+        scoreSum.set(tid,    (scoreSum.get(tid)    ?? 0) + score)
+        activeCount.set(tid, (activeCount.get(tid) ?? 0) + 1)
+      }
+    }
+    const result = new Map<number, number>()
+    for (const [tid, total] of activeCount)
+      result.set(tid, Math.round(((scoreSum.get(tid) ?? 0) / total) * 100))
+    return result
+  }, [words])
+
   const visibleTopics = useMemo(() => {
     const needle = topicSearch.toLowerCase().trim()
     return topics.filter((t) =>
@@ -43,7 +64,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
   }
 
   return {
-    selectedTopicId, selectedTopic, visibleTopics, topicCounts,
+    selectedTopicId, selectedTopic, visibleTopics, topicCounts, topicProgress,
     topicSearch, setTopicSearch, drawerOpen, setDrawerOpen,
     selectTopic, selectSmartReview,
   }

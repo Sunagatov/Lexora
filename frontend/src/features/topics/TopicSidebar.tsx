@@ -10,6 +10,7 @@ import {slugify} from '../../shared/slugify'
 type Props = {
   topics: Topic[]
   topicCounts: Map<number, number>
+  topicProgress: Map<number, number>
   totalWords: number
   topicSearch: string
   setTopicSearch: (v: string) => void
@@ -37,7 +38,7 @@ function saveCollapsed(key: string, val: boolean) {
 }
 
 export function TopicSidebar({
-  topics, topicCounts, totalWords, topicSearch, setTopicSearch,
+  topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
   const [tooltip, setTooltip]         = useState<TooltipState>(null)
@@ -102,7 +103,7 @@ export function TopicSidebar({
     ? Math.round((smartQueue.completed_count / smartQueue.total_count) * 100) : 0
 
   const btnProps = {
-    selectedTopicId, isSmartReview, topicCounts,
+    selectedTopicId, isSmartReview, topicCounts, topicProgress,
     onMouseEnter: handleMouseEnter,
     onTouchStart: handleTouchStart,
     onSelect,
@@ -246,9 +247,10 @@ function SectionToggle({label, count, collapsed, onToggle}: {label: string; coun
   )
 }
 
-function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMouseEnter, onTouchStart, onSelect, clearTooltip, onDelete}: {
+function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, onMouseEnter, onTouchStart, onSelect, clearTooltip, onDelete}: {
   topic: Topic
   topicCounts: Map<number, number>
+  topicProgress: Map<number, number>
   selectedTopicId: number | null
   isSmartReview: boolean
   onMouseEnter: (e: React.MouseEvent, name: string) => void
@@ -257,6 +259,7 @@ function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMous
   clearTooltip: () => void
   onDelete: (id: number) => void
 }) {
+  const progress = topicProgress.get(topic.id)   // undefined if no active words yet
   return (
     <button
       type="button"
@@ -266,6 +269,9 @@ function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMous
       onClick={() => { clearTooltip(); onSelect(topic.id) }}
     >
       <span className="topic-item-name">{topic.name}</span>
+      {progress !== undefined && (
+        <span className="topic-item-pct">{progress}%</span>
+      )}
       <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
       <span
         role="button"
@@ -277,6 +283,11 @@ function TopicButton({topic, topicCounts, selectedTopicId, isSmartReview, onMous
           <line x1="2" y1="2" x2="10" y2="10" /><line x1="10" y1="2" x2="2" y2="10" />
         </svg>
       </span>
+      {progress !== undefined && (
+        <span className="topic-progress-bar" aria-hidden="true">
+          <span className="topic-progress-fill" style={{width: `${progress}%`}} />
+        </span>
+      )}
     </button>
   )
 }
