@@ -72,6 +72,7 @@ export function QuickAddSheet({onClose}: Props) {
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
       setTerm('')
       setTranslation('')
+      setAiSuggested(false)
       setTimeout(() => { setFeedback(null); termRef.current?.focus() }, 1800)
     },
     onError: (err: Error) => {
@@ -185,7 +186,7 @@ export function QuickAddSheet({onClose}: Props) {
               className="quick-add-input"
               placeholder="e.g. недолговечный"
               value={translation}
-              onChange={(e) => setTranslation(e.target.value)}
+              onChange={(e) => { setTranslation(e.target.value); setAiSuggested(false) }}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
             />
           </div>
