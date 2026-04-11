@@ -1,3 +1,3 @@
 import {request} from '../../shared/http'
 
-export const purgeTrash = () => request<void>('/api/trash/purge', {method: 'DELETE'})
+export const purgeTrash = () => request<void>('/api/trash/purge?force=true', {method: 'DELETE'})

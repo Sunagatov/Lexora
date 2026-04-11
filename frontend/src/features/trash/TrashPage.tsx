@@ -60,9 +60,11 @@ export function TrashPage() {
             </svg>
             Back
           </button>
-          <button type="button" className="trash-purge-btn" onClick={() => setConfirmPurge(true)}>
-            Empty Trash
-          </button>
+          {(words.length > 0 || topics.length > 0) && (
+            <button type="button" className="trash-purge-btn" onClick={() => setConfirmPurge(true)}>
+              Empty Trash
+            </button>
+          )}
         </div>
 
         <h1 className="trash-title">Trash</h1>
@@ -109,7 +111,7 @@ export function TrashPage() {
       {confirmPurge && (
         <ConfirmModal
           title="Empty Trash?"
-          message="This will permanently delete all expired items. This cannot be undone."
+          message="This will permanently delete everything in Trash right now. This cannot be undone."
           confirmLabel="Empty Trash"
           danger
           onConfirm={() => purgeMutation.mutate()}

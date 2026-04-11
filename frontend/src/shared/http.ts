@@ -64,5 +64,8 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
   }
   if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`)
 
+  // 204 No Content and 205 Reset Content have no body — return undefined cast to T
+  if (response.status === 204 || response.status === 205) return undefined as unknown as T
+
   return response.json() as Promise<T>
 }

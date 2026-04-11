@@ -3,6 +3,7 @@ import {createPortal} from 'react-dom'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {fetchTopics, createTopic} from '../topics/api'
 import {quickAddWord} from '../words/api'
+import {request} from '../../shared/http'
 import type {Topic} from '../../shared/http'
 import {slugify} from '../../shared/slugify'
 
@@ -16,8 +17,19 @@ async function translateTerm(term: string): Promise<string | null> {
     if (!res.ok) return null
     const data = await res.json()
     const text = data?.responseData?.translatedText
-    // MyMemory returns the original term when it can't translate
     return text && text.toLowerCase() !== term.toLowerCase() ? text : null
+  } catch {
+    return null
+  }
+}
+
+async function suggestTopic(term: string, translation: string): Promise<string | null> {
+  try {
+    const res = await request<{topic_name: string}>('/api/words/suggest-topic', {
+      method: 'POST',
+      body: JSON.stringify({term, translation}),
+    })
+    return res.topic_name ?? null
   } catch {
     return null
   }
@@ -35,16 +47,20 @@ export function QuickAddSheet({onClose}: Props) {
   const [newTopic,    setNewTopic]    = useState('')
   const [addingTopic, setAddingTopic] = useState(false)
   const [translating, setTranslating] = useState(false)
+  const [suggesting,  setSuggesting]  = useState(false)
+  const [aiSuggested, setAiSuggested] = useState(false)
   const [feedback,    setFeedback]    = useState<{ok: boolean; msg: string} | null>(null)
 
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const topics: Topic[] = topicsQuery.data ?? []
 
-  // Default to Inbox topic id once topics load
+  // Default to Inbox topic id once topics load, but only if no Inbox exists yet
+  // show a placeholder so user must consciously pick a topic
   useEffect(() => {
     if (topicId !== null || topics.length === 0) return
     const inbox = topics.find((t) => t.name === INBOX_TOPIC_NAME)
-    setTopicId(inbox?.id ?? topics[0].id)
+    if (inbox) setTopicId(inbox.id)
+    // if no Inbox yet, leave topicId null — user must pick or create
   }, [topics, topicId])
 
   useEffect(() => { setTimeout(() => termRef.current?.focus(), 80) }, [])
@@ -83,10 +99,22 @@ export function QuickAddSheet({onClose}: Props) {
     setFeedback(null)
     const result = await translateTerm(term.trim())
     setTranslating(false)
-    if (result) {
-      setTranslation(result)
-    } else {
+    if (!result) {
       setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
+      return
+    }
+    setTranslation(result)
+
+    // After translation succeeds, ask AI to suggest a topic
+    setSuggesting(true)
+    const suggested = await suggestTopic(term.trim(), result)
+    setSuggesting(false)
+    if (suggested) {
+      const match = topics.find((t) => t.name === suggested)
+      if (match) {
+        setTopicId(match.id)
+        setAiSuggested(true)
+      }
     }
   }
 
@@ -142,10 +170,10 @@ export function QuickAddSheet({onClose}: Props) {
                 type="button"
                 className="quick-add-translate-btn"
                 onClick={handleTranslate}
-                disabled={!term.trim() || translating}
-                title="Auto-translate via MyMemory"
+                disabled={!term.trim() || translating || suggesting}
+                title="Auto-translate via MyMemory + AI topic suggestion"
               >
-                {translating ? '…' : '✨ Translate'}
+                {translating ? 'Translating…' : suggesting ? 'Suggesting…' : '✨ Translate'}
               </button>
             </div>
           </div>
@@ -164,15 +192,18 @@ export function QuickAddSheet({onClose}: Props) {
 
           {/* Topic */}
           <div className="quick-add-field">
-            <label className="quick-add-label">Topic</label>
+            <label className="quick-add-label">Topic {aiSuggested && <span className="quick-add-ai-badge">✨ AI suggested</span>}</label>
             {!addingTopic ? (
               <div className="quick-add-topic-row">
                 <select
                   className="quick-add-select"
                   value={topicId ?? ''}
-                  onChange={(e) => setTopicId(Number(e.target.value))}
+                  onChange={(e) => { setTopicId(Number(e.target.value)); setAiSuggested(false) }}
                 >
-                  {topicsQuery.isLoading && <option>Loading…</option>}
+                  {topicsQuery.isLoading && <option value="">Loading…</option>}
+                  {!topicsQuery.isLoading && topicId === null && (
+                    <option value="" disabled>— select a topic —</option>
+                  )}
                   {sortedTopics.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}

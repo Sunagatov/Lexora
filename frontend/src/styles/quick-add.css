@@ -207,6 +207,19 @@
 .quick-add-feedback-ok  { background: #ecfdf5; color: #047857; }
 .quick-add-feedback-err { background: #fef2f2; color: #c81e1e; }
 
+.quick-add-ai-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .quick-add-footer {
   display: flex;
   gap: 10px;
@@ -336,4 +349,11 @@
 /* Desktop: push FAB above pagination area */
 @media (min-width: 768px) {
   .fab { bottom: 32px; right: 32px; }
+}
+
+/* Ensure last word card is never hidden behind FAB */
+.main-inner { padding-bottom: 88px; }
+
+@media (min-width: 768px) {
+  .main-inner { padding-bottom: 24px; }
 }

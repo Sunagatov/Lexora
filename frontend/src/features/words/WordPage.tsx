@@ -80,10 +80,12 @@ export function WordPage() {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(Number(wordId)),
     onSuccess: () => {
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
+      // capture slug before clearing cache
       const firstTopicId = word?.topic_ids[0]
-      const topic = topicsQuery.data?.find((t) => t.id === firstTopicId)
-      navigate(topic ? `/topics/${topic.slug}` : '/')
+      const topicSlug = topicsQuery.data?.find((t) => t.id === firstTopicId)?.slug
+      queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
+      queryClient.removeQueries({queryKey: ['word', wordId]})
+      navigate(topicSlug ? `/topics/${topicSlug}` : '/')
     },
   })
 
@@ -174,7 +176,7 @@ export function WordPage() {
           <div className="word-page-view">
             <ViewRow label="Translation"    value={word.translations} />
             <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
-            <ViewRow label="Topic"          value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
+            <ViewRow label="Topics"         value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
             <ViewRow label="Knowledge"      value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
             {word.countability    && <ViewRow label="Countability"    value={word.countability} />}
             {word.example         && <ViewRow label="Example"         value={word.example} />}
@@ -201,7 +203,7 @@ export function WordPage() {
             <FormField label="Part of speech">
               <CompactDropdown value={draft.part_of_speech} options={POS_OPTIONS} onChange={(v) => set('part_of_speech', v)} ariaLabel="Part of speech" />
             </FormField>
-            <FormField label="Topic">
+            <FormField label="Primary topic">
               <CompactDropdown
                 value={draft.topic_ids[0] ?? ''}
                 options={[

@@ -1,11 +1,18 @@
+import re
+import unicodedata
 from datetime import datetime, timezone
 
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
+
+
+def _normalize_term(term: str) -> str:
+    return re.sub(r'\s+', ' ', unicodedata.normalize('NFKC', term)).strip().lower()
 
 
 def _load_topics(stmt):
@@ -38,6 +45,20 @@ class WordRepository:
 
     @staticmethod
     def create(db: Session, payload: WordCreate) -> Word:
+        norm_term = _normalize_term(payload.term)
+        # Reject if same term already exists (non-deleted) in any of the requested topics
+        existing = db.scalars(
+            select(Word)
+            .where(Word.deleted_at.is_(None))
+            .where(Word.topics.any(Topic.id.in_(payload.topic_ids)))
+        ).all()
+        for w in existing:
+            if _normalize_term(w.term) == norm_term:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"Word '{payload.term}' already exists in one of the selected topics",
+                )
+
         topics = db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()
         data = payload.model_dump(exclude={"topic_ids"})
         word = Word(**data, topics=list(topics))

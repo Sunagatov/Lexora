@@ -40,11 +40,18 @@ def restore_topic(topic_id: int, restore_words: bool = False, db: Session = Depe
 
 
 @router.delete("/purge", status_code=status.HTTP_204_NO_CONTENT)
-def purge_expired(db: Session = Depends(get_db)) -> None:
-    cutoff = datetime.now(timezone.utc) - timedelta(days=settings.trash_retention_days)
-    for word in word_repo.get_deleted(db):
-        if word.deleted_at and word.deleted_at < cutoff:
+def purge_expired(db: Session = Depends(get_db), force: bool = False) -> None:
+    """Hard-delete trashed items. With force=true deletes all; otherwise only items older than retention days."""
+    if force:
+        for word in word_repo.get_deleted(db):
             word_repo.hard_delete(db, word)
-    for topic in topic_repo.get_deleted(db):
-        if topic.deleted_at and topic.deleted_at < cutoff:
+        for topic in topic_repo.get_deleted(db):
             topic_repo.hard_delete(db, topic)
+    else:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=settings.trash_retention_days)
+        for word in word_repo.get_deleted(db):
+            if word.deleted_at and word.deleted_at < cutoff:
+                word_repo.hard_delete(db, word)
+        for topic in topic_repo.get_deleted(db):
+            if topic.deleted_at and topic.deleted_at < cutoff:
+                topic_repo.hard_delete(db, topic)

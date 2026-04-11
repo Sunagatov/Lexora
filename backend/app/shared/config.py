@@ -30,6 +30,11 @@ class Settings(BaseSettings):
 
     trash_retention_days: int = 30
 
+    # AI / topic suggestion — uses GitHub Models (OpenAI-compatible)
+    openai_api_key: str = ""
+    openai_base_url: str = "https://models.inference.ai.azure.com"
+    openai_model: str = "gpt-4o-mini"
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
