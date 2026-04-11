@@ -5,7 +5,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
@@ -35,6 +35,7 @@ def _pick_for_level(
         return []
     stmt = (
         select(Word)
+        .options(selectinload(Word.topics))
         .where(Word.is_active == True)  # noqa: E712
         .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
@@ -49,10 +50,12 @@ def _pick_for_level(
     for word in candidates:
         if len(picked) >= needed:
             break
-        if topic_counts[word.topic_id] >= settings.smart_review_max_per_topic:
+        # use the first topic_id for per-topic cap tracking
+        first_topic_id = word.topics[0].id if word.topics else 0
+        if topic_counts[first_topic_id] >= settings.smart_review_max_per_topic:
             continue
         picked.append(word)
-        topic_counts[word.topic_id] += 1
+        topic_counts[first_topic_id] += 1
     return picked
 
 

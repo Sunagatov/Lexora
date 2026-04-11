@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field
+
+if TYPE_CHECKING:
+    from app.features.words.model import Word
 
 from app.shared.constraints import (
     BULK_WORDS_MAX, KNOWLEDGE_LEVEL_MAX, KNOWLEDGE_LEVEL_MIN,
@@ -10,7 +16,7 @@ from app.shared.constraints import (
 
 
 class WordCreate(BaseModel):
-    topic_id: int = Field(gt=0)
+    topic_ids: list[int] = Field(min_length=1)
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
     past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
@@ -27,7 +33,7 @@ class WordCreate(BaseModel):
 
 
 class WordUpdate(BaseModel):
-    topic_id: int | None = Field(default=None, gt=0)
+    topic_ids: list[int] | None = Field(default=None, min_length=1)
     term: str | None = Field(default=None, min_length=1, max_length=WORD_TERM_MAX_LEN)
     past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
@@ -45,7 +51,7 @@ class WordUpdate(BaseModel):
 
 class WordResponse(BaseModel):
     id: int
-    topic_id: int
+    topic_ids: list[int]
     term: str
     past_simple: str | None
     past_participle: str | None
@@ -62,6 +68,27 @@ class WordResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_word(cls, word: "Word") -> "WordResponse":
+        return cls(
+            id=word.id,
+            topic_ids=[t.id for t in word.topics],
+            term=word.term,
+            past_simple=word.past_simple,
+            past_participle=word.past_participle,
+            translations=word.translations,
+            part_of_speech=word.part_of_speech,
+            knowledge_level=word.knowledge_level,
+            countability=word.countability,
+            pattern=word.pattern,
+            example=word.example,
+            notes=word.notes,
+            is_active=word.is_active,
+            deleted_at=word.deleted_at,
+            created_at=word.created_at,
+            updated_at=word.updated_at,
+        )
 
 
 class WordInput(BaseModel):

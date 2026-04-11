@@ -1,33 +1,46 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
+from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
+
+
+def _load_topics(stmt):
+    return stmt.options(selectinload(Word.topics))
 
 
 class WordRepository:
     @staticmethod
     def get_all(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
-        stmt = select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc())
+        stmt = _load_topics(
+            select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc())
+        )
         if topic_id is not None:
-            stmt = stmt.where(Word.topic_id == topic_id)
+            stmt = stmt.where(Word.topics.any(Topic.id == topic_id))
         if search:
             stmt = stmt.where(Word.term.ilike(f"%{search}%"))
         return list(db.scalars(stmt).all())
 
     @staticmethod
     def get_by_id(db: Session, word_id: int) -> Word | None:
-        return db.get(Word, word_id)
+        return db.scalar(_load_topics(select(Word).where(Word.id == word_id)))
 
     @staticmethod
     def get_deleted(db: Session) -> list[Word]:
-        return list(db.scalars(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc())).all())
+        return list(
+            db.scalars(
+                _load_topics(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc()))
+            ).all()
+        )
 
     @staticmethod
     def create(db: Session, payload: WordCreate) -> Word:
-        word = Word(**payload.model_dump())
+        topics = db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()
+        data = payload.model_dump(exclude={"topic_ids"})
+        word = Word(**data, topics=list(topics))
         db.add(word)
         db.commit()
         db.refresh(word)
@@ -35,8 +48,11 @@ class WordRepository:
 
     @staticmethod
     def update(db: Session, word: Word, payload: WordUpdate) -> Word:
-        for field, value in payload.model_dump(exclude_unset=True).items():
+        data = payload.model_dump(exclude_unset=True, exclude={"topic_ids"})
+        for field, value in data.items():
             setattr(word, field, value)
+        if payload.topic_ids is not None:
+            word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
         db.add(word)
         db.commit()
         db.refresh(word)

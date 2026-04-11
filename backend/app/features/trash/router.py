@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/trash", tags=["trash"])
 
 @router.get("/words", response_model=list[WordResponse])
 def list_deleted_words(db: Session = Depends(get_db)) -> list[WordResponse]:
-    return word_repo.get_deleted(db)
+    return [WordResponse.from_word(w) for w in word_repo.get_deleted(db)]
 
 
 @router.get("/topics", response_model=list[TopicResponse])
@@ -28,7 +28,7 @@ def restore_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
     word = word_repo.get_by_id(db, word_id)
     if word is None or word.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted word not found")
-    return word_repo.restore(db, word)
+    return WordResponse.from_word(word_repo.restore(db, word))
 
 
 @router.post("/topics/{topic_id}/restore", response_model=TopicResponse)

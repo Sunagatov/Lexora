@@ -24,7 +24,7 @@ def list_words(
     search: str | None = Query(default=None, min_length=1),
     db: Session = Depends(get_db),
 ) -> list[WordResponse]:
-    return word_repo.get_all(db, topic_id=topic_id, search=search)
+    return [WordResponse.from_word(w) for w in word_repo.get_all(db, topic_id=topic_id, search=search)]
 
 
 @router.get("/{word_id}", response_model=WordResponse)
@@ -32,14 +32,15 @@ def get_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
     word = word_repo.get_by_id(db, word_id)
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
-    return word
+    return WordResponse.from_word(word)
 
 
 @router.post("", response_model=WordResponse, status_code=status.HTTP_201_CREATED)
 def create_word(payload: WordCreate, db: Session = Depends(get_db)) -> WordResponse:
-    if topic_repo.get_by_id(db, payload.topic_id) is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Topic does not exist")
-    return word_repo.create(db, payload)
+    missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
+    if missing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
+    return WordResponse.from_word(word_repo.create(db, payload))
 
 
 @router.put("/{word_id}", response_model=WordResponse)
@@ -47,9 +48,11 @@ def update_word(word_id: int, payload: WordUpdate, db: Session = Depends(get_db)
     word = word_repo.get_by_id(db, word_id)
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
-    if payload.topic_id is not None and topic_repo.get_by_id(db, payload.topic_id) is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Topic does not exist")
-    return word_repo.update(db, word, payload)
+    if payload.topic_ids is not None:
+        missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
+        if missing:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
+    return WordResponse.from_word(word_repo.update(db, word, payload))
 
 
 @router.delete("/{word_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -88,7 +91,7 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
             )
         topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
-    existing = {_normalize_term(t) for t in db.scalars(select(Word.term).where(Word.topic_id == topic.id)).all()}
+    existing = {_normalize_term(t) for t in db.scalars(select(Word.term).where(Word.topics.any(Topic.id == topic.id))).all()}
 
     added_terms: list[str] = []
     skipped_terms: list[str] = []
@@ -96,7 +99,8 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
         if _normalize_term(w.term) in existing:
             skipped_terms.append(w.term)
             continue
-        db.add(Word(**w.model_dump(), topic_id=topic.id))
+        new_word = Word(**w.model_dump(), topics=[topic])
+        db.add(new_word)
         existing.add(_normalize_term(w.term))
         added_terms.append(w.term)
 

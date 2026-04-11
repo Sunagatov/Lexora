@@ -47,7 +47,8 @@ class TopicRepository:
         topic.deleted_at = now
         if delete_words:
             for word in topic.words:
-                if word.deleted_at is None:
+                # only soft-delete words that belong exclusively to this topic
+                if word.deleted_at is None and len(word.topics) == 1:
                     word.deleted_at = now
         db.add(topic)
         db.commit()
@@ -59,7 +60,9 @@ class TopicRepository:
         topic.deleted_at = None
         if restore_words:
             for word in topic.words:
-                word.deleted_at = None
+                # only restore words that belong exclusively to this topic
+                if len(word.topics) == 1:
+                    word.deleted_at = None
         db.add(topic)
         db.commit()
         db.refresh(topic)
