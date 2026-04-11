@@ -1,4 +1,4 @@
-import {useState, useMemo, useEffect} from 'react'
+import {useState, useMemo, useEffect, useRef} from 'react'
 import {useParams, useNavigate, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, updateWord, deleteWord} from './api'
@@ -80,14 +80,21 @@ export function WordPage() {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(Number(wordId)),
     onSuccess: () => {
-      // capture slug before clearing cache
-      const firstTopicId = word?.topic_ids[0]
-      const topicSlug = topicsQuery.data?.find((t) => t.id === firstTopicId)?.slug
       queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
       queryClient.removeQueries({queryKey: ['word', wordId]})
-      navigate(topicSlug ? `/topics/${topicSlug}` : '/')
+      navigate(capturedTopicSlug.current ?? '/', {replace: true})
     },
   })
+
+  // Capture the topic slug synchronously before delete fires so onSuccess
+  // doesn't depend on stale closure state or a re-fetch racing the navigation.
+  const capturedTopicSlug = useRef<string | null>(null)
+
+  function handleDelete() {
+    capturedTopicSlug.current = topic?.slug ?? null
+    setConfirming(false)
+    deleteMutation.mutate()
+  }
 
   const word   = wordQuery.data
   const topics = topicsQuery.data ?? []
@@ -274,7 +281,7 @@ export function WordPage() {
           message={`"${word.term}" will be moved to Trash and permanently deleted after 30 days.`}
           confirmLabel="Move to Trash"
           danger
-          onConfirm={() => { setConfirming(false); deleteMutation.mutate() }}
+          onConfirm={() => handleDelete()}
           onCancel={() => setConfirming(false)}
         />
       )}
