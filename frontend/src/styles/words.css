@@ -60,7 +60,9 @@
 .word-row.level-2 td:first-child { box-shadow: inset 3px 0 0 #f97316; }
 .word-row.level-3 td:first-child { box-shadow: inset 3px 0 0 #eab308; }
 .word-row.level-4 td:first-child { box-shadow: inset 3px 0 0 #10b981; }
-.word-row.level-5 td:first-child { box-shadow: inset 3px 0 0 #8b5cf6; }
+/* Level 5 Parked — dashed grey stripe, reduced opacity */
+.word-row.level-5 td:first-child { box-shadow: none; border-left: 3px dashed #cbd5e1; }
+.word-row.level-5 { opacity: 0.65; }
 
 .word-cell-word {
   width: 22%;
@@ -280,7 +282,8 @@
 .word-card.level-2 { border-left-color: #f97316; }
 .word-card.level-3 { border-left-color: #eab308; }
 .word-card.level-4 { border-left-color: #10b981; }
-.word-card.level-5 { border-left-color: #8b5cf6; }
+/* Level 5 Parked — dashed grey border, reduced opacity */
+.word-card.level-5 { border-left-color: #cbd5e1; border-left-style: dashed; opacity: 0.65; }
 
 .word-card + .word-card {
   margin-top: 6px;

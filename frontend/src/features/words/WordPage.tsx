@@ -33,7 +33,7 @@ const LEVEL_OPTIONS: DropdownOption<string>[] = [
   {value: '2', label: '2 — Basic'},
   {value: '3', label: '3 — Okay'},
   {value: '4', label: '4 — Strong'},
-  {value: '5', label: '5 — Master'},
+  {value: '5', label: '5 — Parked (rare, learn later)'},
 ]
 
 type EditState = {

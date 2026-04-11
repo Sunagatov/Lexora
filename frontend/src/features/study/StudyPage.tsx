@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {useStudyState} from './useStudyState'
-import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
+import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {TopicSidebar} from '../topics/TopicSidebar'
 import {Toolbar} from './Toolbar'
 import {Pagination} from './Pagination'
@@ -52,12 +52,18 @@ export function StudyPage() {
                   <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
                 </div>
                 <div className="level-summary">
-                  {LEVELS.map((l) => (
+                  {ACTIVE_LEVELS.map((l) => (
                     <div key={l} className={`level-chip ${levelClass(l)}`}>
                       <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
                       <span className="level-chip-value">{s.levelSummary[l]}</span>
                     </div>
                   ))}
+                  {s.levelSummary[PARKED_LEVEL] > 0 && (
+                    <div className={`level-chip ${levelClass(PARKED_LEVEL)} level-chip-parked`}>
+                      <span className="level-chip-label">{LEVEL_LABELS[PARKED_LEVEL]}</span>
+                      <span className="level-chip-value">{s.levelSummary[PARKED_LEVEL]}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

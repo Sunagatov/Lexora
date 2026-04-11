@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import type {WordKnowledgeLevel} from '../../shared/http'
-import {LEVELS, LEVEL_LABELS, type SortOption} from '../../shared/wordDomain'
+import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '../../shared/wordDomain'
 import {CompactDropdown} from '../../shared/CompactDropdown'
 
 type Props = {
@@ -35,7 +35,8 @@ export function Toolbar({
 
   const levelOptions = [
     {value: 'all' as const, label: `All levels — ${topicTotalCount}`},
-    ...LEVELS.map((l) => ({value: String(l) as `${WordKnowledgeLevel}`, label: `${l} ${LEVEL_LABELS[l]} — ${levelSummary[l]}`})),
+    ...ACTIVE_LEVELS.map((l) => ({value: String(l) as `${WordKnowledgeLevel}`, label: `${l} ${LEVEL_LABELS[l]} — ${levelSummary[l]}`})),
+    {value: String(PARKED_LEVEL) as `${WordKnowledgeLevel}`, label: `${LEVEL_LABELS[PARKED_LEVEL]} — ${levelSummary[PARKED_LEVEL]}`},
   ]
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'

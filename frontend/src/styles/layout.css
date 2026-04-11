@@ -75,8 +75,11 @@
   font-weight: 800;
 }
 
-/* Mobile-only progress strip (hidden by default, shown via mobile.css) */
-.mobile-progress-strip { display: none; }
+/* Parked chip — visually separated from the 1-4 progress chips */
+.level-chip-parked {
+  opacity: 0.6;
+  border-style: dashed;
+}
 
 .mobile-progress-pill {
   display: inline-flex;

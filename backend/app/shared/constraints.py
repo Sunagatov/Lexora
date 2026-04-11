@@ -11,5 +11,7 @@ WORD_COUNT_MAX_LEN  = 50       # countability
 
 KNOWLEDGE_LEVEL_MIN = 1
 KNOWLEDGE_LEVEL_MAX = 5
+# Levels 1-4 are active study levels.
+# Level 5 = "Parked" — too rare/strange to study now, excluded from Smart Review.
 
 BULK_WORDS_MAX      = 500      # max words per bulk import request
