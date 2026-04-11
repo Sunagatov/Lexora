@@ -16,7 +16,8 @@ export function levelClass(level: number | null): string {
   return level ? `level-${level}` : 'level-unset'
 }
 
-// Progress summary only counts active study levels (1-4). Level 5 (Parked) is excluded.
+// Counts all levels 1-5. Level 5 (Parked) is included in the summary data
+// but excluded from the progress chips at render time (StudyPage shows only ACTIVE_LEVELS).
 export function buildLevelSummary(words: Word[]): Record<WordKnowledgeLevel, number> {
   const s: Record<WordKnowledgeLevel, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
   for (const w of words) {
@@ -26,11 +27,12 @@ export function buildLevelSummary(words: Word[]): Record<WordKnowledgeLevel, num
   return s
 }
 
-// Level 5 (Parked) always sorts last regardless of sort direction
-function sortKey(level: number | null, asc: boolean): number {
-  if (level === 5) return asc ? 98 : -1   // last in asc, last in desc
-  if (level === null) return asc ? 99 : -2
-  return level
+// Level 5 (Parked) always sorts last regardless of sort direction.
+// Returns a sort key where higher = later in the list.
+function sortKey(level: number | null): number {
+  if (level === 5)    return 98   // Parked: always near last
+  if (level === null) return 99   // Unset: always last
+  return level                    // 1-4: natural order
 }
 
 export function filterAndSort(
@@ -54,8 +56,18 @@ export function filterAndSort(
     switch (sortBy) {
       case 'term-asc':   return a.term.localeCompare(b.term)
       case 'term-desc':  return b.term.localeCompare(a.term)
-      case 'level-asc':  return sortKey(a.knowledge_level, true)  - sortKey(b.knowledge_level, true)
-      case 'level-desc': return sortKey(b.knowledge_level, false) - sortKey(a.knowledge_level, false)
+      // level-asc: 1 first, 4 last among active, then Parked, then null
+      case 'level-asc':  return sortKey(a.knowledge_level) - sortKey(b.knowledge_level)
+      // level-desc: 4 first, 1 last among active, then Parked, then null
+      // Negate only active levels (1-4); keep Parked/null at the end by using large positive values
+      case 'level-desc': {
+        const ka = sortKey(a.knowledge_level)
+        const kb = sortKey(b.knowledge_level)
+        // For active levels (1-4), higher level = earlier = smaller sort value when descending
+        const da = ka >= 98 ? ka : (5 - ka)   // 4→1, 3→2, 2→3, 1→4; parked/null stay large
+        const db = kb >= 98 ? kb : (5 - kb)
+        return da - db
+      }
     }
   })
 
