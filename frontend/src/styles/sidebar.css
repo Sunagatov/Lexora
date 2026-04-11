@@ -346,6 +346,23 @@
   background: rgba(248, 113, 113, 0.12);
 }
 
+/* Progress percentage label */
+.topic-item-pct {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--sidebar-text-2);
+  opacity: 0.7;
+  min-width: 28px;
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+
+.topic-item-active .topic-item-pct {
+  color: #a5b4fc;
+  opacity: 1;
+}
+
 /* Topic progress bar — sits at the bottom of each topic row */
 .topic-progress-bar {
   position: absolute;
