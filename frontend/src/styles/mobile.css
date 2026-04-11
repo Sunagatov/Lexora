@@ -104,6 +104,21 @@
 }
 
 @media (max-width: 860px) {
+  /* ── iOS Safari zoom prevention ─────────────────────────────
+     iOS zooms the viewport when any focused input has font-size < 16px.
+     Force 16px on all interactive inputs to prevent this.
+     The visual size is controlled by height/padding, not font-size. */
+  input,
+  input[type="text"],
+  input[type="search"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  /* ─────────────────────────────────────────────────────────── */
+
   .app-shell {
     height: 100dvh;
     display: flex;
