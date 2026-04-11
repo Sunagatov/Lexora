@@ -21,15 +21,19 @@ function calcTopicProgress(words: Word[]): number {
 
 function monthKey(dateStr: string): string {
   const d = new Date(dateStr)
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  // Use UTC to match server timestamps and avoid timezone-shift bugs
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
 }
 
 function lastNMonths(n: number): string[] {
   const keys: string[] = []
   const now = new Date()
+  // Use UTC month arithmetic
+  const year = now.getUTCFullYear()
+  const month = now.getUTCMonth()
   for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    keys.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+    const d = new Date(Date.UTC(year, month - i, 1))
+    keys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`)
   }
   return keys
 }
@@ -79,23 +83,28 @@ export function StatsPage() {
   }, [words, months])
   const maxMonthCount = Math.max(1, ...Object.values(wordsByMonth))
 
-  // per-topic rows sorted by progress ascending (worst first)
+  // per-topic rows: active topics sorted by progress ascending, inactive topics at the bottom
   const topicRows = useMemo(() => {
-    return topics
-      .map((t) => {
-        const tw = words.filter((w) => w.topic_ids.includes(t.id))
-        if (tw.length === 0) return null
-        const lc: Record<number, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-        for (const w of tw) {
-          const l = w.knowledge_level
-          if (l && l >= 1 && l <= 5) lc[l] = (lc[l] ?? 0) + 1
-        }
-        const hasActive = ACTIVE_LEVELS.some((l) => lc[l] > 0)
-        return {id: t.id, slug: t.slug, name: t.name, total: tw.length, lc, hasActive, progress: calcTopicProgress(tw)}
-      })
-      .filter(Boolean)
-      .sort((a, b) => a!.progress - b!.progress) as NonNullable<ReturnType<typeof topics['map']>[number]>[]
-  }, [topics, words]) as Array<{id: number; slug: string; name: string; total: number; lc: Record<number,number>; hasActive: boolean; progress: number}>
+    type TopicRow = {id: number; slug: string; name: string; total: number; lc: Record<number,number>; hasActive: boolean; progress: number}
+    const rows: TopicRow[] = []
+    for (const t of topics) {
+      const tw = words.filter((w) => w.topic_ids.includes(t.id))
+      if (tw.length === 0) continue
+      const lc: Record<number, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+      for (const w of tw) {
+        const l = w.knowledge_level
+        if (l && l >= 1 && l <= 5) lc[l] = (lc[l] ?? 0) + 1
+      }
+      const hasActive = ACTIVE_LEVELS.some((l) => lc[l] > 0)
+      rows.push({id: t.id, slug: t.slug, name: t.name, total: tw.length, lc, hasActive, progress: calcTopicProgress(tw)})
+    }
+    // active topics sorted worst-first; inactive (no levels 1-4) go to the bottom
+    return rows.sort((a, b) => {
+      if (a.hasActive && !b.hasActive) return -1
+      if (!a.hasActive && b.hasActive) return 1
+      return a.progress - b.progress
+    })
+  }, [topics, words])
 
   if (isLoading) return <div className="stats-loading">Loading…</div>
 
