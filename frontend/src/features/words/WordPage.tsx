@@ -63,6 +63,7 @@ export function WordPage() {
 
   const [draft, setDraft]           = useState<EditState | null>(null)
   const [confirming, setConfirming] = useState(false)
+  const [saveError,  setSaveError]  = useState<string | null>(null)
 
   const wordQuery   = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
@@ -74,6 +75,15 @@ export function WordPage() {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
       navigate(`/words/${wordId}`, {replace: true})
       setDraft(null)
+      setSaveError(null)
+    },
+    onError: (err: Error) => {
+      const msg = err.message.includes('409')
+        ? 'A word with this term already exists in the selected topic.'
+        : err.message.includes('400') || err.message.includes('422')
+        ? 'Invalid data — check the fields and try again.'
+        : 'Failed to save. Please try again.'
+      setSaveError(msg)
     },
   })
 
@@ -132,11 +142,16 @@ export function WordPage() {
 
   function save() {
     if (!draft || !word) return
+    setSaveError(null)
+    const termVal = draft.term.trim()
+    const transVal = draft.translations.trim()
     const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
-    if (topicIds.length === 0) return  // guard: must have at least one valid topic
+    if (!termVal) { setSaveError('Term cannot be empty.'); return }
+    if (!transVal) { setSaveError('Translation cannot be empty.'); return }
+    if (topicIds.length === 0) { setSaveError('Please select a topic.'); return }
     saveMutation.mutate({
-      term:            draft.term.trim() || word.term,
-      translations:    draft.translations.trim() || word.translations,
+      term:            termVal,
+      translations:    transVal,
       knowledge_level: draft.knowledge_level ? Number(draft.knowledge_level) as 1|2|3|4|5 : null,
       part_of_speech:  draft.part_of_speech || null,
       topic_ids:       topicIds,
@@ -199,10 +214,10 @@ export function WordPage() {
         {editing && draft && (
           <div className="word-page-edit-form">
             <FormField label="Term">
-              <input className="wp-input" value={draft.term} onChange={(e) => set('term', e.target.value)} />
+              <input className="wp-input" value={draft.term} maxLength={255} onChange={(e) => { set('term', e.target.value); setSaveError(null) }} />
             </FormField>
             <FormField label="Translations">
-              <input className="wp-input" value={draft.translations} onChange={(e) => set('translations', e.target.value)} />
+              <input className="wp-input" value={draft.translations} onChange={(e) => { set('translations', e.target.value); setSaveError(null) }} />
             </FormField>
             <FormField label="Knowledge level">
               <CompactDropdown value={draft.knowledge_level} options={LEVEL_OPTIONS} onChange={(v) => set('knowledge_level', v)} ariaLabel="Knowledge level" />
@@ -251,12 +266,17 @@ export function WordPage() {
 
       {editing && (
         <div className="word-page-edit-actions">
-          <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
-          <div className="word-page-edit-actions-right">
-            <button type="button" className="wp-btn-cancel" onClick={() => navigate(`/words/${wordId}`, {replace: true})}>Cancel</button>
-            <button type="button" className="wp-btn-save" disabled={saveMutation.isPending} onClick={save}>
-              {saveMutation.isPending ? 'Saving…' : 'Save'}
-            </button>
+          {saveError && (
+            <div className="wp-save-error">{saveError}</div>
+          )}
+          <div className="word-page-edit-actions-row">
+            <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
+            <div className="word-page-edit-actions-right">
+              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(`/words/${wordId}`, {replace: true}); setSaveError(null) }}>Cancel</button>
+              <button type="button" className="wp-btn-save" disabled={saveMutation.isPending} onClick={save}>
+                {saveMutation.isPending ? 'Saving…' : 'Save'}
+              </button>
+            </div>
           </div>
         </div>
       )}

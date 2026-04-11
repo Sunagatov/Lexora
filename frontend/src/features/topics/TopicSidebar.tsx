@@ -179,6 +179,7 @@ export function TopicSidebar({
                 placeholder="Topic name…"
                 value={newTopicName}
                 autoFocus
+                maxLength={200}
                 onChange={(e) => { setNewTopicName(e.target.value); setTopicError(null) }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && newTopicName.trim()) createTopicMutation.mutate()

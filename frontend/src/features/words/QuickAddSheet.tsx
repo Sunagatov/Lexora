@@ -120,7 +120,19 @@ export function QuickAddSheet({onClose}: Props) {
   }
 
   function handleSave() {
-    if (!term.trim() || !translation.trim() || !topicId) return
+    if (!term.trim()) {
+      setFeedback({ok: false, msg: 'Word or phrase is required.'})
+      termRef.current?.focus()
+      return
+    }
+    if (!translation.trim()) {
+      setFeedback({ok: false, msg: 'Translation is required.'})
+      return
+    }
+    if (!topicId) {
+      setFeedback({ok: false, msg: 'Please select a topic.'})
+      return
+    }
     setFeedback(null)
     addWordMutation.mutate()
   }
@@ -220,6 +232,7 @@ export function QuickAddSheet({onClose}: Props) {
                   placeholder="New topic name…"
                   value={newTopic}
                   autoFocus
+                  maxLength={200}
                   onChange={(e) => setNewTopic(e.target.value)}
                   onKeyDown={(e) => {
                     e.stopPropagation() // prevent sheet-level Escape from closing sheet while typing
