@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.shared.config import settings
@@ -21,8 +21,8 @@ Reply with ONLY the exact topic name from the list — nothing else, no explanat
 
 
 class SuggestTopicRequest(BaseModel):
-    term: str
-    translation: str
+    term: str = Field(min_length=1, max_length=200)
+    translation: str = Field(min_length=1, max_length=500)
 
 
 class SuggestTopicResponse(BaseModel):

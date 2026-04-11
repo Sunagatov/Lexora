@@ -44,6 +44,9 @@ function monthLabel(key: string): string {
     .toLocaleString('default', {month: 'short', year: '2-digit'})
 }
 
+// Computed once at module load — months don't change during a session
+const MONTHS = lastNMonths(6)
+
 // ── component ─────────────────────────────────────────────────────────────────
 
 export function StatsPage() {
@@ -71,32 +74,26 @@ export function StatsPage() {
     : 0
 
   // words added by month — last 6
-  const months = useMemo(() => lastNMonths(6), [])
   const wordsByMonth = useMemo(() => {
     const m: Record<string, number> = {}
-    for (const key of months) m[key] = 0
+    for (const key of MONTHS) m[key] = 0
     for (const w of words) {
       const k = monthKey(w.created_at)
       if (k in m) m[k]++
     }
     return m
-  }, [words, months])
+  }, [words])
   const maxMonthCount = Math.max(1, ...Object.values(wordsByMonth))
 
   // per-topic rows: active topics sorted by progress ascending, inactive topics at the bottom
   const topicRows = useMemo(() => {
-    type TopicRow = {id: number; slug: string; name: string; total: number; lc: Record<number,number>; hasActive: boolean; progress: number}
+    type TopicRow = {id: number; slug: string; name: string; total: number; hasActive: boolean; progress: number}
     const rows: TopicRow[] = []
     for (const t of topics) {
       const tw = words.filter((w) => w.topic_ids.includes(t.id))
       if (tw.length === 0) continue
-      const lc: Record<number, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-      for (const w of tw) {
-        const l = w.knowledge_level
-        if (l && l >= 1 && l <= 5) lc[l] = (lc[l] ?? 0) + 1
-      }
-      const hasActive = ACTIVE_LEVELS.some((l) => lc[l] > 0)
-      rows.push({id: t.id, slug: t.slug, name: t.name, total: tw.length, lc, hasActive, progress: calcTopicProgress(tw)})
+      const hasActive = ACTIVE_LEVELS.some((w) => tw.some((word) => word.knowledge_level === w))
+      rows.push({id: t.id, slug: t.slug, name: t.name, total: tw.length, hasActive, progress: calcTopicProgress(tw)})
     }
     // active topics sorted worst-first; inactive (no levels 1-4) go to the bottom
     return rows.sort((a, b) => {
@@ -105,6 +102,9 @@ export function StatsPage() {
       return a.progress - b.progress
     })
   }, [topics, words])
+
+  // replace months reference in JSX
+  const months = MONTHS
 
   if (isLoading) return <div className="stats-loading">Loading…</div>
 

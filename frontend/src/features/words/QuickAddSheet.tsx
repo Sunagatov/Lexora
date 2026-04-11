@@ -249,7 +249,7 @@ export function QuickAddSheet({onClose}: Props) {
               placeholder="e.g. ephemeral"
               value={term}
               onChange={(e) => setTerm(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave().catch(() => {}) } }}
             />
             <div className="quick-add-actions-row">
               <button
@@ -290,7 +290,7 @@ export function QuickAddSheet({onClose}: Props) {
               placeholder="e.g. недолговечный"
               value={translation}
               onChange={(e) => { setTranslation(e.target.value); setAiSuggested(false) }}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave().catch(() => {}) } }}
             />
           </div>
 
