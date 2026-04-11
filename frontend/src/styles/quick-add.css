@@ -143,6 +143,48 @@
 
 .quick-add-term-row .quick-add-input { flex: 1; }
 
+/* Three action buttons below the term input */
+.quick-add-actions-row {
+  display: flex;
+  gap: 6px;
+}
+
+.quick-add-action-btn {
+  flex: 1;
+  padding: 7px 8px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  text-align: center;
+}
+
+.quick-add-action-btn:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.quick-add-action-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Primary action (Auto-fill) gets accent styling */
+.quick-add-action-btn-primary {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: rgba(99, 102, 241, 0.25);
+  flex: 1.2;
+}
+
+.quick-add-action-btn-primary:hover:not(:disabled) {
+  background: #e0e7ff;
+}
+
+/* quick-add-translate-btn is still used for the inline 'Create' topic button */
 .quick-add-translate-btn {
   flex-shrink: 0;
   padding: 0 14px;

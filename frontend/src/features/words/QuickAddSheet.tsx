@@ -54,19 +54,32 @@ export function QuickAddSheet({onClose}: Props) {
   const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
   const topics: Topic[] = topicsQuery.data ?? []
 
-  // Default to Inbox topic id once topics load, but only if no Inbox exists yet
-  // show a placeholder so user must consciously pick a topic
+  // Default to Inbox topic id once topics load.
+  // If Inbox doesn't exist yet, still default topicId to null but
+  // show Inbox as the first option — it will be created on first save.
   useEffect(() => {
     if (topicId !== null || topics.length === 0) return
     const inbox = topics.find((t) => t.name === INBOX_TOPIC_NAME)
     if (inbox) setTopicId(inbox.id)
-    // if no Inbox yet, leave topicId null — user must pick or create
   }, [topics, topicId])
+
+  // Ensure Inbox topic exists, creating it if needed. Returns its id.
+  async function ensureInbox(): Promise<number | null> {
+    const existing = topics.find((t) => t.name === INBOX_TOPIC_NAME)
+    if (existing) return existing.id
+    try {
+      const created = await createTopic(INBOX_TOPIC_NAME, slugify(INBOX_TOPIC_NAME))
+      queryClient.invalidateQueries({queryKey: ['topics']})
+      return created.id
+    } catch {
+      return null
+    }
+  }
 
   useEffect(() => { setTimeout(() => termRef.current?.focus(), 80) }, [])
 
   const addWordMutation = useMutation({
-    mutationFn: () => quickAddWord(term.trim(), translation.trim(), topicId ? [topicId] : []),
+    mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['words']})
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
@@ -94,10 +107,60 @@ export function QuickAddSheet({onClose}: Props) {
     onError: () => setFeedback({ok: false, msg: 'Could not create topic — name may already exist.'}),
   })
 
-  async function handleTranslate() {
-    if (!term.trim()) return
+  async function handleTranslateOnly() {
+    if (!term.trim()) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      termRef.current?.focus()
+      return
+    }
     setTranslating(true)
     setFeedback(null)
+    const result = await translateTerm(term.trim())
+    setTranslating(false)
+    if (result) {
+      setTranslation(result)
+    } else {
+      setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
+    }
+  }
+
+  async function handleSuggestOnly() {
+    if (!term.trim()) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      termRef.current?.focus()
+      return
+    }
+    if (!translation.trim()) {
+      setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'})
+      return
+    }
+    setSuggesting(true)
+    setFeedback(null)
+    const suggested = await suggestTopic(term.trim(), translation.trim())
+    setSuggesting(false)
+    if (suggested) {
+      const match = topics.find((t) => t.name === suggested)
+      if (match) {
+        setTopicId(match.id)
+        setAiSuggested(true)
+      } else {
+        setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn’t found in your topics.`})
+      }
+    } else {
+      setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'})
+    }
+  }
+
+  async function handleAutoFill() {
+    if (!term.trim()) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      termRef.current?.focus()
+      return
+    }
+    setFeedback(null)
+
+    // Step 1: translate
+    setTranslating(true)
     const result = await translateTerm(term.trim())
     setTranslating(false)
     if (!result) {
@@ -106,7 +169,7 @@ export function QuickAddSheet({onClose}: Props) {
     }
     setTranslation(result)
 
-    // After translation succeeds, ask AI to suggest a topic
+    // Step 2: suggest topic
     setSuggesting(true)
     const suggested = await suggestTopic(term.trim(), result)
     setSuggesting(false)
@@ -119,7 +182,7 @@ export function QuickAddSheet({onClose}: Props) {
     }
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!term.trim()) {
       setFeedback({ok: false, msg: 'Word or phrase is required.'})
       termRef.current?.focus()
@@ -129,12 +192,22 @@ export function QuickAddSheet({onClose}: Props) {
       setFeedback({ok: false, msg: 'Translation is required.'})
       return
     }
-    if (!topicId) {
-      setFeedback({ok: false, msg: 'Please select a topic.'})
-      return
-    }
     setFeedback(null)
-    addWordMutation.mutate()
+
+    // Resolve topic: use selected, or auto-create Inbox
+    let resolvedTopicId = topicId
+    if (!resolvedTopicId) {
+      const inboxId = await ensureInbox()
+      if (!inboxId) {
+        setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'})
+        return
+      }
+      setTopicId(inboxId)
+      resolvedTopicId = inboxId
+    }
+
+    // Pass resolvedTopicId directly — avoids stale closure on topicId state
+    addWordMutation.mutate(resolvedTopicId)
   }
 
   // Only handle Escape at sheet level — do NOT intercept Enter here,
@@ -143,7 +216,7 @@ export function QuickAddSheet({onClose}: Props) {
     if (e.key === 'Escape') onClose()
   }
 
-  const canSave = term.trim().length > 0 && translation.trim().length > 0 && !!topicId && !addWordMutation.isPending
+  const canSave = term.trim().length > 0 && translation.trim().length > 0 && !addWordMutation.isPending
 
   // Sort topics: Inbox first, rest alphabetical
   const sortedTopics = [
@@ -170,23 +243,41 @@ export function QuickAddSheet({onClose}: Props) {
           {/* Term */}
           <div className="quick-add-field">
             <label className="quick-add-label">Word or phrase</label>
-            <div className="quick-add-term-row">
-              <input
-                ref={termRef}
-                className="quick-add-input"
-                placeholder="e.g. ephemeral"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
-              />
+            <input
+              ref={termRef}
+              className="quick-add-input"
+              placeholder="e.g. ephemeral"
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave() } }}
+            />
+            <div className="quick-add-actions-row">
               <button
                 type="button"
-                className="quick-add-translate-btn"
-                onClick={handleTranslate}
+                className="quick-add-action-btn quick-add-action-btn-primary"
+                onClick={handleAutoFill}
                 disabled={!term.trim() || translating || suggesting}
-                title="Auto-translate via MyMemory + AI topic suggestion"
+                title="Translate + suggest topic automatically"
               >
-                {translating ? 'Translating…' : suggesting ? 'Suggesting…' : '✨ Translate'}
+                {translating ? 'Translating…' : suggesting ? 'Suggesting…' : '✨ Auto-fill'}
+              </button>
+              <button
+                type="button"
+                className="quick-add-action-btn"
+                onClick={handleTranslateOnly}
+                disabled={!term.trim() || translating || suggesting}
+                title="Translate only"
+              >
+                Translate
+              </button>
+              <button
+                type="button"
+                className="quick-add-action-btn"
+                onClick={handleSuggestOnly}
+                disabled={!term.trim() || suggesting || translating}
+                title="Suggest topic based on word and translation"
+              >
+                {suggesting ? '…' : 'Suggest topic'}
               </button>
             </div>
           </div>
@@ -215,7 +306,7 @@ export function QuickAddSheet({onClose}: Props) {
                 >
                   {topicsQuery.isLoading && <option value="">Loading…</option>}
                   {!topicsQuery.isLoading && topicId === null && (
-                    <option value="" disabled>— select a topic —</option>
+                    <option value="" disabled>📥 Inbox (default)</option>
                   )}
                   {sortedTopics.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
