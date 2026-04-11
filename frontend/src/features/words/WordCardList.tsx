@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
@@ -76,11 +76,10 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
 }
 
 function LevelDropdown({current, flipUp, onSelect, onClose}: {current: WordKnowledgeLevel | null; flipUp: boolean; onSelect: (l: WordKnowledgeLevel) => void; onClose: () => void}) {
-  const ref = useRef<HTMLDivElement>(null)
   return (
     <>
       <div className="level-dropdown-overlay" onClick={onClose} />
-      <div ref={ref} className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}>
+      <div className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}>
         {LEVELS.map((l) => (
           <button
             key={l}

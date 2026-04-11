@@ -1,8 +1,3 @@
-.level-dropdown-table {
-  top: auto;
-  bottom: calc(100% + 6px);
-}
-
 /* Smart dropdown positioning — flips up when near bottom of viewport */
 .level-dropdown-down {
   top: calc(100% + 6px);
