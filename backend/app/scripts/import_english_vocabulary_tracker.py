@@ -7,9 +7,9 @@ from openpyxl import load_workbook
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.session import SessionLocal
-from app.models.topic import Topic
-from app.models.word import Word
+from app.shared.db import SessionLocal
+from app.features.topics.model import Topic
+from app.features.words.model import Word
 from app.scripts.xlsx_mapping import (
     IGNORED_SHEETS,
     SheetConfig,
@@ -35,14 +35,14 @@ def get_or_create_topic(db: Session, sheet_name: str) -> tuple[Topic, bool]:
     return topic, True
 
 
-def existing_terms(db: Session, topic_id: int) -> set[str]:
-    rows = db.scalars(select(Word.term).where(Word.topic_id == topic_id)).all()
+def existing_terms(db: Session, topic: Topic) -> set[str]:
+    rows = db.scalars(select(Word.term).where(Word.topics.any(Topic.id == topic.id))).all()
     return {t.lower() for t in rows}
 
 
-def build_word(topic_id: int, term: str, translations: str, config: SheetConfig, row_data: dict, sheet_name: str, row_number: int) -> Word:
+def build_word(topic: Topic, term: str, translations: str, config: SheetConfig, row_data: dict, sheet_name: str, row_number: int) -> Word:
     return Word(
-        topic_id=topic_id,
+        topics=[topic],
         term=term,
         translations=translations,
         part_of_speech=config.part_of_speech,
@@ -80,7 +80,7 @@ def import_workbook(file_path: Path) -> None:
                 else:
                     topics_existing += 1
 
-                seen = existing_terms(db, topic.id)
+                seen = existing_terms(db, topic)
 
                 for row_number, row in enumerate(worksheet.iter_rows(min_row=2, values_only=True), start=2):
                     row_data = row_to_dict(headers, row)
@@ -97,7 +97,7 @@ def import_workbook(file_path: Path) -> None:
                         words_skipped += 1
                         continue
 
-                    db.add(build_word(topic.id, term, translations, config, row_data, worksheet.title, row_number))
+                    db.add(build_word(topic, term, translations, config, row_data, worksheet.title, row_number))
                     seen.add(term.lower())
                     words_added += 1
 
