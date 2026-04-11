@@ -38,7 +38,7 @@ const LEVEL_OPTIONS: DropdownOption<string>[] = [
 
 type EditState = {
   term: string; translations: string; knowledge_level: string; part_of_speech: string
-  topic_id: string; countability: string; past_simple: string; past_participle: string
+  topic_ids: string[]; countability: string; past_simple: string; past_participle: string
   example: string; notes: string; pattern: string
 }
 
@@ -47,7 +47,7 @@ function toEditState(word: Word): EditState {
     term: word.term, translations: word.translations,
     knowledge_level: String(word.knowledge_level ?? ''),
     part_of_speech: word.part_of_speech ?? '',
-    topic_id: String(word.topic_id),
+    topic_ids: word.topic_ids.map(String),
     countability: word.countability ?? '',
     past_simple: word.past_simple ?? '',
     past_participle: word.past_participle ?? '',
@@ -81,19 +81,25 @@ export function WordPage() {
     mutationFn: () => deleteWord(Number(wordId)),
     onSuccess: () => {
       queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
-      const topic = topicsQuery.data?.find((t) => t.id === word?.topic_id)
+      const firstTopicId = word?.topic_ids[0]
+      const topic = topicsQuery.data?.find((t) => t.id === firstTopicId)
       navigate(topic ? `/topics/${topic.slug}` : '/')
     },
   })
 
   const word   = wordQuery.data
   const topics = topicsQuery.data ?? []
-  const topic  = topics.find((t) => t.id === word?.topic_id)
+  // primary topic = topic_ids[0] order, used for back-navigation
+  const topic  = word?.topic_ids.length
+    ? topics.find((t) => t.id === word.topic_ids[0])
+    : undefined
 
   const allWords   = queryClient.getQueryData<Word[]>(['words']) ?? []
   const topicWords = useMemo(
-    () => word ? allWords.filter((w) => w.topic_id === word.topic_id).sort((a, b) => a.term.localeCompare(b.term)) : [],
-    [allWords, word],
+    () => word && topic
+      ? allWords.filter((w) => w.topic_ids.includes(topic.id)).sort((a, b) => a.term.localeCompare(b.term))
+      : [],
+    [allWords, word, topic],
   )
   const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
   const prevWord   = currentIdx > 0 ? topicWords[currentIdx - 1] : null
@@ -111,18 +117,20 @@ export function WordPage() {
   const isVerb = (draft?.part_of_speech ?? word.part_of_speech) === 'verb'
   const isNoun = (draft?.part_of_speech ?? word.part_of_speech) === 'noun'
 
-  function set(field: keyof EditState, value: string) {
+  function set(field: keyof EditState, value: string | string[]) {
     setDraft((d) => d ? {...d, [field]: value} : d)
   }
 
   function save() {
     if (!draft || !word) return
+    const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
+    if (topicIds.length === 0) return  // guard: must have at least one valid topic
     saveMutation.mutate({
       term:            draft.term.trim() || word.term,
       translations:    draft.translations.trim() || word.translations,
       knowledge_level: draft.knowledge_level ? Number(draft.knowledge_level) as 1|2|3|4|5 : null,
       part_of_speech:  draft.part_of_speech || null,
-      topic_id:        Number(draft.topic_id),
+      topic_ids:       topicIds,
       countability:    isNoun && draft.countability ? draft.countability : null,
       past_simple:     isVerb && draft.past_simple.trim() ? draft.past_simple.trim() : null,
       past_participle: isVerb && draft.past_participle.trim() ? draft.past_participle.trim() : null,
@@ -166,7 +174,7 @@ export function WordPage() {
           <div className="word-page-view">
             <ViewRow label="Translation"    value={word.translations} />
             <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
-            <ViewRow label="Topic"          value={topic?.name ?? '—'} />
+            <ViewRow label="Topic"          value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
             <ViewRow label="Knowledge"      value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
             {word.countability    && <ViewRow label="Countability"    value={word.countability} />}
             {word.example         && <ViewRow label="Example"         value={word.example} />}
@@ -194,7 +202,15 @@ export function WordPage() {
               <CompactDropdown value={draft.part_of_speech} options={POS_OPTIONS} onChange={(v) => set('part_of_speech', v)} ariaLabel="Part of speech" />
             </FormField>
             <FormField label="Topic">
-              <CompactDropdown value={draft.topic_id} options={topics.map((t) => ({value: String(t.id), label: t.name}))} onChange={(v) => set('topic_id', v)} ariaLabel="Topic" />
+              <CompactDropdown
+                value={draft.topic_ids[0] ?? ''}
+                options={[
+                  {value: '', label: '— select topic —'},
+                  ...topics.map((t) => ({value: String(t.id), label: t.name})),
+                ]}
+                onChange={(v) => set('topic_ids', [v])}
+                ariaLabel="Primary topic"
+              />
             </FormField>
             {isNoun && (
               <FormField label="Countability">

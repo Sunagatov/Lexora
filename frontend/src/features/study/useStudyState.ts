@@ -22,7 +22,7 @@ export function useStudyState() {
   const smartReview = useSmartReview()
 
   const topicWords = useMemo(
-    () => words.filter((w) => w.topic_id === topic.selectedTopicId),
+    () => topic.selectedTopicId === null ? [] : words.filter((w) => w.topic_ids.includes(topic.selectedTopicId!)),
     [words, topic.selectedTopicId],
   )
 

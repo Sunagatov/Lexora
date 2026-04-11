@@ -14,7 +14,7 @@ export type WordKnowledgeLevel = 1 | 2 | 3 | 4 | 5
 
 export type Word = {
   id: number
-  topic_id: number
+  topic_ids: number[]
   term: string
   past_simple: string | null
   past_participle: string | null

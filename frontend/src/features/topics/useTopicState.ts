@@ -18,7 +18,9 @@ export function useTopicState(topics: Topic[], words: Word[]) {
 
   const topicCounts = useMemo(() => {
     const m = new Map<number, number>()
-    for (const w of words) m.set(w.topic_id, (m.get(w.topic_id) ?? 0) + 1)
+    for (const w of words)
+      for (const tid of w.topic_ids)
+        m.set(tid, (m.get(tid) ?? 0) + 1)
     return m
   }, [words])
 

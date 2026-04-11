@@ -50,6 +50,7 @@ export function TopicSidebar({
     mutationFn: (id: number) => deleteTopic(id, true),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['topics']})
+      queryClient.invalidateQueries({queryKey: ['words']})
       setDeleteTopicId(null)
     },
   })

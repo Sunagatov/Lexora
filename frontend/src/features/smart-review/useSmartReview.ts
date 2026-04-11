@@ -10,6 +10,11 @@ export function useSmartReview() {
 
   const mutation = useMutation({
     mutationFn: completeSmartReviewItem,
+    onMutate: async () => {
+      // cancel any in-flight smart-review refetch so it doesn't overwrite
+      // the optimistic knowledge_level patch made by useWordUpdate
+      await queryClient.cancelQueries({queryKey: SMART_REVIEW_KEY})
+    },
     onSuccess: (updatedQueue) => queryClient.setQueryData(SMART_REVIEW_KEY, updatedQueue),
   })
 
