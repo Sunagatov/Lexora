@@ -38,3 +38,4 @@ class Word(Base):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     topics = relationship("Topic", secondary=word_topics, back_populates="words")
+    progress_events = relationship("WordProgressEvent", back_populates="word", cascade="all, delete-orphan")

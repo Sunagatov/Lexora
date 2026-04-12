@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.shared.db import SessionLocal
 from app.features.topics.model import Topic
 from app.features.words.model import Word
+from app.features.stats.model import WordProgressEvent  # noqa: F401 — registers the ORM class so Word.progress_events resolves
 from app.scripts.xlsx_mapping import (
     IGNORED_SHEETS,
     SheetConfig,

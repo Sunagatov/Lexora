@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
+from app.features.stats.model import WordProgressEvent
 
 
 def _normalize_term(term: str) -> str:
@@ -96,6 +97,10 @@ class WordRepository:
             setattr(word, field, value)
         if payload.topic_ids is not None:
             word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
+        # record a progress event whenever knowledge_level changes
+        new_level = data.get("knowledge_level", word.knowledge_level)
+        if "knowledge_level" in data and new_level != word.knowledge_level:
+            db.add(WordProgressEvent(word_id=word.id, old_level=word.knowledge_level, new_level=new_level, source="manual"))
         db.add(word)
         db.commit()
         db.refresh(word)
