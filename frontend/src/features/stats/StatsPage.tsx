@@ -10,7 +10,7 @@ const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak', level_2: 'Basic', level_3: 'Okay', level_4: 'Strong', level_5: 'Parked', unset: 'No level',
 }
 const LEVEL_COLORS: Record<string, string> = {
-  level_1: '#dc2626', level_2: '#2563eb', level_3: '#d97706', level_4: '#059669', level_5: '#cbd5e1', unset: '#e2e8f0',
+  level_1: '#dc2626', level_2: '#2563eb', level_3: '#7c3aed', level_4: '#059669', level_5: '#cbd5e1', unset: '#e2e8f0',
 }
 const LEVEL_KEYS = ['level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'unset'] as const
 
