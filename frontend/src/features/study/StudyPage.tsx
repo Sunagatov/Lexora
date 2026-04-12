@@ -114,7 +114,7 @@ export function StudyPage() {
 
         <button
           type="button"
-          className="fab"
+          className={`fab ${drawerOpen ? 'fab-hidden' : ''}`}
           aria-label="Add word"
           onClick={() => setQuickAddOpen(true)}
         >
