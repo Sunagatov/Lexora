@@ -75,7 +75,7 @@ export function WordPage() {
     onSuccess: (updated) => {
       queryClient.setQueryData(['word', wordId], updated)
       queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
-      navigate(`/words/${wordId}`, {replace: true})
+      navigate(`/words/${wordId}`, {replace: true, state: location.state})
       setDraft(null)
       setSaveError(null)
     },
@@ -184,7 +184,7 @@ export function WordPage() {
             Back
           </button>
           {!editing && (
-            <button type="button" className="word-page-edit-btn" onClick={() => navigate(`/words/${wordId}/edit`)}>
+            <button type="button" className="word-page-edit-btn" onClick={() => navigate(`/words/${wordId}/edit`, {state: location.state})}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
               </svg>
@@ -276,7 +276,7 @@ export function WordPage() {
           <div className="word-page-edit-actions-row">
             <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
             <div className="word-page-edit-actions-right">
-              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(`/words/${wordId}`, {replace: true}); setSaveError(null) }}>Cancel</button>
+              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(`/words/${wordId}`, {replace: true, state: location.state}); setSaveError(null) }}>Cancel</button>
               <button type="button" className="wp-btn-save" disabled={saveMutation.isPending} onClick={save}>
                 {saveMutation.isPending ? 'Saving…' : 'Save'}
               </button>
@@ -287,12 +287,12 @@ export function WordPage() {
 
       {!editing && (
         <div className="word-page-footer">
-          <button type="button" className="word-page-nav-btn" disabled={!prevWord} onClick={() => prevWord && navigate(`/words/${prevWord.id}`)}>
+          <button type="button" className="word-page-nav-btn" disabled={!prevWord} onClick={() => prevWord && navigate(`/words/${prevWord.id}`, {state: location.state})}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9,2 4,7 9,12" /></svg>
             Prev
           </button>
           <span className="word-page-nav-pos">{currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}</span>
-          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!nextWord} onClick={() => nextWord && navigate(`/words/${nextWord.id}`)}>
+          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!nextWord} onClick={() => nextWord && navigate(`/words/${nextWord.id}`, {state: location.state})}>
             Next
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="5,2 10,7 5,12" /></svg>
           </button>
