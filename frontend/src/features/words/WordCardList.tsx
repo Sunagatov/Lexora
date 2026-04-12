@@ -6,7 +6,7 @@ import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 type Props = {
   words: Word[]
   pendingWordId: number | null
-  fromTopicSlug: string | undefined
+  fromTopicSlug?: string
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
