@@ -54,7 +54,15 @@ export function useTopicState(topics: Topic[], words: Word[]) {
 
   function selectTopic(id: number) {
     const topic = topics.find((t) => t.id === id)
-    if (topic) navigate(`/topics/${topic.slug}`)
+    if (topic) {
+      navigate(`/topics/${topic.slug}`)
+      // track recent topics in localStorage (max 5, newest first, no duplicates)
+      try {
+        const prev: number[] = JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]')
+        const next = [id, ...prev.filter((x) => x !== id)].slice(0, 5)
+        localStorage.setItem('sidebar_recent_topics', JSON.stringify(next))
+      } catch { /* ignore */ }
+    }
     setDrawerOpen(false)
   }
 

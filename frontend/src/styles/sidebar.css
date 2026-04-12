@@ -228,6 +228,17 @@
 
 .sidebar-group-chevron.collapsed { transform: rotate(-90deg); }
 
+.sidebar-group-label {
+  padding: 5px 4px 4px 12px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sidebar-text-2);
+  opacity: 0.7;
+  display: block;
+}
+
 .sidebar-group-count {
   margin-left: auto;
   font-size: 0.67rem;

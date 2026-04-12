@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useRef, useMemo, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
@@ -119,6 +119,19 @@ export function TopicSidebar({
   }
 
   const needle      = topicSearch.toLowerCase().trim()
+
+  // Recent topics — stored as IDs, resolved to current topic objects
+  const recentTopicIds: number[] = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]') } catch { return [] }
+  }, [topics]) // re-read when topics change
+  const recentTopics = useMemo(() =>
+    recentTopicIds
+      .map((id) => topics.find((t) => t.id === id))
+      .filter((t): t is Topic => !!t && !needle)
+      .slice(0, 5),
+    [recentTopicIds, topics, needle],
+  )
+
   const posTopics   = sortTopics(
     topics.filter((t) => isPosGroup(t)  && (!needle || t.name.toLowerCase().includes(needle))),
     posSort, topicProgress, topicCounts,
@@ -209,6 +222,15 @@ export function TopicSidebar({
 
       {/* ── Topic list ─────────────────────────────────────────────────── */}
       <div className="sidebar-topic-list">
+        {/* Recent topics */}
+        {recentTopics.length > 0 && (
+          <div className="sidebar-group">
+            <div className="sidebar-group-header">
+              <span className="sidebar-group-label">Recent</span>
+            </div>
+            {recentTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+          </div>
+        )}
         {posTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header">
