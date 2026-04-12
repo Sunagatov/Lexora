@@ -6,6 +6,7 @@ import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 type Props = {
   words: Word[]
   pendingWordId: number | null
+  fromTopicSlug: string | undefined
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
@@ -16,7 +17,7 @@ function openUpward(buttonEl: HTMLElement): boolean {
   return window.innerHeight - rect.bottom < DROPDOWN_HEIGHT
 }
 
-export function WordCardList({words, pendingWordId, onUpdate}: Props) {
+export function WordCardList({words, pendingWordId, fromTopicSlug, onUpdate}: Props) {
   const [openId, setOpenId] = useState<number | null>(null)
   const [flipUp, setFlipUp] = useState(false)
   const navigate = useNavigate()
@@ -35,7 +36,7 @@ export function WordCardList({words, pendingWordId, onUpdate}: Props) {
         return (
           <article key={word.id} className={`word-card ${lc}`}>
             <div className="word-card-header">
-              <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`)}>{word.term}</strong>
+              <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}>{word.term}</strong>
               <div className="word-card-level-wrap">
                 <button
                   type="button"

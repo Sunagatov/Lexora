@@ -6,6 +6,7 @@ import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 type Props = {
   words: Word[]
   pendingWordId: number | null
+  fromTopicSlug: string | undefined
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
@@ -17,7 +18,7 @@ function openUpward(buttonEl: HTMLElement): boolean {
   return window.innerHeight - rect.bottom < DROPDOWN_HEIGHT
 }
 
-export function WordTable({words, pendingWordId, onUpdate}: Props) {
+export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props) {
   const [openId, setOpenId]   = useState<number | null>(null)
   const [flipUp, setFlipUp]   = useState(false)
   const navigate = useNavigate()
@@ -38,7 +39,7 @@ export function WordTable({words, pendingWordId, onUpdate}: Props) {
             return (
               <tr key={word.id} className={`word-row ${lc}`}>
                 <td className="word-cell-word">
-                  <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`)}>{word.term}</strong>
+                  <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}>{word.term}</strong>
                 </td>
                 <td className="word-cell-details">
                   <div className="word-translation">{word.translations}</div>

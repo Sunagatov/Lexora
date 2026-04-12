@@ -95,8 +95,8 @@ export function StudyPage() {
                 <div className="empty-state">No words match the current filters.</div>
               ) : (
                 <>
-                  <WordTable words={s.pageWords} pendingWordId={s.pendingWordId} onUpdate={s.updateLevel} />
-                  <WordCardList words={s.pageWords} pendingWordId={s.pendingWordId} onUpdate={s.updateLevel} />
+                  <WordTable words={s.pageWords} pendingWordId={s.pendingWordId} fromTopicSlug={s.selectedTopic?.slug} onUpdate={s.updateLevel} />
+                  <WordCardList words={s.pageWords} pendingWordId={s.pendingWordId} fromTopicSlug={s.selectedTopic?.slug} onUpdate={s.updateLevel} />
                 </>
               )}
               {s.selectedTopicId !== null && (

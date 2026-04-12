@@ -74,10 +74,12 @@ class WordRepository:
     @staticmethod
     def update(db: Session, word: Word, payload: WordUpdate) -> Word:
         data = payload.model_dump(exclude_unset=True, exclude={"topic_ids"})
-        new_term = data.get("term")
+        effective_term = data.get("term", word.term)
         target_topic_ids = payload.topic_ids if payload.topic_ids is not None else [t.id for t in word.topics]
-        if new_term is not None:
-            norm = _normalize_term(new_term)
+        term_changed  = "term" in data and _normalize_term(data["term"]) != _normalize_term(word.term)
+        topics_changed = payload.topic_ids is not None and set(payload.topic_ids) != {t.id for t in word.topics}
+        if term_changed or topics_changed:
+            norm = _normalize_term(effective_term)
             existing = db.scalars(
                 select(Word)
                 .where(Word.deleted_at.is_(None))
@@ -88,7 +90,7 @@ class WordRepository:
                 if _normalize_term(w.term) == norm:
                     raise HTTPException(
                         status_code=status.HTTP_409_CONFLICT,
-                        detail=f"Word '{new_term}' already exists in one of the selected topics",
+                        detail=f"Word '{effective_term}' already exists in one of the selected topics",
                     )
         for field, value in data.items():
             setattr(word, field, value)

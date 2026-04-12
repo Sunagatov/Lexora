@@ -58,8 +58,10 @@ function toEditState(word: Word): EditState {
 export function WordPage() {
   const {wordId}    = useParams<{wordId: string}>()
   const navigate    = useNavigate()
+  const location    = useLocation()
   const queryClient = useQueryClient()
-  const editing     = useLocation().pathname.endsWith('/edit')
+  const editing     = location.pathname.endsWith('/edit')
+  const fromTopicSlug = (location.state as {fromTopicSlug?: string} | null)?.fromTopicSlug
 
   const [draft, setDraft]           = useState<EditState | null>(null)
   const [confirming, setConfirming] = useState(false)
@@ -108,9 +110,11 @@ export function WordPage() {
 
   const word   = wordQuery.data
   const topics = topicsQuery.data ?? []
-  // primary topic = topic_ids[0] order, used for back-navigation
+  // Use the topic the user navigated from; fall back to topic_ids[0] only when no context exists
   const topic  = word?.topic_ids.length
-    ? topics.find((t) => t.id === word.topic_ids[0])
+    ? (fromTopicSlug
+        ? topics.find((t) => t.slug === fromTopicSlug) ?? topics.find((t) => t.id === word.topic_ids[0])
+        : topics.find((t) => t.id === word.topic_ids[0]))
     : undefined
 
   const allWords   = queryClient.getQueryData<Word[]>(['words']) ?? []
@@ -172,7 +176,7 @@ export function WordPage() {
           <button
             type="button"
             className="word-page-back-btn"
-            onClick={() => editing ? navigate(`/words/${wordId}`, {replace: true}) : navigate(`/topics/${topic?.slug ?? ''}`)}
+            onClick={() => editing ? navigate(`/words/${wordId}`, {replace: true, state: location.state}) : navigate(`/topics/${topic?.slug ?? ''}`)}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />

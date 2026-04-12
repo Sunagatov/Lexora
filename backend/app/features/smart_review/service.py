@@ -37,6 +37,7 @@ def _pick_for_level(
         select(Word)
         .options(selectinload(Word.topics))
         .where(Word.is_active == True)  # noqa: E712
+        .where(Word.deleted_at.is_(None))
         .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
     )
