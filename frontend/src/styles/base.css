@@ -73,10 +73,10 @@ button, input, select, textarea { font: inherit; }
 /* Level color tokens — used by chips, badges, buttons, table rows */
 /* Levels 1-4 are active study levels. Level 5 = Parked (rare/strange, learn later). */
 .level-unset { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
-.level-1     { background: #fef2f2; color: #c81e1e; border-color: #fecaca; }
-.level-2     { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
-.level-3     { background: #fefce8; color: #a16207; border-color: #fde68a; }
-.level-4     { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.level-1     { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+.level-2     { background: #eff6ff; color: #2563eb; border-color: #93c5fd; }
+.level-3     { background: #faf5ff; color: #7c3aed; border-color: #c4b5fd; }
+.level-4     { background: #ecfdf5; color: #059669; border-color: #6ee7b7; }
 /* Level 5 — Parked: muted grey, visually distinct from the 1-4 progression */
 .level-5     { background: #f1f5f9; color: #64748b; border-color: #cbd5e1; border-style: dashed; }
 
