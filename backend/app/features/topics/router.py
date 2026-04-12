@@ -42,8 +42,15 @@ def update_topic(topic_id: int, payload: TopicUpdate, db: Session = Depends(get_
     topic = topic_repo.get_by_id(db, topic_id)
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
-    if payload.slug and payload.slug != topic.slug and topic_repo.get_by_slug(db, payload.slug) is not None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Topic slug already exists")
+    if payload.slug and payload.slug != topic.slug:
+        conflict = db.scalar(select(Topic).where(Topic.slug == payload.slug))
+        if conflict is not None:
+            detail = (
+                f"Topic slug '{payload.slug}' already exists"
+                if conflict.deleted_at is None
+                else f"Topic slug '{payload.slug}' is used by a deleted topic — restore or permanently delete it first"
+            )
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
     return topic_repo.update(db, topic, payload)
 
 

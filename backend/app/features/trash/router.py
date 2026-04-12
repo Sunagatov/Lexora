@@ -25,7 +25,7 @@ def list_deleted_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
 
 @router.post("/words/{word_id}/restore", response_model=WordResponse)
 def restore_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
-    word = word_repo.get_by_id(db, word_id)
+    word = word_repo.get_by_id_including_deleted(db, word_id)
     if word is None or word.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted word not found")
     return WordResponse.from_word(word_repo.restore(db, word))
@@ -33,7 +33,7 @@ def restore_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
 
 @router.post("/topics/{topic_id}/restore", response_model=TopicResponse)
 def restore_topic(topic_id: int, restore_words: bool = False, db: Session = Depends(get_db)) -> TopicResponse:
-    topic = topic_repo.get_by_id(db, topic_id)
+    topic = topic_repo.get_by_id_including_deleted(db, topic_id)
     if topic is None or topic.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
     return topic_repo.restore(db, topic, restore_words=restore_words)

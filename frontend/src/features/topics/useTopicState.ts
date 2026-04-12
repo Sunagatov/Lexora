@@ -13,7 +13,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
 
   useEffect(() => {
     if (!topics.length || !topicSlug) return
-    if (!topics.some((t) => t.slug === topicSlug)) navigate('/smart-review', {replace: true})
+    if (!topics.some((t) => t.slug === topicSlug)) navigate('/', {replace: true})
   }, [topics, topicSlug, navigate])
 
   const topicCounts = useMemo(() => {

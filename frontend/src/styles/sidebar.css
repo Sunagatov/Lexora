@@ -118,19 +118,29 @@
   width: 100%;
   text-align: left;
   background: transparent;
-  border: none;
   border-left: 2px solid transparent;
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
   transition: background 0.12s;
   color: var(--sidebar-text);
   margin-bottom: 2px;
   position: relative;
+}
+
+.topic-item-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 10px 0 10px 12px;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
 }
 
 .topic-item:hover { background: rgba(255, 255, 255, 0.06); }
@@ -328,7 +338,7 @@
   display: none;
   background: transparent;
   border: none;
-  padding: 2px 4px;
+  padding: 10px 12px 10px 4px;
   cursor: pointer;
   color: var(--sidebar-text-2);
   border-radius: 4px;

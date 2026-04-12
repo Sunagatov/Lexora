@@ -38,9 +38,13 @@ export function useWordUpdate(onMutate: () => void) {
 
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(['words'], ctx.prev)
+      queryClient.invalidateQueries({queryKey: SMART_REVIEW_KEY})
     },
 
-    onSettled: () => queryClient.invalidateQueries({queryKey: ['words']}),
+    onSettled: () => {
+      queryClient.invalidateQueries({queryKey: ['words']})
+      queryClient.invalidateQueries({queryKey: SMART_REVIEW_KEY})
+    },
   })
 
   return {

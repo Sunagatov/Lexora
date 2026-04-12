@@ -263,22 +263,26 @@ function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmar
   clearTooltip: () => void
   onDelete: (id: number) => void
 }) {
-  const progress = topicProgress.get(topic.id)   // undefined if no active words yet
+  const progress = topicProgress.get(topic.id)
   return (
-    <button
-      type="button"
+    <div
       className={`topic-item ${!isSmartReview && topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
       onMouseEnter={(e) => onMouseEnter(e, topic.name)}
       onTouchStart={(e) => onTouchStart(e, topic.name)}
-      onClick={() => { clearTooltip(); onSelect(topic.id) }}
     >
-      <span className="topic-item-name">{topic.name}</span>
-      {progress !== undefined && (
-        <span className="topic-item-pct">{progress}%</span>
-      )}
-      <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
-      <span
-        role="button"
+      <button
+        type="button"
+        className="topic-item-select"
+        onClick={() => { clearTooltip(); onSelect(topic.id) }}
+      >
+        <span className="topic-item-name">{topic.name}</span>
+        {progress !== undefined && (
+          <span className="topic-item-pct">{progress}%</span>
+        )}
+        <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
+      </button>
+      <button
+        type="button"
         className="topic-item-delete"
         title="Delete topic"
         onClick={(e) => { e.stopPropagation(); onDelete(topic.id) }}
@@ -286,12 +290,12 @@ function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmar
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
           <line x1="2" y1="2" x2="10" y2="10" /><line x1="10" y1="2" x2="2" y2="10" />
         </svg>
-      </span>
+      </button>
       {progress !== undefined && (
         <span className="topic-progress-bar" aria-hidden="true">
           <span className="topic-progress-fill" style={{width: `${progress}%`}} />
         </span>
       )}
-    </button>
+    </div>
   )
 }

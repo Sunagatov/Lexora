@@ -33,6 +33,10 @@ class WordRepository:
 
     @staticmethod
     def get_by_id(db: Session, word_id: int) -> Word | None:
+        return db.scalar(_load_topics(select(Word).where(Word.id == word_id).where(Word.deleted_at.is_(None))))
+
+    @staticmethod
+    def get_by_id_including_deleted(db: Session, word_id: int) -> Word | None:
         return db.scalar(_load_topics(select(Word).where(Word.id == word_id)))
 
     @staticmethod
@@ -70,6 +74,22 @@ class WordRepository:
     @staticmethod
     def update(db: Session, word: Word, payload: WordUpdate) -> Word:
         data = payload.model_dump(exclude_unset=True, exclude={"topic_ids"})
+        new_term = data.get("term")
+        target_topic_ids = payload.topic_ids if payload.topic_ids is not None else [t.id for t in word.topics]
+        if new_term is not None:
+            norm = _normalize_term(new_term)
+            existing = db.scalars(
+                select(Word)
+                .where(Word.deleted_at.is_(None))
+                .where(Word.id != word.id)
+                .where(Word.topics.any(Topic.id.in_(target_topic_ids)))
+            ).all()
+            for w in existing:
+                if _normalize_term(w.term) == norm:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail=f"Word '{new_term}' already exists in one of the selected topics",
+                    )
         for field, value in data.items():
             setattr(word, field, value)
         if payload.topic_ids is not None:

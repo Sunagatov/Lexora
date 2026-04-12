@@ -69,7 +69,7 @@ def _pick_for_level_with_fallback(
     picked = _pick_for_level(db, level, needed, excluded_ids, topic_counts)
     shortfall = needed - len(picked)
     if shortfall > 0:
-        picked += _pick_for_level(db, level, shortfall, {w.id for w in picked}, topic_counts)
+        picked += _pick_for_level(db, level, shortfall, excluded_ids | {w.id for w in picked}, topic_counts)
     return picked
 
 

@@ -14,6 +14,10 @@ class TopicRepository:
 
     @staticmethod
     def get_by_id(db: Session, topic_id: int) -> Topic | None:
+        return db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None)))
+
+    @staticmethod
+    def get_by_id_including_deleted(db: Session, topic_id: int) -> Topic | None:
         return db.get(Topic, topic_id)
 
     @staticmethod
