@@ -236,7 +236,7 @@ export function WordPage() {
                   {value: '', label: '— select topic —'},
                   ...topics.map((t) => ({value: String(t.id), label: t.name})),
                 ]}
-                onChange={(v) => set('topic_ids', [v])}
+                onChange={(v) => set('topic_ids', v ? [v, ...draft.topic_ids.slice(1)] : draft.topic_ids.slice(1))}
                 ariaLabel="Primary topic"
               />
             </FormField>

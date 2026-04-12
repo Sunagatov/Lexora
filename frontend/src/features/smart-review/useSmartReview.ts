@@ -3,10 +3,10 @@ import {fetchSmartReview, completeSmartReviewItem} from './api'
 
 export const SMART_REVIEW_KEY = ['smart-review'] as const
 
-export function useSmartReview() {
+export function useSmartReview(enabled = true) {
   const queryClient = useQueryClient()
 
-  const query = useQuery({queryKey: SMART_REVIEW_KEY, queryFn: fetchSmartReview})
+  const query = useQuery({queryKey: SMART_REVIEW_KEY, queryFn: fetchSmartReview, enabled})
 
   const mutation = useMutation({
     mutationFn: completeSmartReviewItem,

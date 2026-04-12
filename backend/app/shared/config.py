@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     api_key: str
 
     smart_review_enabled: bool = True
-    smart_review_size: int = 100
     smart_review_level_1_count: int = 25
     smart_review_level_2_count: int = 25
     smart_review_level_3_count: int = 25

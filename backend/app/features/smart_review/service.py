@@ -51,8 +51,8 @@ def _pick_for_level(
     for word in candidates:
         if len(picked) >= needed:
             break
-        # use the first topic_id for per-topic cap tracking
-        first_topic_id = word.topics[0].id if word.topics else 0
+        # use the smallest topic id as a deterministic primary-topic key for cap tracking
+        first_topic_id = min((t.id for t in word.topics), default=0)
         if topic_counts[first_topic_id] >= settings.smart_review_max_per_topic:
             continue
         picked.append(word)

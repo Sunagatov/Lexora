@@ -19,7 +19,7 @@ export function useStudyState() {
   const words  = wordsQuery.data  ?? []
 
   const topic       = useTopicState(topics, words)
-  const smartReview = useSmartReview()
+  const smartReview = useSmartReview(isSmartReview)
 
   const topicWords = useMemo(
     () => topic.selectedTopicId === null ? [] : words.filter((w) => w.topic_ids.includes(topic.selectedTopicId!)),
