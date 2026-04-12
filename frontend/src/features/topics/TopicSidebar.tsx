@@ -1,4 +1,5 @@
 import {useRef, useState} from 'react'
+import {createPortal} from 'react-dom'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic, createTopic} from './api'
@@ -20,7 +21,7 @@ type Props = {
   smartQueue: StudyQueue | null
 }
 
-type SortMode = 'default' | 'weakest' | 'strongest' | 'az' | 'za'
+type SortMode = 'default' | 'weakest' | 'strongest' | 'largest' | 'az' | 'za'
 
 const POS_NAMES = new Set(['adjectives', 'adverbs', 'nouns', 'verbs', 'phrases', 'prepositions', 'irregular verbs'])
 
@@ -35,11 +36,12 @@ function savePref(key: string, val: unknown) {
   localStorage.setItem(key, JSON.stringify(val))
 }
 
-function sortTopics(topics: Topic[], mode: SortMode, progress: Map<number, number>): Topic[] {
+function sortTopics(topics: Topic[], mode: SortMode, progress: Map<number, number>, counts: Map<number, number>): Topic[] {
   const t = [...topics]
   switch (mode) {
     case 'weakest':   return t.sort((a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0))
     case 'strongest': return t.sort((a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0))
+    case 'largest':   return t.sort((a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0))
     case 'az':        return t.sort((a, b) => a.name.localeCompare(b.name))
     case 'za':        return t.sort((a, b) => b.name.localeCompare(a.name))
     default:          return t
@@ -50,6 +52,7 @@ const SORT_OPTIONS: {value: SortMode; label: string}[] = [
   {value: 'default',  label: 'Default'},
   {value: 'weakest',  label: 'Weakest first'},
   {value: 'strongest',label: 'Strongest first'},
+  {value: 'largest',  label: 'Largest first'},
   {value: 'az',       label: 'A → Z'},
   {value: 'za',       label: 'Z → A'},
 ]
@@ -69,7 +72,9 @@ export function TopicSidebar({
   const [newTopicName,    setNewTopicName]     = useState('')
   const [addingTopic,     setAddingTopic]      = useState(false)
   const [topicError,      setTopicError]       = useState<string | null>(null)
-  const searchRef = useRef<HTMLInputElement>(null)
+  const searchRef    = useRef<HTMLInputElement>(null)
+  const posSortRef    = useRef<HTMLButtonElement>(null)
+  const topicsSortRef = useRef<HTMLButtonElement>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
@@ -116,11 +121,11 @@ export function TopicSidebar({
   const needle      = topicSearch.toLowerCase().trim()
   const posTopics   = sortTopics(
     topics.filter((t) => isPosGroup(t)  && (!needle || t.name.toLowerCase().includes(needle))),
-    posSort, topicProgress,
+    posSort, topicProgress, topicCounts,
   )
   const themeTopics = sortTopics(
     topics.filter((t) => !isPosGroup(t) && (!needle || t.name.toLowerCase().includes(needle) || (t.description ?? '').toLowerCase().includes(needle))),
-    topicsSort, topicProgress,
+    topicsSort, topicProgress, topicCounts,
   )
 
   const remaining = smartQueue ? smartQueue.total_count - smartQueue.completed_count : null
@@ -215,13 +220,13 @@ export function TopicSidebar({
                 <span className="sidebar-group-count">{posTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button type="button" className={`sidebar-sort-btn ${posSort !== 'default' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={posSortRef} type="button" className={`sidebar-sort-btn ${posSort !== 'default' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
                 </button>
                 {posSortOpen && (
-                  <SortMenu options={SORT_OPTIONS} current={posSort} onSelect={applyPosSort} onClose={() => setPosSortOpen(false)} />
+                  <SortMenu options={SORT_OPTIONS} current={posSort} anchorRef={posSortRef} onSelect={applyPosSort} onClose={() => setPosSortOpen(false)} />
                 )}
               </div>
             </div>
@@ -239,13 +244,13 @@ export function TopicSidebar({
                 <span className="sidebar-group-count">{themeTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button type="button" className={`sidebar-sort-btn ${topicsSort !== 'default' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={topicsSortRef} type="button" className={`sidebar-sort-btn ${topicsSort !== 'default' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
                 </button>
                 {topicsSortOpen && (
-                  <SortMenu options={SORT_OPTIONS} current={topicsSort} onSelect={applyTopicsSort} onClose={() => setTopicsSortOpen(false)} />
+                  <SortMenu options={SORT_OPTIONS} current={topicsSort} anchorRef={topicsSortRef} onSelect={applyTopicsSort} onClose={() => setTopicsSortOpen(false)} />
                 )}
               </div>
             </div>
@@ -320,16 +325,19 @@ export function TopicSidebar({
   )
 }
 
-function SortMenu({options, current, onSelect, onClose}: {
+function SortMenu({options, current, anchorRef, onSelect, onClose}: {
   options: {value: SortMode; label: string}[]
   current: SortMode
+  anchorRef: React.RefObject<HTMLButtonElement | null>
   onSelect: (v: SortMode) => void
   onClose: () => void
 }) {
-  return (
+  const rect = anchorRef.current?.getBoundingClientRect()
+  const style = rect ? {top: rect.bottom + 4, right: window.innerWidth - rect.right} : {top: 0, right: 0}
+  return createPortal(
     <>
       <div className="sidebar-sort-overlay" onClick={onClose} />
-      <div className="sidebar-sort-menu">
+      <div className="sidebar-sort-menu" style={{...style, position: 'fixed'}}>
         {options.map((o) => (
           <button
             key={o.value}
@@ -346,7 +354,8 @@ function SortMenu({options, current, onSelect, onClose}: {
           </button>
         ))}
       </div>
-    </>
+    </>,
+    document.body,
   )
 }
 
@@ -364,7 +373,7 @@ function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmar
     <div className={`topic-item ${!isSmartReview && topic.id === selectedTopicId ? 'topic-item-active' : ''}`}>
       <button type="button" className="topic-item-select" onClick={() => onSelect(topic.id)}>
         <span className="topic-item-name">{topic.name}</span>
-        {progress !== undefined && <span className="topic-item-pct">{progress}%</span>}
+        {progress !== undefined && progress > 0 && <span className="topic-item-pct">{progress}%</span>}
         <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
       </button>
       <button type="button" className="topic-item-delete" title="Delete topic" onClick={(e) => { e.stopPropagation(); onDelete(topic.id) }}>
