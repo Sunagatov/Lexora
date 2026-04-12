@@ -49,3 +49,4 @@ class StatsResponse(BaseModel):
     topics: list[TopicStat]
     daily_activity: list[DailyActivity]   # all recorded days, newest first
     words_added_by_month: dict[str, int]  # "YYYY-MM" -> count, all months with data
+    tracking_started_at: str | None       # ISO date of first recorded event, or None

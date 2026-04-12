@@ -46,6 +46,7 @@ export type StatsResponse = {
   topics: TopicStat[]
   daily_activity: DailyActivity[]
   words_added_by_month: Record<string, number>
+  tracking_started_at: string | null
 }
 
 export const fetchStats = () => request<StatsResponse>('/api/stats')

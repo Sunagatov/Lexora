@@ -93,14 +93,15 @@ class WordRepository:
                         status_code=status.HTTP_409_CONFLICT,
                         detail=f"Word '{effective_term}' already exists in one of the selected topics",
                     )
+        # capture old level BEFORE mutating the object
+        old_level = word.knowledge_level
         for field, value in data.items():
             setattr(word, field, value)
         if payload.topic_ids is not None:
             word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
-        # record a progress event whenever knowledge_level changes
-        new_level = data.get("knowledge_level", word.knowledge_level)
-        if "knowledge_level" in data and new_level != word.knowledge_level:
-            db.add(WordProgressEvent(word_id=word.id, old_level=word.knowledge_level, new_level=new_level, source="manual"))
+        # record progress event if level actually changed
+        if "knowledge_level" in data and data["knowledge_level"] != old_level:
+            db.add(WordProgressEvent(word_id=word.id, old_level=old_level, new_level=data["knowledge_level"], source="manual"))
         db.add(word)
         db.commit()
         db.refresh(word)

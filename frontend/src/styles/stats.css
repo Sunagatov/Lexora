@@ -140,6 +140,75 @@
   color: #fff;
 }
 
+/* ── Donut chart ─────────────────────────────────────────────────────────── */
+.stats-donut-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stats-donut {
+  flex-shrink: 0;
+}
+
+.stats-donut-label {
+  font-size: 14px;
+  font-weight: 800;
+  fill: var(--text);
+  font-family: inherit;
+}
+
+.stats-donut-sub {
+  font-size: 9px;
+  fill: var(--text-3);
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Insights strip ──────────────────────────────────────────────────────── */
+.stats-insights { gap: 12px; }
+
+.stats-insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.stats-insight-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.4; }
+.stats-insight-text strong { color: var(--text); }
+
+.stats-tracking-note {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  padding: 4px 0;
+  font-style: italic;
+}
+
+/* ── Quality detail layout ───────────────────────────────────────────────── */
+.stats-quality-detail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stats-cards-2 { grid-template-columns: repeat(2, 1fr); }
+
 /* ── Level distribution bar ──────────────────────────────────────────────── */
 .stats-dist-bar {
   height: 20px;
@@ -471,11 +540,14 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
   .stats-daily-row { grid-template-columns: 1fr 60px 60px 70px 50px; }
 
   .stats-section-header { flex-direction: column; gap: 8px; }
+
+  .stats-donut-row { flex-direction: column; align-items: flex-start; gap: 16px; }
 }
 
 @media (max-width: 480px) {
   .stats-cards-6 { grid-template-columns: repeat(2, 1fr); }
   .stats-cards-4 { grid-template-columns: repeat(2, 1fr); }
+  .stats-cards-2 { grid-template-columns: repeat(2, 1fr); }
 
   /* 3 columns: name | words | progress — hide Weak too */
   .stats-topic-header,

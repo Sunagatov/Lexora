@@ -113,6 +113,8 @@ def get_stats(db: Session = Depends(get_db)) -> StatsResponse:
         for day, v in sorted(daily.items(), reverse=True)
     ]
 
+    tracking_started_at = min(daily.keys()) if daily else None
+
     return StatsResponse(
         overview=VocabularyOverview(
             total_words=total_words,
@@ -135,4 +137,5 @@ def get_stats(db: Session = Depends(get_db)) -> StatsResponse:
         topics=topic_stats,
         daily_activity=daily_activity,
         words_added_by_month=dict(sorted(words_by_month.items())),
+        tracking_started_at=tracking_started_at,
     )
