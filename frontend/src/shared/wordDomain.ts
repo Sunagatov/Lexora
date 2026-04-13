@@ -1,4 +1,4 @@
-import type {Word, WordKnowledgeLevel} from './http'
+import type {Word, WordKnowledgeLevel} from './types'
 
 export type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
 
