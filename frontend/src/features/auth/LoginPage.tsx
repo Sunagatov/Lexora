@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {login} from './api'
+import {routes} from '../../shared/routes'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')
@@ -14,7 +15,7 @@ export function LoginPage() {
     setError(false)
     try {
       await login(password)
-      navigate('/')
+      navigate(routes.home)
     } catch {
       setError(true)
     } finally {

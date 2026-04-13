@@ -1,5 +1,6 @@
 import {useNavigate} from 'react-router-dom'
 import {useDrawer} from '../shared/DrawerContext'
+import {routes} from '../shared/routes'
 
 export function AppHeader() {
   const navigate = useNavigate()
@@ -7,7 +8,7 @@ export function AppHeader() {
 
   return (
     <header className="app-header">
-      <button type="button" className="app-header-brand" onClick={() => navigate('/')}>
+      <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
         Lexora
       </button>
       {hasDrawer && (
