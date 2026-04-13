@@ -74,19 +74,3 @@ def hard_delete_topic(db: Session, topic: Topic) -> None:
     soft_delete_exclusive_words(topic)
     db.delete(topic)
     db.commit()
-
-
-# Backward-compatible aliases so existing callers keep working during migration
-class _TopicRepo:
-    get_all = staticmethod(get_all_topics)
-    get_by_id = staticmethod(get_topic_by_id)
-    get_by_id_including_deleted = staticmethod(get_topic_by_id_including_deleted)
-    get_by_slug = staticmethod(get_topic_by_slug)
-    get_deleted = staticmethod(get_deleted_topics)
-    update = staticmethod(update_topic)
-    soft_delete = staticmethod(soft_delete_topic)
-    restore = staticmethod(restore_topic)
-    hard_delete = staticmethod(hard_delete_topic)
-
-
-topic_repo = _TopicRepo()
