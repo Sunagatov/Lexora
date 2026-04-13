@@ -30,6 +30,12 @@ def restore_word_route(word_id: int, db: Session = Depends(get_db)) -> WordRespo
     word = get_word_by_id_including_deleted(db, word_id)
     if word is None or word.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted word not found")
+    active_topics = [t for t in word.topics if t.deleted_at is None]
+    if not active_topics:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cannot restore word: all its topics are deleted. Restore a topic first.",
+        )
     return WordResponse.from_word(restore_word(db, word))
 
 

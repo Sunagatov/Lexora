@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
@@ -21,7 +21,6 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   const [openLevel, setOpenLevel] = useState(false)
   const [flipUp,    setFlipUp]    = useState(false)
   const [expanded,  setExpanded]  = useState(false)
-  const navigate = useNavigate()
 
   const lc      = levelClass(word.knowledge_level)
   const showExample = word.example
@@ -32,9 +31,9 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   return (
     <article className={`word-card ${lc}`}>
       <div className="word-card-header">
-        <strong className="word-term word-term-link" onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}>
+        <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
           {word.term}
-        </strong>
+        </Link>
         <div className="word-card-level-wrap">
           <button type="button" className={`level-badge level-badge-btn ${lc}`}
             disabled={pendingWordId === word.id}
@@ -53,12 +52,13 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
         </div>
       </div>
 
-      <div className="word-card-body-tap" role="button" tabIndex={0}
-        onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}
-        onKeyDown={(e) => e.key === 'Enter' && navigate(routes.word(word.id), {state: {fromTopicSlug}})}
+      <Link
+        className="word-card-body-tap"
+        to={routes.word(word.id)}
+        state={{fromTopicSlug}}
       >
         <WordSummaryContent word={word} />
-      </div>
+      </Link>
 
       {hasExpanded && (
         <>

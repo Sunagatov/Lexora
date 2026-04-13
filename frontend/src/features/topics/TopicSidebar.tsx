@@ -54,7 +54,7 @@ export function TopicSidebar({
   const createTopicMutation = useMutation({
     mutationFn: () => createTopic(newTopicName.trim()),
     onSuccess: (created) => {
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      queryClient.setQueryData<Topic[]>(queryKeys.topics, (cur = []) => [...cur, created])
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)
       navigate(routes.topic(created.slug))
     },
@@ -62,7 +62,7 @@ export function TopicSidebar({
   })
 
   const deleteTopicMutation = useMutation({
-    mutationFn: (id: number) => deleteTopic(id, true),
+    mutationFn: (id: number) => deleteTopic(id, false),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.topics})
       queryClient.invalidateQueries({queryKey: queryKeys.words})
@@ -104,7 +104,7 @@ export function TopicSidebar({
 
       <div className="sidebar-smart-review-wrap">
         <button type="button" className={`sidebar-smart-review-btn ${isSmartReview ? 'active' : ''}`} onClick={onSelectSmartReview}>
-          <span className="sidebar-smart-review-title">✨ Daily Word Mix <span className="sidebar-smart-review-ai">made by AI</span></span>
+          <span className="sidebar-smart-review-title">✨ Daily Word Mix</span>
           {remaining !== null && <span className="sidebar-smart-review-count">{remaining} left</span>}
           {smartQueue && (
             <div className="sidebar-smart-review-bar">
@@ -255,7 +255,7 @@ export function TopicSidebar({
       {deleteTopicId !== null && (
         <ConfirmModal
           title="Delete Topic?"
-          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that belong only to this topic will also be trashed; words shared with other topics will not be affected.`}
+          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that belong only to this topic will also be trashed; shared words will not be affected.`}
           confirmLabel="Delete" danger
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
           onCancel={() => setDeleteTopicId(null)}

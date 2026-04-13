@@ -110,6 +110,6 @@ export function useWordPageState() {
     draft, set, save, saveError, setSaveError,
     savePending: saveMutation.isPending,
     confirming, setConfirming, handleDelete,
-    isLoading: wordQuery.isLoading,
+    isLoading: wordQuery.isLoading || topicsQuery.isLoading,
   }
 }

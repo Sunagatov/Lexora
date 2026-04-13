@@ -4,6 +4,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchTrashWords, restoreWord} from '../words/api'
 import {fetchTrashTopics, restoreTopic} from '../topics/api'
 import {purgeTrash} from './api'
+import {request} from '../../shared/http'
 import type {Word, Topic} from '../../shared/types'
 import {ConfirmModal} from '../../shared/ConfirmModal'
 import {queryKeys} from '../../shared/queryKeys'
@@ -15,6 +16,9 @@ export function TrashPage() {
   const [confirmPurge, setConfirmPurge]   = useState(false)
   const [restoreTopicId, setRestoreTopicId] = useState<number | null>(null)
 
+  const configQuery = useQuery({queryKey: queryKeys.publicConfig, queryFn: () => request<{trash_retention_days: number}>('/api/config/public'), staleTime: Infinity})
+  const settings = configQuery.data
+
   const wordsQuery  = useQuery({queryKey: queryKeys.trashWords,  queryFn: fetchTrashWords})
   const topicsQuery = useQuery({queryKey: queryKeys.trashTopics, queryFn: fetchTrashTopics})
 
@@ -23,6 +27,9 @@ export function TrashPage() {
     onSuccess: (restored) => {
       queryClient.setQueryData<Word[]>(queryKeys.trashWords, (cur = []) => cur.filter((w) => w.id !== restored.id))
       queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => [...cur, restored])
+    },
+    onError: (err: Error) => {
+      alert(err.message)
     },
   })
 
@@ -49,7 +56,8 @@ export function TrashPage() {
   const pendingRestoreTopic = topics.find((t) => t.id === restoreTopicId)
 
   function daysLeft(deletedAt: string) {
-    return Math.max(0, 30 - Math.floor((Date.now() - new Date(deletedAt).getTime()) / 86400000))
+    const retention = settings?.trash_retention_days ?? 30
+    return Math.max(0, retention - Math.floor((Date.now() - new Date(deletedAt).getTime()) / 86400000))
   }
 
   return (
@@ -70,7 +78,7 @@ export function TrashPage() {
         </div>
 
         <h1 className="trash-title">Trash</h1>
-        <p className="trash-subtitle">Items are permanently deleted after 30 days.</p>
+        <p className="trash-subtitle">Items are permanently deleted after {settings?.trash_retention_days ?? 30} days.</p>
 
         {topics.length > 0 && (
           <section className="trash-section">
@@ -129,6 +137,7 @@ export function TrashPage() {
           cancelLabel="Restore topic only"
           onConfirm={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: true})}
           onCancel={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: false})}
+          onClose={() => setRestoreTopicId(null)}
         />
       )}
     </div>

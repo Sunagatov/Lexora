@@ -1,3 +1,4 @@
+import {useEffect} from 'react'
 import {createPortal} from 'react-dom'
 
 type Props = {
@@ -8,11 +9,20 @@ type Props = {
   danger?: boolean
   onConfirm: () => void
   onCancel: () => void
+  onClose?: () => void
 }
 
-export function ConfirmModal({title, message, confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false, onConfirm, onCancel}: Props) {
+export function ConfirmModal({title, message, confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false, onConfirm, onCancel, onClose}: Props) {
+  const handleClose = onClose ?? onCancel
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') handleClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [handleClose])
+
   return createPortal(
-    <div className="modal-overlay" onClick={onCancel}>
+    <div className="modal-overlay" onClick={handleClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">{title}</h2>
         <p className="modal-message">{message}</p>

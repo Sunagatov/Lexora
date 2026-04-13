@@ -1,23 +1,24 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {login} from './api'
+import {ApiError} from '../../shared/apiError'
 import {routes} from '../../shared/routes'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')
-  const [error, setError]       = useState(false)
+  const [error, setError]       = useState<string | null>(null)
   const [loading, setLoading]   = useState(false)
   const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(false)
+    setError(null)
     try {
       await login(password)
       navigate(routes.home)
-    } catch {
-      setError(true)
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 401 ? 'Wrong password.' : 'Could not sign in. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -35,7 +36,7 @@ export function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           autoFocus
         />
-        {error && <p className="login-error">Wrong password</p>}
+        {error && <p className="login-error">{error}</p>}
         <button className="login-btn" type="submit" disabled={loading || !password}>
           {loading ? 'Signing in…' : 'Sign in'}
         </button>

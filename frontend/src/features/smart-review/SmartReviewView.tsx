@@ -36,7 +36,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
       <div className="sticky-controls">
         <div className="card topic-header-card topic-header-card-desktop">
           <div className="topic-header-main">
-            <div className="topic-header-title">✨ Daily Word Mix <span className="daily-mix-subtitle">Made by AI</span></div>
+            <div className="topic-header-title">✨ Daily Word Mix</div>
             <div className="smart-review-subtitle">
               {isComplete
                 ? 'All done! Get a new set when you\'re ready.'

@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
@@ -16,7 +16,6 @@ type Props = {
 export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props) {
   const [openId, setOpenId] = useState<number | null>(null)
   const [flipUp, setFlipUp] = useState(false)
-  const navigate = useNavigate()
 
   return (
     <div className="word-table-wrap">
@@ -28,9 +27,9 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
             return (
               <tr key={word.id} className={`word-row ${lc}`}>
                 <td className="word-cell-word">
-                  <strong className="word-term word-term-link" onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}>
+                  <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
                     {word.term}
-                  </strong>
+                  </Link>
                 </td>
                 <td className="word-cell-details">
                   <WordSummaryContent word={word} />
