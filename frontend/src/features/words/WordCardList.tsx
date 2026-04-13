@@ -3,8 +3,9 @@ import {useNavigate} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
-import {lexicalChips, smartPreview} from './wordPresenter'
 import {routes} from '../../shared/routes'
+import {WordSummaryContent} from './WordSummaryContent'
+import {smartPreview} from './wordPresenter'
 
 type Props = {
   words: Word[]
@@ -23,11 +24,9 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   const navigate = useNavigate()
 
   const lc      = levelClass(word.knowledge_level)
-  const chips   = lexicalChips(word)
-  const preview = smartPreview(word)
   const showExample = word.example
-  const showNotes   = word.notes   && preview?.label !== 'Notes'
-  const showPattern = word.pattern && preview?.label !== 'Pattern' && preview?.label !== 'Forms'
+  const showNotes   = word.notes   && smartPreview(word)?.label !== 'Notes'
+  const showPattern = word.pattern && smartPreview(word)?.label !== 'Pattern' && smartPreview(word)?.label !== 'Forms'
   const hasExpanded = showExample || showNotes || showPattern
 
   return (
@@ -58,16 +57,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
         onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}
         onKeyDown={(e) => e.key === 'Enter' && navigate(routes.word(word.id), {state: {fromTopicSlug}})}
       >
-        {chips.length > 0 && (
-          <div className="word-chips">{chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
-        )}
-        <div className="word-translation">{word.translations}</div>
-        {preview && (
-          <div className="word-preview-line">
-            <span className="word-preview-label">{preview.label}:</span>
-            <span className="word-preview-text">{preview.text}</span>
-          </div>
-        )}
+        <WordSummaryContent word={word} />
       </div>
 
       {hasExpanded && (

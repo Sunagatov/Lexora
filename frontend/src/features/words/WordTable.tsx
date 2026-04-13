@@ -3,8 +3,8 @@ import {useNavigate} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
-import {lexicalChips, smartPreview} from './wordPresenter'
 import {routes} from '../../shared/routes'
+import {WordSummaryContent} from './WordSummaryContent'
 
 type Props = {
   words: Word[]
@@ -23,28 +23,17 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
       <table className="word-table" aria-label="Topic words table">
         <tbody>
           {words.map((word) => {
-            const lc      = levelClass(word.knowledge_level)
-            const isOpen  = openId === word.id
-            const chips   = lexicalChips(word)
-            const preview = smartPreview(word)
+            const lc     = levelClass(word.knowledge_level)
+            const isOpen = openId === word.id
             return (
               <tr key={word.id} className={`word-row ${lc}`}>
                 <td className="word-cell-word">
                   <strong className="word-term word-term-link" onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}>
                     {word.term}
                   </strong>
-                  {chips.length > 0 && (
-                    <div className="word-chips">{chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
-                  )}
                 </td>
                 <td className="word-cell-details">
-                  <div className="word-translation">{word.translations}</div>
-                  {preview && (
-                    <div className="word-preview-line">
-                      <span className="word-preview-label">{preview.label}:</span>
-                      <span className="word-preview-text">{preview.text}</span>
-                    </div>
-                  )}
+                  <WordSummaryContent word={word} />
                 </td>
                 <td className="word-cell-knowledge">
                   <div className="word-level-wrap">

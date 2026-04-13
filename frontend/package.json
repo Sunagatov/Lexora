@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.59.20",
@@ -15,10 +18,16 @@
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^4.1.4",
+    "eslint": "^10.2.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "prettier": "^3.8.2",
     "typescript": "^5.6.3",
-    "vite": "^6.0.1"
+    "vite": "^6.0.1",
+    "vitest": "^4.1.4"
   }
 }

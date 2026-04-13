@@ -1,41 +1,15 @@
 import {useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {fetchTopics, createTopic} from '../topics/api'
-import {quickAddWord} from '../words/api'
-import {request} from '../../shared/http'
+import {createTopic, fetchTopics} from '../topics/api'
+import {quickAddWord} from './api'
 import {ApiError} from '../../shared/apiError'
 import type {Topic} from '../../shared/http'
-import {slugify} from '../../shared/slugify'
 import {queryKeys} from '../../shared/queryKeys'
+import {translateTerm, suggestTopic, ensureInbox} from './quickAddService'
+import {slugify} from "../../shared/slugify";
 
 const INBOX_TOPIC_NAME = 'Inbox'
-
-async function translateTerm(term: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(term)}&langpair=en|ru`,
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    const text = data?.responseData?.translatedText
-    return text && text.toLowerCase() !== term.toLowerCase() ? text : null
-  } catch {
-    return null
-  }
-}
-
-async function suggestTopic(term: string, translation: string): Promise<string | null> {
-  try {
-    const res = await request<{topic_name: string}>('/api/words/suggest-topic', {
-      method: 'POST',
-      body: JSON.stringify({term, translation}),
-    })
-    return res.topic_name ?? null
-  } catch {
-    return null
-  }
-}
 
 type Props = {onClose: () => void}
 
@@ -63,18 +37,6 @@ export function QuickAddSheet({onClose}: Props) {
   }, [topics, topicId])
 
   useEffect(() => { setTimeout(() => termRef.current?.focus(), 80) }, [])
-
-  async function ensureInbox(): Promise<number | null> {
-    const existing = topics.find((t) => t.name === INBOX_TOPIC_NAME)
-    if (existing) return existing.id
-    try {
-      const created = await createTopic(INBOX_TOPIC_NAME, slugify(INBOX_TOPIC_NAME))
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
-      return created.id
-    } catch {
-      return null
-    }
-  }
 
   const addWordMutation = useMutation({
     mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
@@ -149,9 +111,11 @@ export function QuickAddSheet({onClose}: Props) {
     setFeedback(null)
     let resolvedTopicId = topicId
     if (!resolvedTopicId) {
-      const inboxId = await ensureInbox()
+      const inboxId = await ensureInbox(topics, (id) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.topics})
+        setTopicId(id)
+      })
       if (!inboxId) { setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'}); return }
-      setTopicId(inboxId)
       resolvedTopicId = inboxId
     }
     addWordMutation.mutate(resolvedTopicId)
