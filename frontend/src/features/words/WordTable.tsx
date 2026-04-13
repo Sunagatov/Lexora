@@ -4,6 +4,7 @@ import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
 import {lexicalChips, smartPreview} from './wordPresenter'
+import {routes} from '../../shared/routes'
 
 type Props = {
   words: Word[]
@@ -29,7 +30,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
             return (
               <tr key={word.id} className={`word-row ${lc}`}>
                 <td className="word-cell-word">
-                  <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}>
+                  <strong className="word-term word-term-link" onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}>
                     {word.term}
                   </strong>
                   {chips.length > 0 && (

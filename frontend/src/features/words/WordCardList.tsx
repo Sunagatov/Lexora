@@ -4,6 +4,7 @@ import type {Word, WordKnowledgeLevel} from '../../shared/http'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
 import {lexicalChips, smartPreview} from './wordPresenter'
+import {routes} from '../../shared/routes'
 
 type Props = {
   words: Word[]
@@ -32,7 +33,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   return (
     <article className={`word-card ${lc}`}>
       <div className="word-card-header">
-        <strong className="word-term word-term-link" onClick={() => navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}>
+        <strong className="word-term word-term-link" onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}>
           {word.term}
         </strong>
         <div className="word-card-level-wrap">
@@ -54,8 +55,8 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
       </div>
 
       <div className="word-card-body-tap" role="button" tabIndex={0}
-        onClick={() => navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}
-        onKeyDown={(e) => e.key === 'Enter' && navigate(`/words/${word.id}`, {state: {fromTopicSlug}})}
+        onClick={() => navigate(routes.word(word.id), {state: {fromTopicSlug}})}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(routes.word(word.id), {state: {fromTopicSlug}})}
       >
         {chips.length > 0 && (
           <div className="word-chips">{chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
