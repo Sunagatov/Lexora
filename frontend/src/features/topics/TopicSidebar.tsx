@@ -281,7 +281,7 @@ export function TopicSidebar({
                 <span className="sidebar-group-count">{posTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button ref={posSortRef} type="button" className={`sidebar-sort-btn ${posSort !== 'default' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={posSortRef} type="button" className={`sidebar-sort-btn ${posSort !== 'weakest' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
@@ -311,7 +311,7 @@ export function TopicSidebar({
                 <span className="sidebar-group-count">{themeTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button ref={topicsSortRef} type="button" className={`sidebar-sort-btn ${topicsSort !== 'default' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={topicsSortRef} type="button" className={`sidebar-sort-btn ${topicsSort !== 'weakest' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
