@@ -12,6 +12,7 @@ export const SIDEBAR_PREF_KEYS = {
   posSort:         'sidebar_pos_sort',
   topicsSort:      'sidebar_topics_sort',
   pinned:          'sidebar_pinned',
+  recent:          'sidebar_recent_topics',
 } as const
 
 export function useTopicSidebarPrefs() {
@@ -20,6 +21,7 @@ export function useTopicSidebarPrefs() {
   const [posSort,         setPosSortRaw]         = useState<SortMode>(() => load(SIDEBAR_PREF_KEYS.posSort, 'weakest'))
   const [topicsSort,      setTopicsSortRaw]      = useState<SortMode>(() => load(SIDEBAR_PREF_KEYS.topicsSort, 'weakest'))
   const [pinnedIds,       setPinnedIdsRaw]       = useState<number[]>(() => load(SIDEBAR_PREF_KEYS.pinned, []))
+  const [recentIds,       setRecentIdsRaw]       = useState<number[]>(() => load(SIDEBAR_PREF_KEYS.recent, []))
 
   function setPosCollapsed(v: boolean)    { setPosCollapsedRaw(v);    save(SIDEBAR_PREF_KEYS.posCollapsed, v) }
   function setTopicsCollapsed(v: boolean) { setTopicsCollapsedRaw(v); save(SIDEBAR_PREF_KEYS.topicsCollapsed, v) }
@@ -34,11 +36,18 @@ export function useTopicSidebarPrefs() {
     save(SIDEBAR_PREF_KEYS.pinned, next)
   }
 
+  function addRecentId(id: number) {
+    const next = [id, ...recentIds.filter((x) => x !== id)].slice(0, 5)
+    setRecentIdsRaw(next)
+    save(SIDEBAR_PREF_KEYS.recent, next)
+  }
+
   return {
     posCollapsed, setPosCollapsed,
     topicsCollapsed, setTopicsCollapsed,
     posSort, setPosSort,
     topicsSort, setTopicsSort,
     pinnedIds, togglePin,
+    recentIds, addRecentId,
   }
 }

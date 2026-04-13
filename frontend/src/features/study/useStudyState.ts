@@ -44,7 +44,6 @@ export function useStudyState() {
     selectedTopicId: topicState.selectedTopicId, topicCounts: topicState.topicCounts, topicProgress: topicState.topicProgress,
     topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
     selectTopic: topicState.selectTopic, selectSmartReview: topicState.selectSmartReview,
-    recentIds: topicState.recentIds,
     wordSearch: filter.wordSearch, setWordSearch: filter.setWordSearch,
     levelFilter: filter.levelFilter, setLevelFilter: filter.setLevelFilter,
     sortBy: filter.sortBy, setSortBy: filter.setSortBy,

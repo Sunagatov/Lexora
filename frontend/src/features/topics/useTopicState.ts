@@ -7,9 +7,6 @@ export function useTopicState(topics: Topic[], words: Word[]) {
   const {topicSlug} = useParams<{topicSlug?: string}>()
   const navigate    = useNavigate()
   const [topicSearch, setTopicSearch] = useState('')
-  const [recentIds,   setRecentIds]   = useState<number[]>(() => {
-    try { return JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]') } catch { return [] }
-  })
 
   const selectedTopic   = useMemo(() => topics.find((t) => t.slug === topicSlug) ?? null, [topics, topicSlug])
   const selectedTopicId = selectedTopic?.id ?? null
@@ -47,14 +44,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
 
   function selectTopic(id: number) {
     const topic = topics.find((t) => t.id === id)
-    if (topic) {
-      navigate(routes.topic(topic.slug))
-      try {
-        const next = [id, ...recentIds.filter((x) => x !== id)].slice(0, 5)
-        localStorage.setItem('sidebar_recent_topics', JSON.stringify(next))
-        setRecentIds(next)
-      } catch { /* ignore */ }
-    }
+    if (topic) navigate(routes.topic(topic.slug))
   }
 
   function selectSmartReview() {
@@ -64,7 +54,6 @@ export function useTopicState(topics: Topic[], words: Word[]) {
   return {
     selectedTopicId, selectedTopic, topicCounts, topicProgress,
     topicSearch, setTopicSearch,
-    recentIds,
     selectTopic, selectSmartReview,
   }
 }

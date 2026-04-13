@@ -22,7 +22,6 @@ export function StudyPage() {
     totalWords: s.words.length,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
-    recentIds: s.recentIds,
     onSelect: s.selectTopic, onSelectSmartReview: s.selectSmartReview,
     smartQueue: s.smartQueue,
   }

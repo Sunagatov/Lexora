@@ -22,7 +22,6 @@ type Props = {
   selectedTopicId: number | null
   isSmartReview: boolean
   isMobile?: boolean
-  recentIds?: number[]
   onSelect: (id: number) => void
   onSelectSmartReview: () => void
   smartQueue: StudyQueue | null
@@ -30,10 +29,15 @@ type Props = {
 
 export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
-  selectedTopicId, isSmartReview, isMobile = false, recentIds: recentIdsProp = [],
+  selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
+
+  function handleSelect(id: number) {
+    prefs.addRecentId(id)
+    onSelect(id)
+  }
   const [posSortOpen,    setPosSortOpen]    = useState(false)
   const [topicsSortOpen, setTopicsSortOpen] = useState(false)
   const [searchOpen,     setSearchOpen]     = useState(false)
@@ -73,10 +77,10 @@ export function TopicSidebar({
       topics, needle, prefs.pinnedIds,
       prefs.posSort, prefs.topicsSort,
       prefs.posCollapsed, prefs.topicsCollapsed,
-      recentIdsProp, topicProgress, topicCounts,
+      prefs.recentIds, topicProgress, topicCounts,
     ),
     [topics, needle, prefs.pinnedIds, prefs.posSort, prefs.topicsSort,
-     prefs.posCollapsed, prefs.topicsCollapsed, recentIdsProp, topicProgress, topicCounts],
+     prefs.posCollapsed, prefs.topicsCollapsed, prefs.recentIds, topicProgress, topicCounts],
   )
 
   const remaining  = smartQueue ? smartQueue.total_count - smartQueue.completed_count : null
@@ -85,7 +89,7 @@ export function TopicSidebar({
 
   const btnProps = {
     selectedTopicId, isSmartReview, topicCounts, topicProgress,
-    pinnedIds: prefs.pinnedIds, onSelect,
+    pinnedIds: prefs.pinnedIds, onSelect: handleSelect,
     onDelete: (id: number) => setDeleteTopicId(id),
     onPin: prefs.togglePin,
   }
