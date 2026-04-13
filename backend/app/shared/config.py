@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     secret_key: str
     cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
     cookie_httponly: bool = True
-    cookie_secure: bool = True
+    cookie_secure: bool = False  # set True in production via env
     cookie_samesite: str = "lax"
     api_key: str
 
@@ -34,7 +34,9 @@ class Settings(BaseSettings):
 
     cors_allowed_origins: list[str] = [
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
         "https://lexora.zuf.uk",
     ]
 

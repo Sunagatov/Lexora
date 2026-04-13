@@ -22,7 +22,9 @@ class WordRepository:
             select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc())
         )
         if topic_id is not None:
-            stmt = stmt.where(Word.topics.any(Topic.id == topic_id))
+            stmt = stmt.where(Word.topics.any(
+                (Topic.id == topic_id) & Topic.deleted_at.is_(None)
+            ))
         if search:
             stmt = stmt.where(Word.term.ilike(f"%{search}%"))
         return list(db.scalars(stmt).all())

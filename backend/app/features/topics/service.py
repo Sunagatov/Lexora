@@ -3,6 +3,8 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.shared.text import slugify
+from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.repository import topic_repo
@@ -44,11 +46,18 @@ def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
 
 
 def create_topic(db: Session, payload: TopicCreate) -> Topic:
-    assert_slug_available(db, payload.slug)
+    # Normalize slug server-side from the topic name, ignoring whatever the client sent
+    server_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
+    if not server_slug:
+        server_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN)
+    assert_slug_available(db, server_slug)
+    payload.slug = server_slug
     return topic_repo.create(db, payload)
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
     if payload.slug and payload.slug != topic.slug:
+        normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN) or payload.slug
+        payload.slug = normalized_slug
         assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
     return topic_repo.update(db, topic, payload)

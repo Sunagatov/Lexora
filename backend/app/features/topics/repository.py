@@ -61,11 +61,18 @@ class TopicRepository:
 
     @staticmethod
     def restore(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
+        topic_deleted_at = topic.deleted_at
         topic.deleted_at = None
         if restore_words:
             for word in topic.words:
-                # only restore words that belong exclusively to this topic
-                if len(word.topics) == 1:
+                # Only restore words deleted at the same time as the topic
+                # (i.e. deleted as part of this topic deletion, not independently).
+                if (
+                    len(word.topics) == 1
+                    and word.deleted_at is not None
+                    and topic_deleted_at is not None
+                    and abs((word.deleted_at - topic_deleted_at).total_seconds()) < 5
+                ):
                     word.deleted_at = None
         db.add(topic)
         db.commit()
@@ -74,6 +81,12 @@ class TopicRepository:
 
     @staticmethod
     def hard_delete(db: Session, topic: Topic) -> None:
+        # Soft-delete active words that belong exclusively to this topic
+        # to prevent orphaned words with zero topics after the cascade.
+        now = datetime.now(timezone.utc)
+        for word in topic.words:
+            if word.deleted_at is None and len(word.topics) == 1:
+                word.deleted_at = now
         db.delete(topic)
         db.commit()
 
