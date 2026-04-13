@@ -4,7 +4,6 @@ import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
 import {PAGE_SIZES, DEFAULT_PAGE_SIZE} from '../../shared/paginationConfig'
 
-export {PAGE_SIZES} from '../../shared/paginationConfig'
 
 function parseLevel(v: string | null): 'all' | WordKnowledgeLevel {
   const n = parseInt(v ?? '', 10)
