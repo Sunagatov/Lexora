@@ -1,14 +1,12 @@
-from datetime import datetime, timedelta, timezone
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.shared.config import settings
 from app.shared.deps import get_db
 from app.features.topics.repository import topic_repo
 from app.features.topics.schemas import TopicResponse
 from app.features.words.repository import word_repo
 from app.features.words.schemas import WordResponse
+from app.features.trash.service import purge_trash
 
 router = APIRouter(prefix="/api/trash", tags=["trash"])
 
@@ -42,16 +40,4 @@ def restore_topic(topic_id: int, restore_words: bool = False, db: Session = Depe
 @router.delete("/purge", status_code=status.HTTP_204_NO_CONTENT)
 def purge_expired(db: Session = Depends(get_db), force: bool = False) -> None:
     """Hard-delete trashed items. With force=true deletes all; otherwise only items older than retention days."""
-    if force:
-        for word in word_repo.get_deleted(db):
-            word_repo.hard_delete(db, word)
-        for topic in topic_repo.get_deleted(db):
-            topic_repo.hard_delete(db, topic)
-    else:
-        cutoff = datetime.now(timezone.utc) - timedelta(days=settings.trash_retention_days)
-        for word in word_repo.get_deleted(db):
-            if word.deleted_at and word.deleted_at < cutoff:
-                word_repo.hard_delete(db, word)
-        for topic in topic_repo.get_deleted(db):
-            if topic.deleted_at and topic.deleted_at < cutoff:
-                topic_repo.hard_delete(db, topic)
+    purge_trash(db, force=force)
