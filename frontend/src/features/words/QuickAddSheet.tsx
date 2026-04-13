@@ -4,6 +4,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {fetchTopics, createTopic} from '../topics/api'
 import {quickAddWord} from '../words/api'
 import {request} from '../../shared/http'
+import {ApiError} from '../../shared/apiError'
 import type {Topic} from '../../shared/http'
 import {slugify} from '../../shared/slugify'
 import {queryKeys} from '../../shared/queryKeys'
@@ -86,7 +87,7 @@ export function QuickAddSheet({onClose}: Props) {
       setTimeout(() => { setFeedback(null); termRef.current?.focus() }, 1800)
     },
     onError: (err: Error) => {
-      const msg = err.message.includes('409') || err.message.includes('already')
+      const msg = err instanceof ApiError && err.status === 409
         ? `"${term.trim()}" already exists in this topic`
         : 'Failed to save. Try again.'
       setFeedback({ok: false, msg})

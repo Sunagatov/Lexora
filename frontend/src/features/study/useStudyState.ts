@@ -7,10 +7,11 @@ import {useWordFilter} from '../words/useWordFilter'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useSmartReview} from '../smart-review/useSmartReview'
 import {queryKeys} from '../../shared/queryKeys'
+import {routes} from '../../shared/routes'
 
 export function useStudyState() {
   const location      = useLocation()
-  const isSmartReview = location.pathname === '/smart-review'
+  const isSmartReview = location.pathname === routes.smartReview
 
   const topicsQuery   = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
   // All-words query: used only for sidebar counts/progress, not for the word list.
