@@ -159,8 +159,6 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     if queue is not None:
         # Only regenerate if fully completed
         if queue.completed_count >= queue.total_count and queue.total_count > 0:
-            queue.is_active = False
-            db.commit()
             return generate_queue(db)
         return queue
     return generate_queue(db)
