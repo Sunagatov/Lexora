@@ -101,7 +101,8 @@ class WordRepository:
             word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
         # record progress event if level actually changed
         if "knowledge_level" in data and data["knowledge_level"] != old_level:
-            db.add(WordProgressEvent(word_id=word.id, old_level=old_level, new_level=data["knowledge_level"], source="manual"))
+            source = payload.progress_source or "manual"
+            db.add(WordProgressEvent(word_id=word.id, old_level=old_level, new_level=data["knowledge_level"], source=source))
         db.add(word)
         db.commit()
         db.refresh(word)

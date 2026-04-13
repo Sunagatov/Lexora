@@ -3,12 +3,12 @@ import type {Word, WordKnowledgeLevel, StudyQueue} from '../../shared/http'
 import {updateWordKnowledgeLevel} from './api'
 import {SMART_REVIEW_KEY} from '../smart-review/useSmartReview'
 
-export function useWordUpdate(onMutate: () => void) {
+export function useWordUpdate(onMutate: () => void, source = 'study_list') {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: ({wordId, level}: {wordId: number; level: WordKnowledgeLevel}) =>
-      updateWordKnowledgeLevel(wordId, level),
+      updateWordKnowledgeLevel(wordId, level, source),
 
     onMutate: async ({wordId, level}) => {
       onMutate()

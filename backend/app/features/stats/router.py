@@ -77,9 +77,10 @@ def get_stats(db: Session = Depends(get_db)) -> StatsResponse:
         ))
     topic_stats.sort(key=lambda t: t.progress)
 
-    # ── words added by month (all time) ──────────────────────────────────────
+    # ── words added by month (all time, including deleted — true historical additions) ──
+    all_words_for_history = db.scalars(select(Word)).all()
     words_by_month: dict[str, int] = defaultdict(int)
-    for w in words:
+    for w in all_words_for_history:
         key = f"{w.created_at.year}-{w.created_at.month:02d}"
         words_by_month[key] += 1
 

@@ -38,14 +38,22 @@ export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
 }
 
 export function BarChart({data, color = 'var(--accent)'}: {data: {label: string; value: number}[]; color?: string}) {
-  const max = Math.max(1, ...data.map((d) => d.value))
+  const max = Math.max(1, ...data.map((d) => Math.abs(d.value)))
   return (
     <div className="stats-chart">
       {data.map((d, i) => (
         <div key={i} className="stats-chart-col">
-          <span className="stats-chart-count">{d.value > 0 ? d.value : ''}</span>
+          <span className="stats-chart-count" style={d.value < 0 ? {color: 'var(--danger, #dc2626)'} : {}}>
+            {d.value !== 0 ? d.value : ''}
+          </span>
           <div className="stats-chart-bar-wrap">
-            <div className="stats-chart-bar" style={{height: `${(d.value / max) * 100}%`, background: color}} />
+            <div
+              className="stats-chart-bar"
+              style={{
+                height: `${(Math.abs(d.value) / max) * 100}%`,
+                background: d.value < 0 ? 'var(--danger, #dc2626)' : color,
+              }}
+            />
           </div>
           <span className="stats-chart-label">{d.label}</span>
         </div>

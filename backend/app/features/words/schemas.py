@@ -45,6 +45,7 @@ class WordUpdate(BaseModel):
     example: str | None = None
     notes: str | None = None
     is_active: bool | None = None
+    progress_source: str | None = None  # e.g. "manual_edit", "study_list", "smart_review"
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
@@ -73,7 +74,7 @@ class WordResponse(BaseModel):
     def from_word(cls, word: "Word") -> "WordResponse":
         return cls(
             id=word.id,
-            topic_ids=[t.id for t in word.topics],
+            topic_ids=[t.id for t in word.topics if t.deleted_at is None],
             term=word.term,
             past_simple=word.past_simple,
             past_participle=word.past_participle,

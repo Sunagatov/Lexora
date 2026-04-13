@@ -90,12 +90,15 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Topic '{payload.topic_name}' exists but is in trash. Restore or permanently delete it first.",
             )
-        existing_slug = topic_repo.get_by_slug(db, slug)
+        # Check slug against ALL topics including deleted to avoid DB unique constraint crash
+        existing_slug = db.scalar(select(Topic).where(Topic.slug == slug))
         if existing_slug is not None:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"Topic name '{payload.topic_name}' conflicts with existing topic '{existing_slug.name}' (same slug '{slug}'). Use the exact existing name.",
+            detail = (
+                f"Topic name '{payload.topic_name}' conflicts with existing topic '{existing_slug.name}' (same slug '{slug}'). Use the exact existing name."
+                if existing_slug.deleted_at is None
+                else f"Topic slug '{slug}' is used by a deleted topic — restore or permanently delete it first."
             )
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
         topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
     existing = {_normalize_term(t) for t in db.scalars(

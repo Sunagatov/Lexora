@@ -73,7 +73,7 @@ export function StatsPage() {
   }, [filteredActivity])
 
   const activityChartData = useMemo(() =>
-    [...filteredActivity].reverse().slice(-60).map((d) => ({label: dayLabel(d.date), value: Math.max(0, d.net)})),
+    [...filteredActivity].reverse().slice(-60).map((d) => ({label: dayLabel(d.date), value: d.net})),
     [filteredActivity],
   )
   const monthChartData = useMemo(() => {

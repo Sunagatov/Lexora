@@ -72,9 +72,9 @@ export function TopicSidebar({
     onSuccess: (created) => {
       queryClient.invalidateQueries({queryKey: ['topics']})
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)
-      onSelect(created.id)
+      navigate(`/topics/${created.slug}`)
     },
-    onError: () => setTopicError('Name already exists or is invalid.'),
+    onError: (err: Error) => setTopicError(err.message.includes('409') ? err.message.replace('Request failed: ', '') : 'Name already exists or is invalid.'),
   })
 
   const deleteTopicMutation = useMutation({
@@ -103,8 +103,10 @@ export function TopicSidebar({
     topicsSort, topicProgress, topicCounts,
   )
   const pinnedTopics = useMemo(() =>
-    pinnedIds.map((id) => topics.find((t) => t.id === id)).filter((t): t is Topic => !!t),
-    [pinnedIds, topics],
+    pinnedIds
+      .map((id) => topics.find((t) => t.id === id))
+      .filter((t): t is Topic => !!t && (!needle || t.name.toLowerCase().includes(needle))),
+    [pinnedIds, topics, needle],
   )
   const recentTopics = useMemo(() => {
     const expandedIds = new Set<number>()
@@ -287,7 +289,7 @@ export function TopicSidebar({
       {deleteTopicId !== null && (
         <ConfirmModal
           title="Delete Topic?"
-          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? This will move the topic and all its words to trash.`}
+          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that belong only to this topic will also be trashed; words shared with other topics will not be affected.`}
           confirmLabel="Delete" danger
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
           onCancel={() => setDeleteTopicId(null)}

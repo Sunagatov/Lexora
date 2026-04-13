@@ -62,7 +62,14 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
     window.location.href = '/login'
     throw new Error('Not authenticated')
   }
-  if (!response.ok) throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+  if (!response.ok) {
+    let detail = `${response.status} ${response.statusText}`
+    try {
+      const body = await response.json()
+      if (body?.detail) detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
+    } catch { /* ignore parse errors */ }
+    throw new Error(`Request failed: ${detail}`)
+  }
 
   // 204 No Content and 205 Reset Content have no body — return undefined cast to T
   if (response.status === 204 || response.status === 205) return undefined as unknown as T
