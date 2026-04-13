@@ -36,7 +36,7 @@ export async function ensureInbox(
   const existing = topics.find((t) => t.name === 'Inbox')
   if (existing) return existing.id
   try {
-    const created = await createTopic('Inbox', slugify('Inbox'))
+    const created = await createTopic('Inbox')
     onCreated(created.id)
     return created.id
   } catch {

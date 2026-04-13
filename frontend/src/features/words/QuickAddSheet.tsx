@@ -57,7 +57,7 @@ export function QuickAddSheet({onClose}: Props) {
   })
 
   const createTopicMutation = useMutation({
-    mutationFn: () => createTopic(newTopic.trim(), slugify(newTopic.trim())),
+    mutationFn: () => createTopic(newTopic.trim()),
     onSuccess: (created) => {
       queryClient.invalidateQueries({queryKey: queryKeys.topics})
       setTopicId(created.id)

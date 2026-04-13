@@ -3,12 +3,10 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 from app.shared.text import normalize_term, slugify
 from app.features.topics.model import Topic
-from app.features.topics.repository import topic_repo
 from app.features.topics.schemas import TopicCreate
-from app.features.topics.service import assert_slug_available, TopicSlugConflictError
+from app.features.topics.service import assert_slug_available, create_topic, TopicSlugConflictError
 from app.features.words.model import Word
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 
@@ -29,20 +27,15 @@ class BulkInvalidTopicNameError(Exception):
 
 
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
-    slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
-    if not slug:
-        raise BulkInvalidTopicNameError(payload.topic_name)
-
     topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.is_(None)))
     if topic is None:
         deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
         if deleted is not None:
             raise BulkTopicInTrashError(payload.topic_name)
         try:
-            assert_slug_available(db, slug)
+            topic = create_topic(db, TopicCreate(name=payload.topic_name))
         except TopicSlugConflictError as e:
             raise BulkSlugConflictError(e.detail)
-        topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
     existing = {normalize_term(t) for t in db.scalars(
         select(Word.term)

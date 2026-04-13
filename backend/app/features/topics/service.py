@@ -46,13 +46,16 @@ def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
 
 
 def create_topic(db: Session, payload: TopicCreate) -> Topic:
-    # Normalize slug server-side from the topic name, ignoring whatever the client sent
     server_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
     if not server_slug:
-        server_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN)
+        raise TopicSlugConflictError(f"Cannot generate a valid slug from name '{payload.name}'")
     assert_slug_available(db, server_slug)
-    payload.slug = server_slug
-    return topic_repo.create(db, payload)
+    # Attach the generated slug before persisting
+    topic = Topic(name=payload.name, slug=server_slug, description=payload.description, is_active=payload.is_active)
+    db.add(topic)
+    db.commit()
+    db.refresh(topic)
+    return topic
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:

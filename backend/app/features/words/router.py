@@ -7,7 +7,7 @@ from app.features.words.repository import word_repo
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate, WordCreate, WordResponse, WordUpdate
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.bulk_service import (
-    BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
+    BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
 )
 
 router      = APIRouter(prefix="/api/words", tags=["words"])
@@ -71,8 +71,6 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     try:
         return bulk_import(db, payload)
-    except BulkInvalidTopicNameError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{e.name}'")
     except BulkTopicInTrashError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Topic '{e.name}' exists but is in trash. Restore or permanently delete it first.")
     except BulkSlugConflictError as e:
