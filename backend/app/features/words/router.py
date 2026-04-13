@@ -10,8 +10,7 @@ from app.features.words.bulk_service import (
     BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
 )
 
-router      = APIRouter(prefix="/api/words", tags=["words"])
-bulk_router = APIRouter(prefix="/api/words", tags=["words"])
+router = APIRouter(prefix="/api/words", tags=["words"])
 
 
 @router.get("", response_model=list[WordResponse])
@@ -65,8 +64,8 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
     word_repo.soft_delete(db, word)
 
 
-@bulk_router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
-                  dependencies=[Depends(verify_api_key)])
+@router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(verify_api_key)])
 def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     try:

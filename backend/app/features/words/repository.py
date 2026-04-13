@@ -4,15 +4,32 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.text import normalize_term
-from app.shared.progress import record_level_change
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.stats.service import record_level_change
 
 
 def _load_topics(stmt):
     return stmt.options(selectinload(Word.topics))
+
+
+def _existing_normalized_terms(db: Session, topic_ids: list[int], exclude_word_id: int | None = None) -> set[str]:
+    """Return normalized terms of active words in the given topics, optionally excluding one word id."""
+    stmt = (
+        select(Word.term)
+        .where(Word.deleted_at.is_(None))
+        .where(Word.topics.any(Topic.id.in_(topic_ids)))
+    )
+    if exclude_word_id is not None:
+        stmt = stmt.where(Word.id != exclude_word_id)
+    return {normalize_term(t) for t in db.scalars(stmt).all()}
+
+
+def _assert_no_duplicate(term: str, existing_normalized: set[str]) -> None:
+    if normalize_term(term) in existing_normalized:
+        raise DuplicateWordInTopicError(term)
 
 
 class WordRepository:
@@ -56,15 +73,8 @@ class WordRepository:
 
     @staticmethod
     def create(db: Session, payload: WordCreate) -> Word:
-        norm_term = normalize_term(payload.term)
-        existing = db.scalars(
-            select(Word)
-            .where(Word.deleted_at.is_(None))
-            .where(Word.topics.any(Topic.id.in_(payload.topic_ids)))
-        ).all()
-        for w in existing:
-            if normalize_term(w.term) == norm_term:
-                raise DuplicateWordInTopicError(payload.term)
+        existing = _existing_normalized_terms(db, payload.topic_ids)
+        _assert_no_duplicate(payload.term, existing)
 
         topics = db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()
         data = payload.model_dump(exclude={"topic_ids"})
@@ -82,16 +92,8 @@ class WordRepository:
         term_changed   = "term" in data and normalize_term(data["term"]) != normalize_term(word.term)
         topics_changed = payload.topic_ids is not None and set(payload.topic_ids) != {t.id for t in word.topics}
         if term_changed or topics_changed:
-            norm = normalize_term(effective_term)
-            existing = db.scalars(
-                select(Word)
-                .where(Word.deleted_at.is_(None))
-                .where(Word.id != word.id)
-                .where(Word.topics.any(Topic.id.in_(target_topic_ids)))
-            ).all()
-            for w in existing:
-                if normalize_term(w.term) == norm:
-                    raise DuplicateWordInTopicError(effective_term)
+            existing = _existing_normalized_terms(db, target_topic_ids, exclude_word_id=word.id)
+            _assert_no_duplicate(effective_term, existing)
 
         old_level = word.knowledge_level
         for field, value in data.items():

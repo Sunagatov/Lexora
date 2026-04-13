@@ -13,6 +13,17 @@ from app.features.stats.schemas import (
 )
 
 
+def record_level_change(
+    db: Session,
+    word_id: int,
+    old_level: int | None,
+    new_level: int,
+    source: str,
+) -> None:
+    """Append a progress event. Does not commit — caller owns the transaction."""
+    db.add(WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source))
+
+
 def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
     total        = len(words)
     with_example = sum(1 for w in words if w.example)

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
 from app.features.topics.model import Topic
+from app.features.topics.domain import soft_delete_exclusive_words
 from app.features.words.model import Word
 
 
@@ -14,7 +15,7 @@ def purge_trash(db: Session, force: bool = False) -> None:
     """Hard-delete trashed items in a single transaction.
 
     Before deleting trashed topics, soft-delete any active words that belong
-    exclusively to those topics — same invariant as topic_repo.hard_delete().
+    exclusively to those topics — enforced via the shared domain helper.
 
     With force=True deletes everything in trash.
     Otherwise deletes only items older than the configured retention period.
@@ -36,18 +37,13 @@ def purge_trash(db: Session, force: bool = False) -> None:
             .options(selectinload(Topic.words))
         ).all()
 
-    # Soft-delete active words that belong exclusively to a topic being purged
     for topic in topics_to_purge:
-        for word in topic.words:
-            if word.deleted_at is None and len(word.topics) == 1:
-                word.deleted_at = now
+        soft_delete_exclusive_words(topic, now)
 
-    # Now delete the trashed topics (ON DELETE CASCADE removes word_topics rows)
     topic_ids = [t.id for t in topics_to_purge]
     if topic_ids:
         db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
 
-    # Delete trashed words (those already soft-deleted, including ones we just marked)
     if force:
         db.execute(Word.__table__.delete().where(Word.deleted_at.isnot(None)))
     else:
