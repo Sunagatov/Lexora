@@ -2,24 +2,15 @@ from __future__ import annotations
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db
+from app.features.words.suggest_schemas import SuggestTopicRequest, SuggestTopicResponse
 from app.features.words.suggest_service import (
     AiNotConfiguredError, AiUnknownTopicError, NoTopicsError, suggest_topic_for_word,
 )
 
 router = APIRouter(prefix="/api/words", tags=["words"])
-
-
-class SuggestTopicRequest(BaseModel):
-    term: str = Field(min_length=1, max_length=200)
-    translation: str = Field(min_length=1, max_length=500)
-
-
-class SuggestTopicResponse(BaseModel):
-    topic_name: str
 
 
 @router.post("/suggest-topic", response_model=SuggestTopicResponse)

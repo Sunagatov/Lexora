@@ -4,11 +4,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.text import normalize_term
+from app.shared.progress import record_level_change
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.stats.model import WordProgressEvent
 
 
 def _load_topics(stmt):
@@ -91,7 +91,7 @@ class WordRepository:
             word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
         if "knowledge_level" in data and data["knowledge_level"] != old_level:
             source = payload.progress_source or "manual"
-            db.add(WordProgressEvent(word_id=word.id, old_level=old_level, new_level=data["knowledge_level"], source=source))
+            record_level_change(db, word.id, old_level, data["knowledge_level"], source)
         db.add(word)
         db.commit()
         db.refresh(word)

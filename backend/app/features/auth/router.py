@@ -3,16 +3,12 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException, Response, status
 from jose import jwt
-from pydantic import BaseModel
 
 from app.shared.config import settings
 from app.shared.deps import ALGORITHM
+from app.features.auth.schemas import LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-class LoginRequest(BaseModel):
-    password: str
 
 
 @router.post("/login")

@@ -8,6 +8,7 @@ from app.shared.text import normalize_term, slugify
 from app.features.topics.model import Topic
 from app.features.topics.repository import topic_repo
 from app.features.topics.schemas import TopicCreate
+from app.features.topics.service import assert_slug_available, TopicSlugConflictError
 from app.features.words.model import Word
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 
@@ -37,16 +38,10 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
         deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
         if deleted is not None:
             raise BulkTopicInTrashError(payload.topic_name)
-
-        existing_slug = db.scalar(select(Topic).where(Topic.slug == slug))
-        if existing_slug is not None:
-            detail = (
-                f"Topic name '{payload.topic_name}' conflicts with existing topic '{existing_slug.name}' (same slug '{slug}'). Use the exact existing name."
-                if existing_slug.deleted_at is None
-                else f"Topic slug '{slug}' is used by a deleted topic — restore or permanently delete it first."
-            )
-            raise BulkSlugConflictError(detail)
-
+        try:
+            assert_slug_available(db, slug)
+        except TopicSlugConflictError as e:
+            raise BulkSlugConflictError(e.detail)
         topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
     existing = {normalize_term(t) for t in db.scalars(

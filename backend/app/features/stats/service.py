@@ -13,34 +13,41 @@ from app.features.stats.schemas import (
 )
 
 
-def compute_stats(db: Session) -> StatsResponse:
-    words = db.scalars(select(Word).where(Word.deleted_at.is_(None))).all()
-
-    total_words      = len(words)
-    with_example     = sum(1 for w in words if w.example)
-    with_pos         = sum(1 for w in words if w.part_of_speech)
-    needs_enrichment = sum(1 for w in words if not w.example or not w.part_of_speech)
+def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
+    total        = len(words)
+    with_example = sum(1 for w in words if w.example)
+    with_pos     = sum(1 for w in words if w.part_of_speech)
 
     level_counts: dict[int | None, int] = defaultdict(int)
     for w in words:
         level_counts[w.knowledge_level] += 1
 
     active_total = sum(level_counts[l] for l in (1, 2, 3, 4))
-    okay_or_better_pct = (
+    okay_pct = (
         round(((level_counts[3] + level_counts[4]) / active_total) * 100)
         if active_total > 0 else 0
     )
 
-    topics   = db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all()
-    word_map = {w.id: w for w in words}
-    rows     = db.execute(select(word_topics.c.topic_id, word_topics.c.word_id)).all()
+    overview = VocabularyOverview(
+        total_words=total,
+        total_topics=0,  # filled by caller
+        with_example=with_example,
+        with_pos=with_pos,
+        missing_example=total - with_example,
+        missing_pos=total - with_pos,
+        needs_enrichment=sum(1 for w in words if not w.example or not w.part_of_speech),
+    )
+    return overview, level_counts, okay_pct
 
+
+def _build_topic_stats(db: Session, topics: list, word_map: dict) -> list[TopicStat]:
+    rows = db.execute(select(word_topics.c.topic_id, word_topics.c.word_id)).all()
     topic_word_ids: dict[int, list[int]] = defaultdict(list)
     for topic_id, word_id in rows:
         if word_id in word_map:
             topic_word_ids[topic_id].append(word_id)
 
-    topic_stats: list[TopicStat] = []
+    result: list[TopicStat] = []
     for t in topics:
         tw = [word_map[wid] for wid in topic_word_ids.get(t.id, [])]
         if not tw:
@@ -56,20 +63,25 @@ def compute_stats(db: Session) -> StatsResponse:
                 else:
                     strong_count += 1
         progress = round((score_sum / active_count) * 100) if active_count > 0 else 0
-        topic_stats.append(TopicStat(
+        result.append(TopicStat(
             id=t.id, name=t.name, slug=t.slug, total=len(tw),
             progress=progress, weak_count=weak_count, strong_count=strong_count,
             missing_example=sum(1 for w in tw if not w.example),
             missing_pos=sum(1 for w in tw if not w.part_of_speech),
         ))
-    topic_stats.sort(key=lambda t: t.progress)
+    result.sort(key=lambda t: t.progress)
+    return result
 
-    all_words_for_history = db.scalars(select(Word)).all()
-    words_by_month: dict[str, int] = defaultdict(int)
-    for w in all_words_for_history:
+
+def _build_words_added_by_month(db: Session) -> dict[str, int]:
+    counts: dict[str, int] = defaultdict(int)
+    for w in db.scalars(select(Word)).all():
         key = f"{w.created_at.year}-{w.created_at.month:02d}"
-        words_by_month[key] += 1
+        counts[key] += 1
+    return dict(sorted(counts.items()))
 
+
+def _build_daily_activity(db: Session) -> tuple[list[DailyActivity], str | None]:
     events = db.scalars(
         select(WordProgressEvent).order_by(WordProgressEvent.created_at.asc())
     ).all()
@@ -87,7 +99,7 @@ def compute_stats(db: Session) -> StatsResponse:
         elif e.new_level < old:
             daily[day]["downgraded"] += 1
 
-    daily_activity = [
+    activity = [
         DailyActivity(
             date=day,
             reviewed=v["reviewed"],
@@ -97,17 +109,24 @@ def compute_stats(db: Session) -> StatsResponse:
         )
         for day, v in sorted(daily.items(), reverse=True)
     ]
+    tracking_started_at = min(daily.keys()) if daily else None
+    return activity, tracking_started_at
+
+
+def compute_stats(db: Session) -> StatsResponse:
+    words  = db.scalars(select(Word).where(Word.deleted_at.is_(None))).all()
+    topics = db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all()
+
+    overview, level_counts, okay_pct = _build_overview(words)
+    overview = overview.model_copy(update={"total_topics": len(topics)})
+
+    word_map     = {w.id: w for w in words}
+    topic_stats  = _build_topic_stats(db, topics, word_map)
+    words_by_month = _build_words_added_by_month(db)
+    daily_activity, tracking_started_at = _build_daily_activity(db)
 
     return StatsResponse(
-        overview=VocabularyOverview(
-            total_words=total_words,
-            total_topics=len(topics),
-            with_example=with_example,
-            with_pos=with_pos,
-            missing_example=total_words - with_example,
-            missing_pos=total_words - with_pos,
-            needs_enrichment=needs_enrichment,
-        ),
+        overview=overview,
         level_counts=LevelCounts(
             unset=level_counts[None],
             level_1=level_counts[1],
@@ -116,9 +135,9 @@ def compute_stats(db: Session) -> StatsResponse:
             level_4=level_counts[4],
             level_5=level_counts[5],
         ),
-        okay_or_better_pct=okay_or_better_pct,
+        okay_or_better_pct=okay_pct,
         topics=topic_stats,
         daily_activity=daily_activity,
-        words_added_by_month=dict(sorted(words_by_month.items())),
-        tracking_started_at=min(daily.keys()) if daily else None,
+        words_added_by_month=words_by_month,
+        tracking_started_at=tracking_started_at,
     )
