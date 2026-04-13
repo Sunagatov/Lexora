@@ -3,10 +3,10 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.shared.text import normalize_term, slugify
+from app.shared.text import normalize_term
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
-from app.features.topics.service import assert_slug_available, create_topic, TopicSlugConflictError
+from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.model import Word
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 
@@ -34,6 +34,8 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
             raise BulkTopicInTrashError(payload.topic_name)
         try:
             topic = create_topic(db, TopicCreate(name=payload.topic_name))
+        except InvalidTopicNameError as e:
+            raise BulkInvalidTopicNameError(payload.topic_name)
         except TopicSlugConflictError as e:
             raise BulkSlugConflictError(e.detail)
 

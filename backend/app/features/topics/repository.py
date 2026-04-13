@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
-from app.features.topics.schemas import TopicCreate, TopicUpdate
+from app.features.topics.schemas import TopicUpdate
 
 
 class TopicRepository:
@@ -27,14 +27,6 @@ class TopicRepository:
     @staticmethod
     def get_deleted(db: Session) -> list[Topic]:
         return list(db.scalars(select(Topic).where(Topic.deleted_at.is_not(None)).order_by(Topic.deleted_at.desc())).all())
-
-    @staticmethod
-    def create(db: Session, payload: TopicCreate) -> Topic:
-        topic = Topic(**payload.model_dump())
-        db.add(topic)
-        db.commit()
-        db.refresh(topic)
-        return topic
 
     @staticmethod
     def update(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:

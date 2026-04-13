@@ -7,10 +7,17 @@ WORKDIR /app
 
 # Copy dependency manifest first so this layer is cached unless deps change
 COPY pyproject.toml .
+# Install dependencies without the local package (no source needed yet)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -e . --no-build-isolation || true
+    pip install --no-cache-dir $(python -c "
+import tomllib, sys
+with open('pyproject.toml', 'rb') as f:
+    d = tomllib.load(f)
+deps = d.get('project', {}).get('dependencies', [])
+print(' '.join(deps))
+")
 
-# Copy the rest of the source
+# Copy the rest of the source and install the local package
 COPY . .
 RUN pip install --no-cache-dir -e .
 

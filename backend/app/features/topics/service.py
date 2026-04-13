@@ -16,6 +16,13 @@ class TopicSlugConflictError(Exception):
         super().__init__(detail)
 
 
+class InvalidTopicNameError(Exception):
+    """Raised when a topic name cannot produce a valid slug."""
+    def __init__(self, name: str) -> None:
+        self.name = name
+        super().__init__(f"Cannot generate a valid slug from name '{name}'")
+
+
 class MissingTopicsError(Exception):
     def __init__(self, ids: list[int]) -> None:
         self.ids = ids
@@ -48,7 +55,7 @@ def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
 def create_topic(db: Session, payload: TopicCreate) -> Topic:
     server_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
     if not server_slug:
-        raise TopicSlugConflictError(f"Cannot generate a valid slug from name '{payload.name}'")
+        raise InvalidTopicNameError(payload.name)
     assert_slug_available(db, server_slug)
     # Attach the generated slug before persisting
     topic = Topic(name=payload.name, slug=server_slug, description=payload.description, is_active=payload.is_active)
