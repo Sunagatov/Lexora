@@ -21,7 +21,7 @@ export function StudyPage() {
   }, [setHasDrawer])
 
   const sidebarProps = {
-    topics: s.visibleTopics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
+    topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
     totalWords: s.words.length,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
@@ -35,7 +35,7 @@ export function StudyPage() {
     <>
       <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
       <div className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}>
-        <TopicSidebar {...sidebarProps} />
+        <TopicSidebar {...sidebarProps} isMobile />
       </div>
 
       <aside className="desktop-sidebar">

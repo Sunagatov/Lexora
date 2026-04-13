@@ -11,7 +11,7 @@ import {Toolbar} from '../study/Toolbar'
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 
 export function SmartReviewView({queue, isLoading}: Props) {
-  const {completeItem} = useSmartReview()
+  const {completeItem, refresh, isRefreshing} = useSmartReview()
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const filter = useWordFilter(words)
   const update = useWordUpdate(() =>
@@ -27,25 +27,42 @@ export function SmartReviewView({queue, isLoading}: Props) {
   }
 
   if (isLoading) return null
-  if (!queue) return <div className="empty-state">Smart Review is unavailable.</div>
+  if (!queue) return <div className="empty-state">Daily Word Mix is unavailable.</div>
 
-  const remaining = queue.total_count - queue.completed_count
-  const progress  = queue.total_count > 0 ? Math.round((queue.completed_count / queue.total_count) * 100) : 0
+  const remaining  = queue.total_count - queue.completed_count
+  const progress   = queue.total_count > 0 ? Math.round((queue.completed_count / queue.total_count) * 100) : 0
+  const isComplete = remaining === 0 && queue.total_count > 0
 
   return (
     <>
       <div className="sticky-controls">
         <div className="card topic-header-card topic-header-card-desktop">
           <div className="topic-header-main">
-            <div className="topic-header-title">⚡ Smart Review</div>
+            <div className="topic-header-title">✨ Daily Word Mix <span className="daily-mix-subtitle">Made by AI</span></div>
+            <div className="smart-review-subtitle">
+              {isComplete
+                ? 'All done! Get a new set when you\'re ready.'
+                : `${remaining} word${remaining !== 1 ? 's' : ''} left in this session — progress is saved`
+              }
+            </div>
           </div>
           <div className="smart-review-progress">
             <div className="smart-review-progress-bar">
               <div className="smart-review-progress-fill" style={{width: `${progress}%`}} />
             </div>
-            <span className="smart-review-progress-label">
-              {queue.completed_count}/{queue.total_count} completed · {remaining} remaining
-            </span>
+            <div className="smart-review-progress-footer">
+              <span className="smart-review-progress-label">
+                {queue.completed_count}/{queue.total_count} reviewed
+              </span>
+              <button
+                type="button"
+                className="smart-review-refresh-btn"
+                onClick={() => refresh()}
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? 'Loading…' : isComplete ? '✨ New session' : '↺ New set'}
+              </button>
+            </div>
           </div>
         </div>
 

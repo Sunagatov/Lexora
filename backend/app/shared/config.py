@@ -18,14 +18,14 @@ class Settings(BaseSettings):
     api_key: str
 
     smart_review_enabled: bool = True
-    smart_review_level_1_count: int = 25
-    smart_review_level_2_count: int = 25
-    smart_review_level_3_count: int = 25
-    smart_review_level_4_count: int = 25
+    smart_review_level_1_count: int = 5
+    smart_review_level_2_count: int = 5
+    smart_review_level_3_count: int = 5
+    smart_review_level_4_count: int = 5
     smart_review_level_5_count: int = 0
-    smart_review_cooldown_days: int = 2
-    smart_review_max_per_topic: int = 10
-    smart_review_queue_ttl_hours: int = 24
+    smart_review_cooldown_days: int = 1
+    smart_review_max_per_topic: int = 5
+    smart_review_queue_ttl_hours: int = 72  # queue lives 3 days — only regenerates when complete
 
     trash_retention_days: int = 30
 

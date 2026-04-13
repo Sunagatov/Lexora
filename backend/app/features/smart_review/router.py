@@ -32,6 +32,17 @@ def get_active_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
     return StudyQueueResponse.from_queue(loaded)
 
 
+@router.post("/refresh", response_model=StudyQueueResponse)
+def refresh_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
+    """Discard the current queue and generate a fresh one."""
+    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
+        q.is_active = False
+    db.commit()
+    queue = generate_queue(db)
+    loaded = _load_queue(db, queue.id)
+    return StudyQueueResponse.from_queue(loaded)
+
+
 @router.post("/items/{item_id}/complete", response_model=StudyQueueResponse)
 def complete_item(item_id: int, db: Session = Depends(get_db)) -> StudyQueueResponse:
     item = db.get(StudyQueueItem, item_id)

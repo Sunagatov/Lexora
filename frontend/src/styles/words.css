@@ -431,8 +431,46 @@
   transition: width 0.4s ease;
 }
 
-.smart-review-progress-label {
+.smart-review-subtitle {
   font-size: 0.78rem;
-  color: var(--text-3);
+  color: var(--text-2);
+  margin-top: 3px;
 }
+
+.daily-mix-subtitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-3);
+  margin-left: 6px;
+  letter-spacing: 0.01em;
+}
+
+.smart-review-progress-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.smart-review-refresh-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.smart-review-refresh-btn:hover:not(:disabled) {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border-color: var(--accent);
+}
+
+.smart-review-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
