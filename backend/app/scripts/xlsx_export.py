@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import NamedTuple
+
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
@@ -32,21 +34,31 @@ def detect_sheet_type(words: list[Word]) -> str:
     return "noun"
 
 
-def word_to_row(word: Word, sheet_type: str) -> tuple:
+class WordRow(NamedTuple):
+    knowledge: int
+    term: str
+    translations: str | None
+    extra_1: str | None = None
+    extra_2: str | None = None
+    extra_3: str | None = None
+    extra_4: str | None = None
+
+
+def word_to_row(word: Word, sheet_type: str) -> WordRow:
     level = word.knowledge_level or 1
     if sheet_type == "verb":
-        return (level, word.term, word.translations, word.pattern, word.example)
+        return WordRow(level, word.term, word.translations, word.pattern, word.example)
     if sheet_type == "irregular_verb":
-        return (level, word.term, word.past_simple, word.past_participle, word.translations, word.pattern, word.example)
+        return WordRow(level, word.term, word.past_simple, word.past_participle, word.translations, word.pattern, word.example)
     if sheet_type == "noun":
-        return (level, word.term, word.translations, word.countability)
+        return WordRow(level, word.term, word.translations, word.countability)
     if sheet_type in ("adjective", "preposition"):
-        return (level, word.term, word.translations)
+        return WordRow(level, word.term, word.translations)
     if sheet_type == "phrase":
-        return (level, word.term, word.translations, word.notes)
+        return WordRow(level, word.term, word.translations, word.notes)
     if sheet_type == "adverb":
-        return (level, word.term, word.translations, word.pattern)
-    return (level, word.term, word.translations)
+        return WordRow(level, word.term, word.translations, word.pattern)
+    return WordRow(level, word.term, word.translations)
 
 
 def write_sheet(wb: Workbook, topic: Topic, words: list[Word]) -> None:

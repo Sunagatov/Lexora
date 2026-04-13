@@ -1,3 +1,4 @@
+import hashlib
 import hmac
 from collections.abc import Generator
 
@@ -28,6 +29,17 @@ def verify_session(session: str | None = Cookie(default=None)) -> None:
             raise JWTError("unexpected subject")
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+
+
+def verify_csrf(
+    session: str | None = Cookie(default=None),
+    x_csrf_token: str | None = Header(default=None),
+) -> None:
+    if session is None or x_csrf_token is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Missing CSRF token")
+    expected = hashlib.sha256(f"{settings.secret_key}:{session}".encode()).hexdigest()
+    if not hmac.compare_digest(expected, x_csrf_token):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid CSRF token")
 
 
 def verify_api_key(x_api_key: str | None = Header(default=None)) -> None:

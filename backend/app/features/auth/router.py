@@ -1,3 +1,4 @@
+import hashlib
 import hmac
 from datetime import datetime, timezone
 
@@ -21,6 +22,7 @@ def login(payload: LoginRequest, response: Response) -> dict:
         settings.secret_key,
         algorithm=ALGORITHM,
     )
+    csrf_token = hashlib.sha256(f"{settings.secret_key}:{token}".encode()).hexdigest()
     response.set_cookie(
         key="session", value=token,
         httponly=settings.cookie_httponly,
@@ -28,7 +30,7 @@ def login(payload: LoginRequest, response: Response) -> dict:
         samesite=settings.cookie_samesite,
         max_age=settings.cookie_max_age,
     )
-    return {"ok": True}
+    return {"ok": True, "csrf_token": csrf_token}
 
 
 @router.post("/logout")

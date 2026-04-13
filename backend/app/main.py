@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.shared.config import settings
-from app.shared.deps import verify_session
+from app.shared.deps import verify_csrf, verify_session
 from app.features.auth.router import router as auth_router
 from app.features.health.router import router as health_router
 from app.features.topics.router import router as topics_router
@@ -28,9 +28,9 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(auth_router)
-app.include_router(topics_router,      dependencies=[Depends(verify_session)])
-app.include_router(words_router,       dependencies=[Depends(verify_session)])
-app.include_router(suggest_router,     dependencies=[Depends(verify_session)])
-app.include_router(smart_review_router, dependencies=[Depends(verify_session)])
-app.include_router(trash_router,       dependencies=[Depends(verify_session)])
-app.include_router(stats_router,       dependencies=[Depends(verify_session)])
+app.include_router(topics_router,      dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(words_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(suggest_router,     dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(smart_review_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(trash_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(stats_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
