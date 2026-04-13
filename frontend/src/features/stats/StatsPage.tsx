@@ -5,6 +5,8 @@ import {fetchStats} from './api'
 import type {DailyActivity, TopicStat} from './api'
 import {DonutChart, BarChart, StatCard, SectionTitle, PeriodTabs} from './StatsComponents'
 import {InsightsStrip} from './StatsInsights'
+import {queryKeys} from '../../shared/queryKeys'
+import {routes} from '../../shared/routes'
 
 const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak', level_2: 'Basic', level_3: 'Okay', level_4: 'Strong', level_5: 'Parked', unset: 'No level',
@@ -55,7 +57,7 @@ function dayLabel(dateStr: string): string {
 
 export function StatsPage() {
   const navigate   = useNavigate()
-  const {data: s, isLoading} = useQuery({queryKey: ['stats'], queryFn: fetchStats})
+  const {data: s, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
 
   const [activityPeriod, setActivityPeriod] = useState<ActivityPeriod>('30')
   const [monthPeriod,    setMonthPeriod]    = useState<MonthPeriod>('all')
@@ -245,7 +247,7 @@ export function StatsPage() {
                   <span className="stats-col-right">Progress</span>
                 </div>
                 {(topicExpanded ? sortedTopics : sortedTopics.slice(0, 10)).map((row) => (
-                  <div key={row.id} className="stats-topic-row" onClick={() => navigate(`/topics/${row.slug}`)}>
+                  <div key={row.id} className="stats-topic-row" onClick={() => navigate(routes.topic(row.slug))}>
                     <span className="stats-topic-name">{row.name}</span>
                     <span className="stats-col-center stats-topic-count">{row.total}</span>
                     <span className={`stats-col-center stats-topic-weak ${row.weak_count > 0 ? 'has-weak' : ''}`}>{row.weak_count > 0 ? row.weak_count : '—'}</span>

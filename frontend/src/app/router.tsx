@@ -6,21 +6,22 @@ import {StudyPage} from '../features/study/StudyPage'
 import {WordPage} from '../features/words/WordPage'
 import {TrashPage} from '../features/trash/TrashPage'
 import {StatsPage} from '../features/stats/StatsPage'
+import {routes} from '../shared/routes'
 
 export const router = createBrowserRouter([
-  {path: '/login', element: <LoginPage />},
+  {path: routes.login, element: <LoginPage />},
   {
-    path: '/',
+    path: routes.home,
     element: <AppLayout />,
     errorElement: <NotFoundPage />,
     children: [
-      {index: true,                  element: <Navigate to="/smart-review" replace />},
-      {path: 'trash',                element: <TrashPage />},
-      {path: 'stats',                element: <StatsPage />},
-      {path: 'words/:wordId',        element: <WordPage />},
-      {path: 'words/:wordId/edit',   element: <WordPage />},
-      {path: 'smart-review',         element: <StudyPage />},
-      {path: 'topics/:topicSlug',    element: <StudyPage />},
+      {index: true,                element: <Navigate to={routes.smartReview} replace />},
+      {path: 'trash',              element: <TrashPage />},
+      {path: 'stats',              element: <StatsPage />},
+      {path: 'words/:wordId',      element: <WordPage />},
+      {path: 'words/:wordId/edit', element: <WordPage />},
+      {path: 'smart-review',       element: <StudyPage />},
+      {path: 'topics/:topicSlug',  element: <StudyPage />},
     ],
   },
 ])
