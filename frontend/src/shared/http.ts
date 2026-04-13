@@ -1,4 +1,3 @@
-export type {Word, Topic, StudyQueue, StudyQueueItem, TrashWord, TrashTopic, WordKnowledgeLevel} from './types'
 export {ApiError} from './apiError'
 
 import {ApiError} from './apiError'

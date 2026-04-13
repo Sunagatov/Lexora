@@ -2,13 +2,9 @@ import {useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
+import {PAGE_SIZES, DEFAULT_PAGE_SIZE} from '../../shared/paginationConfig'
 
-export const PAGE_SIZES = (import.meta.env.VITE_PAGE_SIZES ?? '10,20,50,100')
-  .split(',')
-  .map(Number)
-  .filter((n) => n > 0)
-
-const DEFAULT_PAGE_SIZE = Number(import.meta.env.VITE_DEFAULT_PAGE_SIZE ?? 20)
+export {PAGE_SIZES} from '../../shared/paginationConfig'
 
 function parseLevel(v: string | null): 'all' | WordKnowledgeLevel {
   const n = parseInt(v ?? '', 10)

@@ -1,4 +1,4 @@
-import {PAGE_SIZES} from '../words/useWordFilter'
+import {PAGE_SIZES} from '../../shared/paginationConfig'
 
 type Props = {page: number; totalPages: number; onPage: (p: number) => void; pageSize: number; onPageSize: (n: number) => void}
 
