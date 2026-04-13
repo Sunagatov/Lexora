@@ -49,11 +49,14 @@ class TopicRepository:
     def soft_delete(db: Session, topic: Topic, delete_words: bool = False) -> Topic:
         now = datetime.now(timezone.utc)
         topic.deleted_at = now
-        if delete_words:
-            for word in topic.words:
-                # only soft-delete words that belong exclusively to this topic
-                if word.deleted_at is None and len(word.topics) == 1:
-                    word.deleted_at = now
+        for word in topic.words:
+            if word.deleted_at is None and len(word.topics) == 1:
+                # Always soft-delete words that belong exclusively to this topic —
+                # leaving them active would produce words with zero active topics.
+                word.deleted_at = now
+            elif delete_words and word.deleted_at is None:
+                # delete_words=True also soft-deletes shared words (multi-topic).
+                word.deleted_at = now
         db.add(topic)
         db.commit()
         db.refresh(topic)
