@@ -5,8 +5,11 @@ import type {Topic, Word} from '../../shared/http'
 export function useTopicState(topics: Topic[], words: Word[]) {
   const {topicSlug} = useParams<{topicSlug?: string}>()
   const navigate    = useNavigate()
-  const [topicSearch, setTopicSearch] = useState('')
-  const [drawerOpen, setDrawerOpen]   = useState(false)
+  const [topicSearch,   setTopicSearch]   = useState('')
+  const [drawerOpen,    setDrawerOpen]    = useState(false)
+  const [recentIds,     setRecentIds]     = useState<number[]>(() => {
+    try { return JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]') } catch { return [] }
+  })
 
   const selectedTopic   = useMemo(() => topics.find((t) => t.slug === topicSlug) ?? null, [topics, topicSlug])
   const selectedTopicId = selectedTopic?.id ?? null
@@ -56,11 +59,10 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     const topic = topics.find((t) => t.id === id)
     if (topic) {
       navigate(`/topics/${topic.slug}`)
-      // track recent topics in localStorage (max 5, newest first, no duplicates)
       try {
-        const prev: number[] = JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]')
-        const next = [id, ...prev.filter((x) => x !== id)].slice(0, 5)
+        const next = [id, ...recentIds.filter((x) => x !== id)].slice(0, 5)
         localStorage.setItem('sidebar_recent_topics', JSON.stringify(next))
+        setRecentIds(next)
       } catch { /* ignore */ }
     }
     setDrawerOpen(false)
@@ -74,6 +76,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
   return {
     selectedTopicId, selectedTopic, visibleTopics, topicCounts, topicProgress,
     topicSearch, setTopicSearch, drawerOpen, setDrawerOpen,
+    recentIds,
     selectTopic, selectSmartReview,
   }
 }

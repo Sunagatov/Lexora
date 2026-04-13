@@ -17,6 +17,7 @@ type Props = {
   selectedTopicId: number | null
   isSmartReview: boolean
   isMobile?: boolean
+  recentIds?: number[]
   onSelect: (id: number) => void
   onSelectSmartReview: () => void
   smartQueue: StudyQueue | null
@@ -65,7 +66,8 @@ const SORT_OPTIONS: {value: SortMode; label: string}[] = [
 
 export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
-  selectedTopicId, isSmartReview, isMobile = false, onSelect, onSelectSmartReview, smartQueue,
+  selectedTopicId, isSmartReview, isMobile = false, recentIds: recentIdsProp = [],
+  onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
   const [posCollapsed,    setPosCollapsed]    = useState(() => loadPref('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadPref('sidebar_topics_collapsed', false))
@@ -153,21 +155,17 @@ export function TopicSidebar({
   )
 
   // Recent topics (exclude pinned, exclude already-visible in expanded sections, max 4)
-  const recentTopicIds: number[] = useMemo(() => {
-    try { return JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]') } catch { return [] }
-  }, [topics])
-
   const recentTopics = useMemo(() => {
     const expandedIds = new Set<number>()
     if (!posCollapsed) posTopics.forEach((t) => expandedIds.add(t.id))
     if (!topicsCollapsed) themeTopics.forEach((t) => expandedIds.add(t.id))
-    return recentTopicIds
+    return recentIdsProp
       .map((id) => topics.find((t) => t.id === id))
       .filter((t): t is Topic =>
         !!t && !needle && !pinnedIds.includes(t.id) && !expandedIds.has(t.id)
       )
       .slice(0, 4)
-  }, [recentTopicIds, topics, needle, pinnedIds, posCollapsed, topicsCollapsed, posTopics, themeTopics])
+  }, [recentIdsProp, topics, needle, pinnedIds, posCollapsed, topicsCollapsed, posTopics, themeTopics])
 
   const remaining  = smartQueue ? smartQueue.total_count - smartQueue.completed_count : null
   const srProgress = smartQueue && smartQueue.total_count > 0

@@ -81,8 +81,15 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
     slug = _slugify(payload.topic_name)
 
-    topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name))
+    topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.is_(None)))
     if topic is None:
+        # also check if a deleted topic with this name exists
+        deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
+        if deleted is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Topic '{payload.topic_name}' exists but is in trash. Restore or permanently delete it first.",
+            )
         existing_slug = topic_repo.get_by_slug(db, slug)
         if existing_slug is not None:
             raise HTTPException(
@@ -91,7 +98,11 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
             )
         topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
-    existing = {_normalize_term(t) for t in db.scalars(select(Word.term).where(Word.topics.any(Topic.id == topic.id))).all()}
+    existing = {_normalize_term(t) for t in db.scalars(
+        select(Word.term)
+        .where(Word.deleted_at.is_(None))
+        .where(Word.topics.any(Topic.id == topic.id))
+    ).all()}
 
     added_terms: list[str] = []
     skipped_terms: list[str] = []
