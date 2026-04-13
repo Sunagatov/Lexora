@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic, createTopic} from './api'
 import type {StudyQueue, Topic} from '../../shared/http'
+import {ApiError} from '../../shared/apiError'
 import {ConfirmModal} from '../../shared/ConfirmModal'
 import {slugify} from '../../shared/slugify'
 import {SortMenu, SortMode, SORT_LABELS, SORT_OPTIONS} from './TopicSortMenu'
@@ -76,7 +77,7 @@ export function TopicSidebar({
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)
       navigate(routes.topic(created.slug))
     },
-    onError: (err: Error) => setTopicError(err.message.includes('409') ? err.message.replace('Request failed: ', '') : 'Name already exists or is invalid.'),
+    onError: (err: Error) => setTopicError(err instanceof ApiError && err.status === 409 ? err.message : 'Name already exists or is invalid.'),
   })
 
   const deleteTopicMutation = useMutation({

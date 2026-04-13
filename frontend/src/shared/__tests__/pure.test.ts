@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest'
 import {filterAndSort, buildLevelSummary} from '../wordDomain'
 import {slugify} from '../slugify'
+import {smartPreview} from '../../features/words/wordPresenter'
 import type {Word} from '../types'
 
 function makeWord(overrides: Partial<Word> = {}): Word {
@@ -82,6 +83,32 @@ describe('filterAndSort', () => {
   it('respects frozenIds order', () => {
     const result = filterAndSort(words, '', 'all', 'term-asc', [3, 1, 2])
     expect(result.map((w) => w.id)).toEqual([3, 1, 2])
+  })
+})
+
+describe('smartPreview', () => {
+  it('returns verb forms when past_simple present', () => {
+    const w = makeWord({term: 'go', past_simple: 'went', past_participle: 'gone'})
+    const p = smartPreview(w)
+    expect(p?.label).toBe('Forms')
+    expect(p?.text).toContain('went')
+  })
+
+  it('returns pattern for verb with pattern', () => {
+    const w = makeWord({part_of_speech: 'verb', pattern: 'to do sth'})
+    const p = smartPreview(w)
+    expect(p?.label).toBe('Pattern')
+    expect(p?.text).toBe('to do sth')
+  })
+
+  it('returns example when no other priority matches', () => {
+    const w = makeWord({example: 'She runs fast.'})
+    const p = smartPreview(w)
+    expect(p?.label).toBe('Example')
+  })
+
+  it('returns null when no preview data', () => {
+    expect(smartPreview(makeWord())).toBeNull()
   })
 })
 
