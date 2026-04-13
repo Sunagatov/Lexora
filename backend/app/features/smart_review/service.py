@@ -36,7 +36,7 @@ def _pick_for_level(
     stmt = (
         select(Word)
         .options(selectinload(Word.topics))
-        .where(Word.is_active == True)  # noqa: E712
+        .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
         .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
@@ -101,7 +101,7 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
 
 def deactivate_all_queues(db: Session) -> None:
     """Mark all active queues inactive. Does NOT commit — caller owns the transaction."""
-    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
+    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all():
         q.is_active = False
 
 
@@ -153,7 +153,7 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     # Return existing active queue if not expired
     queue = db.scalar(
         select(StudyQueue)
-        .where(StudyQueue.is_active == True)  # noqa: E712
+        .where(StudyQueue.is_active.is_(True))
         .where(StudyQueue.expires_at > now)
     )
     if queue is not None:
