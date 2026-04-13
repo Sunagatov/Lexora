@@ -60,13 +60,14 @@ def _pick_for_level(
     return picked
 
 
-def _pick_for_level_with_fallback(
+def _pick_for_level_retry_excluded(
     db: Session,
     level: int,
     needed: int,
     excluded_ids: set[int],
     topic_counts: dict[int, int],
 ) -> list[Word]:
+    """Pick words for a level; if short, retry once with already-picked ids also excluded."""
     picked = _pick_for_level(db, level, needed, excluded_ids, topic_counts)
     shortfall = needed - len(picked)
     if shortfall > 0:
@@ -89,7 +90,7 @@ def generate_queue(db: Session) -> StudyQueue:
     for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        words = _pick_for_level_with_fallback(db, level, needed, cooldown_ids | {w.id for w in selected}, topic_counts)
+        words = _pick_for_level_retry_excluded(db, level, needed, cooldown_ids | {w.id for w in selected}, topic_counts)
         selected.extend(words)
 
     random.shuffle(selected)

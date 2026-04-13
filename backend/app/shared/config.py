@@ -29,6 +29,12 @@ class Settings(BaseSettings):
 
     trash_retention_days: int = 30
 
+    cors_allowed_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://lexora.zuf.uk",
+    ]
+
     # AI / topic suggestion — uses GitHub Models (OpenAI-compatible)
     openai_api_key: str = ""
     openai_base_url: str = "https://models.inference.ai.azure.com"

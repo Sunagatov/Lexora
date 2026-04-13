@@ -1,12 +1,10 @@
-import re
-import unicodedata
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db, verify_api_key
 from app.shared.constraints import TOPIC_SLUG_MAX_LEN
+from app.shared.text import normalize_term, slugify
 from app.features.topics.model import Topic
 from app.features.topics.repository import topic_repo
 from app.features.topics.schemas import TopicCreate
@@ -40,7 +38,10 @@ def create_word(payload: WordCreate, db: Session = Depends(get_db)) -> WordRespo
     missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
     if missing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
-    return WordResponse.from_word(word_repo.create(db, payload))
+    try:
+        return WordResponse.from_word(word_repo.create(db, payload))
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.put("/{word_id}", response_model=WordResponse)
@@ -52,7 +53,10 @@ def update_word(word_id: int, payload: WordUpdate, db: Session = Depends(get_db)
         missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
         if missing:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
-    return WordResponse.from_word(word_repo.update(db, word, payload))
+    try:
+        return WordResponse.from_word(word_repo.update(db, word, payload))
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.delete("/{word_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -63,34 +67,22 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
     word_repo.soft_delete(db, word)
 
 
-def _slugify(value: str) -> str:
-    normalized = unicodedata.normalize("NFKD", value)
-    slug = re.sub(r"[^a-zA-Z0-9]+", "-", normalized.encode("ascii", "ignore").decode()).strip("-").lower()
-    if not slug:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{value}'")
-    return slug[:TOPIC_SLUG_MAX_LEN]
-
-
-def _normalize_term(term: str) -> str:
-    return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", term)).strip().lower()
-
-
 @bulk_router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
                   dependencies=[Depends(verify_api_key)])
 def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
-    slug = _slugify(payload.topic_name)
+    slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
+    if not slug:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{payload.topic_name}'")
 
     topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.is_(None)))
     if topic is None:
-        # also check if a deleted topic with this name exists
         deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
         if deleted is not None:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Topic '{payload.topic_name}' exists but is in trash. Restore or permanently delete it first.",
             )
-        # Check slug against ALL topics including deleted to avoid DB unique constraint crash
         existing_slug = db.scalar(select(Topic).where(Topic.slug == slug))
         if existing_slug is not None:
             detail = (
@@ -101,7 +93,7 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
         topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
 
-    existing = {_normalize_term(t) for t in db.scalars(
+    existing = {normalize_term(t) for t in db.scalars(
         select(Word.term)
         .where(Word.deleted_at.is_(None))
         .where(Word.topics.any(Topic.id == topic.id))
@@ -110,12 +102,12 @@ def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) ->
     added_terms: list[str] = []
     skipped_terms: list[str] = []
     for w in payload.words:
-        if _normalize_term(w.term) in existing:
+        if normalize_term(w.term) in existing:
             skipped_terms.append(w.term)
             continue
         new_word = Word(**w.model_dump(), topics=[topic])
         db.add(new_word)
-        existing.add(_normalize_term(w.term))
+        existing.add(normalize_term(w.term))
         added_terms.append(w.term)
 
     db.commit()
