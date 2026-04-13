@@ -1,5 +1,5 @@
 import {request} from '../../shared/http'
-import type {Word, WordKnowledgeLevel} from '../../shared/http'
+import type {Word, WordKnowledgeLevel} from '../../shared/types'
 
 export const fetchWords = (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()

@@ -2,7 +2,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {DrawerProvider} from './shared/DrawerContext'
 import {ApiError} from './shared/apiError'
-import {routes} from './shared/routes'
+import {redirectIfUnauthorized} from './shared/authRedirect'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -10,21 +10,14 @@ const queryClient = new QueryClient({
       retry: (_, error: unknown) => !(error instanceof ApiError && error.status === 401),
     },
     mutations: {
-      onError: (error: unknown) => {
-        if (error instanceof ApiError && error.status === 401) {
-          window.location.href = routes.login
-        }
-      },
+      onError: (error: unknown) => redirectIfUnauthorized(error),
     },
   },
 })
 
 queryClient.getQueryCache().subscribe((event) => {
   if (event.type === 'updated' && event.query.state.status === 'error') {
-    const err: unknown = event.query.state.error
-    if (err instanceof ApiError && err.status === 401) {
-      window.location.href = routes.login
-    }
+    redirectIfUnauthorized(event.query.state.error)
   }
 })
 

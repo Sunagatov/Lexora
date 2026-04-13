@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import type {Word, WordKnowledgeLevel} from '../../shared/http'
+import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
 import {routes} from '../../shared/routes'

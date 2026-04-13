@@ -1,5 +1,5 @@
 import {request} from '../../shared/http'
-import type {Topic} from '../../shared/http'
+import type {Topic} from '../../shared/types'
 
 export const fetchTopics  = ()                                    => request<Topic[]>('/api/topics')
 export const createTopic  = (name: string)                               => request<Topic>('/api/topics', {method: 'POST', body: JSON.stringify({name, is_active: true})})

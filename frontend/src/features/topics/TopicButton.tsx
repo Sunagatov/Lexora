@@ -1,4 +1,4 @@
-import type {Topic} from '../../shared/http'
+import type {Topic} from '../../shared/types'
 
 export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onDelete, onPin}: {
   topic: Topic

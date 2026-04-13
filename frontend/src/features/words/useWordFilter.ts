@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
-import type {Word, WordKnowledgeLevel} from '../../shared/http'
+import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
 
 export const PAGE_SIZES = (import.meta.env.VITE_PAGE_SIZES ?? '10,20,50,100')

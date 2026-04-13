@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import type {WordKnowledgeLevel} from '../../shared/http'
+import type {WordKnowledgeLevel} from '../../shared/types'
 import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '../../shared/wordDomain'
 
 type Props = {

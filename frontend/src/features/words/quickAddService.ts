@@ -1,6 +1,6 @@
 import {request} from '../../shared/http'
 import {createTopic} from '../topics/api'
-import type {Topic} from '../../shared/http'
+import type {Topic} from '../../shared/types'
 
 export async function translateTerm(term: string): Promise<string | null> {
   try {

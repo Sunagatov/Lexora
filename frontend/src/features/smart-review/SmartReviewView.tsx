@@ -1,12 +1,9 @@
 import {useMemo} from 'react'
-import type {StudyQueue, WordKnowledgeLevel} from '../../shared/http'
+import type {StudyQueue, WordKnowledgeLevel} from '../../shared/types'
 import {useSmartReview} from './useSmartReview'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useWordFilter} from '../words/useWordFilter'
-import {WordTable} from '../words/WordTable'
-import {WordCardList} from '../words/WordCardList'
-import {Pagination} from '../study/Pagination'
-import {Toolbar} from '../study/Toolbar'
+import {WordCollectionView} from '../words/WordCollectionView'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 
@@ -66,44 +63,21 @@ export function SmartReviewView({queue, isLoading}: Props) {
             </div>
           </div>
         </div>
-
-        <Toolbar
-          wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
-          sortBy={filter.sortBy} setSortBy={filter.setSortBy}
-          levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
-          onReset={filter.resetFilters}
-          totalWordsOverall={words.length} topicTotalCount={words.length}
-          filteredCount={filter.filteredWords.length}
-          pageStart={filter.pageStart} pageEnd={filter.pageEnd}
-          levelSummary={filter.levelSummary}
-        />
-
-        {filter.filteredWords.length > 0 && (
-          <div className="word-list-header" aria-hidden="true">
-            <span className="word-list-header-cell">Word</span>
-            <span className="word-list-header-cell">Translation / details</span>
-            <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-          </div>
-        )}
       </div>
 
-      <div className="main-inner">
-        {filter.pageWords.length === 0 ? (
-          <div className="empty-state">No words match the current filters.</div>
-        ) : (
-          <>
-            <WordTable words={filter.pageWords} pendingWordId={update.pendingWordId} onUpdate={handleUpdate} />
-            <WordCardList words={filter.pageWords} pendingWordId={update.pendingWordId} onUpdate={handleUpdate} />
-          </>
-        )}
-        <div className="pagination-bar">
-          <Pagination
-            page={filter.page} totalPages={filter.totalPages}
-            pageSize={filter.pageSize} onPageSize={filter.setPageSize}
-            onPage={(p) => { filter.setPage(p); document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'}) }}
-          />
-        </div>
-      </div>
+      <WordCollectionView
+        wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
+        sortBy={filter.sortBy} setSortBy={filter.setSortBy}
+        levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
+        onReset={filter.resetFilters}
+        totalWordsOverall={words.length} topicTotalCount={words.length}
+        filteredCount={filter.filteredWords.length}
+        pageStart={filter.pageStart} pageEnd={filter.pageEnd}
+        levelSummary={filter.levelSummary}
+        pageWords={filter.pageWords} page={filter.page} totalPages={filter.totalPages}
+        pageSize={filter.pageSize} setPageSize={filter.setPageSize} setPage={filter.setPage}
+        pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
+      />
     </>
   )
 }

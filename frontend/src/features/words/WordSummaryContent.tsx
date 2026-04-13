@@ -1,4 +1,4 @@
-import type {Word} from '../../shared/http'
+import type {Word} from '../../shared/types'
 import {lexicalChips, smartPreview} from './wordPresenter'
 
 type Props = {word: Word}

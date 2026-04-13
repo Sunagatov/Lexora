@@ -2,13 +2,15 @@ import {useRef, useMemo, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic, createTopic} from './api'
-import type {StudyQueue, Topic} from '../../shared/http'
+import type {StudyQueue, Topic} from '../../shared/types'
 import {ApiError} from '../../shared/apiError'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-import {SortMenu, SortMode, SORT_LABELS, SORT_OPTIONS} from './TopicSortMenu'
+import {SortMenu, SORT_LABELS, SORT_OPTIONS} from './TopicSortMenu'
 import {TopicButton} from './TopicButton'
 import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
+import {useTopicSidebarPrefs} from './useTopicSidebarPrefs'
+import {buildSidebarGroups, weakCount} from './topicSidebarModel'
 
 type Props = {
   topics: Topic[]
@@ -26,45 +28,19 @@ type Props = {
   smartQueue: StudyQueue | null
 }
 
-const POS_NAMES = new Set(['adjectives', 'adverbs', 'nouns', 'verbs', 'phrases', 'prepositions', 'irregular verbs'])
-const isPosGroup = (t: Topic) => POS_NAMES.has(t.name.toLowerCase().trim())
-
-function loadPref<T>(key: string, def: T): T {
-  try { return JSON.parse(localStorage.getItem(key) ?? 'null') ?? def } catch { return def }
-}
-function savePref(key: string, val: unknown) { localStorage.setItem(key, JSON.stringify(val)) }
-
-type Comparator = (a: Topic, b: Topic) => number
-
-function sortTopics(topics: Topic[], mode: SortMode, progress: Map<number, number>, counts: Map<number, number>): Topic[] {
-  const comparators: Partial<Record<SortMode, Comparator>> = {
-    weakest:   (a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0),
-    strongest: (a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0),
-    largest:   (a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0),
-    az:        (a, b) => a.name.localeCompare(b.name),
-    za:        (a, b) => b.name.localeCompare(a.name),
-  }
-  const cmp = comparators[mode]
-  return cmp ? [...topics].sort(cmp) : [...topics]
-}
-
 export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false, recentIds: recentIdsProp = [],
   onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
-  const [posCollapsed,    setPosCollapsed]    = useState(() => loadPref('sidebar_pos_collapsed', false))
-  const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadPref('sidebar_topics_collapsed', false))
-  const [posSort,         setPosSort]         = useState<SortMode>(() => loadPref('sidebar_pos_sort', 'weakest'))
-  const [topicsSort,      setTopicsSort]      = useState<SortMode>(() => loadPref('sidebar_topics_sort', 'weakest'))
-  const [posSortOpen,     setPosSortOpen]     = useState(false)
-  const [topicsSortOpen,  setTopicsSortOpen]  = useState(false)
-  const [searchOpen,      setSearchOpen]      = useState(false)
-  const [pinnedIds,       setPinnedIds]       = useState<number[]>(() => loadPref('sidebar_pinned', []))
-  const [deleteTopicId,   setDeleteTopicId]   = useState<number | null>(null)
-  const [newTopicName,    setNewTopicName]     = useState('')
-  const [addingTopic,     setAddingTopic]      = useState(false)
-  const [topicError,      setTopicError]       = useState<string | null>(null)
+  const prefs = useTopicSidebarPrefs()
+  const [posSortOpen,    setPosSortOpen]    = useState(false)
+  const [topicsSortOpen, setTopicsSortOpen] = useState(false)
+  const [searchOpen,     setSearchOpen]     = useState(false)
+  const [deleteTopicId,  setDeleteTopicId]  = useState<number | null>(null)
+  const [newTopicName,   setNewTopicName]   = useState('')
+  const [addingTopic,    setAddingTopic]    = useState(false)
+  const [topicError,     setTopicError]     = useState<string | null>(null)
   const searchRef     = useRef<HTMLInputElement>(null)
   const posSortRef    = useRef<HTMLButtonElement>(null)
   const topicsSortRef = useRef<HTMLButtonElement>(null)
@@ -90,47 +66,29 @@ export function TopicSidebar({
     },
   })
 
-  function togglePin(id: number) {
-    const next = pinnedIds.includes(id) ? pinnedIds.filter((x) => x !== id) : [id, ...pinnedIds].slice(0, 5)
-    setPinnedIds(next); savePref('sidebar_pinned', next)
-  }
+  const needle = topicSearch.toLowerCase().trim()
 
-  const needle      = topicSearch.toLowerCase().trim()
-  const pinnedIdSet = useMemo(() => new Set(pinnedIds), [pinnedIds])
-
-  const posTopics   = sortTopics(
-    topics.filter((t) => isPosGroup(t) && !pinnedIdSet.has(t.id) && (!needle || t.name.toLowerCase().includes(needle))),
-    posSort, topicProgress, topicCounts,
+  const {posTopics, themeTopics, pinnedTopics, recentTopics} = useMemo(() =>
+    buildSidebarGroups(
+      topics, needle, prefs.pinnedIds,
+      prefs.posSort, prefs.topicsSort,
+      prefs.posCollapsed, prefs.topicsCollapsed,
+      recentIdsProp, topicProgress, topicCounts,
+    ),
+    [topics, needle, prefs.pinnedIds, prefs.posSort, prefs.topicsSort,
+     prefs.posCollapsed, prefs.topicsCollapsed, recentIdsProp, topicProgress, topicCounts],
   )
-  const themeTopics = sortTopics(
-    topics.filter((t) => !isPosGroup(t) && !pinnedIdSet.has(t.id) && (!needle || t.name.toLowerCase().includes(needle) || (t.description ?? '').toLowerCase().includes(needle))),
-    topicsSort, topicProgress, topicCounts,
-  )
-  const pinnedTopics = useMemo(() =>
-    pinnedIds
-      .map((id) => topics.find((t) => t.id === id))
-      .filter((t): t is Topic => !!t && (!needle || t.name.toLowerCase().includes(needle))),
-    [pinnedIds, topics, needle],
-  )
-  const recentTopics = useMemo(() => {
-    const expandedIds = new Set<number>()
-    if (!posCollapsed) posTopics.forEach((t) => expandedIds.add(t.id))
-    if (!topicsCollapsed) themeTopics.forEach((t) => expandedIds.add(t.id))
-    return recentIdsProp
-      .map((id) => topics.find((t) => t.id === id))
-      .filter((t): t is Topic => !!t && !needle && !pinnedIds.includes(t.id) && !expandedIds.has(t.id))
-      .slice(0, 4)
-  }, [recentIdsProp, topics, needle, pinnedIds, posCollapsed, topicsCollapsed, posTopics, themeTopics])
 
   const remaining  = smartQueue ? smartQueue.total_count - smartQueue.completed_count : null
   const srProgress = smartQueue && smartQueue.total_count > 0
     ? Math.round((smartQueue.completed_count / smartQueue.total_count) * 100) : 0
 
-  function weakCount(list: Topic[]) {
-    return list.filter((t) => (topicProgress.get(t.id) ?? 0) < 30 && (topicCounts.get(t.id) ?? 0) > 0).length
+  const btnProps = {
+    selectedTopicId, isSmartReview, topicCounts, topicProgress,
+    pinnedIds: prefs.pinnedIds, onSelect,
+    onDelete: (id: number) => setDeleteTopicId(id),
+    onPin: prefs.togglePin,
   }
-
-  const btnProps = {selectedTopicId, isSmartReview, topicCounts, topicProgress, pinnedIds, onSelect, onDelete: (id: number) => setDeleteTopicId(id), onPin: togglePin}
 
   return (
     <>
@@ -195,58 +153,58 @@ export function TopicSidebar({
         {posTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header">
-              <button type="button" className="sidebar-group-toggle" onClick={() => { const n = !posCollapsed; setPosCollapsed(n); savePref('sidebar_pos_collapsed', n) }}>
-                <svg className={`sidebar-group-chevron ${posCollapsed ? 'collapsed' : ''}`} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <button type="button" className="sidebar-group-toggle" onClick={() => prefs.setPosCollapsed(!prefs.posCollapsed)}>
+                <svg className={`sidebar-group-chevron ${prefs.posCollapsed ? 'collapsed' : ''}`} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <polyline points="2,4 6,8 10,4" />
                 </svg>
                 <span>Parts of Speech</span>
                 <span className="sidebar-group-count">{posTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button ref={posSortRef} type="button" className={`sidebar-sort-btn ${posSort !== 'weakest' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={posSortRef} type="button" className={`sidebar-sort-btn ${prefs.posSort !== 'weakest' ? 'active' : ''}`} onClick={() => setPosSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
                 </button>
-                {posSortOpen && <SortMenu options={SORT_OPTIONS} current={posSort} anchorRef={posSortRef} onSelect={(m) => { setPosSort(m); savePref('sidebar_pos_sort', m); setPosSortOpen(false) }} onClose={() => setPosSortOpen(false)} />}
+                {posSortOpen && <SortMenu options={SORT_OPTIONS} current={prefs.posSort} anchorRef={posSortRef} onSelect={(m) => { prefs.setPosSort(m); setPosSortOpen(false) }} onClose={() => setPosSortOpen(false)} />}
               </div>
             </div>
-            {posSort !== 'weakest' && posSort !== 'default' && (
+            {prefs.posSort !== 'weakest' && prefs.posSort !== 'default' && (
               <div className="sidebar-group-meta">
-                {SORT_LABELS[posSort]}
-                {weakCount(posTopics) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(posTopics)} weak</span></>}
+                {SORT_LABELS[prefs.posSort]}
+                {weakCount(posTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(posTopics, topicProgress, topicCounts)} weak</span></>}
               </div>
             )}
-            {!posCollapsed && posTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {!prefs.posCollapsed && posTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
           </div>
         )}
 
         {themeTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header">
-              <button type="button" className="sidebar-group-toggle" onClick={() => { const n = !topicsCollapsed; setTopicsCollapsed(n); savePref('sidebar_topics_collapsed', n) }}>
-                <svg className={`sidebar-group-chevron ${topicsCollapsed ? 'collapsed' : ''}`} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <button type="button" className="sidebar-group-toggle" onClick={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}>
+                <svg className={`sidebar-group-chevron ${prefs.topicsCollapsed ? 'collapsed' : ''}`} width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <polyline points="2,4 6,8 10,4" />
                 </svg>
                 <span>Topics</span>
                 <span className="sidebar-group-count">{themeTopics.length}</span>
               </button>
               <div className="sidebar-sort-wrap">
-                <button ref={topicsSortRef} type="button" className={`sidebar-sort-btn ${topicsSort !== 'weakest' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
+                <button ref={topicsSortRef} type="button" className={`sidebar-sort-btn ${prefs.topicsSort !== 'weakest' ? 'active' : ''}`} onClick={() => setTopicsSortOpen((v) => !v)} aria-label="Sort">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
                   </svg>
                 </button>
-                {topicsSortOpen && <SortMenu options={SORT_OPTIONS} current={topicsSort} anchorRef={topicsSortRef} onSelect={(m) => { setTopicsSort(m); savePref('sidebar_topics_sort', m); setTopicsSortOpen(false) }} onClose={() => setTopicsSortOpen(false)} />}
+                {topicsSortOpen && <SortMenu options={SORT_OPTIONS} current={prefs.topicsSort} anchorRef={topicsSortRef} onSelect={(m) => { prefs.setTopicsSort(m); setTopicsSortOpen(false) }} onClose={() => setTopicsSortOpen(false)} />}
               </div>
             </div>
-            {topicsSort !== 'weakest' && topicsSort !== 'default' && (
+            {prefs.topicsSort !== 'weakest' && prefs.topicsSort !== 'default' && (
               <div className="sidebar-group-meta">
-                {SORT_LABELS[topicsSort]}
-                {weakCount(themeTopics) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics)} below 30%</span></>}
+                {SORT_LABELS[prefs.topicsSort]}
+                {weakCount(themeTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics, topicProgress, topicCounts)} below 30%</span></>}
               </div>
             )}
-            {!topicsCollapsed && themeTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {!prefs.topicsCollapsed && themeTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
           </div>
         )}
 

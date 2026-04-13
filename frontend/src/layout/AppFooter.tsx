@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom'
 import {useQueryClient} from '@tanstack/react-query'
-import type {Word, Topic} from '../shared/http'
+import type {Word, Topic} from '../shared/types'
 import {queryKeys} from '../shared/queryKeys'
 import {routes} from '../shared/routes'
 

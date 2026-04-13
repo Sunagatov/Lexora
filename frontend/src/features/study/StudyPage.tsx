@@ -2,12 +2,9 @@ import {useEffect, useState} from 'react'
 import {useStudyState} from './useStudyState'
 import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {TopicSidebar} from '../topics/TopicSidebar'
-import {Toolbar} from './Toolbar'
-import {Pagination} from './Pagination'
-import {WordTable} from '../words/WordTable'
-import {WordCardList} from '../words/WordCardList'
 import {SmartReviewView} from '../smart-review/SmartReviewView'
 import {QuickAddSheet} from '../words/QuickAddSheet'
+import {WordCollectionView} from '../words/WordCollectionView'
 import {useDrawer} from '../../shared/DrawerContext'
 
 export function StudyPage() {
@@ -68,48 +65,27 @@ export function StudyPage() {
                   )}
                 </div>
               </div>
+            </div>
 
-              <Toolbar
+            {s.selectedTopicId === null ? (
+              <div className="main-inner">
+                <div className="empty-state">Select a topic to start reviewing words.</div>
+              </div>
+            ) : (
+              <WordCollectionView
                 wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
                 sortBy={s.sortBy} setSortBy={s.setSortBy}
                 levelFilter={s.levelFilter} setLevelFilter={s.setLevelFilter}
                 onReset={s.resetFilters}
                 totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                 filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}
-                levelSummary={s.levelSummary}
-                topicName={s.selectedTopic?.name}
+                levelSummary={s.levelSummary} topicName={s.selectedTopic?.name}
+                pageWords={s.pageWords} page={s.page} totalPages={s.totalPages}
+                pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
+                pendingWordId={s.pendingWordId} onUpdate={s.updateLevel}
+                fromTopicSlug={s.selectedTopic?.slug}
               />
-
-              {s.selectedTopicId !== null && s.filteredWords.length > 0 && (
-                <div className="word-list-header" aria-hidden="true">
-                  <span className="word-list-header-cell">Word</span>
-                  <span className="word-list-header-cell">Translation / details</span>
-                  <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-                </div>
-              )}
-            </div>
-
-            <div className="main-inner">
-              {s.selectedTopicId === null ? (
-                <div className="empty-state">Select a topic to start reviewing words.</div>
-              ) : s.filteredWords.length === 0 ? (
-                <div className="empty-state">No words match the current filters.</div>
-              ) : (
-                <>
-                  <WordTable words={s.pageWords} pendingWordId={s.pendingWordId} fromTopicSlug={s.selectedTopic?.slug} onUpdate={s.updateLevel} />
-                  <WordCardList words={s.pageWords} pendingWordId={s.pendingWordId} fromTopicSlug={s.selectedTopic?.slug} onUpdate={s.updateLevel} />
-                </>
-              )}
-              {s.selectedTopicId !== null && (
-                <div className="pagination-bar">
-                  <Pagination
-                    page={s.page} totalPages={s.totalPages}
-                    pageSize={s.pageSize} onPageSize={s.setPageSize}
-                    onPage={(p) => { s.setPage(p); document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'}) }}
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </>
         )}
 
