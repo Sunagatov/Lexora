@@ -5,7 +5,6 @@ import {deleteTopic, createTopic} from './api'
 import type {StudyQueue, Topic} from '../../shared/http'
 import {ApiError} from '../../shared/apiError'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-import {slugify} from '../../shared/slugify'
 import {SortMenu, SortMode, SORT_LABELS, SORT_OPTIONS} from './TopicSortMenu'
 import {TopicButton} from './TopicButton'
 import {queryKeys} from '../../shared/queryKeys'
@@ -35,16 +34,18 @@ function loadPref<T>(key: string, def: T): T {
 }
 function savePref(key: string, val: unknown) { localStorage.setItem(key, JSON.stringify(val)) }
 
+type Comparator = (a: Topic, b: Topic) => number
+
 function sortTopics(topics: Topic[], mode: SortMode, progress: Map<number, number>, counts: Map<number, number>): Topic[] {
-  const t = [...topics]
-  switch (mode) {
-    case 'weakest':   return t.sort((a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0))
-    case 'strongest': return t.sort((a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0))
-    case 'largest':   return t.sort((a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0))
-    case 'az':        return t.sort((a, b) => a.name.localeCompare(b.name))
-    case 'za':        return t.sort((a, b) => b.name.localeCompare(a.name))
-    default:          return t
+  const comparators: Partial<Record<SortMode, Comparator>> = {
+    weakest:   (a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0),
+    strongest: (a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0),
+    largest:   (a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0),
+    az:        (a, b) => a.name.localeCompare(b.name),
+    za:        (a, b) => b.name.localeCompare(a.name),
   }
+  const cmp = comparators[mode]
+  return cmp ? [...topics].sort(cmp) : [...topics]
 }
 
 export function TopicSidebar({
@@ -71,7 +72,7 @@ export function TopicSidebar({
   const queryClient = useQueryClient()
 
   const createTopicMutation = useMutation({
-    mutationFn: () => createTopic(newTopicName.trim(), slugify(newTopicName.trim())),
+    mutationFn: () => createTopic(newTopicName.trim()),
     onSuccess: (created) => {
       queryClient.invalidateQueries({queryKey: queryKeys.topics})
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)

@@ -7,7 +7,6 @@ import {ApiError} from '../../shared/apiError'
 import type {Topic} from '../../shared/http'
 import {queryKeys} from '../../shared/queryKeys'
 import {translateTerm, suggestTopic, ensureInbox} from './quickAddService'
-import {slugify} from "../../shared/slugify";
 
 const INBOX_TOPIC_NAME = 'Inbox'
 

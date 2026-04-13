@@ -1,6 +1,5 @@
 import {request} from '../../shared/http'
 import {createTopic} from '../topics/api'
-import {slugify} from '../../shared/slugify'
 import type {Topic} from '../../shared/http'
 
 export async function translateTerm(term: string): Promise<string | null> {

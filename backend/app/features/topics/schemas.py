@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.shared.constraints import TOPIC_NAME_MAX_LEN
+from app.shared.constraints import TOPIC_NAME_MAX_LEN, TOPIC_SLUG_MAX_LEN
 
 
 class TopicCreate(BaseModel):
