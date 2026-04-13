@@ -3,12 +3,13 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.shared.text import normalize_term
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.model import Word
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
+from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
+from app.shared.text import normalize_term
 
 
 class BulkTopicInTrashError(Exception):
@@ -34,25 +35,23 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
             raise BulkTopicInTrashError(payload.topic_name)
         try:
             topic = create_topic(db, TopicCreate(name=payload.topic_name))
-        except InvalidTopicNameError as e:
+        except InvalidTopicNameError:
             raise BulkInvalidTopicNameError(payload.topic_name)
         except TopicSlugConflictError as e:
             raise BulkSlugConflictError(e.detail)
 
-    existing = {normalize_term(t) for t in db.scalars(
-        select(Word.term)
-        .where(Word.deleted_at.is_(None))
-        .where(Word.topics.any(Topic.id == topic.id))
-    ).all()}
+    # Use the shared domain helper for duplicate detection — same rule as create/update
+    existing = existing_normalized_terms(db, [topic.id])
 
     added_terms: list[str] = []
     skipped_terms: list[str] = []
     for w in payload.words:
-        if normalize_term(w.term) in existing:
+        norm = normalize_term(w.term)
+        if norm in existing:
             skipped_terms.append(w.term)
             continue
         db.add(Word(**w.model_dump(), topics=[topic]))
-        existing.add(normalize_term(w.term))
+        existing.add(norm)
         added_terms.append(w.term)
 
     db.commit()

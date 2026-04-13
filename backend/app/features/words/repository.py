@@ -105,18 +105,3 @@ def hard_delete_word(db: Session, word: Word) -> None:
     db.delete(word)
     db.commit()
 
-
-# Backward-compatible shim so existing callers (words/router.py) keep working
-class _WordRepo:
-    get_all = staticmethod(get_all_words)
-    get_by_id = staticmethod(get_word_by_id)
-    get_by_id_including_deleted = staticmethod(get_word_by_id_including_deleted)
-    get_deleted = staticmethod(get_deleted_words)
-    create = staticmethod(create_word)
-    update = staticmethod(update_word)
-    soft_delete = staticmethod(soft_delete_word)
-    restore = staticmethod(restore_word)
-    hard_delete = staticmethod(hard_delete_word)
-
-
-word_repo = _WordRepo()
