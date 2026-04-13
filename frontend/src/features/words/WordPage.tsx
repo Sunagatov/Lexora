@@ -3,38 +3,13 @@ import {useParams, useNavigate, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, updateWord, deleteWord} from './api'
 import {fetchTopics} from '../topics/api'
-import type {Word} from '../../shared/http'
-import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
-import {CompactDropdown} from '../../shared/CompactDropdown'
-import type {DropdownOption} from '../../shared/CompactDropdown'
+import type {Word, Topic} from '../../shared/http'
+import {ApiError} from '../../shared/apiError'
+import {LEVEL_LABELS, levelClass, levelToStr, strToLevel} from '../../shared/wordDomain'
+import {toStr, toNullStr, toNullStrIf} from '../../shared/utils'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-
-const POS_OPTIONS: DropdownOption<string>[] = [
-  {value: '',            label: '— not set —'},
-  {value: 'noun',        label: 'Noun'},
-  {value: 'verb',        label: 'Verb'},
-  {value: 'adjective',   label: 'Adjective'},
-  {value: 'adverb',      label: 'Adverb'},
-  {value: 'phrase',      label: 'Phrase'},
-  {value: 'preposition', label: 'Preposition'},
-  {value: 'other',       label: 'Other'},
-]
-
-const COUNTABILITY_OPTIONS: DropdownOption<string>[] = [
-  {value: '',            label: '— not set —'},
-  {value: 'Countable',   label: 'Countable'},
-  {value: 'Uncountable', label: 'Uncountable'},
-  {value: 'Both',        label: 'Both'},
-]
-
-const LEVEL_OPTIONS: DropdownOption<string>[] = [
-  {value: '',  label: '— not set —'},
-  {value: '1', label: '1 — Weak'},
-  {value: '2', label: '2 — Basic'},
-  {value: '3', label: '3 — Okay'},
-  {value: '4', label: '4 — Strong'},
-  {value: '5', label: '5 — Parked (rare, learn later)'},
-]
+import {queryKeys} from '../../shared/queryKeys'
+import {routes} from '../../shared/routes'
 
 type EditState = {
   term: string; translations: string; knowledge_level: string; part_of_speech: string
@@ -44,14 +19,41 @@ type EditState = {
 
 function toEditState(word: Word): EditState {
   return {
-    term: word.term, translations: word.translations,
-    knowledge_level: String(word.knowledge_level ?? ''),
-    part_of_speech: word.part_of_speech ?? '',
-    topic_ids: word.topic_ids.map(String),
-    countability: word.countability ?? '',
-    past_simple: word.past_simple ?? '',
-    past_participle: word.past_participle ?? '',
-    example: word.example ?? '', notes: word.notes ?? '', pattern: word.pattern ?? '',
+    term:            word.term,
+    translations:    word.translations,
+    knowledge_level: levelToStr(word.knowledge_level),
+    part_of_speech:  toStr(word.part_of_speech),
+    topic_ids:       word.topic_ids.map(String),
+    countability:    toStr(word.countability),
+    past_simple:     toStr(word.past_simple),
+    past_participle: toStr(word.past_participle),
+    example:         toStr(word.example),
+    notes:           toStr(word.notes),
+    pattern:         toStr(word.pattern),
+  }
+}
+
+function resolveTopic(word: Word, topics: Topic[], fromTopicSlug: string | undefined): Topic | undefined {
+  if (!word.topic_ids.length) return undefined
+  if (fromTopicSlug) {
+    return topics.find((t) => t.slug === fromTopicSlug) ?? topics.find((t) => t.id === word.topic_ids[0])
+  }
+  return topics.find((t) => t.id === word.topic_ids[0])
+}
+
+function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: boolean): Partial<Word> {
+  return {
+    term:            draft.term.trim(),
+    translations:    draft.translations.trim(),
+    knowledge_level: strToLevel(draft.knowledge_level),
+    part_of_speech:  toNullStr(draft.part_of_speech),
+    topic_ids:       draft.topic_ids.map(Number).filter((n) => n > 0),
+    countability:    toNullStrIf(isNoun, draft.countability),
+    past_simple:     toNullStrIf(isVerb, draft.past_simple),
+    past_participle: toNullStrIf(isVerb, draft.past_participle),
+    example:         toNullStr(draft.example),
+    notes:           toNullStr(draft.notes),
+    pattern:         toNullStr(draft.pattern),
   }
 }
 
@@ -67,22 +69,22 @@ export function WordPage() {
   const [confirming, setConfirming] = useState(false)
   const [saveError,  setSaveError]  = useState<string | null>(null)
 
-  const wordQuery   = useQuery({queryKey: ['word', wordId], queryFn: () => fetchWord(Number(wordId))})
-  const topicsQuery = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
+  const wordQuery   = useQuery({queryKey: queryKeys.word(Number(wordId)), queryFn: () => fetchWord(Number(wordId))})
+  const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
 
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(Number(wordId), payload),
     onSuccess: (updated) => {
-      queryClient.setQueryData(['word', wordId], updated)
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
-      navigate(`/words/${wordId}`, {replace: true, state: location.state})
+      queryClient.setQueryData(queryKeys.word(Number(wordId)), updated)
+      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
+      navigate(routes.word(Number(wordId)), {replace: true, state: location.state})
       setDraft(null)
       setSaveError(null)
     },
     onError: (err: Error) => {
-      const msg = err.message.includes('409')
+      const msg = err instanceof ApiError && err.status === 409
         ? 'A word with this term already exists in the selected topic.'
-        : err.message.includes('400') || err.message.includes('422')
+        : err instanceof ApiError && (err.status === 400 || err.status === 422)
         ? 'Invalid data — check the fields and try again.'
         : 'Failed to save. Please try again.'
       setSaveError(msg)
@@ -92,14 +94,12 @@ export function WordPage() {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(Number(wordId)),
     onSuccess: () => {
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
-      queryClient.removeQueries({queryKey: ['word', wordId]})
-      navigate(capturedTopicSlug.current ?? '/', {replace: true})
+      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
+      queryClient.removeQueries({queryKey: queryKeys.word(Number(wordId))})
+      navigate(capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home, {replace: true})
     },
   })
 
-  // Capture the topic slug synchronously before delete fires so onSuccess
-  // doesn't depend on stale closure state or a re-fetch racing the navigation.
   const capturedTopicSlug = useRef<string | null>(null)
 
   function handleDelete() {
@@ -110,14 +110,9 @@ export function WordPage() {
 
   const word   = wordQuery.data
   const topics = topicsQuery.data ?? []
-  // Use the topic the user navigated from; fall back to topic_ids[0] only when no context exists
-  const topic  = word?.topic_ids.length
-    ? (fromTopicSlug
-        ? topics.find((t) => t.slug === fromTopicSlug) ?? topics.find((t) => t.id === word.topic_ids[0])
-        : topics.find((t) => t.id === word.topic_ids[0]))
-    : undefined
+  const topic  = word ? resolveTopic(word, topics, fromTopicSlug) : undefined
 
-  const allWords   = queryClient.getQueryData<Word[]>(['words']) ?? []
+  const allWords   = queryClient.getQueryData<Word[]>(queryKeys.words) ?? []
   const topicWords = useMemo(
     () => word && topic
       ? allWords.filter((w) => w.topic_ids.includes(topic.id)).sort((a, b) => a.term.localeCompare(b.term))
@@ -147,25 +142,13 @@ export function WordPage() {
   function save() {
     if (!draft || !word) return
     setSaveError(null)
-    const termVal = draft.term.trim()
+    const termVal  = draft.term.trim()
     const transVal = draft.translations.trim()
     const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
-    if (!termVal) { setSaveError('Term cannot be empty.'); return }
-    if (!transVal) { setSaveError('Translation cannot be empty.'); return }
-    if (topicIds.length === 0) { setSaveError('Please select a topic.'); return }
-    saveMutation.mutate({
-      term:            termVal,
-      translations:    transVal,
-      knowledge_level: draft.knowledge_level ? Number(draft.knowledge_level) as 1|2|3|4|5 : null,
-      part_of_speech:  draft.part_of_speech || null,
-      topic_ids:       topicIds,
-      countability:    isNoun && draft.countability ? draft.countability : null,
-      past_simple:     isVerb && draft.past_simple.trim() ? draft.past_simple.trim() : null,
-      past_participle: isVerb && draft.past_participle.trim() ? draft.past_participle.trim() : null,
-      example:         draft.example.trim() || null,
-      notes:           draft.notes.trim() || null,
-      pattern:         draft.pattern.trim() || null,
-    })
+    if (!termVal)         { setSaveError('Term cannot be empty.'); return }
+    if (!transVal)        { setSaveError('Translation cannot be empty.'); return }
+    if (!topicIds.length) { setSaveError('Please select a topic.'); return }
+    saveMutation.mutate(buildSavePayload(draft, isVerb, isNoun))
   }
 
   return (
@@ -176,7 +159,9 @@ export function WordPage() {
           <button
             type="button"
             className="word-page-back-btn"
-            onClick={() => editing ? navigate(`/words/${wordId}`, {replace: true, state: location.state}) : navigate(`/topics/${topic?.slug ?? ''}`)}
+            onClick={() => editing
+              ? navigate(routes.word(Number(wordId)), {replace: true, state: location.state})
+              : navigate(routes.topic(topic?.slug ?? ''))}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
@@ -184,7 +169,7 @@ export function WordPage() {
             Back
           </button>
           {!editing && (
-            <button type="button" className="word-page-edit-btn" onClick={() => navigate(`/words/${wordId}/edit`, {state: location.state})}>
+            <button type="button" className="word-page-edit-btn" onClick={() => navigate(routes.editWord(Number(wordId)), {state: location.state})}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
               </svg>
@@ -224,25 +209,45 @@ export function WordPage() {
               <input className="wp-input" value={draft.translations} onChange={(e) => { set('translations', e.target.value); setSaveError(null) }} />
             </FormField>
             <FormField label="Knowledge level">
-              <CompactDropdown value={draft.knowledge_level} options={LEVEL_OPTIONS} onChange={(v) => set('knowledge_level', v)} ariaLabel="Knowledge level" />
+              <select className="wp-input" value={draft.knowledge_level} onChange={(e) => set('knowledge_level', e.target.value)}>
+                <option value="">— not set —</option>
+                <option value="1">1 — Weak</option>
+                <option value="2">2 — Basic</option>
+                <option value="3">3 — Okay</option>
+                <option value="4">4 — Strong</option>
+                <option value="5">5 — Parked (rare, learn later)</option>
+              </select>
             </FormField>
             <FormField label="Part of speech">
-              <CompactDropdown value={draft.part_of_speech} options={POS_OPTIONS} onChange={(v) => set('part_of_speech', v)} ariaLabel="Part of speech" />
+              <select className="wp-input" value={draft.part_of_speech} onChange={(e) => set('part_of_speech', e.target.value)}>
+                <option value="">— not set —</option>
+                <option value="noun">Noun</option>
+                <option value="verb">Verb</option>
+                <option value="adjective">Adjective</option>
+                <option value="adverb">Adverb</option>
+                <option value="phrase">Phrase</option>
+                <option value="preposition">Preposition</option>
+                <option value="other">Other</option>
+              </select>
             </FormField>
             <FormField label="Primary topic">
-              <CompactDropdown
+              <select
+                className="wp-input"
                 value={draft.topic_ids[0] ?? ''}
-                options={[
-                  {value: '', label: '— select topic —'},
-                  ...topics.map((t) => ({value: String(t.id), label: t.name})),
-                ]}
-                onChange={(v) => set('topic_ids', v ? [v, ...draft.topic_ids.slice(1)] : draft.topic_ids.slice(1))}
-                ariaLabel="Primary topic"
-              />
+                onChange={(e) => set('topic_ids', e.target.value ? [e.target.value, ...draft.topic_ids.slice(1)] : draft.topic_ids.slice(1))}
+              >
+                <option value="">— select topic —</option>
+                {topics.map((t) => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
+              </select>
             </FormField>
             {isNoun && (
               <FormField label="Countability">
-                <CompactDropdown value={draft.countability} options={COUNTABILITY_OPTIONS} onChange={(v) => set('countability', v)} ariaLabel="Countability" />
+                <select className="wp-input" value={draft.countability} onChange={(e) => set('countability', e.target.value)}>
+                  <option value="">— not set —</option>
+                  <option value="Countable">Countable</option>
+                  <option value="Uncountable">Uncountable</option>
+                  <option value="Both">Both</option>
+                </select>
               </FormField>
             )}
             {isVerb && (
@@ -270,13 +275,11 @@ export function WordPage() {
 
       {editing && (
         <div className="word-page-edit-actions">
-          {saveError && (
-            <div className="wp-save-error">{saveError}</div>
-          )}
+          {saveError && <div className="wp-save-error">{saveError}</div>}
           <div className="word-page-edit-actions-row">
             <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
             <div className="word-page-edit-actions-right">
-              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(`/words/${wordId}`, {replace: true, state: location.state}); setSaveError(null) }}>Cancel</button>
+              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(routes.word(Number(wordId)), {replace: true, state: location.state}); setSaveError(null) }}>Cancel</button>
               <button type="button" className="wp-btn-save" disabled={saveMutation.isPending} onClick={save}>
                 {saveMutation.isPending ? 'Saving…' : 'Save'}
               </button>
@@ -287,12 +290,12 @@ export function WordPage() {
 
       {!editing && (
         <div className="word-page-footer">
-          <button type="button" className="word-page-nav-btn" disabled={!prevWord} onClick={() => prevWord && navigate(`/words/${prevWord.id}`, {state: location.state})}>
+          <button type="button" className="word-page-nav-btn" disabled={!prevWord} onClick={() => prevWord && navigate(routes.word(prevWord.id), {state: location.state})}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9,2 4,7 9,12" /></svg>
             Prev
           </button>
           <span className="word-page-nav-pos">{currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}</span>
-          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!nextWord} onClick={() => nextWord && navigate(`/words/${nextWord.id}`, {state: location.state})}>
+          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!nextWord} onClick={() => nextWord && navigate(routes.word(nextWord.id), {state: location.state})}>
             Next
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="5,2 10,7 5,12" /></svg>
           </button>

@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel, StudyQueue} from '../../shared/http'
 import {updateWordKnowledgeLevel} from './api'
-import {SMART_REVIEW_KEY} from '../smart-review/useSmartReview'
+import {queryKeys} from '../../shared/queryKeys'
 
 export function useWordUpdate(onMutate: () => void, source = 'study_list') {
   const queryClient = useQueryClient()
@@ -13,16 +13,16 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
     onMutate: async ({wordId, level}) => {
       onMutate()
       // Cancel any in-flight word queries (both flat and topic-scoped)
-      await queryClient.cancelQueries({queryKey: ['words']})
-      const prev = queryClient.getQueryData<Word[]>(['words'])
+      await queryClient.cancelQueries({queryKey: queryKeys.words})
+      const prev = queryClient.getQueryData<Word[]>(queryKeys.words)
 
       // Patch all cached word lists (flat all-words + any topic-scoped caches)
-      queryClient.setQueriesData<Word[]>({queryKey: ['words']}, (cur = []) =>
+      queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
         cur.map((w) => w.id === wordId ? {...w, knowledge_level: level} : w),
       )
 
       // also patch the smart review queue cache so level badges update immediately
-      queryClient.setQueryData<StudyQueue>(SMART_REVIEW_KEY, (cur) => {
+      queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, (cur) => {
         if (!cur) return cur
         return {
           ...cur,
@@ -38,13 +38,13 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
     },
 
     onError: (_e, _v, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['words'], ctx.prev)
-      queryClient.invalidateQueries({queryKey: SMART_REVIEW_KEY})
+      if (ctx?.prev) queryClient.setQueryData(queryKeys.words, ctx.prev)
+      queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: ['words']})
-      queryClient.invalidateQueries({queryKey: SMART_REVIEW_KEY})
+      queryClient.invalidateQueries({queryKey: queryKeys.words})
+      queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
   })
 

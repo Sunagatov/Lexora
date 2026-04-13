@@ -1,13 +1,13 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
 import type {Topic, Word} from '../../shared/http'
+import {routes} from '../../shared/routes'
 
 export function useTopicState(topics: Topic[], words: Word[]) {
   const {topicSlug} = useParams<{topicSlug?: string}>()
   const navigate    = useNavigate()
-  const [topicSearch,   setTopicSearch]   = useState('')
-  const [drawerOpen,    setDrawerOpen]    = useState(false)
-  const [recentIds,     setRecentIds]     = useState<number[]>(() => {
+  const [topicSearch, setTopicSearch] = useState('')
+  const [recentIds,   setRecentIds]   = useState<number[]>(() => {
     try { return JSON.parse(localStorage.getItem('sidebar_recent_topics') ?? '[]') } catch { return [] }
   })
 
@@ -16,7 +16,7 @@ export function useTopicState(topics: Topic[], words: Word[]) {
 
   useEffect(() => {
     if (!topics.length || !topicSlug) return
-    if (!topics.some((t) => t.slug === topicSlug)) navigate('/', {replace: true})
+    if (!topics.some((t) => t.slug === topicSlug)) navigate(routes.home, {replace: true})
   }, [topics, topicSlug, navigate])
 
   const topicCounts = useMemo(() => {
@@ -27,15 +27,12 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     return m
   }, [words])
 
-  // Progress per topic: weighted average of knowledge levels 1-4 (level 5 excluded).
-  // score per word = (level - 1) / 3  →  level1=0%, level2=33%, level3=67%, level4=100%
-  // topic progress = sum(scores) / count_of_active_words × 100
   const topicProgress = useMemo(() => {
-    const scoreSum   = new Map<number, number>()
+    const scoreSum    = new Map<number, number>()
     const activeCount = new Map<number, number>()
     for (const w of words) {
       const lvl = w.knowledge_level
-      if (!lvl || lvl < 1 || lvl > 4) continue   // skip null, unset, parked (5)
+      if (!lvl || lvl < 1 || lvl > 4) continue
       const score = (lvl - 1) / 3
       for (const tid of w.topic_ids) {
         scoreSum.set(tid,    (scoreSum.get(tid)    ?? 0) + score)
@@ -48,34 +45,25 @@ export function useTopicState(topics: Topic[], words: Word[]) {
     return result
   }, [words])
 
-  const visibleTopics = useMemo(() => {
-    const needle = topicSearch.toLowerCase().trim()
-    return topics.filter((t) =>
-      !needle || t.name.toLowerCase().includes(needle) || (t.description ?? '').toLowerCase().includes(needle),
-    )
-  }, [topicSearch, topics])
-
   function selectTopic(id: number) {
     const topic = topics.find((t) => t.id === id)
     if (topic) {
-      navigate(`/topics/${topic.slug}`)
+      navigate(routes.topic(topic.slug))
       try {
         const next = [id, ...recentIds.filter((x) => x !== id)].slice(0, 5)
         localStorage.setItem('sidebar_recent_topics', JSON.stringify(next))
         setRecentIds(next)
       } catch { /* ignore */ }
     }
-    setDrawerOpen(false)
   }
 
   function selectSmartReview() {
-    navigate('/smart-review')
-    setDrawerOpen(false)
+    navigate(routes.smartReview)
   }
 
   return {
-    selectedTopicId, selectedTopic, visibleTopics, topicCounts, topicProgress,
-    topicSearch, setTopicSearch, drawerOpen, setDrawerOpen,
+    selectedTopicId, selectedTopic, topicCounts, topicProgress,
+    topicSearch, setTopicSearch,
     recentIds,
     selectTopic, selectSmartReview,
   }

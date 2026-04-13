@@ -7,6 +7,8 @@ import {ConfirmModal} from '../../shared/ConfirmModal'
 import {slugify} from '../../shared/slugify'
 import {SortMenu, SortMode, SORT_LABELS, SORT_OPTIONS} from './TopicSortMenu'
 import {TopicButton} from './TopicButton'
+import {queryKeys} from '../../shared/queryKeys'
+import {routes} from '../../shared/routes'
 
 type Props = {
   topics: Topic[]
@@ -70,9 +72,9 @@ export function TopicSidebar({
   const createTopicMutation = useMutation({
     mutationFn: () => createTopic(newTopicName.trim(), slugify(newTopicName.trim())),
     onSuccess: (created) => {
-      queryClient.invalidateQueries({queryKey: ['topics']})
+      queryClient.invalidateQueries({queryKey: queryKeys.topics})
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)
-      navigate(`/topics/${created.slug}`)
+      navigate(routes.topic(created.slug))
     },
     onError: (err: Error) => setTopicError(err.message.includes('409') ? err.message.replace('Request failed: ', '') : 'Name already exists or is invalid.'),
   })
@@ -80,8 +82,8 @@ export function TopicSidebar({
   const deleteTopicMutation = useMutation({
     mutationFn: (id: number) => deleteTopic(id, true),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['topics']})
-      queryClient.invalidateQueries({queryKey: ['words']})
+      queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      queryClient.invalidateQueries({queryKey: queryKeys.words})
       setDeleteTopicId(null)
     },
   })
@@ -277,10 +279,10 @@ export function TopicSidebar({
           <button type="button" className="sidebar-add-topic-btn" onClick={() => setAddingTopic(true)}>+ New topic</button>
         )}
         <div className="sidebar-util-row">
-          <button type="button" className="sidebar-util-btn" title="Statistics" onClick={() => navigate('/stats')}>
+          <button type="button" className="sidebar-util-btn" title="Statistics" onClick={() => navigate(routes.stats)}>
             <span className="sidebar-util-icon">📊</span><span className="sidebar-util-label">Stats</span>
           </button>
-          <button type="button" className="sidebar-util-btn" title="Trash" onClick={() => navigate('/trash')}>
+          <button type="button" className="sidebar-util-btn" title="Trash" onClick={() => navigate(routes.trash)}>
             <span className="sidebar-util-icon">🗑</span><span className="sidebar-util-label">Trash</span>
           </button>
         </div>

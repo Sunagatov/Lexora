@@ -16,6 +16,12 @@ export function levelClass(level: number | null): string {
   return level ? `level-${level}` : 'level-unset'
 }
 
+/** Converts a WordKnowledgeLevel to its string form for form state (null → ''). */
+export function levelToStr(v: WordKnowledgeLevel | null | undefined): string { return v != null ? String(v) : '' }
+
+/** Parses a form string back to a WordKnowledgeLevel ('' → null). */
+export function strToLevel(v: string): WordKnowledgeLevel | null { return v ? Number(v) as WordKnowledgeLevel : null }
+
 // Counts all levels 1-5. Level 5 (Parked) is included in the summary data
 // but excluded from the progress chips at render time (StudyPage shows only ACTIVE_LEVELS).
 export function buildLevelSummary(words: Word[]): Record<WordKnowledgeLevel, number> {

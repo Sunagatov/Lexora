@@ -6,14 +6,15 @@ import {useTopicState} from '../topics/useTopicState'
 import {useWordFilter} from '../words/useWordFilter'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useSmartReview} from '../smart-review/useSmartReview'
+import {queryKeys} from '../../shared/queryKeys'
 
 export function useStudyState() {
   const location      = useLocation()
   const isSmartReview = location.pathname === '/smart-review'
 
-  const topicsQuery   = useQuery({queryKey: ['topics'], queryFn: fetchTopics})
+  const topicsQuery   = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
   // All-words query: used only for sidebar counts/progress, not for the word list.
-  const allWordsQuery = useQuery({queryKey: ['words'], queryFn: () => fetchWords()})
+  const allWordsQuery = useQuery({queryKey: queryKeys.words, queryFn: () => fetchWords()})
 
   const topics = topicsQuery.data  ?? []
   const words  = allWordsQuery.data ?? []
@@ -23,7 +24,7 @@ export function useStudyState() {
 
   // Fetch words scoped to the selected topic from the server.
   const wordsQuery = useQuery({
-    queryKey: ['words', topicState.selectedTopicId],
+    queryKey: queryKeys.topicWords(topicState.selectedTopicId ?? 0),
     queryFn: () => fetchWords({topicId: topicState.selectedTopicId!}),
     enabled: topicState.selectedTopicId !== null,
   })
@@ -38,11 +39,10 @@ export function useStudyState() {
   return {
     isSmartReview,
     topics, words, topicWords,
-    visibleTopics: topicState.visibleTopics, selectedTopic: topicState.selectedTopic,
+    selectedTopic: topicState.selectedTopic,
     selectedTopicId: topicState.selectedTopicId, topicCounts: topicState.topicCounts, topicProgress: topicState.topicProgress,
     topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
     selectTopic: topicState.selectTopic, selectSmartReview: topicState.selectSmartReview,
-    drawerOpen: topicState.drawerOpen, setDrawerOpen: topicState.setDrawerOpen,
     recentIds: topicState.recentIds,
     wordSearch: filter.wordSearch, setWordSearch: filter.setWordSearch,
     levelFilter: filter.levelFilter, setLevelFilter: filter.setLevelFilter,

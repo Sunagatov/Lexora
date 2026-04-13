@@ -7,10 +7,7 @@ type DrawerCtx = {
   setHasDrawer: (v: boolean) => void
 }
 
-const DrawerContext = createContext<DrawerCtx>({
-  drawerOpen: false, setDrawerOpen: () => {},
-  hasDrawer: false,  setHasDrawer: () => {},
-})
+const DrawerContext = createContext<DrawerCtx | null>(null)
 
 export function DrawerProvider({children}: {children: React.ReactNode}) {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -22,6 +19,8 @@ export function DrawerProvider({children}: {children: React.ReactNode}) {
   )
 }
 
-export function useDrawer() {
-  return useContext(DrawerContext)
+export function useDrawer(): DrawerCtx {
+  const ctx = useContext(DrawerContext)
+  if (!ctx) throw new Error('useDrawer must be used inside DrawerProvider')
+  return ctx
 }

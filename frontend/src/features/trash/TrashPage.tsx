@@ -6,6 +6,8 @@ import {fetchTrashTopics, restoreTopic} from '../topics/api'
 import {purgeTrash} from './api'
 import type {Word, Topic} from '../../shared/http'
 import {ConfirmModal} from '../../shared/ConfirmModal'
+import {queryKeys} from '../../shared/queryKeys'
+import {routes} from '../../shared/routes'
 
 export function TrashPage() {
   const navigate    = useNavigate()
@@ -13,22 +15,22 @@ export function TrashPage() {
   const [confirmPurge, setConfirmPurge]   = useState(false)
   const [restoreTopicId, setRestoreTopicId] = useState<number | null>(null)
 
-  const wordsQuery  = useQuery({queryKey: ['trash-words'],  queryFn: fetchTrashWords})
-  const topicsQuery = useQuery({queryKey: ['trash-topics'], queryFn: fetchTrashTopics})
+  const wordsQuery  = useQuery({queryKey: queryKeys.trashWords,  queryFn: fetchTrashWords})
+  const topicsQuery = useQuery({queryKey: queryKeys.trashTopics, queryFn: fetchTrashTopics})
 
   const restoreWordMutation = useMutation({
     mutationFn: restoreWord,
     onSuccess: (restored) => {
-      queryClient.setQueryData<Word[]>(['trash-words'], (cur = []) => cur.filter((w) => w.id !== restored.id))
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) => [...cur, restored])
+      queryClient.setQueryData<Word[]>(queryKeys.trashWords, (cur = []) => cur.filter((w) => w.id !== restored.id))
+      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => [...cur, restored])
     },
   })
 
   const restoreTopicMutation = useMutation({
     mutationFn: ({id, restoreWords}: {id: number; restoreWords: boolean}) => restoreTopic(id, restoreWords),
     onSuccess: (restored) => {
-      queryClient.setQueryData<Topic[]>(['trash-topics'], (cur = []) => cur.filter((t) => t.id !== restored.id))
-      queryClient.invalidateQueries({queryKey: ['topics']})
+      queryClient.setQueryData<Topic[]>(queryKeys.trashTopics, (cur = []) => cur.filter((t) => t.id !== restored.id))
+      queryClient.invalidateQueries({queryKey: queryKeys.topics})
       setRestoreTopicId(null)
     },
   })
@@ -36,8 +38,8 @@ export function TrashPage() {
   const purgeMutation = useMutation({
     mutationFn: purgeTrash,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['trash-words']})
-      queryClient.invalidateQueries({queryKey: ['trash-topics']})
+      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       setConfirmPurge(false)
     },
   })
@@ -54,7 +56,7 @@ export function TrashPage() {
     <div className="trash-page">
       <div className="trash-inner">
         <div className="trash-topbar">
-          <button type="button" className="word-page-back-btn" onClick={() => navigate('/smart-review')}>
+          <button type="button" className="word-page-back-btn" onClick={() => navigate(routes.smartReview)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>

@@ -1,7 +1,6 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import type {WordKnowledgeLevel} from '../../shared/http'
 import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '../../shared/wordDomain'
-import {CompactDropdown} from '../../shared/CompactDropdown'
 
 type Props = {
   wordSearch: string; setWordSearch: (v: string) => void
@@ -19,25 +18,18 @@ export function Toolbar({
   onReset, totalWordsOverall, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, topicName,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(false)
-  const levelActive    = levelFilter !== 'all'
-  const searchVisible  = searchOpen || !!wordSearch
+  const levelActive   = levelFilter !== 'all'
+  // When a level filter is active, level-based sort options are hidden.
+  // Clamp the displayed sort value synchronously so the select never shows a blank option.
+  const effectiveSortBy: SortOption = levelActive && (sortBy === 'level-asc' || sortBy === 'level-desc') ? 'term-asc' : sortBy
 
-  useEffect(() => {
-    if (levelActive && (sortBy === 'level-asc' || sortBy === 'level-desc')) setSortBy('term-asc')
-  }, [levelActive, sortBy, setSortBy])
+  function handleSortChange(v: SortOption) {
+    setSortBy(v)
+    // Also reset if the incoming value is a level sort while level filter is active (defensive)
+    if (levelActive && (v === 'level-asc' || v === 'level-desc')) setSortBy('term-asc')
+  }
 
-  const sortOptions = levelActive
-    ? [{value: 'term-asc' as SortOption, label: 'A → Z'}, {value: 'term-desc' as SortOption, label: 'Z → A'}]
-    : [
-        {value: 'level-asc' as SortOption, label: 'Level ↑'}, {value: 'level-desc' as SortOption, label: 'Level ↓'},
-        {value: 'term-asc' as SortOption, label: 'A → Z'},    {value: 'term-desc' as SortOption, label: 'Z → A'},
-      ]
-
-  const levelOptions = [
-    {value: 'all' as const, label: `All levels — ${topicTotalCount}`},
-    ...ACTIVE_LEVELS.map((l) => ({value: String(l) as `${WordKnowledgeLevel}`, label: `${l} ${LEVEL_LABELS[l]} — ${levelSummary[l]}`})),
-    {value: String(PARKED_LEVEL) as `${WordKnowledgeLevel}`, label: `${LEVEL_LABELS[PARKED_LEVEL]} — ${levelSummary[PARKED_LEVEL]}`},
-  ]
+  const searchVisible = searchOpen || !!wordSearch
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'
   const isFiltered   = filteredCount !== topicTotalCount
@@ -55,14 +47,31 @@ export function Toolbar({
       )}
 
       <div className="toolbar-controls-row">
-        <CompactDropdown value={sortBy} options={sortOptions} onChange={setSortBy} ariaLabel="Sort words" className="toolbar-control toolbar-control-sort" />
-        <CompactDropdown
-          value={String(levelFilter) as 'all' | `${WordKnowledgeLevel}`}
-          options={levelOptions}
-          onChange={(v) => setLevelFilter(v === 'all' ? 'all' : (Number(v) as WordKnowledgeLevel))}
-          ariaLabel="Filter words by level"
+        <select
+          className="toolbar-control toolbar-control-sort"
+          value={effectiveSortBy}
+          onChange={(e) => handleSortChange(e.target.value as SortOption)}
+          aria-label="Sort words"
+        >
+          {!levelActive && <option value="level-asc">Level ↑</option>}
+          {!levelActive && <option value="level-desc">Level ↓</option>}
+          <option value="term-asc">A → Z</option>
+          <option value="term-desc">Z → A</option>
+        </select>
+
+        <select
           className="toolbar-control toolbar-control-level"
-        />
+          value={String(levelFilter)}
+          onChange={(e) => setLevelFilter(e.target.value === 'all' ? 'all' : (Number(e.target.value) as WordKnowledgeLevel))}
+          aria-label="Filter words by level"
+        >
+          <option value="all">All levels — {topicTotalCount}</option>
+          {ACTIVE_LEVELS.map((l) => (
+            <option key={l} value={String(l)}>{l} {LEVEL_LABELS[l]} — {levelSummary[l]}</option>
+          ))}
+          <option value={String(PARKED_LEVEL)}>{LEVEL_LABELS[PARKED_LEVEL]} — {levelSummary[PARKED_LEVEL]}</option>
+        </select>
+
         <button
           type="button"
           className={`btn btn-ghost toolbar-search-toggle ${searchVisible ? 'toolbar-search-toggle-active' : ''}`}

@@ -1,19 +1,23 @@
 import {PAGE_SIZES} from '../words/useWordFilter'
-import {CompactDropdown} from '../../shared/CompactDropdown'
 
 type Props = {page: number; totalPages: number; onPage: (p: number) => void; pageSize: number; onPageSize: (n: number) => void}
 
-const PAGE_SIZE_OPTIONS = PAGE_SIZES.map((s) => ({value: String(s), label: `${s} / page`}))
-
 export function Pagination({page, totalPages, onPage, pageSize, onPageSize}: Props) {
-  const sizeDropdown = (
-    <CompactDropdown value={String(pageSize)} options={PAGE_SIZE_OPTIONS} onChange={(v) => onPageSize(Number(v))} ariaLabel="Words per page" className="page-size-dropdown" />
+  const sizeSelect = (
+    <select
+      className="page-size-dropdown"
+      value={String(pageSize)}
+      onChange={(e) => onPageSize(Number(e.target.value))}
+      aria-label="Words per page"
+    >
+      {PAGE_SIZES.map((s) => <option key={s} value={String(s)}>{s} / page</option>)}
+    </select>
   )
 
   if (totalPages <= 1) return (
     <div className="pagination-shell">
-      <div className="pagination pagination-desktop">{sizeDropdown}</div>
-      <div className="pagination pagination-mobile">{sizeDropdown}</div>
+      <div className="pagination pagination-desktop">{sizeSelect}</div>
+      <div className="pagination pagination-mobile">{sizeSelect}</div>
     </div>
   )
 
@@ -34,13 +38,13 @@ export function Pagination({page, totalPages, onPage, pageSize, onPageSize}: Pro
           : <button key={t} className={`page-btn ${t === page ? 'page-btn-active' : ''}`} onClick={() => onPage(t)}>{t}</button>
         )}
         <button className="page-btn page-nav" disabled={page === totalPages} onClick={() => onPage(page + 1)}>Next →</button>
-        {sizeDropdown}
+        {sizeSelect}
       </div>
       <div className="pagination pagination-mobile">
         <button className="page-btn page-nav-mobile" disabled={page === 1} onClick={() => onPage(page - 1)}>←</button>
         <span className="page-label">Page {page} of {totalPages}</span>
         <button className="page-btn page-nav-mobile" disabled={page === totalPages} onClick={() => onPage(page + 1)}>→</button>
-        {sizeDropdown}
+        {sizeSelect}
       </div>
     </div>
   )
