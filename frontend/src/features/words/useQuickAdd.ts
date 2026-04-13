@@ -9,7 +9,7 @@ import {translateTerm, suggestTopic, ensureInbox} from './quickAddService'
 
 const INBOX_TOPIC_NAME = 'Inbox'
 
-export function useQuickAdd(onClose: () => void) {
+export function useQuickAdd(_onClose: () => void) {
   const queryClient = useQueryClient()
   const termRef     = useRef<HTMLInputElement>(null)
 

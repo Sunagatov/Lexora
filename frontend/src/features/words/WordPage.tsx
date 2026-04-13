@@ -1,155 +1,21 @@
-import {useState, useMemo, useEffect, useRef} from 'react'
-import {useParams, useNavigate, useLocation} from 'react-router-dom'
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
-import {fetchWord, updateWord, deleteWord} from './api'
-import {fetchTopics} from '../topics/api'
-import type {Word, Topic} from '../../shared/types'
-import {ApiError} from '../../shared/apiError'
-import {LEVEL_LABELS, levelClass, levelToStr, strToLevel} from '../../shared/wordDomain'
-import {toStr, toNullStr, toNullStrIf} from '../../shared/utils'
+import {useNavigate, useLocation} from 'react-router-dom'
+import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
-
-type EditState = {
-  term: string; translations: string; knowledge_level: string; part_of_speech: string
-  topic_ids: string[]; countability: string; past_simple: string; past_participle: string
-  example: string; notes: string; pattern: string
-}
-
-function toEditState(word: Word): EditState {
-  return {
-    term:            word.term,
-    translations:    word.translations,
-    knowledge_level: levelToStr(word.knowledge_level),
-    part_of_speech:  toStr(word.part_of_speech),
-    topic_ids:       word.topic_ids.map(String),
-    countability:    toStr(word.countability),
-    past_simple:     toStr(word.past_simple),
-    past_participle: toStr(word.past_participle),
-    example:         toStr(word.example),
-    notes:           toStr(word.notes),
-    pattern:         toStr(word.pattern),
-  }
-}
-
-function resolveTopic(word: Word, topics: Topic[], fromTopicSlug: string | undefined): Topic | undefined {
-  if (!word.topic_ids.length) return undefined
-  if (fromTopicSlug) {
-    return topics.find((t) => t.slug === fromTopicSlug) ?? topics.find((t) => t.id === word.topic_ids[0])
-  }
-  return topics.find((t) => t.id === word.topic_ids[0])
-}
-
-function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: boolean): Partial<Word> {
-  return {
-    term:            draft.term.trim(),
-    translations:    draft.translations.trim(),
-    knowledge_level: strToLevel(draft.knowledge_level),
-    part_of_speech:  toNullStr(draft.part_of_speech),
-    topic_ids:       draft.topic_ids.map(Number).filter((n) => n > 0),
-    countability:    toNullStrIf(isNoun, draft.countability),
-    past_simple:     toNullStrIf(isVerb, draft.past_simple),
-    past_participle: toNullStrIf(isVerb, draft.past_participle),
-    example:         toNullStr(draft.example),
-    notes:           toNullStr(draft.notes),
-    pattern:         toNullStr(draft.pattern),
-  }
-}
+import {useWordPageState} from './useWordPageState'
 
 export function WordPage() {
-  const {wordId}    = useParams<{wordId: string}>()
-  const navigate    = useNavigate()
-  const location    = useLocation()
-  const queryClient = useQueryClient()
-  const editing     = location.pathname.endsWith('/edit')
-  const fromTopicSlug = (location.state as {fromTopicSlug?: string} | null)?.fromTopicSlug
+  const s        = useWordPageState()
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const [draft, setDraft]           = useState<EditState | null>(null)
-  const [confirming, setConfirming] = useState(false)
-  const [saveError,  setSaveError]  = useState<string | null>(null)
+  if (s.isLoading) return <div className="word-page-loading">Loading…</div>
+  if (!s.word) return <div className="word-page-loading">Word not found.</div>
 
-  const wordQuery   = useQuery({queryKey: queryKeys.word(Number(wordId)), queryFn: () => fetchWord(Number(wordId))})
-  const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
-
-  const saveMutation = useMutation({
-    mutationFn: (payload: Partial<Word>) => updateWord(Number(wordId), payload),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.word(Number(wordId)), updated)
-      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
-      navigate(routes.word(Number(wordId)), {replace: true, state: location.state})
-      setDraft(null)
-      setSaveError(null)
-    },
-    onError: (err: Error) => {
-      const msg = err instanceof ApiError && err.status === 409
-        ? 'A word with this term already exists in the selected topic.'
-        : err instanceof ApiError && (err.status === 400 || err.status === 422)
-        ? 'Invalid data — check the fields and try again.'
-        : 'Failed to save. Please try again.'
-      setSaveError(msg)
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteWord(Number(wordId)),
-    onSuccess: () => {
-      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.filter((w) => w.id !== Number(wordId)))
-      queryClient.removeQueries({queryKey: queryKeys.word(Number(wordId))})
-      navigate(capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home, {replace: true})
-    },
-  })
-
-  const capturedTopicSlug = useRef<string | null>(null)
-
-  function handleDelete() {
-    capturedTopicSlug.current = topic?.slug ?? null
-    setConfirming(false)
-    deleteMutation.mutate()
-  }
-
-  const word   = wordQuery.data
-  const topics = topicsQuery.data ?? []
-  const topic  = word ? resolveTopic(word, topics, fromTopicSlug) : undefined
-
-  const allWords   = queryClient.getQueryData<Word[]>(queryKeys.words) ?? []
-  const topicWords = useMemo(
-    () => word && topic
-      ? allWords.filter((w) => w.topic_ids.includes(topic.id)).sort((a, b) => a.term.localeCompare(b.term))
-      : [],
-    [allWords, word, topic],
-  )
-  const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
-  const prevWord   = currentIdx > 0 ? topicWords[currentIdx - 1] : null
-  const nextWord   = currentIdx >= 0 && currentIdx < topicWords.length - 1 ? topicWords[currentIdx + 1] : null
-
-  useEffect(() => {
-    if (editing && word && !draft) setDraft(toEditState(word))
-    if (!editing) setDraft(null)
-  }, [editing, word?.id])
-
-  if (wordQuery.isLoading) return <div className="word-page-loading">Loading…</div>
-  if (!word) return <div className="word-page-loading">Word not found.</div>
-
+  const {word, topics, topic, draft, set, editing} = s
   const lc     = levelClass(word.knowledge_level)
   const isVerb = (draft?.part_of_speech ?? word.part_of_speech) === 'verb'
   const isNoun = (draft?.part_of_speech ?? word.part_of_speech) === 'noun'
-
-  function set(field: keyof EditState, value: string | string[]) {
-    setDraft((d) => d ? {...d, [field]: value} : d)
-  }
-
-  function save() {
-    if (!draft || !word) return
-    setSaveError(null)
-    const termVal  = draft.term.trim()
-    const transVal = draft.translations.trim()
-    const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
-    if (!termVal)         { setSaveError('Term cannot be empty.'); return }
-    if (!transVal)        { setSaveError('Translation cannot be empty.'); return }
-    if (!topicIds.length) { setSaveError('Please select a topic.'); return }
-    saveMutation.mutate(buildSavePayload(draft, isVerb, isNoun))
-  }
 
   return (
     <div className="word-page">
@@ -160,7 +26,7 @@ export function WordPage() {
             type="button"
             className="word-page-back-btn"
             onClick={() => editing
-              ? navigate(routes.word(Number(wordId)), {replace: true, state: location.state})
+              ? navigate(routes.word(s.wordId), {replace: true, state: location.state})
               : navigate(routes.topic(topic?.slug ?? ''))}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -169,7 +35,7 @@ export function WordPage() {
             Back
           </button>
           {!editing && (
-            <button type="button" className="word-page-edit-btn" onClick={() => navigate(routes.editWord(Number(wordId)), {state: location.state})}>
+            <button type="button" className="word-page-edit-btn" onClick={() => navigate(routes.editWord(s.wordId), {state: location.state})}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
               </svg>
@@ -203,10 +69,10 @@ export function WordPage() {
         {editing && draft && (
           <div className="word-page-edit-form">
             <FormField label="Term">
-              <input className="wp-input" value={draft.term} maxLength={255} onChange={(e) => { set('term', e.target.value); setSaveError(null) }} />
+              <input className="wp-input" value={draft.term} maxLength={255} onChange={(e) => { set('term', e.target.value); s.setSaveError(null) }} />
             </FormField>
             <FormField label="Translations">
-              <input className="wp-input" value={draft.translations} onChange={(e) => { set('translations', e.target.value); setSaveError(null) }} />
+              <input className="wp-input" value={draft.translations} onChange={(e) => { set('translations', e.target.value); s.setSaveError(null) }} />
             </FormField>
             <FormField label="Knowledge level">
               <select className="wp-input" value={draft.knowledge_level} onChange={(e) => set('knowledge_level', e.target.value)}>
@@ -275,13 +141,13 @@ export function WordPage() {
 
       {editing && (
         <div className="word-page-edit-actions">
-          {saveError && <div className="wp-save-error">{saveError}</div>}
+          {s.saveError && <div className="wp-save-error">{s.saveError}</div>}
           <div className="word-page-edit-actions-row">
-            <button type="button" className="wp-btn-delete" onClick={() => setConfirming(true)}>Delete</button>
+            <button type="button" className="wp-btn-delete" onClick={() => s.setConfirming(true)}>Delete</button>
             <div className="word-page-edit-actions-right">
-              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(routes.word(Number(wordId)), {replace: true, state: location.state}); setSaveError(null) }}>Cancel</button>
-              <button type="button" className="wp-btn-save" disabled={saveMutation.isPending} onClick={save}>
-                {saveMutation.isPending ? 'Saving…' : 'Save'}
+              <button type="button" className="wp-btn-cancel" onClick={() => { navigate(routes.word(s.wordId), {replace: true, state: location.state}); s.setSaveError(null) }}>Cancel</button>
+              <button type="button" className="wp-btn-save" disabled={s.savePending} onClick={s.save}>
+                {s.savePending ? 'Saving…' : 'Save'}
               </button>
             </div>
           </div>
@@ -290,26 +156,26 @@ export function WordPage() {
 
       {!editing && (
         <div className="word-page-footer">
-          <button type="button" className="word-page-nav-btn" disabled={!prevWord} onClick={() => prevWord && navigate(routes.word(prevWord.id), {state: location.state})}>
+          <button type="button" className="word-page-nav-btn" disabled={!s.prevWord} onClick={() => s.prevWord && navigate(routes.word(s.prevWord.id), {state: location.state})}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="9,2 4,7 9,12" /></svg>
             Prev
           </button>
-          <span className="word-page-nav-pos">{currentIdx >= 0 ? `${currentIdx + 1} / ${topicWords.length}` : ''}</span>
-          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!nextWord} onClick={() => nextWord && navigate(routes.word(nextWord.id), {state: location.state})}>
+          <span className="word-page-nav-pos">{s.currentIdx >= 0 ? `${s.currentIdx + 1} / ${s.topicWords.length}` : ''}</span>
+          <button type="button" className="word-page-nav-btn word-page-nav-btn-next" disabled={!s.nextWord} onClick={() => s.nextWord && navigate(routes.word(s.nextWord.id), {state: location.state})}>
             Next
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="5,2 10,7 5,12" /></svg>
           </button>
         </div>
       )}
 
-      {confirming && (
+      {s.confirming && (
         <ConfirmModal
           title="Move to Trash?"
           message={`"${word.term}" will be moved to Trash and permanently deleted after 30 days.`}
           confirmLabel="Move to Trash"
           danger
-          onConfirm={() => handleDelete()}
-          onCancel={() => setConfirming(false)}
+          onConfirm={s.handleDelete}
+          onCancel={() => s.setConfirming(false)}
         />
       )}
     </div>

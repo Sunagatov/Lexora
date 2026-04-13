@@ -1,4 +1,4 @@
-import {request} from '../../shared/types'
+import {request} from '../../shared/http'
 import type {StudyQueue} from '../../shared/types'
 
 export const fetchSmartReview        = ()               => request<StudyQueue>('/api/smart-review')
