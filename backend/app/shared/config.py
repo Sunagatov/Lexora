@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     app_password: str
     secret_key: str
     cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
+    cookie_httponly: bool = True
+    cookie_secure: bool = True
+    cookie_samesite: str = "lax"
     api_key: str
 
     smart_review_enabled: bool = True

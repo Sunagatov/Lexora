@@ -15,7 +15,13 @@ def login(payload: LoginRequest, response: Response) -> dict:
     if payload.password != settings.app_password:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong password")
     token = jwt.encode({"sub": "owner"}, settings.secret_key, algorithm=ALGORITHM)
-    response.set_cookie(key="session", value=token, httponly=True, secure=True, samesite="lax", max_age=settings.cookie_max_age)
+    response.set_cookie(
+        key="session", value=token,
+        httponly=settings.cookie_httponly,
+        secure=settings.cookie_secure,
+        samesite=settings.cookie_samesite,
+        max_age=settings.cookie_max_age,
+    )
     return {"ok": True}
 
 
