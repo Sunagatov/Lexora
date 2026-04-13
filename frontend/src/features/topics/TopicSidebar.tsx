@@ -69,8 +69,8 @@ export function TopicSidebar({
 }: Props) {
   const [posCollapsed,    setPosCollapsed]    = useState(() => loadPref('sidebar_pos_collapsed', false))
   const [topicsCollapsed, setTopicsCollapsed] = useState(() => loadPref('sidebar_topics_collapsed', false))
-  const [posSort,         setPosSort]         = useState<SortMode>(() => loadPref('sidebar_pos_sort', 'default'))
-  const [topicsSort,      setTopicsSort]      = useState<SortMode>(() => loadPref('sidebar_topics_sort', 'default'))
+  const [posSort,         setPosSort]         = useState<SortMode>(() => loadPref('sidebar_pos_sort', 'weakest'))
+  const [topicsSort,      setTopicsSort]      = useState<SortMode>(() => loadPref('sidebar_topics_sort', 'weakest'))
   const [posSortOpen,     setPosSortOpen]     = useState(false)
   const [topicsSortOpen,  setTopicsSortOpen]  = useState(false)
   const [searchOpen,      setSearchOpen]      = useState(false)
@@ -291,7 +291,7 @@ export function TopicSidebar({
                 {posSortOpen && <SortMenu options={SORT_OPTIONS} current={posSort} anchorRef={posSortRef} onSelect={applyPosSort} onClose={() => setPosSortOpen(false)} />}
               </div>
             </div>
-            {posSort !== 'default' && (
+            {posSort !== 'weakest' && posSort !== 'default' && (
               <div className="sidebar-group-meta">
                 {SORT_LABELS[posSort]}
                 {weakCount(posTopics) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(posTopics)} weak</span></>}
@@ -321,7 +321,7 @@ export function TopicSidebar({
                 {topicsSortOpen && <SortMenu options={SORT_OPTIONS} current={topicsSort} anchorRef={topicsSortRef} onSelect={applyTopicsSort} onClose={() => setTopicsSortOpen(false)} />}
               </div>
             </div>
-            {topicsSort !== 'default' && (
+            {topicsSort !== 'weakest' && topicsSort !== 'default' && (
               <div className="sidebar-group-meta">
                 {SORT_LABELS[topicsSort]}
                 {weakCount(themeTopics) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics)} below 30%</span></>}
@@ -449,7 +449,9 @@ function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmar
     >
       <button type="button" className="topic-item-select" onClick={() => onSelect(topic.id)}>
         <span className="topic-item-name">{topic.name}</span>
-        {progress !== undefined && progress > 0 && <span className="topic-item-pct">{progress}%</span>}
+        <span className="topic-item-pct">
+          {progress !== undefined ? `${progress}%` : (topicCounts.get(topic.id) ?? 0) > 0 ? '—' : ''}
+        </span>
         <span className="topic-count">{topicCounts.get(topic.id) ?? 0}</span>
       </button>
       <div className="topic-item-actions">
