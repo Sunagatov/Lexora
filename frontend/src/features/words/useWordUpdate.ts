@@ -12,11 +12,12 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
 
     onMutate: async ({wordId, level}) => {
       onMutate()
+      // Cancel any in-flight word queries (both flat and topic-scoped)
       await queryClient.cancelQueries({queryKey: ['words']})
       const prev = queryClient.getQueryData<Word[]>(['words'])
 
-      // patch the main words cache
-      queryClient.setQueryData<Word[]>(['words'], (cur = []) =>
+      // Patch all cached word lists (flat all-words + any topic-scoped caches)
+      queryClient.setQueriesData<Word[]>({queryKey: ['words']}, (cur = []) =>
         cur.map((w) => w.id === wordId ? {...w, knowledge_level: level} : w),
       )
 
