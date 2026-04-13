@@ -75,6 +75,30 @@ def _pick_for_level_retry_excluded(
     return picked
 
 
+class QueueItemNotFoundError(Exception):
+    pass
+
+
+class QueueNotActiveError(Exception):
+    pass
+
+
+def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
+    """Mark a queue item complete and return the updated queue. Raises domain errors if not found/inactive."""
+    item = db.get(StudyQueueItem, item_id)
+    if item is None:
+        raise QueueItemNotFoundError
+    queue = db.get(StudyQueue, item.queue_id)
+    if queue is None or not queue.is_active:
+        raise QueueNotActiveError
+    if not item.is_completed:
+        item.is_completed = True
+        item.completed_at = datetime.now(timezone.utc)
+        queue.completed_count += 1
+        db.commit()
+    return queue
+
+
 def deactivate_all_queues(db: Session) -> None:
     for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
         q.is_active = False
@@ -101,8 +125,7 @@ def generate_queue(db: Session) -> StudyQueue:
 
     random.shuffle(selected)
 
-    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
-        q.is_active = False
+    deactivate_all_queues(db)
 
     now = datetime.now(timezone.utc)
     queue = StudyQueue(
