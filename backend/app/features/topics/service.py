@@ -7,7 +7,7 @@ from app.shared.text import slugify
 from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate, TopicUpdate
-from app.features.topics.repository import update_topic
+from app.features.topics.repository import update_topic as persist_topic_update
 
 
 class TopicSlugConflictError(Exception):
@@ -70,4 +70,4 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
         normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN) or payload.slug
         payload.slug = normalized_slug
         assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
-    return update_topic(db, topic, payload)
+    return persist_topic_update(db, topic, payload)
