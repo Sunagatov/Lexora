@@ -26,7 +26,16 @@ class WordRepository:
                 (Topic.id == topic_id) & Topic.deleted_at.is_(None)
             ))
         if search:
-            stmt = stmt.where(Word.term.ilike(f"%{search}%"))
+            needle = f"%{search}%"
+            stmt = stmt.where(
+                Word.term.ilike(needle)
+                | Word.translations.ilike(needle)
+                | Word.pattern.ilike(needle)
+                | Word.example.ilike(needle)
+                | Word.notes.ilike(needle)
+                | Word.past_simple.ilike(needle)
+                | Word.past_participle.ilike(needle)
+            )
         return list(db.scalars(stmt).all())
 
     @staticmethod

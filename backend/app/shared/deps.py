@@ -23,7 +23,9 @@ def verify_session(session: str | None = Cookie(default=None)) -> None:
     if session is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     try:
-        jwt.decode(session, settings.secret_key, algorithms=[ALGORITHM])
+        payload = jwt.decode(session, settings.secret_key, algorithms=[ALGORITHM])
+        if payload.get("sub") != "owner":
+            raise JWTError("unexpected subject")
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
 
