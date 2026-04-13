@@ -100,9 +100,9 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
 
 
 def deactivate_all_queues(db: Session) -> None:
+    """Mark all active queues inactive. Does NOT commit — caller owns the transaction."""
     for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
         q.is_active = False
-    db.commit()
 
 
 def generate_queue(db: Session) -> StudyQueue:
