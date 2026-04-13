@@ -6,7 +6,7 @@ from app.shared.deps import get_db
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.smart_review.schemas import StudyQueueResponse
 from app.features.smart_review.service import (
-    get_or_create_active_queue, generate_queue, deactivate_all_queues,
+    get_or_create_active_queue, generate_queue,
     complete_queue_item, QueueItemNotFoundError, QueueNotActiveError,
 )
 from app.features.words.model import Word
@@ -36,7 +36,6 @@ def get_active_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
 @router.post("/refresh", response_model=StudyQueueResponse)
 def refresh_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
     """Discard the current queue and generate a fresh one."""
-    deactivate_all_queues(db)
     queue = generate_queue(db)
     loaded = _load_queue(db, queue.id)
     return StudyQueueResponse.from_queue(loaded)

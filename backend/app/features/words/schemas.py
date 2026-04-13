@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,7 +45,7 @@ class WordUpdate(BaseModel):
     example: str | None = None
     notes: str | None = None
     is_active: bool | None = None
-    progress_source: str | None = None  # e.g. "manual_edit", "study_list", "smart_review"
+    progress_source: Literal['manual', 'study_list', 'smart_review', 'quick_add', 'bulk_import'] | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

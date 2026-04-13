@@ -7,6 +7,7 @@ from app.shared.text import normalize_term
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordUpdate
+from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.stats.model import WordProgressEvent
 
 
@@ -52,7 +53,7 @@ class WordRepository:
         ).all()
         for w in existing:
             if normalize_term(w.term) == norm_term:
-                raise ValueError(f"Word '{payload.term}' already exists in one of the selected topics")
+                raise DuplicateWordInTopicError(payload.term)
 
         topics = db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()
         data = payload.model_dump(exclude={"topic_ids"})
@@ -79,7 +80,7 @@ class WordRepository:
             ).all()
             for w in existing:
                 if normalize_term(w.term) == norm:
-                    raise ValueError(f"Word '{effective_term}' already exists in one of the selected topics")
+                    raise DuplicateWordInTopicError(effective_term)
 
         old_level = word.knowledge_level
         for field, value in data.items():

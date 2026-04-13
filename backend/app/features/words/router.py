@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db, verify_api_key
-from app.features.topics.repository import topic_repo
+from app.features.topics.service import assert_topics_exist, MissingTopicsError
 from app.features.words.repository import word_repo
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate, WordCreate, WordResponse, WordUpdate
+from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.bulk_service import (
     BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
 )
@@ -32,12 +33,12 @@ def get_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
 
 @router.post("", response_model=WordResponse, status_code=status.HTTP_201_CREATED)
 def create_word(payload: WordCreate, db: Session = Depends(get_db)) -> WordResponse:
-    missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
-    if missing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
     try:
+        assert_topics_exist(db, payload.topic_ids)
         return WordResponse.from_word(word_repo.create(db, payload))
-    except ValueError as e:
+    except MissingTopicsError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except DuplicateWordInTopicError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
@@ -46,13 +47,13 @@ def update_word(word_id: int, payload: WordUpdate, db: Session = Depends(get_db)
     word = word_repo.get_by_id(db, word_id)
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
-    if payload.topic_ids is not None:
-        missing = [tid for tid in payload.topic_ids if topic_repo.get_by_id(db, tid) is None]
-        if missing:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Topics not found: {missing}")
     try:
+        if payload.topic_ids is not None:
+            assert_topics_exist(db, payload.topic_ids)
         return WordResponse.from_word(word_repo.update(db, word, payload))
-    except ValueError as e:
+    except MissingTopicsError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except DuplicateWordInTopicError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
