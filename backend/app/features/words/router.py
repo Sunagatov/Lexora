@@ -1,16 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db, verify_api_key
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
-from app.shared.text import normalize_term, slugify
-from app.features.topics.model import Topic
 from app.features.topics.repository import topic_repo
-from app.features.topics.schemas import TopicCreate
-from app.features.words.model import Word
 from app.features.words.repository import word_repo
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate, WordCreate, WordResponse, WordUpdate
+from app.features.words.bulk_service import (
+    BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
+)
 
 router      = APIRouter(prefix="/api/words", tags=["words"])
 bulk_router = APIRouter(prefix="/api/words", tags=["words"])
@@ -71,48 +68,11 @@ def delete_word(word_id: int, db: Session = Depends(get_db)) -> None:
                   dependencies=[Depends(verify_api_key)])
 def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
     """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
-    slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
-    if not slug:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{payload.topic_name}'")
-
-    topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.is_(None)))
-    if topic is None:
-        deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
-        if deleted is not None:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"Topic '{payload.topic_name}' exists but is in trash. Restore or permanently delete it first.",
-            )
-        existing_slug = db.scalar(select(Topic).where(Topic.slug == slug))
-        if existing_slug is not None:
-            detail = (
-                f"Topic name '{payload.topic_name}' conflicts with existing topic '{existing_slug.name}' (same slug '{slug}'). Use the exact existing name."
-                if existing_slug.deleted_at is None
-                else f"Topic slug '{slug}' is used by a deleted topic — restore or permanently delete it first."
-            )
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
-        topic = topic_repo.create(db, TopicCreate(name=payload.topic_name, slug=slug))
-
-    existing = {normalize_term(t) for t in db.scalars(
-        select(Word.term)
-        .where(Word.deleted_at.is_(None))
-        .where(Word.topics.any(Topic.id == topic.id))
-    ).all()}
-
-    added_terms: list[str] = []
-    skipped_terms: list[str] = []
-    for w in payload.words:
-        if normalize_term(w.term) in existing:
-            skipped_terms.append(w.term)
-            continue
-        new_word = Word(**w.model_dump(), topics=[topic])
-        db.add(new_word)
-        existing.add(normalize_term(w.term))
-        added_terms.append(w.term)
-
-    db.commit()
-    return BulkImportResponse(
-        topic_id=topic.id, topic_name=topic.name,
-        added=len(added_terms), skipped=len(skipped_terms),
-        added_terms=added_terms, skipped_terms=skipped_terms,
-    )
+    try:
+        return bulk_import(db, payload)
+    except BulkInvalidTopicNameError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot build a slug from topic name: '{e.name}'")
+    except BulkTopicInTrashError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Topic '{e.name}' exists but is in trash. Restore or permanently delete it first.")
+    except BulkSlugConflictError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)

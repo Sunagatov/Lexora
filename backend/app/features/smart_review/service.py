@@ -75,6 +75,12 @@ def _pick_for_level_retry_excluded(
     return picked
 
 
+def deactivate_all_queues(db: Session) -> None:
+    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active == True)).all():  # noqa: E712
+        q.is_active = False
+    db.commit()
+
+
 def generate_queue(db: Session) -> StudyQueue:
     cooldown_ids   = _cooldown_word_ids(db)
     topic_counts: dict[int, int] = defaultdict(int)
