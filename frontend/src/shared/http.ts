@@ -7,6 +7,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
+  const csrfToken = localStorage.getItem('csrf_token')
+  if (csrfToken) headers.set('X-CSRF-Token', csrfToken)
 
   const response = await fetch(`${API_BASE_URL}${path}`, {...init, headers, credentials: 'include'})
 

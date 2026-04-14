@@ -7,7 +7,7 @@ import {redirectIfUnauthorized} from './shared/authRedirect'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: (_, error: unknown) => !(error instanceof ApiError && error.status === 401),
+      retry: (_, error: unknown) => !(error instanceof ApiError && (error.status === 401 || error.status === 403)),
     },
     mutations: {
       onError: (error: unknown) => redirectIfUnauthorized(error),
