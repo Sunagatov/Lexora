@@ -1,0 +1,129 @@
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
+import pytest
+
+from app.features.topics import service as topic_service
+from app.features.topics.schemas import TopicCreate, TopicUpdate
+
+
+def test_assert_slug_available_allows_missing_slug() -> None:
+    db = MagicMock()
+    db.scalar.return_value = None
+
+    topic_service.assert_slug_available(db, "travel")
+
+
+def test_assert_slug_available_allows_same_topic_id() -> None:
+    db = MagicMock()
+    db.scalar.return_value = SimpleNamespace(id=7, deleted_at=None)
+
+    topic_service.assert_slug_available(db, "travel", exclude_topic_id=7)
+
+
+def test_assert_slug_available_raises_for_active_conflict() -> None:
+    db = MagicMock()
+    db.scalar.return_value = SimpleNamespace(id=9, deleted_at=None)
+
+    with pytest.raises(topic_service.TopicSlugConflictError) as exc_info:
+        topic_service.assert_slug_available(db, "travel")
+
+    assert exc_info.value.detail == "Topic slug 'travel' already exists"
+
+
+def test_assert_slug_available_raises_for_deleted_conflict() -> None:
+    db = MagicMock()
+    db.scalar.return_value = SimpleNamespace(id=9, deleted_at=object())
+
+    with pytest.raises(topic_service.TopicSlugConflictError) as exc_info:
+        topic_service.assert_slug_available(db, "travel")
+
+    assert (
+        exc_info.value.detail
+        == "Topic slug 'travel' is used by a deleted topic — restore or permanently delete it first"
+    )
+
+
+def test_assert_topics_exist_raises_missing_ids_in_original_order() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [1, 3]
+
+    with pytest.raises(topic_service.MissingTopicsError) as exc_info:
+        topic_service.assert_topics_exist(db, [3, 2, 1, 4])
+
+    assert exc_info.value.ids == [2, 4]
+
+
+def test_create_topic_slugifies_and_persists(monkeypatch) -> None:
+    db = MagicMock()
+    payload = TopicCreate(name="Daily Routine", description="desc", is_active=False)
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "daily-routine")
+    slug_check = MagicMock()
+    monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
+
+    topic = topic_service.create_topic(db, payload)
+
+    assert topic.name == "Daily Routine"
+    assert topic.slug == "daily-routine"
+    assert topic.description == "desc"
+    assert topic.is_active is False
+
+    slug_check.assert_called_once_with(db, "daily-routine")
+    db.add.assert_called_once_with(topic)
+    db.commit.assert_called_once()
+    db.refresh.assert_called_once_with(topic)
+
+
+def test_create_topic_raises_when_generated_slug_is_empty(monkeypatch) -> None:
+    db = MagicMock()
+    payload = TopicCreate(name="!!!")
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "")
+
+    with pytest.raises(topic_service.InvalidTopicNameError) as exc_info:
+        topic_service.create_topic(db, payload)
+
+    assert exc_info.value.name == "!!!"
+
+
+def test_update_topic_normalizes_new_slug_and_checks_availability(monkeypatch) -> None:
+    db = MagicMock()
+    topic = SimpleNamespace(id=5, slug="old-slug")
+    payload = TopicUpdate(slug="New Slug")
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "new-slug")
+    slug_check = MagicMock()
+    monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
+
+    expected = object()
+
+    def fake_persist(db_arg, topic_arg, payload_arg):
+        assert db_arg is db
+        assert topic_arg is topic
+        assert payload_arg.slug == "new-slug"
+        return expected
+
+    monkeypatch.setattr(topic_service, "persist_topic_update", fake_persist)
+
+    result = topic_service.update_topic(db, topic, payload)
+
+    assert result is expected
+    slug_check.assert_called_once_with(db, "new-slug", exclude_topic_id=5)
+
+
+def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> None:
+    db = MagicMock()
+    topic = SimpleNamespace(id=5, slug="same-slug")
+    payload = TopicUpdate(slug="same-slug", description="Updated description")
+
+    slug_check = MagicMock()
+    monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
+
+    expected = object()
+    monkeypatch.setattr(topic_service, "persist_topic_update", lambda *_: expected)
+
+    result = topic_service.update_topic(db, topic, payload)
+
+    assert result is expected
+    slug_check.assert_not_called()
