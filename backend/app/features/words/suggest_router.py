@@ -22,7 +22,7 @@ async def suggest_topic(payload: SuggestTopicRequest, db: Session = Depends(get_
     except NoTopicsError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No topics found")
     except AiUnknownTopicError:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="AI returned unknown topic")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="AI returned unknown topic")
     except httpx.TimeoutException:
         raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="AI request timed out")
     except httpx.HTTPStatusError as e:
