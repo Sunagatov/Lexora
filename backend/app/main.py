@@ -1,4 +1,6 @@
-from fastapi import Depends, FastAPI
+import logging
+
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.shared.config import settings
@@ -11,6 +13,8 @@ from app.features.words.suggest_router import router as suggest_router
 from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Lexora API",
@@ -26,11 +30,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    logger.info(
+        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s",
+        settings.smart_review_enabled,
+        len(settings.cors_allowed_origins),
+    )
+
+
+@app.on_event("shutdown")
+async def on_shutdown() -> None:
+    logger.info("app.stopped")
+
+
+@app.middleware("http")
+async def log_unhandled_errors(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception:
+        logger.exception(
+            "http.request.failed: method=%s, path=%s",
+            request.method,
+            request.url.path,
+        )
+        raise
+
+
 app.include_router(health_router)
 app.include_router(auth_router)
-app.include_router(topics_router,      dependencies=[Depends(verify_session), Depends(verify_csrf)])
-app.include_router(words_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
-app.include_router(suggest_router,     dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(topics_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(words_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(suggest_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(smart_review_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
-app.include_router(trash_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
-app.include_router(stats_router,       dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(trash_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(stats_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
