@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
@@ -9,6 +10,8 @@ from app.shared.config import settings
 from app.features.topics.model import Topic
 from app.features.topics.domain import soft_delete_exclusive_words
 from app.features.words.model import Word
+
+logger = logging.getLogger(__name__)
 
 
 def purge_trash(db: Session, force: bool = False) -> None:
@@ -41,17 +44,28 @@ def purge_trash(db: Session, force: bool = False) -> None:
         soft_delete_exclusive_words(topic, now)
 
     topic_ids = [t.id for t in topics_to_purge]
+    deleted_topics = 0
     if topic_ids:
-        db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
+        result = db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
+        deleted_topics = result.rowcount or 0
 
     if force:
-        db.execute(Word.__table__.delete().where(Word.deleted_at.isnot(None)))
+        word_result = db.execute(Word.__table__.delete().where(Word.deleted_at.isnot(None)))
     else:
         cutoff = now - timedelta(days=settings.trash_retention_days)
-        db.execute(
+        word_result = db.execute(
             Word.__table__.delete()
             .where(Word.deleted_at.isnot(None))
             .where(Word.deleted_at < cutoff)
         )
 
+    deleted_words = word_result.rowcount or 0
+
     db.commit()
+
+    logger.info(
+        "trash.purged: force=%s, topicsDeleted=%s, wordsDeleted=%s",
+        force,
+        deleted_topics,
+        deleted_words,
+    )
