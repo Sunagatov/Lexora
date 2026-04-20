@@ -34,8 +34,3 @@ postgres-data/
 /frontend/package-lock.json
 /package-lock.json
 /.codacy/codacy.yaml
-
-# Frontend generated config/build artifacts
-frontend/*.tsbuildinfo
-frontend/vite.config.js
-frontend/vite.config.d.ts
