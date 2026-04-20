@@ -5,7 +5,7 @@ import {routes} from '../../shared/routes'
 import {useWordPageState} from './useWordPageState'
 
 export function WordPage() {
-  const s = useWordPageState()
+  const s        = useWordPageState()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -13,14 +13,9 @@ export function WordPage() {
   if (!s.word) return <div className="word-page-loading">Word not found.</div>
 
   const {word, topics, topic, draft, set, editing} = s
-  const lc = levelClass(word.knowledge_level)
+  const lc     = levelClass(word.knowledge_level)
   const isVerb = (draft?.part_of_speech ?? word.part_of_speech) === 'verb'
   const isNoun = (draft?.part_of_speech ?? word.part_of_speech) === 'noun'
-  const backRoute = topic?.slug
-    ? routes.topic(topic.slug)
-    : s.fromTopicSlug
-      ? routes.topic(s.fromTopicSlug)
-      : routes.home
 
   return (
     <div className="word-page">
@@ -32,7 +27,7 @@ export function WordPage() {
             className="word-page-back-btn"
             onClick={() => editing
               ? navigate(routes.word(s.wordId), {replace: true, state: location.state})
-              : navigate(backRoute)}
+              : navigate(routes.topic(topic?.slug ?? ''))}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
@@ -56,15 +51,15 @@ export function WordPage() {
       <div className="word-page-inner">
         {!editing && (
           <div className="word-page-view">
-            <ViewRow label="Translation" value={word.translations} />
+            <ViewRow label="Translation"    value={word.translations} />
             <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
-            <ViewRow label="Topics" value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
-            <ViewRow label="Knowledge" value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
-            {word.countability && <ViewRow label="Countability" value={word.countability} />}
-            {word.example && <ViewRow label="Example" value={word.example} />}
-            {word.notes && <ViewRow label="Notes" value={word.notes} />}
-            {word.pattern && <ViewRow label="Pattern" value={word.pattern} />}
-            {word.past_simple && <ViewRow label="Past simple" value={word.past_simple} />}
+            <ViewRow label="Topics"         value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
+            <ViewRow label="Knowledge"      value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
+            {word.countability    && <ViewRow label="Countability"    value={word.countability} />}
+            {word.example         && <ViewRow label="Example"         value={word.example} />}
+            {word.notes           && <ViewRow label="Notes"           value={word.notes} />}
+            {word.pattern         && <ViewRow label="Pattern"         value={word.pattern} />}
+            {word.past_simple     && <ViewRow label="Past simple"     value={word.past_simple} />}
             {word.past_participle && <ViewRow label="Past participle" value={word.past_participle} />}
             <ViewRow label="Updated" value={new Date(word.updated_at).toLocaleDateString()} />
             <ViewRow label="Created" value={new Date(word.created_at).toLocaleDateString()} />

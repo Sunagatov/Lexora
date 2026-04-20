@@ -2,14 +2,7 @@ export {ApiError} from './apiError'
 
 import {ApiError} from './apiError'
 
-function normalizeBaseUrl(raw: string | undefined): string {
-  const trimmed = raw?.trim()
-  if (trimmed) return trimmed.replace(/\/+$/, '')
-  if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, '')
-  return ''
-}
-
-const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
@@ -26,9 +19,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
     try {
       const body = await response.json()
       if (body?.detail) detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
-    } catch {
-      // ignore parse errors
-    }
+    } catch { /* ignore parse errors */ }
     throw new ApiError(response.status, detail)
   }
 

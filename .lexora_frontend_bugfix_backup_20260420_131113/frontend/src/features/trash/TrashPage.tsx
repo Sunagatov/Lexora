@@ -11,28 +11,22 @@ import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
 
 export function TrashPage() {
-  const navigate = useNavigate()
+  const navigate    = useNavigate()
   const queryClient = useQueryClient()
-  const [confirmPurge, setConfirmPurge] = useState(false)
+  const [confirmPurge, setConfirmPurge]   = useState(false)
   const [restoreTopicId, setRestoreTopicId] = useState<number | null>(null)
 
-  const configQuery = useQuery({
-    queryKey: queryKeys.publicConfig,
-    queryFn: () => request<{trash_retention_days: number}>('/api/config/public'),
-    staleTime: Infinity,
-  })
+  const configQuery = useQuery({queryKey: queryKeys.publicConfig, queryFn: () => request<{trash_retention_days: number}>('/api/config/public'), staleTime: Infinity})
   const settings = configQuery.data
 
-  const wordsQuery = useQuery({queryKey: queryKeys.trashWords, queryFn: fetchTrashWords})
+  const wordsQuery  = useQuery({queryKey: queryKeys.trashWords,  queryFn: fetchTrashWords})
   const topicsQuery = useQuery({queryKey: queryKeys.trashTopics, queryFn: fetchTrashTopics})
 
   const restoreWordMutation = useMutation({
     mutationFn: restoreWord,
     onSuccess: (restored) => {
       queryClient.setQueryData<Word[]>(queryKeys.trashWords, (cur = []) => cur.filter((w) => w.id !== restored.id))
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => [...cur, restored])
     },
     onError: (err: Error) => {
       alert(err.message)
@@ -44,9 +38,6 @@ export function TrashPage() {
     onSuccess: (restored) => {
       queryClient.setQueryData<Topic[]>(queryKeys.trashTopics, (cur = []) => cur.filter((t) => t.id !== restored.id))
       queryClient.invalidateQueries({queryKey: queryKeys.topics})
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       setRestoreTopicId(null)
     },
   })
@@ -60,7 +51,7 @@ export function TrashPage() {
     },
   })
 
-  const words = wordsQuery.data ?? []
+  const words  = wordsQuery.data  ?? []
   const topics = topicsQuery.data ?? []
   const pendingRestoreTopic = topics.find((t) => t.id === restoreTopicId)
 
