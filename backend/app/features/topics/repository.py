@@ -56,8 +56,12 @@ def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Top
 
     if restore_words and topic_deleted_at is not None:
         for word in topic.words:
-            # Restore any word deleted as part of the same topic-delete operation,
-            # including shared words when delete_words=True was used.
+            # Heuristic: treat any word whose deleted_at is within 5 seconds of the topic's
+            # deleted_at as having been deleted by that same topic-delete operation.
+            # This covers both exclusive words and shared words deleted via delete_words=True.
+            # Risk: a word independently deleted within the same 5-second window will also be
+            # restored.  A precise solution would require storing the originating topic id on
+            # the word row (schema change); the heuristic is accepted as a practical trade-off.
             if (
                 word.deleted_at is not None
                 and abs((word.deleted_at - topic_deleted_at).total_seconds()) < 5

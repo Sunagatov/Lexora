@@ -150,8 +150,47 @@ def test_build_words_added_by_month_excludes_deleted_words_via_caller_filter() -
         deleted_at=None,
         created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
     )
-    # Simulate that deleted words are NOT included in the list (compute_stats filters them out).
     result = stats_service._build_words_added_by_month([active])
 
     assert "2026-01" in result
     assert result["2026-01"] == 1
+
+
+def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
+    # End-to-end proof: compute_stats must only count active words in monthly totals.
+    # The deleted word was created in January; the active word was created in March.
+    # After the fix, January must be absent from words_added_by_month.
+    active_word = SimpleNamespace(
+        id=1,
+        deleted_at=None,
+        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+        knowledge_level=2,
+        example="ex",
+        part_of_speech="noun",
+    )
+    deleted_word_january = SimpleNamespace(
+        id=2,
+        deleted_at=datetime(2026, 3, 20, tzinfo=timezone.utc),
+        created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
+        knowledge_level=1,
+        example=None,
+        part_of_speech=None,
+    )
+    _ = deleted_word_january  # not returned by the active-words query — that's the invariant
+
+    db = MagicMock()
+    # compute_stats calls db.scalars three times in order:
+    #   1. active words   (deleted_at IS NULL)
+    #   2. active topics  (deleted_at IS NULL)
+    #   3. WordProgressEvent in _build_daily_activity
+    db.scalars.side_effect = [
+        MagicMock(**{"all.return_value": [active_word]}),
+        MagicMock(**{"all.return_value": []}),
+        MagicMock(**{"all.return_value": []}),
+    ]
+    db.execute.return_value.all.return_value = []  # word_topics join in _build_topic_stats
+
+    result = stats_service.compute_stats(db)
+
+    assert result.words_added_by_month == {"2026-03": 1}
+    assert "2026-01" not in result.words_added_by_month
