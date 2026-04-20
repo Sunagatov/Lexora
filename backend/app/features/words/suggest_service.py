@@ -32,6 +32,22 @@ class AiUnknownTopicError(Exception):
     pass
 
 
+class AiMalformedResponseError(Exception):
+    pass
+
+
+def _extract_choice_content(data: object) -> str:
+    if not isinstance(data, dict):
+        raise AiMalformedResponseError()
+    try:
+        content = data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        raise AiMalformedResponseError()
+    if not isinstance(content, str) or not content.strip():
+        raise AiMalformedResponseError()
+    return content.strip()
+
+
 async def suggest_topic_for_word(db: Session, term: str, translation: str) -> str:
     """Return the best matching topic name for the given term+translation. Raises domain errors on failure."""
     if not settings.openai_api_key:
@@ -75,7 +91,13 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
         logger.error("word.suggest_topic.request_error: type=%s", type(e).__name__)
         raise
 
-    suggested = response.json()["choices"][0]["message"]["content"].strip()
+    try:
+        payload = response.json()
+    except ValueError as e:
+        logger.error("word.suggest_topic.invalid_json")
+        raise AiMalformedResponseError() from e
+
+    suggested = _extract_choice_content(payload)
     topic_names = {t.name for t in topics}
 
     if suggested not in topic_names:

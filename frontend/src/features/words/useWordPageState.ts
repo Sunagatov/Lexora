@@ -57,6 +57,8 @@ export function useWordPageState() {
       )
 
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
 
       navigate(routes.word(updated.id), {
         replace: true,
@@ -77,6 +79,7 @@ export function useWordPageState() {
   })
 
   const capturedTopicSlug = useRef<string | null>(null)
+  const draftWordIdRef = useRef<number | null>(null)
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
@@ -87,6 +90,9 @@ export function useWordPageState() {
 
       queryClient.removeQueries({queryKey: queryKeys.word(numericWordId)})
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
 
       navigate(
         capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home,
@@ -110,11 +116,19 @@ export function useWordPageState() {
   useEffect(() => {
     if (!editing) {
       setDraft(null)
+      draftWordIdRef.current = null
+      setSaveError(null)
       return
     }
+
     if (!word) return
-    setDraft((currentDraft) => currentDraft ?? toEditState(word))
-  }, [editing, word])
+
+    if (draftWordIdRef.current !== word.id) {
+      setDraft(toEditState(word))
+      draftWordIdRef.current = word.id
+      setSaveError(null)
+    }
+  }, [editing, word?.id])
 
   function set(field: keyof EditState, value: string | string[]) {
     setDraft((d) => (d ? {...d, [field]: value} : d))

@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.features.words import suggest_router
 from app.features.words.suggest_schemas import SuggestTopicRequest
-from app.features.words.suggest_service import AiNotConfiguredError, AiUnknownTopicError, NoTopicsError
+from app.features.words.suggest_service import AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError
 
 
 def test_suggest_topic_returns_response_model(monkeypatch) -> None:
@@ -116,6 +116,24 @@ def test_suggest_topic_maps_http_status_error_to_502(monkeypatch) -> None:
 
     assert exc_info.value.status_code == 502
     assert exc_info.value.detail == "AI error: 429"
+
+
+def test_suggest_topic_maps_malformed_response_to_502(monkeypatch) -> None:
+    async def fake_suggest_topic_for_word(db, term, translation):
+        raise AiMalformedResponseError()
+
+    monkeypatch.setattr(suggest_router, "suggest_topic_for_word", fake_suggest_topic_for_word)
+
+    with pytest.raises(HTTPException) as exc_info:
+        asyncio.run(
+            suggest_router.suggest_topic(
+                SuggestTopicRequest(term="run", translation="бежать"),
+                db=object(),
+            )
+        )
+
+    assert exc_info.value.status_code == 502
+    assert exc_info.value.detail == "AI returned malformed response"
 
 
 def test_suggest_topic_maps_request_error_to_502(monkeypatch) -> None:

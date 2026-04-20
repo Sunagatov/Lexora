@@ -9,7 +9,8 @@ from app.features.topics.service import create_topic, InvalidTopicNameError, Top
 from app.features.words.model import Word
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
-from app.shared.text import normalize_term
+from app.shared.text import normalize_term, slugify
+from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 
 
 class BulkTopicInTrashError(Exception):
@@ -28,11 +29,23 @@ class BulkInvalidTopicNameError(Exception):
 
 
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
-    topic = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.is_(None)))
+    topic_slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
+    if not topic_slug:
+        raise BulkInvalidTopicNameError(payload.topic_name)
+
+    topic = db.scalar(
+        select(Topic)
+        .where(Topic.slug == topic_slug)
+        .where(Topic.deleted_at.is_(None))
+    )
     if topic is None:
-        deleted = db.scalar(select(Topic).where(Topic.name == payload.topic_name).where(Topic.deleted_at.isnot(None)))
+        deleted = db.scalar(
+            select(Topic)
+            .where(Topic.slug == topic_slug)
+            .where(Topic.deleted_at.isnot(None))
+        )
         if deleted is not None:
-            raise BulkTopicInTrashError(payload.topic_name)
+            raise BulkTopicInTrashError(deleted.name)
         try:
             topic = create_topic(db, TopicCreate(name=payload.topic_name))
         except InvalidTopicNameError:

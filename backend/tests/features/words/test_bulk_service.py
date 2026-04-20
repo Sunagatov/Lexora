@@ -97,3 +97,41 @@ def test_bulk_import_maps_slug_conflict_from_create_topic(monkeypatch) -> None:
         bulk_service.bulk_import(db, payload)
 
     assert exc_info.value.detail == "Topic slug 'travel' already exists"
+
+
+def test_bulk_import_reuses_existing_topic_when_name_slugifies_to_same_slug(monkeypatch) -> None:
+    topic = SimpleNamespace(id=3, name="Daily Life", slug="daily-life", deleted_at=None)
+    db = MagicMock()
+    db.scalar.return_value = topic
+
+    monkeypatch.setattr(bulk_service, "Word", DummyWord)
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+
+    payload = WordBulkCreate(
+        topic_name="daily-life",
+        words=[WordInput(term="routine", translations="рутина")],
+    )
+
+    result = bulk_service.bulk_import(db, payload)
+
+    assert result.topic_id == 3
+    assert result.topic_name == "Daily Life"
+    assert result.added == 1
+    db.add.assert_called_once()
+    db.commit.assert_called_once()
+
+
+def test_bulk_import_raises_when_slug_equivalent_topic_is_in_trash() -> None:
+    deleted_topic = SimpleNamespace(id=4, name="Daily Life", slug="daily-life", deleted_at=object())
+    db = MagicMock()
+    db.scalar.side_effect = [None, deleted_topic]
+
+    payload = WordBulkCreate(
+        topic_name="daily-life",
+        words=[WordInput(term="routine", translations="рутина")],
+    )
+
+    with pytest.raises(bulk_service.BulkTopicInTrashError) as exc_info:
+        bulk_service.bulk_import(db, payload)
+
+    assert exc_info.value.name == "Daily Life"

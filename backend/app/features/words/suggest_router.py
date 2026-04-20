@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.shared.deps import get_db
 from app.features.words.suggest_schemas import SuggestTopicRequest, SuggestTopicResponse
 from app.features.words.suggest_service import (
-    AiNotConfiguredError, AiUnknownTopicError, NoTopicsError, suggest_topic_for_word,
+    AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError, suggest_topic_for_word,
 )
 
 router = APIRouter(prefix="/api/words", tags=["words"])
@@ -23,6 +23,8 @@ async def suggest_topic(payload: SuggestTopicRequest, db: Session = Depends(get_
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No topics found")
     except AiUnknownTopicError:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="AI returned unknown topic")
+    except AiMalformedResponseError:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="AI returned malformed response")
     except httpx.TimeoutException:
         raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="AI request timed out")
     except httpx.HTTPStatusError as e:
