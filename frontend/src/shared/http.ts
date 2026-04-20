@@ -9,15 +9,26 @@ function normalizeBaseUrl(raw: string | undefined): string {
   return ''
 }
 
-const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+export const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
 
-export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const headers = new Headers(init.headers)
-  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json')
+export function buildApiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`
+}
+
+export function buildRequestHeaders(headersInit?: HeadersInit, body?: BodyInit | null): Headers {
+  const headers = new Headers(headersInit)
+  if (body && !(body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
   const csrfToken = localStorage.getItem('csrf_token')
   if (csrfToken) headers.set('X-CSRF-Token', csrfToken)
+  return headers
+}
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {...init, headers, credentials: 'include'})
+export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers = buildRequestHeaders(init.headers, init.body)
+
+  const response = await fetch(buildApiUrl(path), {...init, headers, credentials: 'include'})
 
   if (response.status === 401) throw new ApiError(401, 'Not authenticated')
 

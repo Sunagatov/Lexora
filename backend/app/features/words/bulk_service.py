@@ -7,8 +7,9 @@ from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.model import Word
+from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
-from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
+from app.features.words.domain import existing_normalized_terms
 from app.shared.text import normalize_term, slugify
 from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 
@@ -63,7 +64,18 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
         if norm in existing:
             skipped_terms.append(w.term)
             continue
-        db.add(Word(**w.model_dump(), topics=[topic]))
+        word = Word(
+            **w.model_dump(exclude={"translation_entries", "example_entries"}),
+            topics=[topic],
+        )
+        sync_word_multivalue_fields(
+            word,
+            w.translations,
+            w.translation_entries,
+            w.example,
+            w.example_entries,
+        )
+        db.add(word)
         existing.add(norm)
         added_terms.append(w.term)
 

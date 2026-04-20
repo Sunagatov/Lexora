@@ -17,11 +17,13 @@ export type Word = {
   past_simple: string | null
   past_participle: string | null
   translations: string
+  translation_entries?: string[]
   part_of_speech: string | null
   knowledge_level: WordKnowledgeLevel | null
   countability: string | null
   pattern: string | null
   example: string | null
+  example_entries?: string[]
   notes: string | null
   is_active: boolean
   created_at: string
@@ -45,6 +47,21 @@ export type StudyQueue = {
   total_count: number
   completed_count: number
   items: StudyQueueItem[]
+}
+
+export type WorkbookImportSheetSummary = {
+  sheet_name: string
+  topic_name: string
+  created: number
+  updated: number
+  skipped: number
+}
+
+export type WorkbookImportResponse = {
+  created: number
+  updated: number
+  skipped: number
+  sheets: WorkbookImportSheetSummary[]
 }
 
 export type TrashWord  = Word  & {deleted_at: string}

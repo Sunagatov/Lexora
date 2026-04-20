@@ -21,11 +21,13 @@ class WordCreate(BaseModel):
     past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str = Field(min_length=1)
+    translation_entries: list[str] | None = None
     part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
     knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
+    example_entries: list[str] | None = None
     notes: str | None = None
     is_active: bool = True
 
@@ -38,14 +40,18 @@ class WordUpdate(BaseModel):
     past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str | None = Field(default=None, min_length=1)
+    translation_entries: list[str] | None = None
     part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
     knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
+    example_entries: list[str] | None = None
     notes: str | None = None
     is_active: bool | None = None
-    progress_source: Literal['manual', 'study_list', 'smart_review', 'quick_add', 'bulk_import'] | None = None
+    progress_source: Literal[
+        "manual", "study_list", "smart_review", "quick_add", "bulk_import", "xlsx_import"
+    ] | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
@@ -57,11 +63,13 @@ class WordResponse(BaseModel):
     past_simple: str | None
     past_participle: str | None
     translations: str
+    translation_entries: list[str] = Field(default_factory=list)
     part_of_speech: str | None
     knowledge_level: int | None
     countability: str | None
     pattern: str | None
     example: str | None
+    example_entries: list[str] = Field(default_factory=list)
     notes: str | None
     is_active: bool
     deleted_at: datetime | None = None
@@ -79,11 +87,13 @@ class WordResponse(BaseModel):
             past_simple=word.past_simple,
             past_participle=word.past_participle,
             translations=word.translations,
+            translation_entries=[item.value for item in getattr(word, "translation_items", [])],
             part_of_speech=word.part_of_speech,
             knowledge_level=word.knowledge_level,
             countability=word.countability,
             pattern=word.pattern,
             example=word.example,
+            example_entries=[item.value for item in getattr(word, "example_items", [])],
             notes=word.notes,
             is_active=word.is_active,
             deleted_at=word.deleted_at,
@@ -98,11 +108,13 @@ class WordInput(BaseModel):
     past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
     translations: str = Field(min_length=1)
+    translation_entries: list[str] | None = None
     part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
     knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
     example: str | None = None
+    example_entries: list[str] | None = None
     notes: str | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
@@ -122,3 +134,18 @@ class BulkImportResponse(BaseModel):
     skipped: int
     added_terms: list[str]
     skipped_terms: list[str]
+
+
+class WorkbookImportSheetSummary(BaseModel):
+    sheet_name: str
+    topic_name: str
+    created: int
+    updated: int
+    skipped: int = 0
+
+
+class WorkbookImportResponse(BaseModel):
+    created: int
+    updated: int
+    skipped: int
+    sheets: list[WorkbookImportSheetSummary]

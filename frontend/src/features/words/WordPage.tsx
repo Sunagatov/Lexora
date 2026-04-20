@@ -18,6 +18,12 @@ export function WordPage() {
   const lc = levelClass(word.knowledge_level)
   const isVerb = (draft?.part_of_speech ?? word.part_of_speech) === 'verb'
   const isNoun = (draft?.part_of_speech ?? word.part_of_speech) === 'noun'
+  const translationsToView = word.translation_entries?.length
+    ? word.translation_entries.join('\n')
+    : word.translations
+  const examplesToView = word.example_entries?.length
+    ? word.example_entries.join('\n')
+    : word.example
   const backRoute = topic?.slug
     ? routes.topic(topic.slug)
     : s.fromTopicSlug
@@ -58,14 +64,14 @@ export function WordPage() {
       <div className="word-page-inner">
         {!editing && (
           <div className="word-page-view">
-            <ViewRow label="Translation" value={word.translations} />
+            <ViewRow label="Translations" value={translationsToView} preserveLines />
             <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
             <ViewRow label="Topics" value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
             <ViewRow label="Knowledge" value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
             {word.countability && <ViewRow label="Countability" value={word.countability} />}
-            {word.example && <ViewRow label="Example" value={word.example} />}
-            {word.notes && <ViewRow label="Notes" value={word.notes} />}
-            {word.pattern && <ViewRow label="Pattern" value={word.pattern} />}
+            {examplesToView && <ViewRow label="Examples" value={examplesToView} preserveLines />}
+            {word.notes && <ViewRow label="Notes" value={word.notes} preserveLines />}
+            {word.pattern && <ViewRow label="Pattern" value={word.pattern} preserveLines />}
             {word.past_simple && <ViewRow label="Past simple" value={word.past_simple} />}
             {word.past_participle && <ViewRow label="Past participle" value={word.past_participle} />}
             <ViewRow label="Updated" value={new Date(word.updated_at).toLocaleDateString()} />
@@ -78,8 +84,13 @@ export function WordPage() {
             <FormField label="Term">
               <input className="wp-input" value={draft.term} maxLength={255} onChange={(e) => { set('term', e.target.value); s.setSaveError(null) }} />
             </FormField>
-            <FormField label="Translations">
-              <input className="wp-input" value={draft.translations} onChange={(e) => { set('translations', e.target.value); s.setSaveError(null) }} />
+            <FormField label="Translations (one per line)">
+              <textarea
+                className="wp-input wp-textarea"
+                rows={4}
+                value={draft.translations}
+                onChange={(e) => { set('translations', e.target.value); s.setSaveError(null) }}
+              />
             </FormField>
             <FormField label="Knowledge level">
               <select className="wp-input" value={draft.knowledge_level} onChange={(e) => set('knowledge_level', e.target.value)}>
@@ -133,8 +144,8 @@ export function WordPage() {
                 </FormField>
               </>
             )}
-            <FormField label="Example">
-              <textarea className="wp-input wp-textarea" rows={3} value={draft.example} onChange={(e) => set('example', e.target.value)} />
+            <FormField label="Examples (one per line)">
+              <textarea className="wp-input wp-textarea" rows={5} value={draft.example} onChange={(e) => set('example', e.target.value)} />
             </FormField>
             <FormField label="Notes">
               <textarea className="wp-input wp-textarea" rows={3} value={draft.notes} onChange={(e) => set('notes', e.target.value)} />
@@ -189,11 +200,13 @@ export function WordPage() {
   )
 }
 
-function ViewRow({label, value}: {label: string; value: string}) {
+function ViewRow({label, value, preserveLines = false}: {label: string; value: string; preserveLines?: boolean}) {
   return (
     <div className="word-page-view-row">
       <span className="word-page-view-label">{label}</span>
-      <span className="word-page-view-value">{value}</span>
+      <span className="word-page-view-value" style={preserveLines ? {whiteSpace: 'pre-wrap'} : undefined}>
+        {value}
+      </span>
     </div>
   )
 }

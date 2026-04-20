@@ -11,6 +11,7 @@ import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
 import {useTopicSidebarPrefs} from './useTopicSidebarPrefs'
 import {buildSidebarGroups, weakCount} from './topicSidebarModel'
+import {exportWordsWorkbook, importWordsWorkbook} from '../words/api'
 
 type Props = {
   topics: Topic[]
@@ -45,9 +46,11 @@ export function TopicSidebar({
   const [newTopicName,   setNewTopicName]   = useState('')
   const [addingTopic,    setAddingTopic]    = useState(false)
   const [topicError,     setTopicError]     = useState<string | null>(null)
-  const searchRef     = useRef<HTMLInputElement>(null)
-  const posSortRef    = useRef<HTMLButtonElement>(null)
-  const topicsSortRef = useRef<HTMLButtonElement>(null)
+  const [workbookBusy,   setWorkbookBusy]   = useState(false)
+  const searchRef      = useRef<HTMLInputElement>(null)
+  const importInputRef = useRef<HTMLInputElement>(null)
+  const posSortRef     = useRef<HTMLButtonElement>(null)
+  const topicsSortRef  = useRef<HTMLButtonElement>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
@@ -92,6 +95,49 @@ export function TopicSidebar({
     pinnedIds: prefs.pinnedIds, onSelect: handleSelect,
     onDelete: (id: number) => setDeleteTopicId(id),
     onPin: prefs.togglePin,
+  }
+
+  async function handleExportWorkbook() {
+    try {
+      setWorkbookBusy(true)
+      await exportWordsWorkbook()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to export workbook.'
+      window.alert(message)
+    } finally {
+      setWorkbookBusy(false)
+    }
+  }
+
+  async function handleImportWorkbookChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    try {
+      setWorkbookBusy(true)
+      const result = await importWordsWorkbook(file)
+
+      await Promise.all([
+        queryClient.invalidateQueries({queryKey: queryKeys.topics}),
+        queryClient.invalidateQueries({queryKey: queryKeys.words}),
+        queryClient.invalidateQueries({queryKey: queryKeys.stats}),
+        queryClient.invalidateQueries({queryKey: queryKeys.smartReview}),
+      ])
+
+      const perSheet = result.sheets
+        .map((sheet) => `${sheet.topic_name}: +${sheet.created} new, ${sheet.updated} updated`)
+        .join('\n')
+
+      window.alert(
+        `Workbook imported successfully.\n\nCreated: ${result.created}\nUpdated: ${result.updated}\nSkipped: ${result.skipped}\n\n${perSheet}`,
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to import workbook.'
+      window.alert(message)
+    } finally {
+      setWorkbookBusy(false)
+    }
   }
 
   return (
@@ -250,6 +296,21 @@ export function TopicSidebar({
             <span className="sidebar-util-icon">🗑</span><span className="sidebar-util-label">Trash</span>
           </button>
         </div>
+        <div className="sidebar-util-row">
+          <button type="button" className="sidebar-util-btn" title="Export Excel workbook" disabled={workbookBusy} onClick={handleExportWorkbook}>
+            <span className="sidebar-util-icon">Export</span><span className="sidebar-util-label">XLSX</span>
+          </button>
+          <button type="button" className="sidebar-util-btn" title="Import Excel workbook" disabled={workbookBusy} onClick={() => importInputRef.current?.click()}>
+            <span className="sidebar-util-icon">Import</span><span className="sidebar-util-label">{workbookBusy ? 'Working' : 'XLSX'}</span>
+          </button>
+        </div>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          style={{display: 'none'}}
+          onChange={handleImportWorkbookChange}
+        />
       </div>
 
       {deleteTopicId !== null && (

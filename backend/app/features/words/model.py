@@ -2,7 +2,19 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Table, Text, func, text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    Text,
+    UniqueConstraint,
+    func,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.db import Base
@@ -16,6 +28,44 @@ word_topics = Table(
     Column("word_id", Integer, ForeignKey("words.id", ondelete="CASCADE"), primary_key=True),
     Column("topic_id", Integer, ForeignKey("topics.id", ondelete="CASCADE"), primary_key=True),
 )
+
+
+class WordTranslation(Base):
+    __tablename__ = "word_translations"
+    __table_args__ = (
+        UniqueConstraint("word_id", "position", name="uq_word_translations_word_id_position"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    word_id: Mapped[int] = mapped_column(ForeignKey("words.id", ondelete="CASCADE"), index=True)
+    position: Mapped[int] = mapped_column(Integer(), nullable=False)
+    value: Mapped[str] = mapped_column(Text(), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    word = relationship("Word", back_populates="translation_items")
+
+
+class WordExample(Base):
+    __tablename__ = "word_examples"
+    __table_args__ = (
+        UniqueConstraint("word_id", "position", name="uq_word_examples_word_id_position"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    word_id: Mapped[int] = mapped_column(ForeignKey("words.id", ondelete="CASCADE"), index=True)
+    position: Mapped[int] = mapped_column(Integer(), nullable=False)
+    value: Mapped[str] = mapped_column(Text(), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    word = relationship("Word", back_populates="example_items")
 
 
 class Word(Base):
@@ -38,4 +88,16 @@ class Word(Base):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     topics = relationship("Topic", secondary=word_topics, back_populates="words")
+    translation_items: Mapped[list[WordTranslation]] = relationship(
+        "WordTranslation",
+        back_populates="word",
+        cascade="all, delete-orphan",
+        order_by="WordTranslation.position",
+    )
+    example_items: Mapped[list[WordExample]] = relationship(
+        "WordExample",
+        back_populates="word",
+        cascade="all, delete-orphan",
+        order_by="WordExample.position",
+    )
     progress_events = relationship("WordProgressEvent", back_populates="word", cascade="all, delete-orphan")
