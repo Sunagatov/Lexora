@@ -2,6 +2,7 @@ import {useNavigate, useLocation} from 'react-router-dom'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
 import {routes} from '../../shared/routes'
+import {NotFoundPage} from '../../layout/NotFoundPage'
 import {useWordPageState} from './useWordPageState'
 
 export function WordPage() {
@@ -9,6 +10,7 @@ export function WordPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  if (s.isInvalidWordId) return <NotFoundPage />
   if (s.isLoading) return <div className="word-page-loading">Loading…</div>
   if (!s.word) return <div className="word-page-loading">Word not found.</div>
 

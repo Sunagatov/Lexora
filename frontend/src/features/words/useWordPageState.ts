@@ -3,19 +3,12 @@ import {useParams, useNavigate, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, fetchWords, updateWord, deleteWord} from './api'
 import {fetchTopics} from '../topics/api'
-import type {Word, Topic} from '../../shared/types'
+import type {Word} from '../../shared/types'
 import {ApiError} from '../../shared/apiError'
 import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
 import {type EditState, toEditState, buildSavePayload} from './wordForm'
-
-function resolveTopic(word: Word, topics: Topic[], fromTopicSlug: string | undefined): Topic | undefined {
-  if (!word.topic_ids.length) return undefined
-  if (fromTopicSlug) {
-    return topics.find((t) => t.slug === fromTopicSlug) ?? topics.find((t) => t.id === word.topic_ids[0])
-  }
-  return topics.find((t) => t.id === word.topic_ids[0])
-}
+import {buildWordLocationState, resolveWordContextTopic} from './wordPageContext'
 
 export function useWordPageState() {
   const {wordId} = useParams<{wordId: string}>()
@@ -30,17 +23,46 @@ export function useWordPageState() {
   const [saveError, setSaveError] = useState<string | null>(null)
 
   const numericWordId = Number(wordId)
+  const isValidWordId = Number.isInteger(numericWordId) && numericWordId > 0
 
-  const wordQuery = useQuery({queryKey: queryKeys.word(numericWordId), queryFn: () => fetchWord(numericWordId)})
-  const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
-  const allWordsQuery = useQuery({queryKey: queryKeys.words, queryFn: () => fetchWords()})
+  const wordQuery = useQuery({
+    queryKey: isValidWordId ? queryKeys.word(numericWordId) : ['word', 'invalid', wordId ?? 'missing'],
+    queryFn: () => fetchWord(numericWordId),
+    enabled: isValidWordId,
+  })
+
+  const topicsQuery = useQuery({
+    queryKey: queryKeys.topics,
+    queryFn: fetchTopics,
+    enabled: isValidWordId,
+  })
+
+  const allWordsQuery = useQuery({
+    queryKey: queryKeys.words,
+    queryFn: () => fetchWords(),
+    enabled: isValidWordId,
+  })
+
+  const word = wordQuery.data
+  const topics = topicsQuery.data ?? []
+  const topic = word ? resolveWordContextTopic(word, topics, fromTopicSlug) : undefined
 
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(numericWordId, payload),
     onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.word(numericWordId), updated)
-      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.map((w) => w.id === updated.id ? updated : w))
-      navigate(routes.word(numericWordId), {replace: true, state: location.state})
+      queryClient.setQueryData(queryKeys.word(updated.id), updated)
+
+      queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
+        cur.map((w) => (w.id === updated.id ? updated : w)),
+      )
+
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+
+      navigate(routes.word(updated.id), {
+        replace: true,
+        state: buildWordLocationState(updated, topics, fromTopicSlug),
+      })
+
       setDraft(null)
       setSaveError(null)
     },
@@ -55,18 +77,23 @@ export function useWordPageState() {
   })
 
   const capturedTopicSlug = useRef<string | null>(null)
+
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
     onSuccess: () => {
-      queryClient.setQueryData<Word[]>(queryKeys.words, (cur = []) => cur.filter((w) => w.id !== numericWordId))
+      queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
+        cur.filter((w) => w.id !== numericWordId),
+      )
+
       queryClient.removeQueries({queryKey: queryKeys.word(numericWordId)})
-      navigate(capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home, {replace: true})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+
+      navigate(
+        capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home,
+        {replace: true},
+      )
     },
   })
-
-  const word = wordQuery.data
-  const topics = topicsQuery.data ?? []
-  const topic = word ? resolveTopic(word, topics, fromTopicSlug) : undefined
 
   const topicWords = useMemo(() => {
     const allWords = allWordsQuery.data ?? []
@@ -90,15 +117,18 @@ export function useWordPageState() {
   }, [editing, word])
 
   function set(field: keyof EditState, value: string | string[]) {
-    setDraft((d) => d ? {...d, [field]: value} : d)
+    setDraft((d) => (d ? {...d, [field]: value} : d))
   }
 
   function save() {
     if (!draft || !word) return
+
     setSaveError(null)
+
     const termVal = draft.term.trim()
     const transVal = draft.translations.trim()
     const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
+
     if (!termVal) {
       setSaveError('Term cannot be empty.')
       return
@@ -111,19 +141,24 @@ export function useWordPageState() {
       setSaveError('Please select a topic.')
       return
     }
+
     const isVerb = draft.part_of_speech === 'verb'
     const isNoun = draft.part_of_speech === 'noun'
     saveMutation.mutate(buildSavePayload(draft, isVerb, isNoun))
   }
 
   function handleDelete() {
-    capturedTopicSlug.current = topic?.slug ?? fromTopicSlug ?? null
+    capturedTopicSlug.current = word
+      ? (buildWordLocationState(word, topics, fromTopicSlug)?.fromTopicSlug ?? null)
+      : null
+
     setConfirming(false)
     deleteMutation.mutate()
   }
 
   return {
     wordId: numericWordId,
+    isInvalidWordId: !isValidWordId,
     editing,
     location,
     word,
@@ -143,6 +178,6 @@ export function useWordPageState() {
     setConfirming,
     handleDelete,
     fromTopicSlug,
-    isLoading: wordQuery.isLoading || topicsQuery.isLoading,
+    isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || allWordsQuery.isLoading),
   }
 }
