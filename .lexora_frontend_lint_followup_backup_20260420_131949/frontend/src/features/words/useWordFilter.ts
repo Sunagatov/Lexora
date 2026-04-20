@@ -38,8 +38,7 @@ export function useWordFilter(topicWords: Word[]) {
   function setParam(key: string, value: string | null, resetPage = true) {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev)
-      if (value === null || value === '') next.delete(key)
-      else next.set(key, value)
+      value === null || value === '' ? next.delete(key) : next.set(key, value)
       if (resetPage) next.delete('page')
       return next
     }, {replace: true})

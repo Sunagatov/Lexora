@@ -1,24 +1,42 @@
 import js from '@eslint/js'
-import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
-import tseslint from 'typescript-eslint'
 
-export default tseslint.config(
-  {ignores: ['dist']},
+const browserGlobals = {
+  window: 'readonly',
+  document: 'readonly',
+  navigator: 'readonly',
+  location: 'readonly',
+  history: 'readonly',
+  localStorage: 'readonly',
+  sessionStorage: 'readonly',
+  fetch: 'readonly',
+  Headers: 'readonly',
+  URL: 'readonly',
+  URLSearchParams: 'readonly',
+  setTimeout: 'readonly',
+  clearTimeout: 'readonly',
+  alert: 'readonly',
+  console: 'readonly',
+  KeyboardEvent: 'readonly',
+  React: 'readonly',
+}
+
+export default [
+  {ignores: ['dist', 'coverage']},
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: globals.browser,
+      parserOptions: {ecmaFeatures: {jsx: true}},
+      globals: browserGlobals,
     },
     plugins: {'react-hooks': reactHooks},
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      'no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
     },
   },
-)
+]
