@@ -87,6 +87,46 @@ def test_suggest_topic_for_word_returns_case_insensitive_match(monkeypatch) -> N
     assert "- Travel" in FakeAsyncClient.last_request["json"]["messages"][1]["content"]
 
 
+def test_extract_choice_content_raises_on_empty_choices(monkeypatch) -> None:
+    with pytest.raises(suggest_service.AiMalformedResponseError):
+        suggest_service._extract_choice_content({"choices": []})
+
+
+def test_extract_choice_content_raises_on_missing_choices_key(monkeypatch) -> None:
+    with pytest.raises(suggest_service.AiMalformedResponseError):
+        suggest_service._extract_choice_content({})
+
+
+def test_extract_choice_content_raises_on_non_string_content(monkeypatch) -> None:
+    with pytest.raises(suggest_service.AiMalformedResponseError):
+        suggest_service._extract_choice_content({"choices": [{"message": {"content": 123}}]})
+
+
+def test_extract_choice_content_raises_on_non_dict_input(monkeypatch) -> None:
+    with pytest.raises(suggest_service.AiMalformedResponseError):
+        suggest_service._extract_choice_content("not a dict")
+
+
+def test_suggest_topic_for_word_raises_malformed_on_empty_choices_response(monkeypatch) -> None:
+    class EmptyChoicesClient(FakeAsyncClient):
+        async def post(self, url, headers, json):
+            class Resp:
+                def raise_for_status(self): return None
+                def json(self): return {"choices": []}
+            return Resp()
+
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [
+        SimpleNamespace(name="Travel", deleted_at=None),
+    ]
+
+    monkeypatch.setattr(suggest_service.settings, "openai_api_key", "token")
+    monkeypatch.setattr(suggest_service.httpx, "AsyncClient", EmptyChoicesClient)
+
+    with pytest.raises(suggest_service.AiMalformedResponseError):
+        asyncio.run(suggest_service.suggest_topic_for_word(db, "plane", "самолет"))
+
+
 def test_suggest_topic_for_word_raises_for_unknown_topic(monkeypatch) -> None:
     class UnknownTopicClient(FakeAsyncClient):
         async def post(self, url, headers, json):
