@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {createTopic, fetchTopics} from '../topics/api'
 import {quickAddWord} from './api'
@@ -24,7 +24,7 @@ export function useQuickAdd(_onClose: () => void) {
   const [feedback,    setFeedback]    = useState<{ok: boolean; msg: string} | null>(null)
 
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
-  const topics: Topic[] = topicsQuery.data ?? []
+  const topics: Topic[] = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
 
   useEffect(() => {
     if (topicId !== null || topics.length === 0) return
@@ -32,7 +32,10 @@ export function useQuickAdd(_onClose: () => void) {
     if (inbox) setTopicId(inbox.id)
   }, [topics, topicId])
 
-  useEffect(() => { setTimeout(() => termRef.current?.focus(), 80) }, [])
+  useEffect(() => {
+    const timeoutId = setTimeout(() => termRef.current?.focus(), 80)
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   const addWordMutation = useMutation({
     mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),

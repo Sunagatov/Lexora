@@ -68,21 +68,26 @@ export function useWordPageState() {
   const topics = topicsQuery.data ?? []
   const topic = word ? resolveTopic(word, topics, fromTopicSlug) : undefined
 
-  const allWords = allWordsQuery.data ?? []
-  const topicWords = useMemo(
-    () => word && topic
-      ? allWords.filter((w) => w.topic_ids.includes(topic.id)).sort((a, b) => a.term.localeCompare(b.term))
-      : [],
-    [allWords, word, topic],
-  )
+  const topicWords = useMemo(() => {
+    const allWords = allWordsQuery.data ?? []
+    if (!word || !topic) return []
+    return allWords
+      .filter((w) => w.topic_ids.includes(topic.id))
+      .sort((a, b) => a.term.localeCompare(b.term))
+  }, [allWordsQuery.data, word, topic])
+
   const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
   const prevWord = currentIdx > 0 ? topicWords[currentIdx - 1] : null
   const nextWord = currentIdx >= 0 && currentIdx < topicWords.length - 1 ? topicWords[currentIdx + 1] : null
 
   useEffect(() => {
-    if (editing && word && !draft) setDraft(toEditState(word))
-    if (!editing) setDraft(null)
-  }, [editing, word?.id])
+    if (!editing) {
+      setDraft(null)
+      return
+    }
+    if (!word) return
+    setDraft((currentDraft) => currentDraft ?? toEditState(word))
+  }, [editing, word])
 
   function set(field: keyof EditState, value: string | string[]) {
     setDraft((d) => d ? {...d, [field]: value} : d)
