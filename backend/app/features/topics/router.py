@@ -41,6 +41,8 @@ def update_topic_route(topic_id: int, payload: TopicUpdate, db: Session = Depend
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
     try:
         return update_topic(db, topic, payload)
+    except InvalidTopicNameError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
 

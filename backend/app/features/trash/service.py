@@ -3,45 +3,51 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
 from app.features.topics.model import Topic
-from app.features.topics.domain import soft_delete_exclusive_words
 from app.features.words.model import Word
 
 logger = logging.getLogger(__name__)
 
 
+def _word_loses_all_remaining_topics(word: Word, purged_topic_ids: set[int]) -> bool:
+    return not any(
+        topic.deleted_at is None and topic.id not in purged_topic_ids
+        for topic in word.topics
+    )
+
+
 def purge_trash(db: Session, force: bool = False) -> None:
     """Hard-delete trashed items in a single transaction.
 
-    Before deleting trashed topics, soft-delete any active words that belong
-    exclusively to those topics — enforced via the shared domain helper.
+    Active words that would become topicless after the purge are also hard-deleted.
 
     With force=True deletes everything in trash.
     Otherwise deletes only items older than the configured retention period.
     """
     now = datetime.now(timezone.utc)
 
-    if force:
-        topics_to_purge = db.scalars(
-            select(Topic)
-            .where(Topic.deleted_at.isnot(None))
-            .options(selectinload(Topic.words))
-        ).all()
-    else:
-        cutoff = now - timedelta(days=settings.trash_retention_days)
-        topics_to_purge = db.scalars(
-            select(Topic)
-            .where(Topic.deleted_at.isnot(None))
-            .where(Topic.deleted_at < cutoff)
-            .options(selectinload(Topic.words))
-        ).all()
+    topic_stmt = (
+        select(Topic)
+        .where(Topic.deleted_at.isnot(None))
+        .options(selectinload(Topic.words).selectinload(Word.topics))
+    )
 
+    if not force:
+        cutoff = now - timedelta(days=settings.trash_retention_days)
+        topic_stmt = topic_stmt.where(Topic.deleted_at < cutoff)
+
+    topics_to_purge = db.scalars(topic_stmt).all()
+    purged_topic_ids = {t.id for t in topics_to_purge}
+
+    words_to_hard_delete_ids: set[int] = set()
     for topic in topics_to_purge:
-        soft_delete_exclusive_words(topic, now)
+        for word in topic.words:
+            if word.deleted_at is None and _word_loses_all_remaining_topics(word, purged_topic_ids):
+                words_to_hard_delete_ids.add(word.id)
 
     topic_ids = [t.id for t in topics_to_purge]
     deleted_topics = 0
@@ -49,17 +55,20 @@ def purge_trash(db: Session, force: bool = False) -> None:
         result = db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
         deleted_topics = result.rowcount or 0
 
+    conditions = []
     if force:
-        word_result = db.execute(Word.__table__.delete().where(Word.deleted_at.isnot(None)))
+        conditions.append(Word.deleted_at.isnot(None))
     else:
         cutoff = now - timedelta(days=settings.trash_retention_days)
-        word_result = db.execute(
-            Word.__table__.delete()
-            .where(Word.deleted_at.isnot(None))
-            .where(Word.deleted_at < cutoff)
-        )
+        conditions.append((Word.deleted_at.isnot(None)) & (Word.deleted_at < cutoff))
 
-    deleted_words = word_result.rowcount or 0
+    if words_to_hard_delete_ids:
+        conditions.append(Word.id.in_(words_to_hard_delete_ids))
+
+    deleted_words = 0
+    if conditions:
+        word_result = db.execute(Word.__table__.delete().where(or_(*conditions)))
+        deleted_words = word_result.rowcount or 0
 
     db.commit()
 

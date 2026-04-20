@@ -75,9 +75,20 @@ def test_get_active_queue_returns_loaded_queue(monkeypatch, make_topic, make_wor
     assert result.items[0].word.term == "plane"
 
 
+def test_refresh_queue_returns_503_when_disabled(monkeypatch) -> None:
+    monkeypatch.setattr(smart_review_router.settings, "smart_review_enabled", False)
+
+    with pytest.raises(HTTPException) as exc_info:
+        smart_review_router.refresh_queue(db=object())
+
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.detail == "Smart Review is disabled"
+
+
 def test_refresh_queue_returns_loaded_queue(monkeypatch, make_topic, make_word, fixed_now) -> None:
     queue = _build_queue(make_topic, make_word, fixed_now)
 
+    monkeypatch.setattr(smart_review_router.settings, "smart_review_enabled", True)
     monkeypatch.setattr(smart_review_router, "generate_queue", lambda db: SimpleNamespace(id=queue.id))
     monkeypatch.setattr(smart_review_router, "_load_queue", lambda db, queue_id: queue)
 

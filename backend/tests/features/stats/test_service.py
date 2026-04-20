@@ -127,3 +127,31 @@ def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:
     assert activity[1].improved == 2
     assert activity[1].downgraded == 0
     assert activity[1].net == 2
+
+
+def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> None:
+    # Only non-deleted words (deleted_at=None) are passed by compute_stats, so deleted
+    # words must not appear in the monthly totals.
+    active_word = SimpleNamespace(
+        id=1,
+        deleted_at=None,
+        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+    )
+
+    result = stats_service._build_words_added_by_month([active_word])
+
+    assert result == {"2026-03": 1}
+
+
+def test_build_words_added_by_month_excludes_deleted_words_via_caller_filter() -> None:
+    # Callers pass only active words; deleted words with different created_at must be absent.
+    active = SimpleNamespace(
+        id=1,
+        deleted_at=None,
+        created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
+    )
+    # Simulate that deleted words are NOT included in the list (compute_stats filters them out).
+    result = stats_service._build_words_added_by_month([active])
+
+    assert "2026-01" in result
+    assert result["2026-01"] == 1

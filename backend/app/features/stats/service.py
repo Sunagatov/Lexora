@@ -84,9 +84,9 @@ def _build_topic_stats(db: Session, topics: list, word_map: dict) -> list[TopicS
     return result
 
 
-def _build_words_added_by_month(db: Session) -> dict[str, int]:
+def _build_words_added_by_month(words: list) -> dict[str, int]:
     counts: dict[str, int] = defaultdict(int)
-    for w in db.scalars(select(Word)).all():
+    for w in words:
         key = f"{w.created_at.year}-{w.created_at.month:02d}"
         counts[key] += 1
     return dict(sorted(counts.items()))
@@ -133,7 +133,7 @@ def compute_stats(db: Session) -> StatsResponse:
 
     word_map     = {w.id: w for w in words}
     topic_stats  = _build_topic_stats(db, topics, word_map)
-    words_by_month = _build_words_added_by_month(db)
+    words_by_month = _build_words_added_by_month(words)
     daily_activity, tracking_started_at = _build_daily_activity(db)
 
     return StatsResponse(

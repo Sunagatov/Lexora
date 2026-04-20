@@ -53,17 +53,17 @@ def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
     topic_deleted_at = topic.deleted_at
     topic.deleted_at = None
-    if restore_words:
+
+    if restore_words and topic_deleted_at is not None:
         for word in topic.words:
-            # Only restore words deleted at the same time as the topic
-            # (i.e. deleted as part of this topic deletion, not independently).
+            # Restore any word deleted as part of the same topic-delete operation,
+            # including shared words when delete_words=True was used.
             if (
-                len(word.topics) == 1
-                and word.deleted_at is not None
-                and topic_deleted_at is not None
+                word.deleted_at is not None
                 and abs((word.deleted_at - topic_deleted_at).total_seconds()) < 5
             ):
                 word.deleted_at = None
+
     db.add(topic)
     db.commit()
     db.refresh(topic)

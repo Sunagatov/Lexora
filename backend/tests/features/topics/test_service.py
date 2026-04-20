@@ -127,3 +127,16 @@ def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> No
 
     assert result is expected
     slug_check.assert_not_called()
+
+
+def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> None:
+    db = MagicMock()
+    topic = SimpleNamespace(id=5, slug="old-slug")
+    payload = TopicUpdate(slug="!!!")
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "")
+
+    with pytest.raises(topic_service.InvalidTopicNameError) as exc_info:
+        topic_service.update_topic(db, topic, payload)
+
+    assert exc_info.value.name == "!!!"

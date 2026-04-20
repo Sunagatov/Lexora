@@ -63,7 +63,7 @@ def test_soft_delete_topic_can_delete_all_words(monkeypatch, make_topic) -> None
     all_words.assert_called_once()
 
 
-def test_restore_topic_restores_only_words_deleted_with_that_topic(
+def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
     make_topic,
     make_word,
     fixed_now,
@@ -77,10 +77,11 @@ def test_restore_topic_restores_only_words_deleted_with_that_topic(
     keep_time_mismatch = make_word(id=2, deleted_at=fixed_now + timedelta(seconds=10))
     keep_time_mismatch.topics = [topic]
 
-    keep_shared = make_word(id=3, deleted_at=fixed_now + timedelta(seconds=2))
-    keep_shared.topics = [topic, make_topic(id=99, slug="shared")]
+    # Shared word deleted at the same time — should now be restored too (delete_words=True path)
+    also_restore_shared = make_word(id=3, deleted_at=fixed_now + timedelta(seconds=2))
+    also_restore_shared.topics = [topic, make_topic(id=99, slug="shared")]
 
-    topic.words = [restore_me, keep_time_mismatch, keep_shared]
+    topic.words = [restore_me, keep_time_mismatch, also_restore_shared]
 
     result = topic_repository.restore_topic(db, topic, restore_words=True)
 
@@ -88,7 +89,7 @@ def test_restore_topic_restores_only_words_deleted_with_that_topic(
     assert topic.deleted_at is None
     assert restore_me.deleted_at is None
     assert keep_time_mismatch.deleted_at is not None
-    assert keep_shared.deleted_at is not None
+    assert also_restore_shared.deleted_at is None
     db.add.assert_called_once_with(topic)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(topic)

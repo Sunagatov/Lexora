@@ -16,6 +16,6 @@ FastAPI backend for Lexora.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-cp ../.env.example .env
+cp .env.example .env
 alembic upgrade head
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000

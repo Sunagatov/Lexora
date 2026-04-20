@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -53,9 +54,39 @@ def test_complete_queue_item_raises_when_queue_is_missing_or_inactive() -> None:
         smart_review_service.complete_queue_item(db, 10)
 
 
+def test_complete_queue_item_raises_when_queue_is_expired() -> None:
+    from datetime import timedelta
+
+    item = SimpleNamespace(queue_id=5, is_completed=False, completed_at=None)
+    past = datetime(2020, 1, 1, tzinfo=timezone.utc)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=0,
+        expires_at=past,
+    )
+
+    db = MagicMock()
+
+    def fake_get(model, object_id):
+        if model is smart_review_service.StudyQueueItem:
+            return item
+        if model is smart_review_service.StudyQueue:
+            return queue
+        return None
+
+    db.get.side_effect = fake_get
+
+    with pytest.raises(smart_review_service.QueueNotActiveError):
+        smart_review_service.complete_queue_item(db, 10)
+
+
 def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
     item = SimpleNamespace(queue_id=5, is_completed=False, completed_at=None)
-    queue = SimpleNamespace(is_active=True, completed_count=1)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=1,
+        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
 
     db = MagicMock()
 
@@ -79,7 +110,11 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
 
 def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
     item = SimpleNamespace(queue_id=5, is_completed=True, completed_at="already")
-    queue = SimpleNamespace(is_active=True, completed_count=3)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=3,
+        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
 
     db = MagicMock()
 

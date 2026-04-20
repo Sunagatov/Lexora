@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from app.shared.config import settings
 from app.shared.deps import get_db
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.smart_review.schemas import StudyQueueResponse
@@ -36,6 +37,11 @@ def get_active_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
 @router.post("/refresh", response_model=StudyQueueResponse)
 def refresh_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
     """Discard the current queue and generate a fresh one."""
+    if not settings.smart_review_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Smart Review is disabled",
+        )
     queue = generate_queue(db)
     loaded = _load_queue(db, queue.id)
     return StudyQueueResponse.from_queue(loaded)

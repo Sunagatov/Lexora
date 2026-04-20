@@ -66,8 +66,10 @@ def create_topic(db: Session, payload: TopicCreate) -> Topic:
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
-    if payload.slug and payload.slug != topic.slug:
-        normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN) or payload.slug
+    if payload.slug is not None and payload.slug != topic.slug:
+        normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN)
+        if not normalized_slug:
+            raise InvalidTopicNameError(payload.slug)
         payload.slug = normalized_slug
         assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
     return persist_topic_update(db, topic, payload)

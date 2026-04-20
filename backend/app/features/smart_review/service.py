@@ -88,14 +88,18 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
     item = db.get(StudyQueueItem, item_id)
     if item is None:
         raise QueueItemNotFoundError
+
     queue = db.get(StudyQueue, item.queue_id)
-    if queue is None or not queue.is_active:
+    now = datetime.now(timezone.utc)
+    if queue is None or not queue.is_active or queue.expires_at <= now:
         raise QueueNotActiveError
+
     if not item.is_completed:
         item.is_completed = True
-        item.completed_at = datetime.now(timezone.utc)
+        item.completed_at = now
         queue.completed_count += 1
         db.commit()
+
     return queue
 
 
