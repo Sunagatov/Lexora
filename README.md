@@ -20,3 +20,21 @@ Lexora is a personal learning project for studying English vocabulary in a clean
 ```bash
 git clone https://github.com/Sunagatov/Lexora.git
 cd Lexora
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+# Edit .env to set APP_PASSWORD, SECRET_KEY, API_KEY, and any other values you need.
+```
+
+### 3. Start with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+The app will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000

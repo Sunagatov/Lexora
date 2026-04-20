@@ -83,6 +83,17 @@ class QueueNotActiveError(Exception):
     pass
 
 
+def _queue_needs_regeneration(queue: StudyQueue) -> bool:
+    if len(queue.items) != queue.total_count:
+        return True
+    return any(
+        item.word is None
+        or item.word.deleted_at is not None
+        or not item.word.is_active
+        for item in queue.items
+    )
+
+
 def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
     """Mark a queue item complete and return the updated queue. Raises domain errors if not found/inactive."""
     item = db.get(StudyQueueItem, item_id)
@@ -92,6 +103,10 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
     queue = db.get(StudyQueue, item.queue_id)
     now = datetime.now(timezone.utc)
     if queue is None or not queue.is_active or queue.expires_at <= now:
+        raise QueueNotActiveError
+
+    word = db.get(Word, item.word_id)
+    if word is None or word.deleted_at is not None or not word.is_active:
         raise QueueNotActiveError
 
     if not item.is_completed:
@@ -154,14 +169,16 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     if not settings.smart_review_enabled:
         return None
     now = datetime.now(timezone.utc)
-    # Return existing active queue if not expired
     queue = db.scalar(
         select(StudyQueue)
         .where(StudyQueue.is_active.is_(True))
         .where(StudyQueue.expires_at > now)
+        .options(selectinload(StudyQueue.items).selectinload(StudyQueueItem.word))
+        .order_by(StudyQueue.generated_at.desc())
     )
     if queue is not None:
-        # Only regenerate if fully completed
+        if _queue_needs_regeneration(queue):
+            return generate_queue(db)
         if queue.completed_count >= queue.total_count and queue.total_count > 0:
             return generate_queue(db)
         return queue

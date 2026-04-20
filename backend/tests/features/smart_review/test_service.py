@@ -81,12 +81,13 @@ def test_complete_queue_item_raises_when_queue_is_expired() -> None:
 
 
 def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
-    item = SimpleNamespace(queue_id=5, is_completed=False, completed_at=None)
+    item = SimpleNamespace(queue_id=5, word_id=10, is_completed=False, completed_at=None)
     queue = SimpleNamespace(
         is_active=True,
         completed_count=1,
         expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
     )
+    word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
 
     db = MagicMock()
 
@@ -95,6 +96,8 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
             return item
         if model is smart_review_service.StudyQueue:
             return queue
+        if model is smart_review_service.Word:
+            return word
         return None
 
     db.get.side_effect = fake_get
@@ -109,12 +112,13 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
 
 
 def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
-    item = SimpleNamespace(queue_id=5, is_completed=True, completed_at="already")
+    item = SimpleNamespace(queue_id=5, word_id=10, is_completed=True, completed_at="already")
     queue = SimpleNamespace(
         is_active=True,
         completed_count=3,
         expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
     )
+    word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
 
     db = MagicMock()
 
@@ -123,6 +127,8 @@ def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
             return item
         if model is smart_review_service.StudyQueue:
             return queue
+        if model is smart_review_service.Word:
+            return word
         return None
 
     db.get.side_effect = fake_get
@@ -142,7 +148,17 @@ def test_get_or_create_active_queue_returns_none_when_feature_disabled(monkeypat
 
 
 def test_get_or_create_active_queue_returns_existing_incomplete_queue(monkeypatch) -> None:
-    queue = SimpleNamespace(is_active=True, completed_count=1, total_count=3)
+    active_word = SimpleNamespace(deleted_at=None, is_active=True)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=1,
+        total_count=3,
+        items=[
+            SimpleNamespace(word=active_word),
+            SimpleNamespace(word=active_word),
+            SimpleNamespace(word=active_word),
+        ],
+    )
     db = MagicMock()
     db.scalar.return_value = queue
 
@@ -157,7 +173,13 @@ def test_get_or_create_active_queue_returns_existing_incomplete_queue(monkeypatc
 
 
 def test_get_or_create_active_queue_regenerates_when_existing_queue_is_complete(monkeypatch) -> None:
-    queue = SimpleNamespace(is_active=True, completed_count=3, total_count=3)
+    active_word = SimpleNamespace(deleted_at=None, is_active=True)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=3,
+        total_count=3,
+        items=[SimpleNamespace(word=active_word), SimpleNamespace(word=active_word), SimpleNamespace(word=active_word)],
+    )
     regenerated = SimpleNamespace(id=99)
 
     db = MagicMock()
@@ -213,3 +235,69 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     assert len(items) == 2
     assert [item.word_id for item in items] == [1, 2]
     assert [item.position for item in items] == [0, 1]
+
+
+def test_complete_queue_item_raises_when_linked_word_is_deleted() -> None:
+    item = SimpleNamespace(queue_id=5, word_id=10, is_completed=False, completed_at=None)
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=0,
+        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
+    deleted_word = SimpleNamespace(id=10, deleted_at=datetime(2026, 1, 1, tzinfo=timezone.utc), is_active=True)
+
+    db = MagicMock()
+
+    def fake_get(model, object_id):
+        if model is smart_review_service.StudyQueueItem:
+            return item
+        if model is smart_review_service.StudyQueue:
+            return queue
+        if model is smart_review_service.Word:
+            return deleted_word
+        return None
+
+    db.get.side_effect = fake_get
+
+    with pytest.raises(smart_review_service.QueueNotActiveError):
+        smart_review_service.complete_queue_item(db, 10)
+
+
+def test_get_or_create_active_queue_regenerates_when_existing_queue_contains_deleted_word(monkeypatch) -> None:
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=0,
+        total_count=1,
+        items=[SimpleNamespace(word=SimpleNamespace(deleted_at=datetime(2026, 1, 1, tzinfo=timezone.utc), is_active=True))],
+    )
+    regenerated = SimpleNamespace(id=99)
+
+    db = MagicMock()
+    db.scalar.return_value = queue
+
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
+    monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+
+    result = smart_review_service.get_or_create_active_queue(db)
+
+    assert result is regenerated
+
+
+def test_get_or_create_active_queue_regenerates_when_item_count_drifted(monkeypatch) -> None:
+    queue = SimpleNamespace(
+        is_active=True,
+        completed_count=0,
+        total_count=2,
+        items=[SimpleNamespace(word=SimpleNamespace(deleted_at=None, is_active=True))],
+    )
+    regenerated = SimpleNamespace(id=100)
+
+    db = MagicMock()
+    db.scalar.return_value = queue
+
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
+    monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+
+    result = smart_review_service.get_or_create_active_queue(db)
+
+    assert result is regenerated

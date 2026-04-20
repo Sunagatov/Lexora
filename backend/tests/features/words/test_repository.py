@@ -123,6 +123,39 @@ def test_update_word_does_not_record_level_change_when_level_is_unchanged(monkey
     db.refresh.assert_called_once_with(word)
 
 
+def test_update_word_allows_clearing_knowledge_level_without_progress_event(monkeypatch) -> None:
+    db = MagicMock()
+    word = SimpleNamespace(
+        id=12,
+        term="read",
+        translations="читать",
+        part_of_speech=None,
+        knowledge_level=3,
+        countability=None,
+        pattern=None,
+        example=None,
+        notes=None,
+        is_active=True,
+        topics=[SimpleNamespace(id=1)],
+    )
+
+    record_change = MagicMock()
+    monkeypatch.setattr(word_repository, "record_level_change", record_change)
+    monkeypatch.setattr(word_repository, "existing_normalized_terms", lambda *args, **kwargs: set())
+    monkeypatch.setattr(word_repository, "assert_no_duplicate_word", MagicMock())
+
+    payload = WordUpdate(knowledge_level=None)
+
+    result = word_repository.update_word(db, word, payload)
+
+    assert result is word
+    assert word.knowledge_level is None
+    record_change.assert_not_called()
+    db.add.assert_called_once_with(word)
+    db.commit.assert_called_once()
+    db.refresh.assert_called_once_with(word)
+
+
 def test_soft_delete_word_marks_deleted_and_persists(make_word) -> None:
     db = MagicMock()
     word = make_word(deleted_at=None)

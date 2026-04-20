@@ -76,7 +76,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate) -> Word:
         setattr(word, field, value)
     if payload.topic_ids is not None:
         word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
-    if "knowledge_level" in data and data["knowledge_level"] != old_level:
+    if "knowledge_level" in data and data["knowledge_level"] != old_level and data["knowledge_level"] is not None:
         source = payload.progress_source or "manual"
         record_level_change(db, word.id, old_level, data["knowledge_level"], source)
     db.add(word)

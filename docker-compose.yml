@@ -3,7 +3,7 @@ services:
     image: postgres:16
     container_name: lexora-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-lexora_db}
+      POSTGRES_DB: ${POSTGRES_DB:-english_learning}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-lexora_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-english_learning}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,9 +20,35 @@ services:
     build:
       context: ./backend
     container_name: lexora-backend
-    env_file: .env
     environment:
+      POSTGRES_DB: ${POSTGRES_DB:-english_learning}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      APP_HOST: ${APP_HOST:-0.0.0.0}
+      APP_PORT: ${APP_PORT:-8000}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_PASSWORD: ${APP_PASSWORD:-change-me}
+      SECRET_KEY: ${SECRET_KEY:-change-me}
+      API_KEY: ${API_KEY:-change-me}
+      COOKIE_MAX_AGE: ${COOKIE_MAX_AGE:-2592000}
+      COOKIE_HTTPONLY: ${COOKIE_HTTPONLY:-true}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      COOKIE_SAMESITE: ${COOKIE_SAMESITE:-lax}
+      SMART_REVIEW_ENABLED: ${SMART_REVIEW_ENABLED:-true}
+      SMART_REVIEW_LEVEL_1_COUNT: ${SMART_REVIEW_LEVEL_1_COUNT:-5}
+      SMART_REVIEW_LEVEL_2_COUNT: ${SMART_REVIEW_LEVEL_2_COUNT:-5}
+      SMART_REVIEW_LEVEL_3_COUNT: ${SMART_REVIEW_LEVEL_3_COUNT:-5}
+      SMART_REVIEW_LEVEL_4_COUNT: ${SMART_REVIEW_LEVEL_4_COUNT:-5}
+      SMART_REVIEW_LEVEL_5_COUNT: ${SMART_REVIEW_LEVEL_5_COUNT:-0}
+      SMART_REVIEW_COOLDOWN_DAYS: ${SMART_REVIEW_COOLDOWN_DAYS:-1}
+      SMART_REVIEW_MAX_PER_TOPIC: ${SMART_REVIEW_MAX_PER_TOPIC:-5}
+      SMART_REVIEW_QUEUE_TTL_HOURS: ${SMART_REVIEW_QUEUE_TTL_HOURS:-72}
+      TRASH_RETENTION_DAYS: ${TRASH_RETENTION_DAYS:-30}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://models.inference.ai.azure.com}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
     ports:
       - "8000:8000"
     depends_on:
@@ -33,9 +59,9 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-        VITE_PAGE_SIZES: ${VITE_PAGE_SIZES}
-        VITE_DEFAULT_PAGE_SIZE: ${VITE_DEFAULT_PAGE_SIZE}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+        VITE_PAGE_SIZES: ${VITE_PAGE_SIZES:-10,20,50,100}
+        VITE_DEFAULT_PAGE_SIZE: ${VITE_DEFAULT_PAGE_SIZE:-20}
     container_name: lexora-frontend
     ports:
       - "5173:80"
