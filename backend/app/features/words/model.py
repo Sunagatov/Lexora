@@ -86,6 +86,11 @@ class Word(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_via_topic_id: Mapped[int | None] = mapped_column(
+        ForeignKey("topics.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
 
     topics = relationship("Topic", secondary=word_topics, back_populates="words")
     translation_items: Mapped[list[WordTranslation]] = relationship(

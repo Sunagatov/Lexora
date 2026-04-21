@@ -29,3 +29,25 @@ def assert_no_duplicate_word(term: str, existing: set[str]) -> None:
     """Raise DuplicateWordInTopicError if the normalized term is already in the existing set."""
     if normalize_term(term) in existing:
         raise DuplicateWordInTopicError(term)
+
+
+def assert_word_restore_allowed(
+    db: Session,
+    word: Word,
+    restoring_topic_ids: set[int] | None = None,
+) -> None:
+    topic_ids = {topic.id for topic in word.topics if topic.deleted_at is None}
+    if restoring_topic_ids:
+        topic_ids |= restoring_topic_ids
+
+    if not topic_ids:
+        return
+
+    assert_no_duplicate_word(
+        word.term,
+        existing_normalized_terms(
+            db,
+            sorted(topic_ids),
+            exclude_word_id=word.id,
+        ),
+    )

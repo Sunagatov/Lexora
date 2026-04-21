@@ -15,6 +15,7 @@ def soft_delete_exclusive_words(topic: Topic, now: datetime | None = None) -> No
     for word in topic.words:
         if word.deleted_at is None and len(word.topics) == 1:
             word.deleted_at = ts
+            word.deleted_via_topic_id = topic.id
 
 
 def soft_delete_all_words(topic: Topic, now: datetime | None = None) -> None:
@@ -26,3 +27,4 @@ def soft_delete_all_words(topic: Topic, now: datetime | None = None) -> None:
     for word in topic.words:
         if word.deleted_at is None:
             word.deleted_at = ts
+            word.deleted_via_topic_id = topic.id

@@ -231,6 +231,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
 
 def soft_delete_word(db: Session, word: Word) -> Word:
     word.deleted_at = datetime.now(timezone.utc)
+    word.deleted_via_topic_id = None
     db.add(word)
     db.commit()
     db.refresh(word)
@@ -239,6 +240,7 @@ def soft_delete_word(db: Session, word: Word) -> Word:
 
 def restore_word(db: Session, word: Word) -> Word:
     word.deleted_at = None
+    word.deleted_via_topic_id = None
     db.add(word)
     db.commit()
     db.refresh(word)
