@@ -18,9 +18,11 @@ Rules:
 - Do not include any other fields.
 - No Russian in the examples.
 - Keep examples concise, natural, practical, and vocabulary-app friendly.
+- Do not rewrite words that already have 3 strong examples unless the existing examples are weak or repetitive.
 - Vary sentence structure so the three examples do not feel repetitive.
 - If a word has multiple senses, use the sense that best fits the topic and stay consistent.
 - Keep the examples B1-C1 and suitable for everyday learning use.
+- Prefer model-written examples over deterministic template fillers.
 
 Return JSON in this exact shape:
 {
