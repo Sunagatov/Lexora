@@ -172,6 +172,9 @@ Practical rule:
 - use dry-run before live import
 - reuse an existing active topic if one already matches a candidate bucket closely
 - do not create duplicate or near-duplicate topic names
+- prefer fewer, broader subtopics instead of many adjacent sibling topics
+- if two candidate buckets are too similar, merge them into one clearer bucket
+- when in doubt, optimize for clean boundaries over maximum topic count
 
 Suggested split buckets for broad conflict / boundaries topics:
 

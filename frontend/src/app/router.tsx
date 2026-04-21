@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     errorElement: <NotFoundPage />,
     children: [
-      {index: true,                element: <Navigate to={routes.stats} replace />},
+      {index: true,                element: <Navigate to={routes.smartReview} replace />},
       {path: 'trash',              element: <TrashPage />},
       {path: 'stats',              element: <StatsPage />},
       {path: 'words/:wordId',      element: <WordPage />},

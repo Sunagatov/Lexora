@@ -25,7 +25,7 @@ class TopicAuditResponse(BaseModel):
 
 class TopicSplitPlanRequest(BaseModel):
     max_new_topics: int = Field(default=5, ge=1, le=10)
-    min_words_per_topic: int = Field(default=8, ge=1, le=50)
+    min_words_per_topic: int = Field(default=15, ge=3, le=50)
     include_existing_co_topics: bool = True
 
     model_config = ConfigDict(extra="forbid")

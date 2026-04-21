@@ -8,6 +8,9 @@ Goal:
 - Keep the source topic in place.
 - Reuse an existing active topic if it already matches a subtopic closely enough.
 - Do not create duplicate or near-duplicate topics.
+- Prefer fewer, broader subtopics over many narrow sibling topics.
+- If two candidate names feel like near-synonyms or tiny scope variants, merge them into one clearer bucket.
+- Avoid creating two topics that would look confusing side by side on the topics page.
 - Return a dry-run plan, not a live write.
 
 Rules:
@@ -16,6 +19,7 @@ Rules:
 - Do not include duplicate terms in the same subtopic.
 - Do not create two subtopics that are very similar in meaning or wording.
 - Prefer real-life groupings over abstract labels.
+- Prefer distinct topic families rather than small variations of the same family.
 - Prefer these broad buckets when they fit the actual words:
   - Safety, Abuse, and Control
   - Boundaries, Privacy, and Consent

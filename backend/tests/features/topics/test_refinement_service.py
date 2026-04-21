@@ -115,3 +115,17 @@ def test_build_topic_split_plan_reuses_existing_topics_and_keeps_names_unique(
         for index, left in enumerate(result.proposed_subtopics)
         for right in result.proposed_subtopics[index + 1 :]
     )
+
+
+def test_merge_target_key_collapses_near_duplicate_new_topics() -> None:
+    accepted_targets = {
+        "new:cleaning-and-laundry": (None, "Cleaning and Laundry"),
+    }
+
+    merge_key = topic_refinement_service._merge_target_key(
+        topic_id=None,
+        topic_name="Laundry and Fabric Care",
+        accepted_targets=accepted_targets,
+    )
+
+    assert merge_key == "new:cleaning-and-laundry"

@@ -31,8 +31,8 @@ GENERIC_NAME_TOKENS = {
 }
 
 TOPIC_SPLIT_MIN_WORDS = 300
-TOPIC_NAME_SIMILARITY_REUSE_THRESHOLD = 0.6
-TOPIC_NAME_SIMILARITY_MERGE_THRESHOLD = 0.8
+TOPIC_NAME_SIMILARITY_REUSE_THRESHOLD = 0.5
+TOPIC_NAME_SIMILARITY_MERGE_THRESHOLD = 0.5
 NAME_STOPWORDS = {"and", "for", "of", "the", "to", "with"}
 
 
@@ -52,97 +52,76 @@ class WordLike(Protocol):
 
 CLUSTERS: tuple[ClusterDefinition, ...] = (
     ClusterDefinition(
-        key="cleaning",
-        name="Cleaning Tools and Supplies",
-        description="Words for cleaning tools, products, and everyday cleaning tasks.",
+        key="cleaning_laundry",
+        name="Cleaning and Laundry",
+        description="Words for household cleaning, washing clothes, and fabric care.",
         keywords=frozenset(
             {
                 "clean", "cleaning", "wash", "washing", "mop", "broom", "brush", "sponge",
                 "cloth", "detergent", "soap", "bleach", "vacuum", "dust", "duster", "bucket",
-                "scrub", "polish", "disinfect", "stain",
+                "scrub", "polish", "disinfect", "stain", "laundry", "dryer", "drying", "iron",
+                "ironing", "softener", "peg", "line", "clothesline", "basket",
             }
         ),
         priority=10,
     ),
     ClusterDefinition(
-        key="diy_tools",
-        name="DIY Hand Tools",
-        description="Words for basic tools used in repairs, fixing, and assembly.",
+        key="diy_repairs_tools",
+        name="DIY Repairs and Tools",
+        description="Words for basic tools and simple repair work around the home.",
         keywords=frozenset(
             {
                 "tool", "tools", "hammer", "drill", "screwdriver", "wrench", "spanner", "pliers",
                 "saw", "nail", "screw", "clamp", "chisel", "ladder", "bit", "bits", "measure",
-                "tape", "toolbox",
+                "tape", "toolbox", "repair", "fix", "fixing", "assemble", "assembly",
             }
         ),
         priority=9,
     ),
     ClusterDefinition(
-        key="appliances",
-        name="Kitchen Appliances",
-        description="Words for common household and kitchen appliances.",
+        key="appliances_home_systems",
+        name="Appliances and Home Systems",
+        description="Words for kitchen appliances and common household systems.",
         keywords=frozenset(
             {
                 "appliance", "appliances", "oven", "microwave", "kettle", "toaster", "blender",
                 "mixer", "fridge", "freezer", "dishwasher", "cooker", "hob", "stove", "grill",
-                "washing", "machine", "food", "processor",
+                "washing", "machine", "food", "processor", "plug", "socket", "switch", "wire",
+                "wiring", "cable", "bulb", "lamp", "light", "lights", "fuse", "charger",
+                "circuit", "breaker", "battery", "electric", "electricity", "extension",
+                "radiator", "boiler", "tap", "sink", "pipe", "leak", "drain", "hose", "valve",
+                "pump", "toilet", "shower", "bath", "heater", "heating", "thermostat",
             }
         ),
         priority=8,
     ),
     ClusterDefinition(
-        key="electrical",
-        name="Electrical Fixtures and Wiring",
-        description="Words for plugs, sockets, switches, wiring, and light fittings.",
-        keywords=frozenset(
-            {
-                "plug", "socket", "switch", "switches", "wire", "wiring", "cable", "bulb", "lamp",
-                "light", "lights", "fuse", "charger", "circuit", "breaker", "battery", "electric",
-                "electricity", "extension",
-            }
-        ),
-        priority=7,
-    ),
-    ClusterDefinition(
-        key="plumbing",
-        name="Plumbing and Heating",
-        description="Words for taps, pipes, leaks, heating systems, and bathroom fittings.",
-        keywords=frozenset(
-            {
-                "tap", "taps", "faucet", "sink", "pipe", "pipes", "leak", "drain", "boiler",
-                "radiator", "hose", "valve", "pump", "toilet", "shower", "bath", "heater",
-                "heating", "thermostat", "plumbing",
-            }
-        ),
-        priority=6,
-    ),
-    ClusterDefinition(
-        key="decorating",
+        key="decorating_surface",
         name="Decorating and Surface Repair",
-        description="Words for painting, wallpapering, patching, and surface finishing.",
+        description="Words for painting, patching, wallpapering, and surface finishing.",
         keywords=frozenset(
             {
                 "paint", "painting", "brush", "roller", "wallpaper", "wall", "plaster", "filler",
                 "sealant", "caulk", "sandpaper", "varnish", "trim", "patch", "decorating",
             }
         ),
-        priority=5,
+        priority=7,
     ),
     ClusterDefinition(
-        key="laundry",
-        name="Laundry and Fabric Care",
-        description="Words for washing clothes, ironing, and fabric care.",
+        key="storage_organisation",
+        name="Storage and Organisation",
+        description="Words for storing, sorting, and organising things at home.",
         keywords=frozenset(
             {
-                "laundry", "wash", "washing", "dryer", "drying", "iron", "ironing", "stain",
-                "fabric", "clothes", "clothing", "basket", "detergent", "softener", "peg",
-                "line", "clothesline",
+                "storage", "organise", "organize", "organising", "organizing", "shelf", "shelves",
+                "box", "boxes", "bin", "bins", "drawer", "cupboard", "cabinet", "container",
+                "basket", "rack", "hook", "hooks", "drawer", "wardrobe", "closet",
             }
         ),
-        priority=4,
+        priority=6,
     ),
     ClusterDefinition(
-        key="garden",
+        key="garden_outdoor",
         name="Garden and Outdoor Care",
         description="Words for garden work, outdoor maintenance, and yard tools.",
         keywords=frozenset(
@@ -151,20 +130,7 @@ CLUSTERS: tuple[ClusterDefinition, ...] = (
                 "compost", "weed", "weeds", "patio", "fence", "yard", "plant", "plants",
             }
         ),
-        priority=3,
-    ),
-    ClusterDefinition(
-        key="storage",
-        name="Storage and Organisation",
-        description="Words for containers, shelves, drawers, and keeping things organised.",
-        keywords=frozenset(
-            {
-                "storage", "organise", "organize", "organising", "organizing", "shelf", "shelves",
-                "box", "boxes", "bin", "bins", "drawer", "cupboard", "cabinet", "container",
-                "basket", "rack", "hook", "hooks",
-            }
-        ),
-        priority=2,
+        priority=5,
     ),
 )
 
@@ -467,6 +433,8 @@ Rules:
 - Propose between 2 and {max_new_topics} subtopics.
 - Only split topics with more than 300 active words.
 - Keep names short, practical, and specific.
+- Prefer fewer, broader buckets over many narrow siblings.
+- If two buckets would read as near-synonyms, merge them.
 - Do not invent words.
 - Reuse an existing active topic if it already matches a subtopic closely.
 - Do not create duplicate or near-duplicate topic names.
