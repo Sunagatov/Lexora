@@ -24,6 +24,10 @@ export type Word = {
   pattern: string | null
   example: string | null
   example_entries?: string[]
+  example_count?: number
+  example_target_count?: number
+  example_status?: 'missing' | 'partial' | 'complete'
+  needs_example_enrichment?: boolean
   notes: string | null
   is_active: boolean
   created_at: string

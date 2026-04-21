@@ -8,7 +8,7 @@ How to enrich topic words (add examples, create new words) using ChatGPT and the
 |---|---|---|
 | List all topics | GET | `/api/ai-curation/topics` |
 | Export topic words (full) | GET | `/api/ai-curation/topics/{topic_id}/export?page=1&page_size=100` |
-| Export for ChatGPT (lean) | GET | `/api/ai-curation/topics/{topic_id}/export?lean=true&page=1&page_size=100` |
+| Export for ChatGPT (lean) | GET | `/api/ai-curation/topics/{topic_id}/export?lean=true&needs_examples_only=true&page=1&page_size=100` |
 | Dry run / live import | POST | `/api/ai-curation/import` |
 
 Auth: session cookie + `X-CSRF-Token` header (same as all protected routes).
@@ -19,7 +19,7 @@ Auth: session cookie + `X-CSRF-Token` header (same as all protected routes).
 
 Call the **lean** export endpoint **against prod** for the target topic. Save the response as `{topic}-page{N}-export.json`.
 
-The lean export (`?lean=true`) returns only `id`, `term`, and existing `example_entries` per word — no translations, no topic metadata, no allowed values. This is all ChatGPT needs for examples enrichment, and less input means faster responses and fewer hallucinations.
+The lean export (`?lean=true`) returns only `id`, `term`, `example_entries`, and a small example-completeness hint per word — no translations, no topic metadata, no allowed values. Use `needs_examples_only=true` when you want only words that still need enrichment. This is all ChatGPT needs for examples enrichment, and less input means faster responses and fewer hallucinations.
 
 > **Critical:** always export from prod, never from a local database. Word IDs differ between environments — using a local export will cause the import to fail or corrupt wrong words on prod.
 

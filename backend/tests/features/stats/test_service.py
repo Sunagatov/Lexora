@@ -37,8 +37,10 @@ def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> No
 
     assert overview.total_words == 5
     assert overview.with_example == 2
+    assert overview.with_examples_3plus == 0
     assert overview.with_pos == 2
     assert overview.missing_example == 3
+    assert overview.needs_example_enrichment == 5
     assert overview.missing_pos == 3
     assert overview.needs_enrichment == 4
 
@@ -78,6 +80,7 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
     assert work.weak_count == 1
     assert work.strong_count == 0
     assert work.missing_example == 1
+    assert work.needs_example_enrichment == 1
     assert work.missing_pos == 1
 
     travel = result[1]
@@ -86,6 +89,7 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
     assert travel.weak_count == 1
     assert travel.strong_count == 1
     assert travel.missing_example == 1
+    assert travel.needs_example_enrichment == 2
     assert travel.missing_pos == 0
 
 

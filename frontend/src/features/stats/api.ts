@@ -18,6 +18,7 @@ export type TopicStat = {
   weak_count: number
   strong_count: number
   missing_example: number
+  needs_example_enrichment: number
   missing_pos: number
 }
 
@@ -33,8 +34,10 @@ export type VocabularyOverview = {
   total_words: number
   total_topics: number
   with_example: number
+  with_examples_3plus: number
   with_pos: number
   missing_example: number
+  needs_example_enrichment: number
   missing_pos: number
   needs_enrichment: number
 }

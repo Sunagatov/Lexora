@@ -128,7 +128,7 @@ def _needs_examples_filter():
         .group_by(WordExample.word_id)
         .having(func.count(WordExample.id) >= EXAMPLE_TARGET_COUNT)
     )
-    return ~Word.id.in_(complete_word_ids)
+    return Word.id.not_in(complete_word_ids)
 
 
 def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsResponse:

@@ -14,8 +14,10 @@ def test_get_stats_returns_result_from_compute_stats(monkeypatch) -> None:
             total_words=10,
             total_topics=3,
             with_example=7,
+            with_examples_3plus=5,
             with_pos=8,
             missing_example=3,
+            needs_example_enrichment=5,
             missing_pos=2,
             needs_enrichment=4,
         ),
@@ -38,6 +40,7 @@ def test_get_stats_returns_result_from_compute_stats(monkeypatch) -> None:
                 weak_count=3,
                 strong_count=1,
                 missing_example=2,
+                needs_example_enrichment=3,
                 missing_pos=1,
             )
         ],

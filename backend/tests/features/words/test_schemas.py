@@ -39,6 +39,10 @@ def test_word_response_from_word_filters_deleted_topics(make_topic, make_word, f
     assert response.part_of_speech == "noun"
     assert response.knowledge_level == 3
     assert response.example == "The plane is late."
+    assert response.example_count == 1
+    assert response.example_target_count == 3
+    assert response.example_status == "partial"
+    assert response.needs_example_enrichment is True
     assert response.notes == "common travel word"
     assert response.topic_ids == [1]
     assert response.created_at == fixed_now

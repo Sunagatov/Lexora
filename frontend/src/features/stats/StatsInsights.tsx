@@ -12,8 +12,8 @@ export function InsightsStrip({s}: {s: StatsResponse}) {
     insights.push({icon: '⚠️', text: <><strong>{weakest.name}</strong> needs most attention — {weakest.progress}% progress</>})
   if (mostWeak && mostWeak.weak_count > 0)
     insights.push({icon: '📚', text: <><strong>{mostWeak.weak_count}</strong> weak words in <strong>{mostWeak.name}</strong></>})
-  if (s.overview.missing_example > 0)
-    insights.push({icon: '✏️', text: <><strong>{s.overview.missing_example.toLocaleString()}</strong> words missing examples</>})
+  if (s.overview.needs_example_enrichment > 0)
+    insights.push({icon: '✏️', text: <><strong>{s.overview.needs_example_enrichment.toLocaleString()}</strong> words need 3+ examples</>})
   if (strongest && strongest.progress >= 80)
     insights.push({icon: '🏆', text: <>Best topic: <strong>{strongest.name}</strong> — {strongest.progress}%</>})
 

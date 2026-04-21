@@ -120,7 +120,7 @@ class AiCurationWordLean(BaseModel):
 
 
 class AiCurationTopicWordsLeanResponse(BaseModel):
-    """Minimal export for ChatGPT examples enrichment — id, term, existing examples only."""
+    """Minimal export for ChatGPT examples enrichment — id, term, existing examples, and completion hints."""
     schema_version: Literal["lexora.ai-curation.v2"] = SCHEMA_VERSION
     source_topic_id: int
     exported_at: datetime

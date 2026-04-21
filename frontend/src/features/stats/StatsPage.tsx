@@ -106,10 +106,10 @@ export function StatsPage() {
   const knowledgeSlices = LEVEL_KEYS
     .map((k) => ({value: k === 'unset' ? s.level_counts.unset : s.level_counts[k], color: LEVEL_COLORS[k], label: LEVEL_LABELS[k]}))
     .filter((sl) => sl.value > 0)
-  const enrichComplete = totalWords - ov.needs_enrichment
+  const enrichComplete = totalWords - ov.needs_example_enrichment
   const enrichSlices = [
     {value: enrichComplete, color: '#10b981', label: 'Complete'},
-    {value: ov.needs_enrichment, color: '#f97316', label: 'Needs enrichment'},
+    {value: ov.needs_example_enrichment, color: '#f97316', label: 'Needs 3+ examples'},
   ].filter((sl) => sl.value > 0)
 
   return (
@@ -243,7 +243,7 @@ export function StatsPage() {
                   <span>Topic</span>
                   <span className="stats-col-center stats-topic-count">Words</span>
                   <span className="stats-col-center stats-topic-weak">Weak</span>
-                  <span className="stats-col-center stats-topic-missing">No ex.</span>
+                  <span className="stats-col-center stats-topic-missing">Need 3+</span>
                   <span className="stats-col-right">Progress</span>
                 </div>
                 {(topicExpanded ? sortedTopics : sortedTopics.slice(0, 10)).map((row) => (
@@ -251,7 +251,7 @@ export function StatsPage() {
                     <span className="stats-topic-name">{row.name}</span>
                     <span className="stats-col-center stats-topic-count">{row.total}</span>
                     <span className={`stats-col-center stats-topic-weak ${row.weak_count > 0 ? 'has-weak' : ''}`}>{row.weak_count > 0 ? row.weak_count : '—'}</span>
-                    <span className={`stats-col-center stats-topic-missing ${row.missing_example > 0 ? 'has-missing' : ''}`}>{row.missing_example > 0 ? row.missing_example : '—'}</span>
+                    <span className={`stats-col-center stats-topic-missing ${row.needs_example_enrichment > 0 ? 'has-missing' : ''}`}>{row.needs_example_enrichment > 0 ? row.needs_example_enrichment : '—'}</span>
                     <div className="stats-topic-progress-wrap">
                       <span className="stats-topic-pct">{row.progress}%</span>
                       <div className="stats-topic-bar"><div className="stats-topic-bar-fill" style={{width: `${row.progress}%`}} /></div>
@@ -273,15 +273,16 @@ export function StatsPage() {
           <div className="stats-donut-row">
             <DonutChart slices={enrichSlices} centerLabel={`${Math.round((enrichComplete / Math.max(1, totalWords)) * 100)}%`} centerSub="complete" size={130} />
             <div className="stats-quality-detail">
-              <div className="stats-cards stats-cards-2">
-                <StatCard value={ov.missing_example} label="Missing example" />
+          <div className="stats-cards stats-cards-2">
+                <StatCard value={ov.with_examples_3plus} label="3+ examples" />
+                <StatCard value={ov.needs_example_enrichment} label="Need 3+ examples" />
                 <StatCard value={ov.missing_pos}     label="Missing POS" />
                 <StatCard value={s.level_counts.unset} label="No level set" />
-                <StatCard value={ov.needs_enrichment} label="Need enrichment" />
               </div>
               <div className="stats-quality-row">
                 {[
-                  {label: 'Example coverage', val: ov.with_example, color: '#10b981'},
+                  {label: 'Any example',       val: ov.with_example, color: '#10b981'},
+                  {label: '3+ examples',       val: ov.with_examples_3plus, color: '#f59e0b'},
                   {label: 'POS coverage',     val: ov.with_pos,     color: '#6366f1'},
                 ].map(({label, val, color}) => (
                   <div key={label} className="stats-quality-item">
