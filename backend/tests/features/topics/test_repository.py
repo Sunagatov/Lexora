@@ -1,22 +1,39 @@
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
+import pytest
+
 from app.features.topics import repository as topic_repository
+from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
+from app.features.topics.service import InvalidTopicParentError
 
 
-class TopicStub:
-    def __init__(self, *, id: int = 1, name: str, slug: str, description: str, is_active: bool) -> None:
-        self.id = id
-        self.name = name
-        self.slug = slug
-        self.description = description
-        self.is_active = is_active
-        self.deleted_at = None
+def _make_topic_mock(
+    *,
+    id: int = 1,
+    name: str,
+    slug: str,
+    description: str,
+    is_active: bool,
+    deleted_at=None,
+    parent_topic_id=None,
+):
+    topic = MagicMock(spec=Topic)
+    topic.id = id
+    topic.name = name
+    topic.slug = slug
+    topic.description = description
+    topic.is_active = is_active
+    topic.deleted_at = deleted_at
+    topic.parent_topic_id = parent_topic_id
+    topic.words = []
+    return topic
 
 
 def test_update_topic_applies_only_provided_fields_and_persists() -> None:
     db = MagicMock()
-    topic = TopicStub(
+    topic = _make_topic_mock(
         name="Old",
         slug="old",
         description="old-desc",
@@ -73,12 +90,15 @@ def test_soft_delete_topic_can_delete_all_words(monkeypatch, make_topic) -> None
 
 def test_soft_delete_topic_soft_deletes_word_when_only_other_topics_are_deleted(make_topic, make_word) -> None:
     db = MagicMock()
-    active_topic = TopicStub(id=1, name="Active", slug="active", description="", is_active=True)
-    active_topic.deleted_at = None
-    active_topic.words = []
-    deleted_topic = TopicStub(id=2, name="Deleted", slug="deleted", description="", is_active=True)
-    deleted_topic.deleted_at = object()
-    deleted_topic.words = []
+    active_topic = _make_topic_mock(id=1, name="Active", slug="active", description="", is_active=True)
+    deleted_topic = _make_topic_mock(
+        id=2,
+        name="Deleted",
+        slug="deleted",
+        description="",
+        is_active=True,
+        deleted_at=datetime.now(timezone.utc),
+    )
     word = make_word(id=5, deleted_at=None, deleted_via_topic_id=None, topics=[active_topic, deleted_topic])
     active_topic.words = [word]
 
@@ -94,7 +114,7 @@ def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
 ) -> None:
     db = MagicMock()
     db.scalars.return_value.all.return_value = []
-    topic = make_topic(id=1, deleted_at=object())
+    topic = _make_topic_mock(id=1, name="Topic", slug="topic", description="", is_active=True, deleted_at=datetime.now(timezone.utc))
 
     restore_me = make_word(id=1, deleted_at=object(), deleted_via_topic_id=1)
     restore_me.topics = [topic]
@@ -104,7 +124,7 @@ def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
 
     # Shared word deleted by this topic-delete operation — should be restored too.
     also_restore_shared = make_word(id=3, deleted_at=object(), deleted_via_topic_id=1)
-    also_restore_shared.topics = [topic, make_topic(id=99, slug="shared")]
+    also_restore_shared.topics = [topic, _make_topic_mock(id=99, name="Shared", slug="shared", description="", is_active=True)]
 
     topic.words = [restore_me, keep_other_provenance, also_restore_shared]
 
@@ -121,6 +141,17 @@ def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
     db.add.assert_called_once_with(topic)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(topic)
+
+
+def test_restore_topic_rejects_restoring_child_when_parent_is_deleted(make_topic) -> None:
+    db = MagicMock()
+    topic = _make_topic_mock(id=5, name="Child", slug="child", description="", is_active=True, deleted_at=datetime.now(timezone.utc), parent_topic_id=1)
+    db.scalar.return_value = None
+
+    with pytest.raises(InvalidTopicParentError) as exc_info:
+        topic_repository.restore_topic(db, topic, restore_words=False)
+
+    assert "Restore the parent first" in str(exc_info.value)
 
 
 def test_hard_delete_topic_soft_deletes_exclusive_words_then_deletes_topic(monkeypatch, make_topic) -> None:

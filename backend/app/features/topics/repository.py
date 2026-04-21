@@ -74,6 +74,19 @@ def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> 
 
 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
+    if topic.parent_topic_id is not None:
+        from app.features.topics.service import InvalidTopicParentError
+
+        parent = db.scalar(
+            select(Topic)
+            .where(Topic.id == topic.parent_topic_id)
+            .where(Topic.deleted_at.is_(None))
+        )
+        if parent is None:
+            raise InvalidTopicParentError(
+                "Cannot restore subtopic while its parent topic is deleted. Restore the parent first."
+            )
+
     topic.deleted_at = None
 
     if restore_words:

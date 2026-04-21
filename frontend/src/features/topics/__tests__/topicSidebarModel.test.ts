@@ -41,4 +41,30 @@ describe('buildSidebarGroups', () => {
     expect(result.themeTree.map((node) => node.topic.id)).toEqual([1, 4])
     expect(result.themeTree[0].children.map((node) => node.topic.id)).toEqual([2, 3])
   })
+
+  it('keeps pinned parent topics in the structural tree so children stay nested', () => {
+    const topics = [
+      makeTopic(1, 'Home Chores DIY Repairs Appliances'),
+      makeTopic(2, 'Cleaning and Laundry', 1),
+      makeTopic(3, 'DIY Hand Tools', 1),
+      makeTopic(4, 'Travel'),
+    ]
+
+    const result = buildSidebarGroups(
+      topics,
+      '',
+      [1],
+      'default',
+      'default',
+      false,
+      false,
+      [],
+      new Map(),
+      new Map(),
+    )
+
+    expect(result.pinnedTopics.map((topic) => topic.id)).toEqual([1])
+    expect(result.themeTree.map((node) => node.topic.id)).toEqual([1, 4])
+    expect(result.themeTree[0].children.map((node) => node.topic.id)).toEqual([2, 3])
+  })
 })

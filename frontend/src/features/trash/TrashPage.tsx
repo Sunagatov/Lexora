@@ -53,6 +53,10 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setRestoreTopicId(null)
     },
+    onError: (err: Error) => {
+      alert(err.message)
+      setRestoreTopicId(null)
+    },
   })
 
   const purgeMutation = useMutation({

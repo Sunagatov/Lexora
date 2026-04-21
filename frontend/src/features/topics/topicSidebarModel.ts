@@ -63,19 +63,17 @@ function matchesNeedle(topic: Topic, needle: string): boolean {
 function buildTopicTree(
   topics: Topic[],
   needle: string,
-  pinnedIds: number[],
   sortMode: SortMode,
   progress: Map<number, number>,
   counts: Map<number, number>,
 ): TopicTreeNode[] {
-  const pinned = new Set(pinnedIds)
-  const eligible = topics.filter((t) => !isPosGroup(t) && !pinned.has(t.id))
-  const eligibleById = new Map(eligible.map((topic) => [topic.id, topic]))
+  const structural = topics.filter((t) => !isPosGroup(t))
+  const structuralById = new Map(structural.map((topic) => [topic.id, topic]))
   const childrenByParent = new Map<number | null, Topic[]>()
 
-  for (const topic of eligible) {
+  for (const topic of structural) {
     const parentId = topic.parent_topic_id ?? null
-    const parentExists = parentId !== null && eligibleById.has(parentId)
+    const parentExists = parentId !== null && structuralById.has(parentId)
     const key = parentExists ? parentId : null
     const list = childrenByParent.get(key) ?? []
     list.push(topic)
@@ -125,7 +123,7 @@ export function buildSidebarGroups(
   const pinnedTopics = pinnedIds
     .map((id) => topics.find((t) => t.id === id))
     .filter((t): t is Topic => !!t && (!needle || t.name.toLowerCase().includes(needle)))
-  const themeTree = buildTopicTree(topics, needle, pinnedIds, topicsSort, progress, counts)
+  const themeTree = buildTopicTree(topics, needle, topicsSort, progress, counts)
   const themeTopics = flattenTopicTree(themeTree)
 
   const expandedIds = new Set<number>()

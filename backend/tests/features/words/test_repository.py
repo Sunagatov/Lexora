@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
+from app.features.topics.model import Topic
+from app.features.words.model import Word
 from app.features.words import repository as word_repository
 from app.features.words.schemas import WordCreate, WordUpdate
 
@@ -11,18 +13,20 @@ class DummyWord:
     translations: str
     knowledge_level: int | None
     topics: list[TopicStub]
-    example: str | None
-    example_items: list[object]
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
 
 class TopicStub:
-    id: int
-
     def __init__(self, id: int):
         self.id = id
+
+
+def _make_topic_mock(id: int):
+    topic = MagicMock(spec=Topic)
+    topic.id = id
+    return topic
 
 
 class ExampleStub:
@@ -32,35 +36,35 @@ class ExampleStub:
         self.value = value
 
 
-class WordStub:
-    def __init__(
-        self,
-        *,
-        id: int,
-        term: str,
-        translations: str,
-        part_of_speech,
-        knowledge_level,
-        countability,
-        pattern,
-        example,
-        notes,
-        is_active: bool,
-        topics: list[TopicStub],
-        example_items=None,
-    ) -> None:
-        self.id = id
-        self.term = term
-        self.translations = translations
-        self.part_of_speech = part_of_speech
-        self.knowledge_level = knowledge_level
-        self.countability = countability
-        self.pattern = pattern
-        self.example = example
-        self.example_items = list(example_items or [])
-        self.notes = notes
-        self.is_active = is_active
-        self.topics = list(topics)
+def _make_word_mock(
+    *,
+    id: int,
+    term: str,
+    translations: str,
+    part_of_speech,
+    knowledge_level,
+    countability,
+    pattern,
+    example,
+    notes,
+    is_active: bool,
+    topics,
+    example_items=None,
+):
+    word = MagicMock(spec=Word)
+    word.id = id
+    word.term = term
+    word.translations = translations
+    word.part_of_speech = part_of_speech
+    word.knowledge_level = knowledge_level
+    word.countability = countability
+    word.pattern = pattern
+    word.example = example
+    word.example_items = list(example_items or [])
+    word.notes = notes
+    word.is_active = is_active
+    word.topics = list(topics)
+    return word
 
 
 def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
@@ -96,11 +100,27 @@ def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
     db.refresh.assert_called_once_with(word)
 
 
+def test_get_all_words_for_parent_topic_includes_descendants(make_topic, make_word) -> None:
+    db = MagicMock()
+    parent = make_topic(id=1, parent_topic_id=None)
+    child = make_topic(id=2, parent_topic_id=1)
+    grandchild = make_topic(id=3, parent_topic_id=2)
+    db.scalars.side_effect = [
+        MagicMock(all=MagicMock(return_value=[parent, child, grandchild])),
+        MagicMock(all=MagicMock(return_value=[make_word(id=10, topics=[child]), make_word(id=11, topics=[grandchild])])),
+    ]
+
+    result = word_repository.get_all_words(db, topic_id=1)
+
+    assert [word.id for word in result] == [10, 11]
+    assert db.scalars.call_count == 2
+
+
 def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> None:
     db = MagicMock()
-    db.scalars.return_value.all.return_value = [TopicStub(2), TopicStub(3)]
+    db.scalars.return_value.all.return_value = [_make_topic_mock(2), _make_topic_mock(3)]
 
-    word = WordStub(
+    word = _make_word_mock(
         id=10,
         term="walk",
         translations="идти",
@@ -111,7 +131,7 @@ def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> No
         example=None,
         notes=None,
         is_active=True,
-        topics=[TopicStub(1)],
+        topics=[_make_topic_mock(1)],
     )
 
     duplicate_check = MagicMock()
@@ -142,7 +162,7 @@ def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> No
 
 def test_update_word_does_not_record_level_change_when_level_is_unchanged(monkeypatch) -> None:
     db = MagicMock()
-    word = WordStub(
+    word = _make_word_mock(
         id=11,
         term="read",
         translations="читать",
@@ -153,7 +173,7 @@ def test_update_word_does_not_record_level_change_when_level_is_unchanged(monkey
         example=None,
         notes=None,
         is_active=True,
-        topics=[TopicStub(1)],
+        topics=[_make_topic_mock(1)],
     )
 
     record_change = MagicMock()
@@ -175,7 +195,7 @@ def test_update_word_does_not_record_level_change_when_level_is_unchanged(monkey
 
 def test_update_word_allows_clearing_knowledge_level_without_progress_event(monkeypatch) -> None:
     db = MagicMock()
-    word = WordStub(
+    word = _make_word_mock(
         id=12,
         term="read",
         translations="читать",
@@ -186,7 +206,7 @@ def test_update_word_allows_clearing_knowledge_level_without_progress_event(monk
         example=None,
         notes=None,
         is_active=True,
-        topics=[TopicStub(1)],
+        topics=[_make_topic_mock(1)],
     )
 
     record_change = MagicMock()
@@ -208,7 +228,7 @@ def test_update_word_allows_clearing_knowledge_level_without_progress_event(monk
 
 def test_update_word_clears_examples_when_explicit_empty_list_is_provided(monkeypatch) -> None:
     db = MagicMock()
-    word = WordStub(
+    word = _make_word_mock(
         id=13,
         term="read",
         translations="читать",
@@ -220,7 +240,7 @@ def test_update_word_clears_examples_when_explicit_empty_list_is_provided(monkey
         example_items=[ExampleStub("Old example line")],
         notes=None,
         is_active=True,
-        topics=[TopicStub(1)],
+        topics=[_make_topic_mock(1)],
     )
 
     monkeypatch.setattr(word_repository, "record_level_change", MagicMock())

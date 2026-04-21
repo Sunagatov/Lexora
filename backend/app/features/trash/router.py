@@ -6,6 +6,7 @@ from app.features.topics.repository import (
     get_deleted_topics, get_topic_by_id_including_deleted, restore_topic,
 )
 from app.features.topics.schemas import TopicResponse
+from app.features.topics.service import InvalidTopicParentError
 from app.features.words.domain import assert_word_restore_allowed
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.repository import (
@@ -24,7 +25,7 @@ def list_deleted_words(db: Session = Depends(get_db)) -> list[WordResponse]:
 
 @router.get("/topics", response_model=list[TopicResponse])
 def list_deleted_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
-    return get_deleted_topics(db)
+    return [TopicResponse.model_validate(topic) for topic in get_deleted_topics(db)]
 
 
 @router.post("/words/{word_id}/restore", response_model=WordResponse)
@@ -51,7 +52,9 @@ def restore_topic_route(topic_id: int, restore_words: bool = False, db: Session 
     if topic is None or topic.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
     try:
-        return restore_topic(db, topic, restore_words=restore_words)
+        return TopicResponse.model_validate(restore_topic(db, topic, restore_words=restore_words))
+    except InvalidTopicParentError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
     except DuplicateWordInTopicError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
