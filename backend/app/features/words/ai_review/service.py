@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter
+from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -83,6 +84,7 @@ def build_topic_ai_review_export(
     ).all())
 
     return AiReviewExportResponse(
+        exported_at=datetime.now(timezone.utc),
         topic_id=topic.id,
         topic=AiReviewTopic(id=topic.id, name=topic.name),
         pagination=AiReviewPagination(
@@ -138,6 +140,15 @@ def _build_update_payload(item) -> WordUpdate:
     return WordUpdate(**data)
 
 
+def _check_stale(word: Word, exported_at: datetime) -> None:
+    if word.updated_at is not None and word.updated_at > exported_at:
+        raise AiReviewImportError(
+            f"Word {word.id} ('{word.term}') was modified after export "
+            f"(word.updated_at={word.updated_at.isoformat()}, "
+            f"exported_at={exported_at.isoformat()}). Re-export and re-run."
+        )
+
+
 def import_topic_ai_review(db: Session, payload: AiReviewImportRequest) -> AiReviewImportResponse:
     topic = _get_topic(db, payload.topic_id)
     word_ids = [word.id for word in payload.words]
@@ -159,6 +170,10 @@ def import_topic_ai_review(db: Session, payload: AiReviewImportRequest) -> AiRev
                 raise AiReviewImportError(
                     f"Word {item.id} term mismatch: expected '{word.term}', got '{item.term}'"
                 )
+
+        if payload.exported_at is not None:
+            for item in payload.words:
+                _check_stale(words_by_id[item.id], payload.exported_at)
 
         for item in payload.words:
             word = words_by_id[item.id]

@@ -202,25 +202,40 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     translation_requested = "translations" in fields_set or "translation_entries" in fields_set
     example_requested = "example" in fields_set or "example_entries" in fields_set
     if translation_requested or example_requested:
+        current_translations_text = word.translations
+        current_example_text = word.example
         current_translation_entries = [
             item.value for item in getattr(word, "translation_items", [])
         ]
         current_example_entries = [
             item.value for item in getattr(word, "example_items", [])
         ]
+
         # Clear before re-assigning to avoid unique constraint violations on flush
         # (SQLAlchemy may INSERT new rows before DELETE-ing old ones)
         word.translation_items = []
         word.example_items = []
         db.flush()
-        translations_text: str | None = payload.translations if "translations" in fields_set else word.translations
-        translation_entries: list[str] | None = (
-            payload.translation_entries if "translation_entries" in fields_set else current_translation_entries
+
+        translations_text: str | None = (
+            payload.translations if "translations" in fields_set else current_translations_text
         )
-        example_text: str | None = payload.example if "example" in fields_set else word.example
-        example_entries: list[str] | None = (
-            payload.example_entries if "example_entries" in fields_set else current_example_entries
+        if "translation_entries" in fields_set:
+            translation_entries: list[str] | None = payload.translation_entries
+        elif "translations" in fields_set:
+            translation_entries = None
+        else:
+            translation_entries = current_translation_entries
+
+        example_text: str | None = (
+            payload.example if "example" in fields_set else current_example_text
         )
+        if "example_entries" in fields_set:
+            example_entries: list[str] | None = payload.example_entries
+        elif "example" in fields_set:
+            example_entries = None
+        else:
+            example_entries = current_example_entries
 
         sync_word_multivalue_fields(
             word,

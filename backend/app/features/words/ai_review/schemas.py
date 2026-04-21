@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -70,6 +71,7 @@ class AiReviewWord(BaseModel):
 class AiReviewExportResponse(BaseModel):
     schema_version: Literal["lexora.ai-review.v1"] = SCHEMA_VERSION
     mode: Literal["enrich_existing_words_only"] = "enrich_existing_words_only"
+    exported_at: datetime
     topic_id: int
     topic: AiReviewTopic
     pagination: AiReviewPagination
@@ -123,6 +125,7 @@ class AiReviewImportWord(BaseModel):
 class AiReviewImportRequest(BaseModel):
     schema_version: Literal["lexora.ai-review.v1"] = SCHEMA_VERSION
     topic_id: int = Field(gt=0)
+    exported_at: datetime | None = None
     dry_run: bool = False
     words: list[AiReviewImportWord] = Field(min_length=1, max_length=100)
 

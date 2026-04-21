@@ -6,6 +6,7 @@ from fastapi import HTTPException
 
 from app.features.topics.service import MissingTopicsError
 from app.features.words import router as words_router
+from app.features.words import agent_router
 from app.features.words.bulk.service import BulkTopicInTrashError
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.ai_review.schemas import AiReviewImportRequest
@@ -70,7 +71,7 @@ def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
     def fake_bulk_import(db_arg, payload):
         raise BulkTopicInTrashError(payload.topic_name)
 
-    monkeypatch.setattr(words_router, "bulk_import", fake_bulk_import)
+    monkeypatch.setattr(agent_router, "bulk_import", fake_bulk_import)
 
     payload = WordBulkCreate(
         topic_name="Travel",
@@ -78,7 +79,7 @@ def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
     )
 
     with pytest.raises(HTTPException) as exc_info:
-        words_router.bulk_create_words(payload, db=object())
+        agent_router.bulk_create_words(payload, db=object())
 
     assert exc_info.value.status_code == 409
     assert "exists but is in trash" in exc_info.value.detail

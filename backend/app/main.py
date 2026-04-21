@@ -12,6 +12,7 @@ from app.features.auth.router import router as auth_router
 from app.features.health.router import router as health_router
 from app.features.topics.router import router as topics_router
 from app.features.words.router import router as words_router
+from app.features.words.agent_router import router as words_agent_router
 from app.features.words.suggest.router import router as suggest_router
 from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
@@ -98,6 +99,7 @@ async def log_unhandled_errors(request: Request, call_next):
 
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(words_agent_router)
 app.include_router(topics_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(words_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(suggest_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])

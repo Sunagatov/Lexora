@@ -5,14 +5,12 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from starlette.datastructures import UploadFile
 
-from app.shared.deps import get_db, verify_api_key
+from app.shared.deps import get_db
 from app.features.topics.service import assert_topics_exist, MissingTopicsError
 from app.features.words.repository import (
     get_all_words, get_word_by_id, create_word, update_word, soft_delete_word,
 )
 from app.features.words.schemas import (
-    BulkImportResponse,
-    WordBulkCreate,
     WordCreate,
     WordResponse,
     WordUpdate,
@@ -24,9 +22,6 @@ from app.features.words.workbook import (
     import_words_workbook,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.bulk import (
-    BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
-)
 from app.features.words.ai_review import (
     AiReviewExportResponse,
     AiReviewImportError,
@@ -46,20 +41,6 @@ def list_words(
     db: Session = Depends(get_db),
 ) -> list[WordResponse]:
     return [WordResponse.from_word(w) for w in get_all_words(db, topic_id=topic_id, search=search)]
-
-
-@router.post("/bulk", response_model=BulkImportResponse, status_code=status.HTTP_201_CREATED,
-             dependencies=[Depends(verify_api_key)])
-def bulk_create_words(payload: WordBulkCreate, db: Session = Depends(get_db)) -> BulkImportResponse:
-    """Create or reuse a topic by name, then insert words skipping duplicates. Secured by X-Api-Key header."""
-    try:
-        return bulk_import(db, payload)
-    except BulkInvalidTopicNameError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot generate a valid slug from topic name: '{e.name}'")
-    except BulkTopicInTrashError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Topic '{e.name}' exists but is in trash. Restore or permanently delete it first.")
-    except BulkSlugConflictError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
 
 
 @router.get("/export/xlsx")
