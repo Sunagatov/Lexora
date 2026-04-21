@@ -40,7 +40,7 @@ def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
 
 
 def get_topic_by_id_including_deleted(db: Session, topic_id: int) -> Topic | None:
-    return db.get(Topic, topic_id)
+    return db.scalars(select(Topic).where(Topic.id == topic_id)).first()
 
 
 def get_topic_by_slug(db: Session, slug: str) -> Topic | None:

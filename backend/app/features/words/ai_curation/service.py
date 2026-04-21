@@ -132,10 +132,14 @@ def _needs_examples_filter():
 
 def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsResponse:
     topic = _get_topic(db, topic_id)
-    topic_filter = Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
+    topic_filter = (Topic.id == topic.id) & Topic.deleted_at.is_(None)
 
     total = db.scalar(
-        select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), topic_filter)
+        select(func.count())
+        .select_from(Word)
+        .join(word_topics, word_topics.c.word_id == Word.id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Word.deleted_at.is_(None), topic_filter)
     ) or 0
     offset = (page - 1) * page_size
 
@@ -143,6 +147,8 @@ def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: in
         db.scalars(
             _with_details(
                 select(Word)
+                .join(word_topics, word_topics.c.word_id == Word.id)
+                .join(Topic, Topic.id == word_topics.c.topic_id)
                 .where(Word.deleted_at.is_(None), topic_filter)
                 .order_by(Word.term.asc(), Word.id.asc())
                 .offset(offset)
@@ -182,16 +188,27 @@ def export_topic_words_lean_page(
     needs_examples_only: bool = False,
 ) -> AiCurationTopicWordsLeanResponse:
     topic = _get_topic(db, topic_id)
-    topic_filter = Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
+    topic_filter = (Topic.id == topic.id) & Topic.deleted_at.is_(None)
     needs_examples_filter = _needs_examples_filter() if needs_examples_only else None
 
-    count_stmt = select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), topic_filter)
+    count_stmt = (
+        select(func.count())
+        .select_from(Word)
+        .join(word_topics, word_topics.c.word_id == Word.id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Word.deleted_at.is_(None), topic_filter)
+    )
     if needs_examples_filter is not None:
         count_stmt = count_stmt.where(needs_examples_filter)
     total = db.scalar(count_stmt) or 0
     offset = (page - 1) * page_size
 
-    words_stmt = select(Word).where(Word.deleted_at.is_(None), topic_filter)
+    words_stmt = (
+        select(Word)
+        .join(word_topics, word_topics.c.word_id == Word.id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Word.deleted_at.is_(None), topic_filter)
+    )
     if needs_examples_filter is not None:
         words_stmt = words_stmt.where(needs_examples_filter)
 

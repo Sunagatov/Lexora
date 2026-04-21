@@ -126,7 +126,8 @@ def get_all_words(db: Session, topic_id: int | None = None, search: str | None =
             | Word.past_simple.ilike(needle)
             | Word.past_participle.ilike(needle)
         )
-    return list(db.scalars(stmt).all())
+    words: list[Word] = [word for word in db.scalars(stmt).all()]
+    return words
 
 
 def get_word_by_id(db: Session, word_id: int) -> Word | None:
@@ -138,14 +139,15 @@ def get_word_by_id_including_deleted(db: Session, word_id: int) -> Word | None:
 
 
 def get_deleted_words(db: Session) -> list[Word]:
-    return list(db.scalars(
+    words: list[Word] = [word for word in db.scalars(
         _with_details(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc()))
-    ).all())
+    ).all()]
+    return words
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
     assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
-    topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
+    topics: list[Topic] = [topic for topic in db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()]
     data = payload.model_dump(
         exclude={"topic_ids", "translation_entries", "example_entries"}
     )
@@ -193,7 +195,8 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     for field, value in data.items():
         setattr(word, field, value)
     if payload.topic_ids is not None:
-        word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
+        topics: list[Topic] = [topic for topic in db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()]
+        word.topics = topics
 
     translation_requested = "translations" in fields_set or "translation_entries" in fields_set
     example_requested = "example" in fields_set or "example_entries" in fields_set
@@ -209,17 +212,41 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         word.translation_items = []
         word.example_items = []
         db.flush()
+        translations_text: str | None
+        if "translations" in fields_set:
+            translations_text = payload.translations
+        else:
+            translations_text = word.translations
+
+        translation_entries: list[str] | None
+        if "translation_entries" in fields_set:
+            translation_entries = payload.translation_entries
+        else:
+            translation_entries = current_translation_entries
+
+        example_text: str | None
+        if "example" in fields_set:
+            example_text = payload.example
+        else:
+            example_text = word.example
+
+        example_entries: list[str] | None
+        if "example_entries" in fields_set:
+            example_entries = payload.example_entries
+        else:
+            example_entries = current_example_entries
+
         sync_word_multivalue_fields(
             word,
-            payload.translations if "translations" in fields_set else word.translations,
-            payload.translation_entries if "translation_entries" in fields_set else current_translation_entries,
-            payload.example if "example" in fields_set else word.example,
-            payload.example_entries if "example_entries" in fields_set else current_example_entries,
+            translations_text,
+            translation_entries,
+            example_text,
+            example_entries,
         )
 
     if "knowledge_level" in data and data["knowledge_level"] != old_level and data["knowledge_level"] is not None:
         source = payload.progress_source or "manual"
-        record_level_change(db, word.id, old_level, data["knowledge_level"], source)
+        record_level_change(db, int(word.id), old_level, int(data["knowledge_level"]), source)
     db.add(word)
     if commit:
         db.commit()
