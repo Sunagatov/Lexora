@@ -14,8 +14,12 @@ export function StudyPage() {
 
   useEffect(() => {
     setHasDrawer(true)
-    return () => setHasDrawer(false)
-  }, [setHasDrawer])
+    setDrawerOpen(false)
+    return () => {
+      setHasDrawer(false)
+      setDrawerOpen(false)
+    }
+  }, [setHasDrawer, setDrawerOpen])
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,

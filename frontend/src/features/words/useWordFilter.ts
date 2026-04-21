@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
@@ -57,6 +57,18 @@ export function useWordFilter(topicWords: Word[]) {
   const filteredWords = useMemo(() => filterAndSort(topicWords, wordSearch, levelFilter, sortBy, frozenIds), [topicWords, wordSearch, levelFilter, sortBy, frozenIds])
   const totalPages    = Math.max(1, Math.ceil(filteredWords.length / pageSize))
   const safePage      = Math.min(page, totalPages)
+
+  useEffect(() => {
+    if (safePage === page) return
+
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (safePage === 1) next.delete('page')
+      else next.set('page', String(safePage))
+      return next
+    }, {replace: true})
+  }, [page, safePage, setSearchParams])
+
   const pageWords     = useMemo(() => filteredWords.slice((safePage - 1) * pageSize, safePage * pageSize), [filteredWords, safePage, pageSize])
   const pageStart     = pageWords.length > 0 ? (safePage - 1) * pageSize + 1 : 0
   const pageEnd       = pageWords.length > 0 ? pageStart + pageWords.length - 1 : 0
