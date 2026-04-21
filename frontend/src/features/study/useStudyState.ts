@@ -55,6 +55,6 @@ export function useStudyState() {
     filteredWordCount: filter.filteredWords.length,
     updateLevel: update.updateLevel, pendingWordId: update.pendingWordId,
     smartQueue: smartReview.queue,
-    isLoading: topicsQuery.isLoading || (!isSmartReview && allWordsQuery.isLoading) || wordsQuery.isLoading || (isSmartReview && smartReview.isLoading),
+    isLoading: topicsQuery.isLoading || allWordsQuery.isLoading || wordsQuery.isLoading || (isSmartReview && smartReview.isLoading),
   }
 }

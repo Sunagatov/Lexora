@@ -1,12 +1,10 @@
 const fallbackPageSizes = [10, 20, 50, 100]
-export const PAGE_SIZES = Array.from(
-  new Set(
-    (import.meta.env.VITE_PAGE_SIZES ?? fallbackPageSizes.join(','))
-      .split(',')
-      .map((value) => Number(value.trim()))
-      .filter((value) => Number.isInteger(value) && value > 0),
-  ),
-)
+const configuredPageSizes = (import.meta.env.VITE_PAGE_SIZES ?? fallbackPageSizes.join(','))
+  .split(',')
+  .map((value: string) => Number(value.trim()))
+  .filter((value: number): value is number => Number.isInteger(value) && value > 0)
+
+export const PAGE_SIZES: number[] = Array.from(new Set<number>(configuredPageSizes))
 if (PAGE_SIZES.length === 0) {
   PAGE_SIZES.push(...fallbackPageSizes)
 }
