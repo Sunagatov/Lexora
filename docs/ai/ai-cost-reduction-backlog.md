@@ -25,6 +25,7 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - use `needs_examples_only=true` when you only need unfinished words
 - treat 3 natural English examples per word as the completion threshold
 - skip already-complete words
+- prefer stable IDs and compact payloads over large text blobs when you can
 - keep examples natural, not templated
 - prefer model-written examples over deterministic filler
 - do not use deterministic template generators unless explicitly asked
@@ -47,6 +48,8 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - keep many-to-many membership when a word belongs in multiple topics
 - if a split creates unclear sibling names, merge them back into one clearer bucket
 - if a broad topic is semantically messy, keep it as an umbrella and do not force subtopics
+- if the split plan is close but not clearly better, leave the topic unsplit
+- when topic names are close in meaning, favor reuse over adding another sibling
 
 ### Ops hygiene
 

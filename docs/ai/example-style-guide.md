@@ -6,12 +6,14 @@ Use this when generating examples for vocabulary enrichment.
 
 - Write exactly 3 example sentences per word or phrase.
 - Treat 3 natural English examples as the done threshold; skip words that already have strong examples.
+- If a word is already complete, do not rewrite it just to make counts look uniform.
 - Make each sentence sound natural in English.
 - Keep the level around B1 to C1.
 - Use the target word or phrase naturally in every sentence.
 - Keep the examples concise, concrete, and easy to read.
 - Prefer everyday situations when they fit the word.
 - For Lexora, favor home chores, cleaning, repair, tools, appliances, and routine household context when relevant.
+- Keep the three examples varied enough that they do not read like templates.
 - Vary sentence structure so the three examples do not feel templated.
 - Avoid Russian, translations, notes, glosses, or commentary inside the examples.
 - If a word has multiple senses, pick the sense that best fits the topic and use it consistently.
