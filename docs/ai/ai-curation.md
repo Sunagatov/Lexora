@@ -22,6 +22,8 @@ Query params for export: `page` (default 1), `page_size` (default 100, max 200).
 
 1. Call `GET /api/ai-curation/topics` to find the topic ID you want to enrich.
 2. Call `GET /api/ai-curation/topics/{id}/export?page_size=200` to get the current word data.
+   > The response includes an `exported_at` timestamp. If any word is edited between your export
+   > and import, the import is rejected with a clear error. Re-export and retry in that case.
 3. Paste the full JSON response into ChatGPT with the prompt below.
 4. Copy the model's JSON output.
 5. Call `POST /api/ai-curation/import` with `dry_run: true` first to validate.
@@ -40,6 +42,7 @@ Your job is to return a valid import payload that improves the data quality.
 Rules:
 - Return ONLY valid JSON. No markdown, no explanation.
 - Keep schema_version unchanged ("lexora.ai-curation.v1").
+- Keep exported_at unchanged (copy it from the source JSON as-is).
 - Existing words keep their id and term.
 - You may enrich: translation_entries, example_entries, pattern, countability, part_of_speech, past_simple, past_participle, notes.
 - Only include fields you are actually changing. Omit all other fields.
@@ -60,12 +63,17 @@ Source export:
 {
   "schema_version": "lexora.ai-curation.v1",
   "source_topic_id": 7,
+  "exported_at": "2025-01-15T14:30:00Z",
   "dry_run": true,
   "strict_mode": false,
   "topic_operations": [],
   "word_operations": [...]
 }
 ```
+
+`exported_at` is optional. When present, the server rejects any `update_existing_word` or
+`reassign_word_topics` operation for a word that was modified after the export. Omit it to
+skip the check (not recommended for production use).
 
 ### Word operation types
 
@@ -201,7 +209,7 @@ These are validated server-side. Pass only exact strings from these lists.
 
 | Status | Meaning |
 |--------|---------|
-| `400` | Payload validation failed (term mismatch, unknown topic ref, strict_mode violation, etc.) |
+| `400` | Payload validation failed (term mismatch, unknown topic ref, strict_mode violation, stale `exported_at`, etc.) |
 | `404` | `source_topic_id` does not exist |
 | `422` | Pydantic schema error (invalid field values, missing required fields) |
 

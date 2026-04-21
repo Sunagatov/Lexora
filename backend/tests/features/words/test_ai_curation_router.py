@@ -63,7 +63,9 @@ def _word():
 
 
 def _words_response():
+    from datetime import datetime, timezone
     return AiCurationTopicWordsResponse(
+        exported_at=datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
         source_topic=_topic_summary(),
         pagination=_pagination(total_items=1),
         allowed_values=AiCurationAllowedValues(
@@ -1093,3 +1095,127 @@ def test_happy_path_topic_split_with_strict_mode(monkeypatch) -> None:
     # bond → investment only (source topic removed)
     assert final_topic_ids[11] == [56]
     db.commit.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Stale-payload protection
+# ---------------------------------------------------------------------------
+
+def test_import_stale_update_rejected_when_word_modified_after_export(monkeypatch) -> None:
+    """exported_at set and word.updated_at is newer → AiCurationImportError."""
+    from datetime import datetime, timezone, timedelta
+
+    source = _make_topic()
+    word = _make_word(id=10, term="mortgage")
+    export_time = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+    word.updated_at = export_time + timedelta(hours=1)
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        exported_at=export_time,
+        word_operations=[
+            {
+                "op": "update_existing_word",
+                "id": 10,
+                "term": "mortgage",
+                "translation_entries": ["ипотека"],
+            }
+        ],
+    )
+
+    with pytest.raises(AiCurationImportError, match="was modified after export"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+    db.rollback.assert_called_once()
+    db.commit.assert_not_called()
+
+
+def test_import_stale_check_skipped_when_exported_at_is_none(monkeypatch) -> None:
+    """No exported_at → no stale check; import succeeds even if updated_at is far in the future."""
+    from datetime import datetime, timezone
+
+    source = _make_topic()
+    word = _make_word(id=10, term="mortgage")
+    word.updated_at = datetime(2099, 1, 1, tzinfo=timezone.utc)
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    captured: list = []
+
+    def capture_update(db, w, payload, commit=True):
+        captured.append(w.id)
+        return w
+
+    monkeypatch.setattr(ai_curation_service, "update_word", capture_update)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        word_operations=[
+            {
+                "op": "update_existing_word",
+                "id": 10,
+                "term": "mortgage",
+                "translation_entries": ["ипотека", "жилищный кредит"],
+            }
+        ],
+    )
+
+    result = ai_curation_service.import_ai_curation(db, payload)
+
+    assert result.updated_words == 1
+    assert 10 in captured
+
+
+def test_import_stale_reassign_rejected_when_word_modified_after_export(monkeypatch) -> None:
+    """Stale check fires for reassign_word_topics too; op name appears in the error."""
+    from datetime import datetime, timezone, timedelta
+
+    source = _make_topic(id=1)
+    word = _make_word(id=10, term="mortgage", topics=[source])
+    export_time = datetime(2025, 6, 1, 10, 0, 0, tzinfo=timezone.utc)
+    word.updated_at = export_time + timedelta(minutes=30)
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        exported_at=export_time,
+        word_operations=[
+            {
+                "op": "reassign_word_topics",
+                "id": 10,
+                "term": "mortgage",
+                "add_topic_refs": [{"topic_id": 2}],
+                "remove_topic_ids": [1],
+            }
+        ],
+    )
+
+    with pytest.raises(AiCurationImportError, match="reassign_word_topics"):
+        ai_curation_service.import_ai_curation(db, payload)

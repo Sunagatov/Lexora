@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections import Counter
+from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -144,6 +145,7 @@ def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: in
     )
 
     return AiCurationTopicWordsResponse(
+        exported_at=datetime.now(timezone.utc),
         source_topic=source_topic,
         pagination=PaginationMeta.build(page=page, page_size=page_size, total_items=total),
         allowed_values=AiCurationAllowedValues(
@@ -211,6 +213,15 @@ def _has_update_changes(word: Word, op: UpdateExistingWordOperation) -> bool:
     return False
 
 
+def _check_stale(word: Word, exported_at: datetime, op_name: str) -> None:
+    if word.updated_at is not None and word.updated_at > exported_at:
+        raise AiCurationImportError(
+            f"{op_name}: word {word.id} ('{word.term}') was modified after export "
+            f"(word.updated_at={word.updated_at.isoformat()}, "
+            f"exported_at={exported_at.isoformat()}). Re-export and re-run."
+        )
+
+
 def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurationImportResponse:
     source_topic = _get_topic(db, payload.source_topic_id)
 
@@ -242,6 +253,10 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
         raise AiCurationImportError(f"Duplicate topic client_keys: {duplicate_client_keys}")
 
     try:
+        if payload.exported_at is not None:
+            for op in existing_ops:
+                _check_stale(words_by_id[op.id], payload.exported_at, op.op)
+
         for op in payload.topic_operations:
             topic = create_topic(
                 db,

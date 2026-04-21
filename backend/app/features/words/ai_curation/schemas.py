@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from math import ceil
 from typing import Annotated, Literal
 
@@ -96,6 +97,7 @@ class AiCurationWord(BaseModel):
 
 class AiCurationTopicWordsResponse(BaseModel):
     schema_version: Literal["lexora.ai-curation.v1"] = SCHEMA_VERSION
+    exported_at: datetime
     source_topic: AiCurationTopicSummary
     pagination: PaginationMeta
     allowed_values: AiCurationAllowedValues
@@ -234,6 +236,7 @@ class AiCurationImportRequest(BaseModel):
     source_topic_id: int = Field(gt=0)
     dry_run: bool = False
     strict_mode: bool = False
+    exported_at: datetime | None = None
     topic_operations: list[TopicOperation] = Field(default_factory=list, max_length=50)
     word_operations: list[WordOperation] = Field(min_length=1, max_length=500)
 
