@@ -936,7 +936,7 @@ def test_full_import_flow_all_operation_types(monkeypatch) -> None:
         source_topic_id=1,
         dry_run=False,
         topic_operations=[
-            {"op": "create_topic", "client_key": "retail", "name": "Retail Banking"},
+            CreateTopicOperation(client_key="retail", name="Retail Banking"),
         ],
         word_operations=[
             {
@@ -1067,8 +1067,8 @@ def test_happy_path_topic_split_with_strict_mode(monkeypatch) -> None:
         source_topic_id=1,
         strict_mode=True,
         topic_operations=[
-            {"op": "create_topic", "client_key": "retail", "name": "Retail Banking"},
-            {"op": "create_topic", "client_key": "investment", "name": "Investment Banking"},
+            CreateTopicOperation(client_key="retail", name="Retail Banking"),
+            CreateTopicOperation(client_key="investment", name="Investment Banking"),
         ],
         word_operations=[
             {
@@ -1245,7 +1245,7 @@ def test_import_topic_slug_conflict_is_normalized_to_ai_curation_import_error(mo
 
     payload = AiCurationImportRequest(
         source_topic_id=1,
-        topic_operations=[{"op": "create_topic", "client_key": "banking", "name": "Banking"}],
+        topic_operations=[CreateTopicOperation(client_key="banking", name="Banking")],
         word_operations=[],
     )
 
@@ -1271,7 +1271,7 @@ def test_import_invalid_topic_name_is_normalized_to_ai_curation_import_error(mon
 
     payload = AiCurationImportRequest(
         source_topic_id=1,
-        topic_operations=[{"op": "create_topic", "client_key": "bad", "name": "!!!!"}],
+        topic_operations=[CreateTopicOperation(client_key="bad", name="!!!!")],
         word_operations=[],
     )
 

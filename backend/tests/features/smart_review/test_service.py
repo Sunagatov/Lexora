@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 from types import SimpleNamespace
+from typing import cast
 from unittest.mock import MagicMock
+
+from sqlalchemy.orm import Session
 
 import pytest
 
@@ -217,7 +220,7 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
 
     monkeypatch.setattr(smart_review_service, "_pick_for_level_retry_excluded", fake_pick)
 
-    queue = smart_review_service.generate_queue(db)
+    queue = smart_review_service.generate_queue(cast(Session, db))
 
     assert queue.id == 123
     assert queue.total_count == 2
