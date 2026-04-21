@@ -5,7 +5,9 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 from openpyxl import Workbook
+import pytest
 
+from app.features.topics.model import Topic
 from app.features.words.workbook import importer as workbook_importer
 
 
@@ -17,8 +19,8 @@ class TopicStub:
         self.is_active = True
 
 
-def _make_topic(topic_id=1, name="Animals") -> TopicStub:
-    return TopicStub(topic_id, name)
+def _make_topic(topic_id=1, name="Animals") -> Topic:
+    return TopicStub(topic_id, name)  # type: ignore[return-value]
 
 
 def _make_existing_word(word_id=10, term="cat", topic_id=1):
@@ -157,7 +159,7 @@ def test_import_words_workbook_prefers_meta_topic_id(monkeypatch) -> None:
     monkeypatch.setattr(
         workbook_importer,
         "_import_sheet",
-        lambda db_arg, ws_arg, header_map_arg, topic_arg: workbook_importer.WorkbookImportSheetSummary(
+        lambda db_arg, ws_arg, header_map_arg, topic_arg, seen_existing_words_arg=None: workbook_importer.WorkbookImportSheetSummary(
             sheet_name=ws_arg.title,
             topic_name=topic_arg.name,
             created=0,
@@ -170,3 +172,66 @@ def test_import_words_workbook_prefers_meta_topic_id(monkeypatch) -> None:
 
     assert result.sheets[0].topic_name == "Renamed Topic"
     assert seen == [("Renamed Topic", 77, "Renamed Topic")]
+
+
+def test_import_sheet_allows_identical_shared_word_updates_across_sheets(monkeypatch) -> None:
+    topic = _make_topic()
+    db = MagicMock()
+    existing = _make_existing_word(word_id=10, term="cat", topic_id=1)
+    _patch_sheet_deps(monkeypatch, find_existing_returns=existing)
+
+    header_map = {"word_id": 1, "term": 2, "translations": 3, "examples": 4}
+    first_sheet = _FakeWs("Animals A", [{1: 10, 2: "cat", 3: "кошка", 4: "Cat is a pet."}])
+    second_sheet = _FakeWs("Animals B", [{1: 10, 2: "cat", 3: "кошка", 4: "Cat is a pet."}])
+    seen_existing_words: dict[int, tuple[str, tuple[object, ...]]] = {}
+
+    first_summary = workbook_importer._import_sheet(
+        db,
+        first_sheet,
+        header_map,
+        topic,
+        seen_existing_words,
+    )
+    second_summary = workbook_importer._import_sheet(
+        db,
+        second_sheet,
+        header_map,
+        topic,
+        seen_existing_words,
+    )
+
+    assert first_summary.updated == 1
+    assert second_summary.updated == 1
+    assert seen_existing_words[10][0] == "Animals A"
+    assert db.flush.call_count == 2
+
+
+def test_import_sheet_rejects_conflicting_shared_word_updates_across_sheets(monkeypatch) -> None:
+    topic = _make_topic()
+    db = MagicMock()
+    existing = _make_existing_word(word_id=10, term="cat", topic_id=1)
+    _patch_sheet_deps(monkeypatch, find_existing_returns=existing)
+
+    header_map = {"word_id": 1, "term": 2, "translations": 3, "examples": 4}
+    first_sheet = _FakeWs("Animals A", [{1: 10, 2: "cat", 3: "кошка", 4: "Cat is a pet."}])
+    second_sheet = _FakeWs("Animals B", [{1: 10, 2: "cat", 3: "кошка", 4: "Cat is a domestic animal."}])
+    seen_existing_words: dict[int, tuple[str, tuple[object, ...]]] = {}
+
+    workbook_importer._import_sheet(
+        db,
+        first_sheet,
+        header_map,
+        topic,
+        seen_existing_words,
+    )
+
+    with pytest.raises(workbook_importer.InvalidWorkbookError) as exc_info:
+        workbook_importer._import_sheet(
+            db,
+            second_sheet,
+            header_map,
+            topic,
+            seen_existing_words,
+        )
+
+    assert "conflicting values" in str(exc_info.value)

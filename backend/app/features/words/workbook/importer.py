@@ -40,9 +40,43 @@ from app.shared.constraints import (
 )
 
 
+def _row_fingerprint(
+    *,
+    term: str,
+    translations_text: str,
+    knowledge_value: int | None,
+    pattern: str | None,
+    examples_text: str | None,
+    countability: str | None,
+    part_of_speech: str | None,
+    past_simple: str | None,
+    past_participle: str | None,
+    notes: str | None,
+) -> tuple[object, ...]:
+    return (
+        term.strip(),
+        translations_text.strip(),
+        knowledge_value,
+        (pattern or "").strip(),
+        (examples_text or "").strip(),
+        (countability or "").strip().lower(),
+        (part_of_speech or "").strip().lower(),
+        (past_simple or "").strip(),
+        (past_participle or "").strip(),
+        (notes or "").strip(),
+    )
+
+
 def _import_sheet(
-    db: Session, ws, header_map: dict[str, int], topic: Topic
+    db: Session,
+    ws,
+    header_map: dict[str, int],
+    topic: Topic,
+    seen_existing_words: dict[int, tuple[str, tuple[object, ...]]] | None = None,
 ) -> WorkbookImportSheetSummary:
+    if seen_existing_words is None:
+        seen_existing_words = {}
+
     created = 0
     updated = 0
     skipped = 0
@@ -140,17 +174,6 @@ def _import_sheet(
                 )
 
             old_level = existing.knowledge_level
-
-            existing.term = term
-            existing.translations = translations_text
-            existing.knowledge_level = knowledge_value if has_knowledge else existing.knowledge_level
-            existing.countability = countability if has_countability else existing.countability
-            existing.pattern = pattern if has_pattern else existing.pattern
-            existing.notes = notes if has_notes else existing.notes
-            existing.past_simple = past_simple if has_past_simple else existing.past_simple
-            existing.past_participle = (
-                past_participle if has_past_participle else existing.past_participle
-            )
             part_of_speech_value = (
                 _validate_part_of_speech(
                     _read_str(ws, row_idx, header_map.get("part_of_speech")),
@@ -160,22 +183,59 @@ def _import_sheet(
                 if has_part_of_speech
                 else None
             )
-            existing.part_of_speech = _normalize_part_of_speech(
+            effective_knowledge_level = knowledge_value if has_knowledge else existing.knowledge_level
+            effective_countability = countability if has_countability else existing.countability
+            effective_pattern = pattern if has_pattern else existing.pattern
+            effective_examples_text = examples_text if has_examples else existing.example
+            effective_part_of_speech = _normalize_part_of_speech(
                 part_of_speech_value,
-                getattr(existing, "countability"),
-                getattr(existing, "past_simple"),
-                getattr(existing, "past_participle"),
-                getattr(existing, "part_of_speech"),
+                effective_countability,
+                existing.past_simple if not has_past_simple else past_simple,
+                existing.past_participle if not has_past_participle else past_participle,
+                existing.part_of_speech,
             )
+            effective_past_simple = past_simple if has_past_simple else existing.past_simple
+            effective_past_participle = past_participle if has_past_participle else existing.past_participle
+            effective_notes = notes if has_notes else existing.notes
+            fingerprint = _row_fingerprint(
+                term=term,
+                translations_text=translations_text,
+                knowledge_value=effective_knowledge_level,
+                pattern=effective_pattern,
+                examples_text=effective_examples_text,
+                countability=effective_countability,
+                part_of_speech=effective_part_of_speech,
+                past_simple=effective_past_simple,
+                past_participle=effective_past_participle,
+                notes=effective_notes,
+            )
+            previous = seen_existing_words.get(int(existing.id))
+            if previous is None:
+                seen_existing_words[int(existing.id)] = (ws.title, fingerprint)
+            else:
+                previous_sheet, previous_fingerprint = previous
+                if previous_fingerprint != fingerprint:
+                    raise InvalidWorkbookError(
+                        f"Word ID {existing.id} appears with conflicting values in sheets "
+                        f"'{previous_sheet}' and '{ws.title}'. Shared words must be edited consistently."
+                    )
+
+            existing.term = term
+            existing.translations = translations_text
+            existing.knowledge_level = effective_knowledge_level
+            existing.countability = effective_countability
+            existing.pattern = effective_pattern
+            existing.notes = effective_notes
+            existing.past_simple = effective_past_simple
+            existing.past_participle = effective_past_participle
+            existing.part_of_speech = effective_part_of_speech
 
             sync_word_multivalue_fields(
                 existing,
                 translations_text,
                 _split_translation_cell(translations_text),
-                examples_text if has_examples else existing.example,
-                _split_examples_cell(examples_text)
-                if has_examples
-                else [item.value for item in existing.example_items],
+                effective_examples_text,
+                _split_examples_cell(effective_examples_text),
             )
 
             if existing.knowledge_level != old_level and existing.knowledge_level is not None:
@@ -258,6 +318,7 @@ def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse
     total_created = 0
     total_updated = 0
     total_skipped = 0
+    seen_existing_words: dict[int, tuple[str, tuple[object, ...]]] = {}
 
     for ws in workbook.worksheets:
         if ws.sheet_state != "visible":
@@ -273,7 +334,7 @@ def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse
         resolved_topic_name = topic_name or ws.title
         topic = _get_topic(db, resolved_topic_name, topic_id=topic_id)
 
-        summary = _import_sheet(db, ws, header_map, topic)
+        summary = _import_sheet(db, ws, header_map, topic, seen_existing_words)
         summaries.append(summary)
         total_created += summary.created
         total_updated += summary.updated

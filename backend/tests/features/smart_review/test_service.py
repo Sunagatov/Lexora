@@ -1,15 +1,19 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from typing import cast
 from unittest.mock import MagicMock
 
 from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 import app.features.topics.model  # noqa: F401 — registers Topic in SQLAlchemy's class registry
 import app.features.stats.model  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
+import app.features.words.model  # noqa: F401 — registers Word in SQLAlchemy's class registry
 
 import pytest
 
+from app.shared.db import Base
 from app.features.smart_review import service as smart_review_service
 
 
@@ -32,6 +36,12 @@ class FakeDB:
 
     def refresh(self, obj):
         self.refreshed.append(obj)
+
+
+def _make_sqlite_session() -> Session:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    return sessionmaker(bind=engine)()
 
 
 def test_complete_queue_item_raises_when_item_missing() -> None:
@@ -239,6 +249,59 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     assert len(items) == 2
     assert [item.word_id for item in items] == [1, 2]
     assert [item.position for item in items] == [0, 1]
+
+
+def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_cooldown_days", 7)
+
+    db = _make_sqlite_session()
+    now = datetime.now(timezone.utc)
+
+    word_completed = smart_review_service.Word(term="done", translations="done")
+    word_pending = smart_review_service.Word(term="pending", translations="pending")
+    db.add_all([word_completed, word_pending])
+    db.flush()
+
+    queue_completed = smart_review_service.StudyQueue(
+        generated_at=now - timedelta(hours=1),
+        expires_at=now + timedelta(hours=1),
+        is_active=True,
+        total_count=1,
+        completed_count=1,
+    )
+    queue_pending = smart_review_service.StudyQueue(
+        generated_at=now - timedelta(hours=1),
+        expires_at=now + timedelta(hours=1),
+        is_active=True,
+        total_count=1,
+        completed_count=0,
+    )
+    db.add_all([queue_completed, queue_pending])
+    db.flush()
+
+    db.add_all(
+        [
+            smart_review_service.StudyQueueItem(
+                queue_id=queue_completed.id,
+                word_id=word_completed.id,
+                position=0,
+                is_completed=True,
+                completed_at=now - timedelta(hours=1),
+            ),
+            smart_review_service.StudyQueueItem(
+                queue_id=queue_pending.id,
+                word_id=word_pending.id,
+                position=0,
+                is_completed=False,
+                completed_at=None,
+            ),
+        ]
+    )
+    db.flush()
+
+    result = smart_review_service._cooldown_word_ids(cast(Session, db))
+
+    assert result == {word_completed.id}
 
 
 def test_complete_queue_item_raises_when_linked_word_is_deleted() -> None:

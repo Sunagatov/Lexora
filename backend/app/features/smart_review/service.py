@@ -20,7 +20,9 @@ def _cooldown_word_ids(db: Session) -> set[int]:
     stmt = (
         select(StudyQueueItem.word_id)
         .join(StudyQueue, StudyQueueItem.queue_id == StudyQueue.id)
-        .where(StudyQueue.generated_at >= cutoff)
+        .where(StudyQueueItem.is_completed.is_(True))
+        .where(StudyQueueItem.completed_at.is_not(None))
+        .where(StudyQueueItem.completed_at >= cutoff)
     )
     return set(db.scalars(stmt).all())
 

@@ -148,6 +148,32 @@ def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> No
     slug_check.assert_not_called()
 
 
+def test_update_topic_renaming_without_explicit_slug_updates_slug(monkeypatch) -> None:
+    db = MagicMock()
+    db.scalar.return_value = None
+    topic = MagicMock(spec=Topic, id=5, name="Old Name", slug="old-name")
+    payload = TopicUpdate(name="New Name")
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "new-name")
+    slug_check = MagicMock()
+    monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
+
+    expected = object()
+
+    def fake_persist(db_arg, topic_arg, payload_arg):
+        assert db_arg is db
+        assert topic_arg is topic
+        assert payload_arg.slug == "new-name"
+        return expected
+
+    monkeypatch.setattr(topic_service, "persist_topic_update", fake_persist)
+
+    result = topic_service.update_topic(db, topic, payload)
+
+    assert result is expected
+    slug_check.assert_called_once_with(db, "new-name", exclude_topic_id=5)
+
+
 def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> None:
     db = MagicMock()
     topic = MagicMock(spec=Topic, id=5, slug="old-slug")

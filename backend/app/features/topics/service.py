@@ -150,6 +150,7 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
                 raise InvalidTopicNameError(name_value)
             assert derived_slug is not None
             assert_slug_available(db, derived_slug, exclude_topic_id=topic.id)
+            payload.slug = derived_slug
 
     if "parent_topic_id" in payload.model_fields_set:
         assert_topic_parent_valid(db, payload.parent_topic_id, exclude_topic_id=topic.id)
