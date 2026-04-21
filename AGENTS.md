@@ -14,6 +14,7 @@ This repository is a monorepo for **Lexora**, a personal English vocabulary lear
 2. Read the nearest scoped file:
    - `backend/AGENTS.md` for backend changes
    - `frontend/AGENTS.md` for frontend changes
+   - `docs/ai/ai-curation-workflow.md` for enriching topic words via ChatGPT + REST API
 3. Read only the files directly touched by the task.
 4. Read supporting shared files only if required:
    - backend: `backend/app/shared/config.py`, `backend/app/shared/deps.py`
