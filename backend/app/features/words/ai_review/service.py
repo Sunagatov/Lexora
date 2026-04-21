@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from collections import Counter
 from datetime import datetime, timezone
+from typing import cast
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -39,7 +40,7 @@ def _get_topic(db: Session, topic_id: int) -> Topic:
     topic = db.scalar(select(Topic).where(Topic.id == topic_id, Topic.deleted_at.is_(None)))
     if topic is None:
         raise AiReviewImportError(f"Topic {topic_id} not found")
-    return topic
+    return cast(Topic, topic)
 
 
 def _word_to_ai_review_word(word: Word) -> AiReviewWord:

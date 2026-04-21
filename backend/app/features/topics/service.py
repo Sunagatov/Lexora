@@ -68,16 +68,18 @@ def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> T
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
-    if payload.slug is not None and payload.slug != topic.slug:
-        normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN)
-        if not normalized_slug:
-            raise InvalidTopicNameError(payload.slug)
-        payload.slug = normalized_slug
-        assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
-    elif payload.name is not None and payload.name != topic.name:
-        derived_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
-        if not derived_slug:
-            raise InvalidTopicNameError(payload.name)
-        assert_slug_available(db, derived_slug, exclude_topic_id=topic.id)
+    if payload.slug is not None:
+        if payload.slug != topic.slug:
+            normalized_slug = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN)
+            if not normalized_slug:
+                raise InvalidTopicNameError(payload.slug)
+            payload.slug = normalized_slug
+            assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
+    elif payload.name is not None:
+        if payload.name != topic.name:
+            derived_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
+            if not derived_slug:
+                raise InvalidTopicNameError(payload.name)
+            assert_slug_available(db, derived_slug, exclude_topic_id=topic.id)
 
     return persist_topic_update(db, topic, payload)
