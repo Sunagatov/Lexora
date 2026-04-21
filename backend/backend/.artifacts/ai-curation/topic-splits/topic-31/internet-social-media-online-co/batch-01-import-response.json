@@ -1,0 +1,31 @@
+{
+  "source_topic_id": 31,
+  "source_topic_name": "Internet Social Media Online Co",
+  "dry_run": true,
+  "created_topics": [
+    {
+      "client_key": "diy-hand-tools-31-1",
+      "id": 79,
+      "name": "DIY Hand Tools",
+      "slug": "diy-hand-tools"
+    }
+  ],
+  "created_words": 0,
+  "updated_words": 0,
+  "reassigned_words": 10,
+  "unchanged": 0,
+  "created_word_ids": [],
+  "updated_word_ids": [],
+  "reassigned_word_ids": [
+    11,
+    1186,
+    1284,
+    1390,
+    2980,
+    5787,
+    6228,
+    8684,
+    8894,
+    8982
+  ]
+}

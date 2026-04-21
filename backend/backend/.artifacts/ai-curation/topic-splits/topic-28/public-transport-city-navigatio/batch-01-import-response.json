@@ -1,0 +1,29 @@
+{
+  "source_topic_id": 28,
+  "source_topic_name": "Public Transport City Navigatio",
+  "dry_run": true,
+  "created_topics": [
+    {
+      "client_key": "laundry-and-fabric-care-28-1",
+      "id": 82,
+      "name": "Laundry and Fabric Care",
+      "slug": "laundry-and-fabric-care"
+    }
+  ],
+  "created_words": 0,
+  "updated_words": 0,
+  "reassigned_words": 8,
+  "unchanged": 0,
+  "created_word_ids": [],
+  "updated_word_ids": [],
+  "reassigned_word_ids": [
+    3484,
+    3512,
+    3933,
+    7729,
+    7730,
+    7731,
+    7732,
+    8089
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source_topic_id": 34,
+  "source_topic_name": "Shopping Retail Returns Deliver",
+  "dry_run": true,
+  "created_topics": [
+    {
+      "client_key": "laundry-and-fabric-care-34-1",
+      "id": 80,
+      "name": "Laundry and Fabric Care",
+      "slug": "laundry-and-fabric-care"
+    }
+  ],
+  "created_words": 0,
+  "updated_words": 0,
+  "reassigned_words": 15,
+  "unchanged": 0,
+  "created_word_ids": [],
+  "updated_word_ids": [],
+  "reassigned_word_ids": [
+    3454,
+    3456,
+    3498,
+    3531,
+    3534,
+    3551,
+    3933,
+    3543,
+    8478,
+    10110,
+    10068,
+    10182,
+    10366,
+    10363,
+    10331
+  ]
+}

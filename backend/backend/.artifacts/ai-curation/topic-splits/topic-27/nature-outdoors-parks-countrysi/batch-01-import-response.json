@@ -1,0 +1,34 @@
+{
+  "source_topic_id": 27,
+  "source_topic_name": "Nature Outdoors Parks Countrysi",
+  "dry_run": true,
+  "created_topics": [
+    {
+      "client_key": "garden-and-outdoor-care-27-1",
+      "id": 81,
+      "name": "Garden and Outdoor Care",
+      "slug": "garden-and-outdoor-care"
+    }
+  ],
+  "created_words": 0,
+  "updated_words": 0,
+  "reassigned_words": 13,
+  "unchanged": 0,
+  "created_word_ids": [],
+  "updated_word_ids": [],
+  "reassigned_word_ids": [
+    368,
+    4715,
+    4588,
+    4799,
+    7411,
+    7469,
+    7470,
+    7486,
+    7491,
+    7540,
+    7604,
+    4720,
+    4722
+  ]
+}

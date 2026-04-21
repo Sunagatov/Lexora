@@ -1,0 +1,568 @@
+{
+  "schema_version": "lexora.ai-curation.v2",
+  "source_topic_id": 32,
+  "dry_run": true,
+  "strict_mode": false,
+  "topic_operations": [
+    {
+      "op": "create_topic",
+      "client_key": "diy-hand-tools-32-1",
+      "name": "DIY Hand Tools",
+      "description": "Words for basic tools used in repairs, fixing, and assembly.",
+      "is_active": true
+    }
+  ],
+  "word_updates": [],
+  "word_creates": [],
+  "word_reassigns": [
+    {
+      "id": 11,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1182,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1186,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1284,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1390,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 2980,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 2981,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4084,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4417,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4980,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 5776,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 5787,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 5799,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 6228,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 6686,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7274,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 8684,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 8982,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9076,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9160,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9180,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9183,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9205,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9217,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9283,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9285,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9354,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9367,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9372,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9374,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9375,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9378,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9379,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9390,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9391,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9402,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9405,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9410,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9411,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9426,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9457,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9460,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9461,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9462,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9474,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9482,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9483,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9484,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9485,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9487,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9490,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9498,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9503,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9504,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9506,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9509,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9518,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9519,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9542,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9543,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 9549,
+      "add_topic_refs": [
+        {
+          "client_key": "diy-hand-tools-32-1"
+        }
+      ],
+      "remove_topic_ids": []
+    }
+  ]
+}

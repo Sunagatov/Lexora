@@ -1,0 +1,91 @@
+{
+  "schema_version": "lexora.ai-curation.v2",
+  "source_topic_id": 28,
+  "dry_run": true,
+  "strict_mode": false,
+  "topic_operations": [
+    {
+      "op": "create_topic",
+      "client_key": "laundry-and-fabric-care-28-1",
+      "name": "Laundry and Fabric Care",
+      "description": "Words for washing clothes, ironing, and fabric care.",
+      "is_active": true
+    }
+  ],
+  "word_updates": [],
+  "word_creates": [],
+  "word_reassigns": [
+    {
+      "id": 3484,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 3512,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 3933,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7729,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7730,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7731,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7732,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 8089,
+      "add_topic_refs": [
+        {
+          "client_key": "laundry-and-fabric-care-28-1"
+        }
+      ],
+      "remove_topic_ids": []
+    }
+  ]
+}

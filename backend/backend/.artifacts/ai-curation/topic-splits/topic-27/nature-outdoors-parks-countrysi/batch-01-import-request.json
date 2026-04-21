@@ -1,0 +1,136 @@
+{
+  "schema_version": "lexora.ai-curation.v2",
+  "source_topic_id": 27,
+  "dry_run": true,
+  "strict_mode": false,
+  "topic_operations": [
+    {
+      "op": "create_topic",
+      "client_key": "garden-and-outdoor-care-27-1",
+      "name": "Garden and Outdoor Care",
+      "description": "Words for garden work, outdoor maintenance, and yard tools.",
+      "is_active": true
+    }
+  ],
+  "word_updates": [],
+  "word_creates": [],
+  "word_reassigns": [
+    {
+      "id": 368,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4715,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4588,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4799,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7411,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7469,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7470,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7486,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7491,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7540,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 7604,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4720,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 4722,
+      "add_topic_refs": [
+        {
+          "client_key": "garden-and-outdoor-care-27-1"
+        }
+      ],
+      "remove_topic_ids": []
+    }
+  ]
+}
