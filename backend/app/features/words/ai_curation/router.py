@@ -6,10 +6,12 @@ from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
     AiCurationTopicListResponse,
+    AiCurationTopicWordsLeanResponse,
     AiCurationTopicWordsResponse,
 )
 from app.features.words.ai_curation.service import (
     AiCurationImportError,
+    export_topic_words_lean_page,
     export_topic_words_page,
     import_ai_curation,
     list_topics_page,
@@ -40,14 +42,20 @@ def list_ai_curation_topic_words(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.get("/topics/{topic_id}/export", response_model=AiCurationTopicWordsResponse)
+@router.get(
+    "/topics/{topic_id}/export",
+    response_model=AiCurationTopicWordsLeanResponse | AiCurationTopicWordsResponse,
+)
 def export_ai_curation_topic(
     topic_id: int,
+    lean: bool = Query(default=False, description="Return minimal export (id, term, examples only) for ChatGPT enrichment"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=100, ge=1, le=200),
     db: Session = Depends(get_db),
-) -> AiCurationTopicWordsResponse:
+) -> AiCurationTopicWordsLeanResponse | AiCurationTopicWordsResponse:
     try:
+        if lean:
+            return export_topic_words_lean_page(db, topic_id=topic_id, page=page, page_size=page_size)
         return export_topic_words_page(db, topic_id=topic_id, page=page, page_size=page_size)
     except AiCurationImportError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

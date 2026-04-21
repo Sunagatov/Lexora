@@ -7,7 +7,8 @@ How to enrich topic words (add examples, create new words) using ChatGPT and the
 | Purpose | Method | Path |
 |---|---|---|
 | List all topics | GET | `/api/ai-curation/topics` |
-| Export topic words | GET | `/api/ai-curation/topics/{topic_id}/export?page=1&page_size=100` |
+| Export topic words (full) | GET | `/api/ai-curation/topics/{topic_id}/export?page=1&page_size=100` |
+| Export for ChatGPT (lean) | GET | `/api/ai-curation/topics/{topic_id}/export?lean=true&page=1&page_size=100` |
 | Dry run / live import | POST | `/api/ai-curation/import` |
 
 Auth: session cookie + `X-CSRF-Token` header (same as all protected routes).
@@ -16,7 +17,9 @@ Auth: session cookie + `X-CSRF-Token` header (same as all protected routes).
 
 ### 1. Export
 
-Call the export endpoint **against prod** for the target topic. Save the response as `{topic}-page{N}-export.json`.
+Call the **lean** export endpoint **against prod** for the target topic. Save the response as `{topic}-page{N}-export.json`.
+
+The lean export (`?lean=true`) returns only `id`, `term`, and existing `example_entries` per word — no translations, no topic metadata, no allowed values. This is all ChatGPT needs for examples enrichment, and less input means faster responses and fewer hallucinations.
 
 > **Critical:** always export from prod, never from a local database. Word IDs differ between environments — using a local export will cause the import to fail or corrupt wrong words on prod.
 
@@ -43,10 +46,6 @@ ChatGPT returns a valid import JSON. Save it as `{topic}-page{N}-import.json`.
 
 POST the import JSON as-is (`"dry_run": true`). The backend runs all validation and returns a summary (words updated / created / unchanged) **without writing to the database**.
 
-```json
-{ "dry_run": true, ... }
-```
-
 Check: `updated_words`, `created_words`, `unchanged` counts look correct.
 
 ### 4. Live import
@@ -57,28 +56,68 @@ Set `"dry_run": false` in the file, POST again. The backend commits the changes.
 
 `dry_run: true` runs the full import logic — validates IDs, checks for stale data, resolves topic refs — then calls `db.rollback()` instead of `db.commit()`. Nothing is saved. Safe to run repeatedly.
 
-## Import payload shape (examples-only enrichment)
+## Import payload shape (v2)
+
+Three separate arrays replace the old `word_operations` discriminated union.
+
+### Examples-only enrichment (most common)
 
 ```json
 {
-  "schema_version": "lexora.ai-curation.v1",
+  "schema_version": "lexora.ai-curation.v2",
   "source_topic_id": 6,
   "exported_at": "<copy from export>",
   "dry_run": true,
-  "strict_mode": false,
-  "topic_operations": [],
-  "word_operations": [
+  "word_updates": [
+    {"id": 2662, "example_entries": ["...", "...", "..."]},
+    {"id": 2701, "example_entries": ["...", "...", "..."]}
+  ]
+}
+```
+
+`word_updates` is sparse — only include `id` + the fields to change. No `term`, no `op`.
+
+### Adding new words
+
+```json
+{
+  "schema_version": "lexora.ai-curation.v2",
+  "source_topic_id": 6,
+  "dry_run": true,
+  "word_creates": [
     {
-      "op": "update_existing_word",
-      "id": 2662,
-      "term": "alligator",
+      "target_topic_refs": [{"topic_id": 6}],
+      "term": "otter",
+      "translations": "выдра",
+      "part_of_speech": "noun",
+      "countability": "countable",
+      "example_entries": ["...", "...", "..."]
+    },
+    {
+      "target_topic_refs": [{"topic_id": 6}],
+      "term": "insist",
+      "translations": "настаивать",
+      "part_of_speech": "verb",
+      "pattern": "insist on sth / insist on doing sth",
+      "past_simple": "insisted",
+      "past_participle": "insisted",
       "example_entries": ["...", "...", "..."]
     }
   ]
 }
 ```
 
-Supported `op` values: `update_existing_word`, `create_new_word`, `reassign_word_topics`.
+All fields in `word_creates` are optional except `term`, `translations`, and `target_topic_refs`. Include only what applies (e.g. verbs get `past_simple`/`past_participle`/`pattern`; nouns get `countability`).
+
+### Reassigning words to different topics
+
+```json
+{
+  "word_reassigns": [
+    {"id": 2662, "add_topic_refs": [{"topic_id": 7}], "remove_topic_ids": [6]}
+  ]
+}
+```
 
 ## Service location
 

@@ -17,7 +17,7 @@ from app.shared.constraints import (
     WORD_VERB_FORM_MAX_LEN,
 )
 
-SCHEMA_VERSION = "lexora.ai-curation.v1"
+SCHEMA_VERSION = "lexora.ai-curation.v2"
 JsonEntry = Annotated[str, Field(min_length=1, max_length=1000)]
 
 
@@ -96,7 +96,7 @@ class AiCurationWord(BaseModel):
 
 
 class AiCurationTopicWordsResponse(BaseModel):
-    schema_version: Literal["lexora.ai-curation.v1"] = SCHEMA_VERSION
+    schema_version: Literal["lexora.ai-curation.v2"] = SCHEMA_VERSION
     exported_at: datetime
     source_topic: AiCurationTopicSummary
     pagination: PaginationMeta
@@ -104,6 +104,23 @@ class AiCurationTopicWordsResponse(BaseModel):
     instructions: list[str]
     words: list[AiCurationWord]
 
+
+class AiCurationWordLean(BaseModel):
+    id: int
+    term: str
+    example_entries: list[str]
+
+
+class AiCurationTopicWordsLeanResponse(BaseModel):
+    """Minimal export for ChatGPT examples enrichment — id, term, existing examples only."""
+    schema_version: Literal["lexora.ai-curation.v2"] = SCHEMA_VERSION
+    source_topic_id: int
+    exported_at: datetime
+    total_words: int
+    words: list[AiCurationWordLean]
+
+
+# ── Import: topic operations ──────────────────────────────────────────────────
 
 class TopicRef(BaseModel):
     topic_id: int | None = Field(default=None, gt=0)
@@ -128,10 +145,11 @@ class CreateTopicOperation(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
-class UpdateExistingWordOperation(BaseModel):
-    op: Literal["update_existing_word"] = "update_existing_word"
+# ── Import: word operations (v2) ──────────────────────────────────────────────
+
+class WordUpdateV2(BaseModel):
+    """Sparse update — only id is required, include only the fields to change."""
     id: int = Field(gt=0)
-    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
 
     translations: str | None = Field(default=None, min_length=1)
     translation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
@@ -171,12 +189,12 @@ class UpdateExistingWordOperation(BaseModel):
         return value
 
 
-class CreateNewWordOperation(BaseModel):
-    op: Literal["create_new_word"] = "create_new_word"
+class WordCreateV2(BaseModel):
+    """Full word creation — include term, translations, and all applicable fields."""
     target_topic_refs: list[TopicRef] = Field(min_length=1, max_length=20)
-
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
     translations: str = Field(min_length=1)
+
     translation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     pattern: str | None = Field(default=None, max_length=2000)
     example_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
@@ -214,33 +232,35 @@ class CreateNewWordOperation(BaseModel):
         return value
 
 
-class ReassignWordTopicsOperation(BaseModel):
-    op: Literal["reassign_word_topics"] = "reassign_word_topics"
+class WordReassignV2(BaseModel):
+    """Reassign an existing word to different topics."""
     id: int = Field(gt=0)
-    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
     add_topic_refs: list[TopicRef] = Field(default_factory=list, max_length=20)
     remove_topic_ids: list[int] = Field(default_factory=list, max_length=20)
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
-TopicOperation = Annotated[CreateTopicOperation, Field(discriminator="op")]
-WordOperation = Annotated[
-    UpdateExistingWordOperation | CreateNewWordOperation | ReassignWordTopicsOperation,
-    Field(discriminator="op"),
-]
-
+# ── Import request / response ─────────────────────────────────────────────────
 
 class AiCurationImportRequest(BaseModel):
-    schema_version: Literal["lexora.ai-curation.v1"] = SCHEMA_VERSION
+    schema_version: Literal["lexora.ai-curation.v2"] = SCHEMA_VERSION
     source_topic_id: int = Field(gt=0)
     dry_run: bool = False
     strict_mode: bool = False
     exported_at: datetime | None = None
-    topic_operations: list[TopicOperation] = Field(default_factory=list, max_length=50)
-    word_operations: list[WordOperation] = Field(min_length=1, max_length=500)
+    topic_operations: list[CreateTopicOperation] = Field(default_factory=list, max_length=50)
+    word_updates: list[WordUpdateV2] = Field(default_factory=list, max_length=500)
+    word_creates: list[WordCreateV2] = Field(default_factory=list, max_length=500)
+    word_reassigns: list[WordReassignV2] = Field(default_factory=list, max_length=500)
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    @model_validator(mode="after")
+    def validate_not_empty(self) -> "AiCurationImportRequest":
+        if not self.topic_operations and not self.word_updates and not self.word_creates and not self.word_reassigns:
+            raise ValueError("At least one operation must be provided")
+        return self
 
 
 class CreatedTopicResult(BaseModel):
