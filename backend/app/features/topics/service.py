@@ -112,7 +112,7 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
             if not normalized_slug:
                 raise InvalidTopicNameError(slug_value)
             payload.slug = normalized_slug
-            assert_slug_available(db, payload.slug, exclude_topic_id=topic.id)
+            assert_slug_available(db, normalized_slug, exclude_topic_id=topic.id)
     elif payload.name is not None:
         if payload.name != topic.name:
             name_value = payload.name
