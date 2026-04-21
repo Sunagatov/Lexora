@@ -204,6 +204,11 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         current_example_entries = [
             item.value for item in getattr(word, "example_items", [])
         ]
+        # Clear before re-assigning to avoid unique constraint violations on flush
+        # (SQLAlchemy may INSERT new rows before DELETE-ing old ones)
+        word.translation_items = []
+        word.example_items = []
+        db.flush()
         sync_word_multivalue_fields(
             word,
             payload.translations if "translations" in fields_set else word.translations,

@@ -64,7 +64,18 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
         <>
           {expanded && (
             <div className="word-card-extras">
-              {showExample && <div className="word-extra"><strong>Example:</strong> {word.example}</div>}
+              {showExample && (
+                <div className="word-extra">
+                  <strong>Example:</strong>
+                  {word.example_entries && word.example_entries.length > 1 ? (
+                    <ol className="word-extra-examples">
+                      {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
+                    </ol>
+                  ) : (
+                    <span> {word.example_entries?.[0] ?? word.example}</span>
+                  )}
+                </div>
+              )}
               {showNotes   && <div className="word-extra"><strong>Notes:</strong> {word.notes}</div>}
               {showPattern && <div className="word-extra"><strong>Pattern:</strong> {word.pattern}</div>}
             </div>

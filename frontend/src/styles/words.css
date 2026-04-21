@@ -84,6 +84,37 @@
 
 .word-level-wrap {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.word-table-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.word-table-expand-btn:hover {
+  background: var(--surface-2, #f1f5f9);
+  color: var(--text);
+}
+
+.word-row-detail td {
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px 12px 16px;
+}
+
+.word-cell-detail {
+  padding-top: 0 !important;
 }
 
 .word-term {
@@ -196,6 +227,16 @@
 .word-extra strong {
   color: var(--text-2);
   font-weight: 600;
+}
+
+.word-extra-examples {
+  margin: 4px 0 0 1.2em;
+  padding: 0;
+  list-style: decimal;
+}
+
+.word-extra-examples li {
+  margin-bottom: 2px;
 }
 
 /* Level badge */

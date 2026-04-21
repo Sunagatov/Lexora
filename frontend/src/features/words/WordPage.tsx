@@ -69,7 +69,17 @@ export function WordPage() {
             <ViewRow label="Topics" value={topics.filter((t) => word.topic_ids.includes(t.id)).map((t) => t.name).join(', ') || '—'} />
             <ViewRow label="Knowledge" value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
             {word.countability && <ViewRow label="Countability" value={word.countability} />}
-            {examplesToView && <ViewRow label="Examples" value={examplesToView} preserveLines />}
+            {(word.example_entries?.length
+              ? <div className="word-page-view-row">
+                  <span className="word-page-view-label">Examples</span>
+                  <ol className="word-page-examples-list">
+                    {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
+                  </ol>
+                </div>
+              : examplesToView
+                ? <ViewRow label="Examples" value={examplesToView} preserveLines />
+                : null
+            )}
             {word.notes && <ViewRow label="Notes" value={word.notes} preserveLines />}
             {word.pattern && <ViewRow label="Pattern" value={word.pattern} preserveLines />}
             {word.past_simple && <ViewRow label="Past simple" value={word.past_simple} />}

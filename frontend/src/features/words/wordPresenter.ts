@@ -16,7 +16,7 @@ export function smartPreview(word: Word): {label: string; text: string} | null {
   if (pos === 'verb' && word.pattern)        return {label: 'Pattern', text: word.pattern}
   if ((pos === 'phrase' || pos === 'preposition') && word.notes) return {label: 'Notes', text: word.notes}
   if (word.pattern)  return {label: 'Pattern', text: word.pattern}
-  if (word.example)  return {label: 'Example', text: word.example}
+  if (word.example)  return {label: 'Example', text: word.example_entries?.[0] ?? word.example}
   if (word.notes)    return {label: 'Notes',   text: word.notes}
   return null
 }
