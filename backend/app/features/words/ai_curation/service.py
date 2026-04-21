@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from collections import Counter
 from datetime import datetime, timezone
+from typing import cast
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -51,7 +52,7 @@ class AiCurationImportError(Exception):
 
 
 def _get_topic(db: Session, topic_id: int) -> Topic:
-    topic = db.scalar(select(Topic).where(Topic.id == topic_id, Topic.deleted_at.is_(None)))
+    topic: Topic | None = db.scalar(select(Topic).where(Topic.id == topic_id, Topic.deleted_at.is_(None)))
     if topic is None:
         raise AiCurationImportError(f"Topic {topic_id} not found")
     return topic
@@ -82,12 +83,12 @@ def list_topics_page(db: Session, page: int, page_size: int) -> AiCurationTopicL
 
     items = [
         AiCurationTopicSummary(
-            id=row.id,
-            name=row.name,
-            slug=row.slug,
+            id=int(row.id),
+            name=str(row.name),
+            slug=str(row.slug),
             description=row.description,
-            is_active=row.is_active,
-            word_count=row.word_count,
+            is_active=bool(row.is_active),
+            word_count=int(row.word_count),
         )
         for row in rows
     ]
@@ -101,9 +102,9 @@ def _word_to_export(word: Word) -> AiCurationWord:
     example_count_value = example_count(word)
     return AiCurationWord(
         id=word.id,
-        topic_ids=[topic.id for topic in word.topics if topic.deleted_at is None],
-        term=word.term,
-        translations=word.translations,
+        topic_ids=[int(topic.id) for topic in word.topics if topic.deleted_at is None],
+        term=str(word.term),
+        translations=str(word.translations),
         translation_entries=[item.value for item in getattr(word, "translation_items", [])],
         pattern=word.pattern,
         example_entries=[item.value for item in getattr(word, "example_items", [])],
@@ -139,7 +140,7 @@ def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: in
     ) or 0
     offset = (page - 1) * page_size
 
-    words = list(
+    words: list[Word] = list(
         db.scalars(
             _with_details(
                 select(Word)
@@ -243,7 +244,7 @@ def _load_existing_words(
             .where(Word.topics.any((Topic.id == source_topic_id) & Topic.deleted_at.is_(None)))
         )
     ).all()
-    return {word.id: word for word in words}
+    return {int(word.id): word for word in words}
 
 
 def _assert_unique_ids(ids: list[int], label: str) -> None:
@@ -262,7 +263,7 @@ def _resolve_topic_ref(
     created_topics: dict[str, Topic],
 ) -> Topic:
     if ref.topic_id is not None:
-        topic = db.scalar(select(Topic).where(Topic.id == ref.topic_id, Topic.deleted_at.is_(None)))
+        topic: Topic | None = db.scalar(select(Topic).where(Topic.id == ref.topic_id, Topic.deleted_at.is_(None)))
         if topic is None:
             raise AiCurationImportError(f"Referenced topic {ref.topic_id} not found")
         return topic
@@ -270,7 +271,7 @@ def _resolve_topic_ref(
     topic = created_topics.get(ref.client_key or "")
     if topic is None:
         raise AiCurationImportError(f"Referenced client_key '{ref.client_key}' was not created in topic_operations")
-    return topic
+    return cast(Topic, topic)
 
 
 def _current_value(word: Word, field: str):

@@ -136,7 +136,7 @@ def _import_sheet(
             if _should_validate_existing_word_duplicate(existing, term, topic_was_missing):
                 assert_no_duplicate_word(
                     term,
-                    existing_normalized_terms(db, [topic.id], exclude_word_id=existing.id),
+                    existing_normalized_terms(db, [int(topic.id)], exclude_word_id=int(existing.id)),
                 )
 
             old_level = existing.knowledge_level
@@ -179,14 +179,14 @@ def _import_sheet(
             )
 
             if existing.knowledge_level != old_level and existing.knowledge_level is not None:
-                record_level_change(db, existing.id, old_level, existing.knowledge_level, "xlsx_import")
+                record_level_change(db, int(existing.id), old_level, existing.knowledge_level, "xlsx_import")
 
             db.add(existing)
             db.flush()
             updated += 1
             continue
 
-        assert_no_duplicate_word(term, existing_normalized_terms(db, [topic.id]))
+        assert_no_duplicate_word(term, existing_normalized_terms(db, [int(topic.id)]))
 
         knowledge_for_create = knowledge_value if knowledge_value is not None else 1
         part_of_speech_value = (

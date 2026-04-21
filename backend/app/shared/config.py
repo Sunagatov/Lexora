@@ -1,3 +1,4 @@
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,13 +13,13 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_debug: bool = True
 
-    app_password: str
-    secret_key: str
+    app_password: str = Field(default="")
+    secret_key: str = Field(default="")
     cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
     cookie_httponly: bool = True
     cookie_secure: bool = False  # set True in production via env
     cookie_samesite: str = "lax"
-    api_key: str
+    api_key: str = Field(default="")
 
     smart_review_enabled: bool = True
     smart_review_level_1_count: int = 5
@@ -57,6 +58,18 @@ class Settings(BaseSettings):
             f"postgresql+psycopg://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
+
+    @model_validator(mode="after")
+    def _validate_required_values(self) -> "Settings":
+        required = {
+            "app_password": self.app_password,
+            "secret_key": self.secret_key,
+            "api_key": self.api_key,
+        }
+        missing = [name for name, value in required.items() if not value]
+        if missing:
+            raise ValueError(f"Missing required settings: {', '.join(missing)}")
+        return self
 
 
 settings = Settings()

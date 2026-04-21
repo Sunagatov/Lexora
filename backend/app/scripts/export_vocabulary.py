@@ -15,7 +15,9 @@ from app.scripts.xlsx_export import write_sheet
 
 def export_workbook(output_path: Path) -> None:
     wb = Workbook()
-    wb.remove(wb.active)
+    default_sheet = wb.active
+    assert default_sheet is not None
+    wb.remove(default_sheet)
 
     with SessionLocal() as db:
         topics = list(db.scalars(select(Topic).where(Topic.is_active.is_(True)).order_by(Topic.name)))

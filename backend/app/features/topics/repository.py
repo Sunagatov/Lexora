@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -26,7 +27,7 @@ def get_all_topics_with_words(db: Session) -> list[Topic]:
 
 
 def get_topic_by_id(db: Session, topic_id: int) -> Topic | None:
-    return db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None)))
+    return cast(Topic | None, db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None))))
 
 
 def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
@@ -36,15 +37,15 @@ def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
         .where(Topic.deleted_at.is_(None))
         .options(selectinload(Topic.words).selectinload(Word.topics))
     )
-    return db.scalar(stmt)
+    return cast(Topic | None, db.scalar(stmt))
 
 
 def get_topic_by_id_including_deleted(db: Session, topic_id: int) -> Topic | None:
-    return db.get(Topic, topic_id)
+    return cast(Topic | None, db.get(Topic, topic_id))
 
 
 def get_topic_by_slug(db: Session, slug: str) -> Topic | None:
-    return db.scalar(select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None)))
+    return cast(Topic | None, db.scalar(select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None))))
 
 
 def get_deleted_topics(db: Session) -> list[Topic]:

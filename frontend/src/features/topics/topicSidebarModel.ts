@@ -15,14 +15,28 @@ export function sortTopics(
   progress: Map<number, number>,
   counts: Map<number, number>,
 ): Topic[] {
-  const comparators: Partial<Record<SortMode, Comparator>> = {
-    weakest:   (a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0),
-    strongest: (a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0),
-    largest:   (a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0),
-    az:        (a, b) => a.name.localeCompare(b.name),
-    za:        (a, b) => b.name.localeCompare(a.name),
+  let cmp: Comparator | null = null
+
+  switch (mode) {
+    case 'weakest':
+      cmp = (a, b) => (progress.get(a.id) ?? 0) - (progress.get(b.id) ?? 0)
+      break
+    case 'strongest':
+      cmp = (a, b) => (progress.get(b.id) ?? 0) - (progress.get(a.id) ?? 0)
+      break
+    case 'largest':
+      cmp = (a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0)
+      break
+    case 'az':
+      cmp = (a, b) => a.name.localeCompare(b.name)
+      break
+    case 'za':
+      cmp = (a, b) => b.name.localeCompare(a.name)
+      break
+    default:
+      break
   }
-  const cmp = comparators[mode]
+
   return cmp ? [...topics].sort(cmp) : [...topics]
 }
 

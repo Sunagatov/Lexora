@@ -67,6 +67,3 @@ export type WorkbookImportResponse = {
   skipped: number
   sheets: WorkbookImportSheetSummary[]
 }
-
-export type TrashWord  = Word  & {deleted_at: string}
-export type TrashTopic = Topic & {deleted_at: string}

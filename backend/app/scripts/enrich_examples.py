@@ -42,7 +42,7 @@ import argparse
 import json
 import os
 import sys
-from typing import Protocol
+from typing import Any, Literal, Protocol, TypedDict, cast
 
 import httpx
 
@@ -69,7 +69,17 @@ _KEY_ENV = {
 }
 
 
-def _user_prompt(words: list[dict]) -> str:
+class WordPayload(TypedDict):
+    id: int
+    example_entries: list[str]
+
+
+class ChatMessage(TypedDict):
+    role: Literal["system", "user"]
+    content: str
+
+
+def _user_prompt(words: list[WordPayload]) -> str:
     return (
         "Generate exactly 3 natural, concise English example sentences for each word. "
         "No Russian. Keep them practical and vocabulary-app friendly.\n\n"
@@ -80,7 +90,7 @@ def _user_prompt(words: list[dict]) -> str:
 # ── Provider abstraction ───────────────────────────────────────────────────────
 
 class AiProvider(Protocol):
-    def enrich(self, model: str, words: list[dict]) -> list[dict]: ...
+    def enrich(self, model: str, words: list[WordPayload]) -> list[WordPayload]: ...
 
 
 class GeminiProvider:
@@ -92,15 +102,17 @@ class GeminiProvider:
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         )
 
-    def enrich(self, model: str, words: list[dict]) -> list[dict]:
+    def enrich(self, model: str, words: list[WordPayload]) -> list[WordPayload]:
+        response_format = cast(Any, {"type": "json_object"})
+        messages: list[ChatMessage] = [
+            {"role": "system", "content": _SYSTEM},
+            {"role": "user", "content": _user_prompt(words)},
+        ]
         resp = self._client.chat.completions.create(
             model=model,
             max_tokens=8192,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": _SYSTEM},
-                {"role": "user", "content": _user_prompt(words)},
-            ],
+            response_format=response_format,
+            messages=cast(Any, messages),
         )
         text = resp.choices[0].message.content or ""
         data = json.loads(text.strip())
@@ -114,15 +126,17 @@ class OpenAIProvider:
         from openai import OpenAI
         self._client = OpenAI(api_key=api_key)
 
-    def enrich(self, model: str, words: list[dict]) -> list[dict]:
+    def enrich(self, model: str, words: list[WordPayload]) -> list[WordPayload]:
+        response_format = cast(Any, {"type": "json_object"})
+        messages: list[ChatMessage] = [
+            {"role": "system", "content": _SYSTEM},
+            {"role": "user", "content": _user_prompt(words)},
+        ]
         resp = self._client.chat.completions.create(
             model=model,
             max_tokens=8192,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": _SYSTEM},
-                {"role": "user", "content": _user_prompt(words)},
-            ],
+            response_format=response_format,
+            messages=cast(Any, messages),
         )
         text = resp.choices[0].message.content or ""
         data = json.loads(text.strip())
@@ -136,12 +150,12 @@ class AnthropicProvider:
         import anthropic
         self._client = anthropic.Anthropic(api_key=api_key)
 
-    def enrich(self, model: str, words: list[dict]) -> list[dict]:
+    def enrich(self, model: str, words: list[WordPayload]) -> list[WordPayload]:
         msg = self._client.messages.create(
             model=model,
             max_tokens=8192,
             system=_SYSTEM,
-            messages=[{"role": "user", "content": _user_prompt(words)}],
+            messages=cast(Any, [{"role": "user", "content": _user_prompt(words)}]),
         )
         return json.loads(msg.content[0].text.strip())
 
@@ -157,6 +171,7 @@ def _resolve_provider(provider_name: str | None) -> tuple[str, AiProvider]:
             keys = ", ".join(_KEY_ENV.values())
             sys.exit(f"Error: no API key found. Set one of: {keys}")
 
+    assert provider_name is not None
     key = os.environ.get(_KEY_ENV[provider_name])
     if not key:
         sys.exit(f"Error: {_KEY_ENV[provider_name]} is required for --provider {provider_name}")
@@ -180,7 +195,7 @@ def _login(http: httpx.Client, base_url: str, password: str) -> str:
     return resp.json()["csrf_token"]
 
 
-def _export_page(http: httpx.Client, base_url: str, csrf: str, topic_id: int, page: int, page_size: int) -> dict:
+def _export_page(http: httpx.Client, base_url: str, csrf: str, topic_id: int, page: int, page_size: int) -> dict[str, object]:
     resp = http.get(
         f"{base_url}/api/ai-curation/topics/{topic_id}/export",
         params={"lean": "true", "page": page, "page_size": page_size},
@@ -190,7 +205,7 @@ def _export_page(http: httpx.Client, base_url: str, csrf: str, topic_id: int, pa
     return resp.json()
 
 
-def _import(http: httpx.Client, base_url: str, csrf: str, payload: dict) -> dict:
+def _import(http: httpx.Client, base_url: str, csrf: str, payload: dict[str, object]) -> dict[str, object]:
     resp = http.post(
         f"{base_url}/api/ai-curation/import",
         json=payload,
@@ -240,7 +255,7 @@ def main() -> None:
 
         while True:
             export = _export_page(http, args.prod_url, csrf, args.topic_id, page, args.page_size)
-            words = export.get("words", [])
+            words = cast(list[WordPayload], export.get("words", []))
             if not words:
                 print("No more words.")
                 break

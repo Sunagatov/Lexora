@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from io import BytesIO
+from typing import cast
 
 from openpyxl import Workbook
 from sqlalchemy import select
@@ -46,12 +47,13 @@ def _countability_for_export(word: Word) -> str | None:
 def build_words_workbook(db: Session) -> tuple[str, bytes]:
     workbook = Workbook()
     default_sheet = workbook.active
+    assert default_sheet is not None
     workbook.remove(default_sheet)
 
     _create_lists_sheet(workbook)
 
-    topics = list(
-        db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all()
+    topics: list[Topic] = list(
+        cast(list[Topic], db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all())
     )
 
     used_titles: set[str] = set()
@@ -67,9 +69,11 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
         _add_validations(workbook, ws, 2)
     else:
         for topic in topics:
-            words = list(
-                db.scalars(
-                    select(Word)
+            words: list[Word] = list(
+                cast(
+                    list[Word],
+                    db.scalars(
+                        select(Word)
                     .options(
                         selectinload(Word.translation_items),
                         selectinload(Word.example_items),
@@ -78,7 +82,8 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
                     .where(Word.deleted_at.is_(None))
                     .where(Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None)))
                     .order_by(Word.term.asc())
-                ).all()
+                    ).all(),
+                )
             )
 
             sheet_title = _safe_sheet_title(topic.name, used_titles)

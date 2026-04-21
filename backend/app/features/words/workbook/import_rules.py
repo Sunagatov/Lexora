@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
-
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.repository import get_word_by_id_including_deleted
@@ -53,11 +52,11 @@ def _get_topic(db: Session, topic_name: str) -> Topic:
             f"Topic name '{topic_name}' is too long; maximum is {TOPIC_NAME_MAX_LEN} characters."
         )
 
-    topic = db.scalar(select(Topic).where(Topic.name == topic_name).where(Topic.deleted_at.is_(None)))
+    topic: Topic | None = db.scalar(select(Topic).where(Topic.name == topic_name).where(Topic.deleted_at.is_(None)))
     if topic is not None:
         return topic
 
-    deleted = db.scalar(select(Topic).where(Topic.name == topic_name).where(Topic.deleted_at.isnot(None)))
+    deleted: Topic | None = db.scalar(select(Topic).where(Topic.name == topic_name).where(Topic.deleted_at.isnot(None)))
     if deleted is not None:
         raise InvalidWorkbookError(
             f"Workbook references topic '{topic_name}', but that topic is currently in Trash."
@@ -83,7 +82,7 @@ def _find_existing_word(db: Session, topic_id: int, word_id: int | None, term: s
             )
         return word
 
-    candidates = list(
+    candidates: list[Word] = list(
         db.scalars(
             select(Word)
             .options(

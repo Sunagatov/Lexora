@@ -1,6 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 from logging.config import dictConfig
+from typing import Any, cast
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,7 +75,7 @@ app = FastAPI(
 )
 
 app.add_middleware(
-    CORSMiddleware,
+    cast(Any, CORSMiddleware),
     allow_origins=settings.cors_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
