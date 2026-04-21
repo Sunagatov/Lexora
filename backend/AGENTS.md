@@ -109,6 +109,13 @@ Durable rules:
 - spot-check 10-15 proposed entries before live import when the split plan is newly tuned or large
 - if a broad topic is semantically messy, keep it as an umbrella topic instead of forcing weak subtopics
 
+## Alembic / migration rules
+
+- `alembic/env.py` — `SET LOCAL` statements must be **inside** `with context.begin_transaction()`, not before it. Placing them outside triggers SQLAlchemy 2 autobegin which causes migrations to silently no-op (exit 0, table never created). This burned us 2026-04-21.
+- The Dockerfile CMD runs `alembic upgrade head && uvicorn ...` on every container start.
+- Prod migrations are also run explicitly by Vault's `prod:migrate` task (called automatically inside `prod:deploy`, `prod:release`, and `prod:ship`).
+- If `alembic upgrade head` exits 0 but the table still doesn't exist, check: (1) is `alembic_version` already stamped at head without the DDL having run? (2) are SET statements outside the transaction block in `env.py`?
+
 ## Backend correctness invariants
 
 These are easy to regress and should stay stable:
