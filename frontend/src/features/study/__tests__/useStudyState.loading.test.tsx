@@ -1,3 +1,4 @@
+// noinspection JSUnusedGlobalSymbols
 import {renderHook} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 import {useStudyState} from '../useStudyState'
@@ -35,6 +36,8 @@ vi.mock('../../words/useWordFilter', () => ({
     setLevelFilter: vi.fn(),
     sortBy: 'term',
     setSortBy: vi.fn(),
+    frozenIds: null,
+    setFrozenIds: vi.fn(),
     levelSummary: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, unset: 0},
     filteredWords: [],
     pageWords: [],
