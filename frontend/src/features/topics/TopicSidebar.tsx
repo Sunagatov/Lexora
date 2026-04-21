@@ -91,13 +91,6 @@ export function TopicSidebar({
   const srProgress = smartQueue && smartQueue.total_count > 0
     ? Math.round((smartQueue.completed_count / smartQueue.total_count) * 100) : 0
 
-  const btnProps = {
-    selectedTopicId, isSmartReview, topicCounts, topicProgress,
-    pinnedIds: prefs.pinnedIds, onSelect: handleSelect,
-    onDelete: (id: number) => setDeleteTopicId(id),
-    onPin: prefs.togglePin,
-  }
-
   async function handleExportWorkbook() {
     try {
       setWorkbookBusy(true)
@@ -191,13 +184,39 @@ export function TopicSidebar({
         {pinnedTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header"><span className="sidebar-group-label">📌 Pinned</span></div>
-            {pinnedTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {pinnedTopics.map((t) => (
+              <TopicButton
+                key={t.id}
+                topic={t}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onDelete={(id: number) => setDeleteTopicId(id)}
+                onPin={prefs.togglePin}
+              />
+            ))}
           </div>
         )}
         {recentTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header"><span className="sidebar-group-label">🕒 Recent</span></div>
-            {recentTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {recentTopics.map((t) => (
+              <TopicButton
+                key={t.id}
+                topic={t}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onDelete={(id: number) => setDeleteTopicId(id)}
+                onPin={prefs.togglePin}
+              />
+            ))}
           </div>
         )}
 
@@ -226,7 +245,20 @@ export function TopicSidebar({
                 {weakCount(posTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(posTopics, topicProgress, topicCounts)} weak</span></>}
               </div>
             )}
-            {!prefs.posCollapsed && posTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {!prefs.posCollapsed && posTopics.map((t) => (
+              <TopicButton
+                key={t.id}
+                topic={t}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onDelete={(id: number) => setDeleteTopicId(id)}
+                onPin={prefs.togglePin}
+              />
+            ))}
           </div>
         )}
 
@@ -255,7 +287,20 @@ export function TopicSidebar({
                 {weakCount(themeTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics, topicProgress, topicCounts)} below 30%</span></>}
               </div>
             )}
-            {!prefs.topicsCollapsed && themeTopics.map((t) => <TopicButton key={t.id} topic={t} {...btnProps} />)}
+            {!prefs.topicsCollapsed && themeTopics.map((t) => (
+              <TopicButton
+                key={t.id}
+                topic={t}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onDelete={(id: number) => setDeleteTopicId(id)}
+                onPin={prefs.togglePin}
+              />
+            ))}
           </div>
         )}
 
