@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi import HTTPException
@@ -15,6 +15,7 @@ from app.features.words.ai_curation.schemas import (
     AiCurationTopicWordsResponse,
     AiCurationAllowedValues,
     AiCurationWord,
+    CreateTopicOperation,
     PaginationMeta,
 )
 from app.features.words.ai_curation.service import AiCurationImportError
@@ -107,7 +108,7 @@ def test_list_topics_returns_paginated_response(monkeypatch) -> None:
     expected = _topic_list_response()
     monkeypatch.setattr(ai_curation_router, "list_topics_page", lambda db, page, page_size: expected)
 
-    result = ai_curation_router.list_ai_curation_topics(page=1, page_size=50, db=object())
+    result = ai_curation_router.list_ai_curation_topics(page=1, page_size=50, db=MagicMock())
 
     assert result is expected
     assert len(result.items) == 1
@@ -123,7 +124,7 @@ def test_list_topic_words_returns_words_and_instructions(monkeypatch) -> None:
     expected = _words_response()
     monkeypatch.setattr(ai_curation_router, "export_topic_words_page", lambda db, topic_id, page, page_size: expected)
 
-    result = ai_curation_router.list_ai_curation_topic_words(topic_id=1, page=1, page_size=100, db=object())
+    result = ai_curation_router.list_ai_curation_topic_words(topic_id=1, page=1, page_size=100, db=MagicMock())
 
     assert result is expected
     assert len(result.words) == 1
@@ -137,7 +138,7 @@ def test_list_topic_words_raises_404_for_missing_topic(monkeypatch) -> None:
     monkeypatch.setattr(ai_curation_router, "export_topic_words_page", raise_error)
 
     with pytest.raises(HTTPException) as exc_info:
-        ai_curation_router.list_ai_curation_topic_words(topic_id=99, page=1, page_size=100, db=object())
+        ai_curation_router.list_ai_curation_topic_words(topic_id=99, page=1, page_size=100, db=MagicMock())
 
     assert exc_info.value.status_code == 404
     assert "99" in exc_info.value.detail
@@ -167,7 +168,7 @@ def test_import_router_returns_response_on_success(monkeypatch) -> None:
     expected = _import_response(created_words=1, created_word_ids=[42])
     monkeypatch.setattr(ai_curation_router, "import_ai_curation", lambda db, payload: expected)
 
-    result = ai_curation_router.import_ai_curation_payload(_minimal_import_payload(), db=object())
+    result = ai_curation_router.import_ai_curation_payload(_minimal_import_payload(), db=MagicMock())
 
     assert result is expected
 
@@ -179,7 +180,7 @@ def test_import_router_maps_error_to_400(monkeypatch) -> None:
     monkeypatch.setattr(ai_curation_router, "import_ai_curation", raise_error)
 
     with pytest.raises(HTTPException) as exc_info:
-        ai_curation_router.import_ai_curation_payload(_minimal_import_payload(), db=object())
+        ai_curation_router.import_ai_curation_payload(_minimal_import_payload(), db=MagicMock())
 
     assert exc_info.value.status_code == 400
     assert "Term mismatch" in exc_info.value.detail
@@ -338,7 +339,7 @@ def test_import_with_new_topic_and_word(monkeypatch) -> None:
         source_topic_id=1,
         dry_run=False,
         topic_operations=[
-            {"op": "create_topic", "client_key": "retail-banking", "name": "Retail Banking"},
+            CreateTopicOperation(client_key="retail-banking", name="Retail Banking"),
         ],
         word_operations=[
             {
@@ -502,8 +503,8 @@ def test_import_duplicate_client_key_raises_error(monkeypatch) -> None:
     payload = AiCurationImportRequest(
         source_topic_id=1,
         topic_operations=[
-            {"op": "create_topic", "client_key": "dup", "name": "Topic A"},
-            {"op": "create_topic", "client_key": "dup", "name": "Topic B"},
+            CreateTopicOperation(client_key="dup", name="Topic A"),
+            CreateTopicOperation(client_key="dup", name="Topic B"),
         ],
         word_operations=[
             {
@@ -740,7 +741,7 @@ def test_strict_mode_allows_reassign_to_request_created_topic(monkeypatch) -> No
     payload = AiCurationImportRequest(
         source_topic_id=1,
         strict_mode=True,
-        topic_operations=[{"op": "create_topic", "client_key": "retail", "name": "Retail Banking"}],
+        topic_operations=[CreateTopicOperation(client_key="retail", name="Retail Banking")],
         word_operations=[
             {
                 "op": "reassign_word_topics",

@@ -55,8 +55,6 @@ def test_complete_queue_item_raises_when_queue_is_missing_or_inactive() -> None:
 
 
 def test_complete_queue_item_raises_when_queue_is_expired() -> None:
-    from datetime import timedelta
-
     item = SimpleNamespace(queue_id=5, is_completed=False, completed_at=None)
     past = datetime(2020, 1, 1, tzinfo=timezone.utc)
     queue = SimpleNamespace(
