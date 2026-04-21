@@ -43,11 +43,11 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        connection.execute(text("SET statement_timeout = 0"))
-        connection.execute(text("SET lock_timeout = 0"))
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
+            connection.execute(text("SET LOCAL statement_timeout = 0"))
+            connection.execute(text("SET LOCAL lock_timeout = 0"))
             context.run_migrations()
 
 
