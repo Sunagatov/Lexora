@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -44,7 +45,7 @@ def _pick_for_level(
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
 
-    candidates: list[Word] = list(db.scalars(stmt).all())
+    candidates: list[Word] = cast(list[Word], list(db.scalars(stmt).all()))
     random.shuffle(candidates)
 
     picked: list[Word] = []
@@ -121,16 +122,16 @@ def _queue_needs_regeneration(queue: StudyQueue) -> bool:
 
 def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
     """Mark a queue item complete and return the updated queue. Raises domain errors if not found/inactive."""
-    item: StudyQueueItem | None = db.get(StudyQueueItem, item_id)
+    item: StudyQueueItem | None = cast(StudyQueueItem | None, db.get(StudyQueueItem, item_id))
     if item is None:
         raise QueueItemNotFoundError
 
-    queue: StudyQueue | None = db.get(StudyQueue, item.queue_id)
+    queue: StudyQueue | None = cast(StudyQueue | None, db.get(StudyQueue, item.queue_id))
     now = datetime.now(timezone.utc)
     if queue is None or not queue.is_active or queue.expires_at <= now:
         raise QueueNotActiveError
 
-    word: Word | None = db.get(Word, item.word_id)
+    word: Word | None = cast(Word | None, db.get(Word, item.word_id))
     if word is None or word.deleted_at is not None or not word.is_active:
         raise QueueNotActiveError
 
@@ -145,7 +146,7 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
 
 def deactivate_all_queues(db: Session) -> None:
     """Mark all active queues inactive. Does NOT commit — caller owns the transaction."""
-    for queue in db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all():
+    for queue in cast(list[StudyQueue], list(db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all())):
         queue.is_active = False
 
 
@@ -164,7 +165,7 @@ def generate_queue(db: Session) -> StudyQueue:
     for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        words = _pick_for_level_retry_excluded(db, level, needed, cooldown_ids | {w.id for w in selected}, topic_counts)
+        words: list[Word] = _pick_for_level_retry_excluded(db, level, needed, cooldown_ids | {w.id for w in selected}, topic_counts)
         selected.extend(words)
 
     random.shuffle(selected)
@@ -194,12 +195,15 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     if not settings.smart_review_enabled:
         return None
     now = datetime.now(timezone.utc)
-    queue: StudyQueue | None = db.scalar(
+    queue: StudyQueue | None = cast(
+        StudyQueue | None,
+        db.scalar(
         select(StudyQueue)
         .where(StudyQueue.is_active.is_(True))
         .where(StudyQueue.expires_at > now)
         .options(selectinload(StudyQueue.items).selectinload(StudyQueueItem.word))
         .order_by(StudyQueue.generated_at.desc())
+        ),
     )
     if queue is not None:
         if queue.total_count == 0:

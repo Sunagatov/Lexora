@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
-from app.features.words.model import Word, WordExample, WordTranslation
+from app.features.words.model import Word, WordExample, WordTranslation, word_topics
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
 from app.features.stats.service import record_level_change
@@ -112,9 +112,12 @@ def sync_word_multivalue_fields(
 def get_all_words(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
     stmt = _with_details(select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc()))
     if topic_id is not None:
-        stmt = stmt.where(Word.topics.any(
-            (Topic.id == topic_id) & Topic.deleted_at.is_(None)
-        ))
+        stmt = (
+            stmt.join(word_topics, word_topics.c.word_id == Word.id)
+            .join(Topic, Topic.id == word_topics.c.topic_id)
+            .where(Topic.id == topic_id)
+            .where(Topic.deleted_at.is_(None))
+        )
     if search:
         needle = f"%{search}%"
         stmt = stmt.where(
@@ -126,8 +129,7 @@ def get_all_words(db: Session, topic_id: int | None = None, search: str | None =
             | Word.past_simple.ilike(needle)
             | Word.past_participle.ilike(needle)
         )
-    words: list[Word] = [word for word in db.scalars(stmt).all()]
-    return words
+    return list(db.scalars(stmt).all())
 
 
 def get_word_by_id(db: Session, word_id: int) -> Word | None:
@@ -139,15 +141,14 @@ def get_word_by_id_including_deleted(db: Session, word_id: int) -> Word | None:
 
 
 def get_deleted_words(db: Session) -> list[Word]:
-    words: list[Word] = [word for word in db.scalars(
+    return list(db.scalars(
         _with_details(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc()))
-    ).all()]
-    return words
+    ).all())
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
     assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
-    topics: list[Topic] = [topic for topic in db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()]
+    topics: list[Topic] = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
     data = payload.model_dump(
         exclude={"topic_ids", "translation_entries", "example_entries"}
     )
@@ -195,7 +196,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     for field, value in data.items():
         setattr(word, field, value)
     if payload.topic_ids is not None:
-        topics: list[Topic] = [topic for topic in db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()]
+        topics: list[Topic] = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
         word.topics = topics
 
     translation_requested = "translations" in fields_set or "translation_entries" in fields_set
@@ -212,29 +213,14 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         word.translation_items = []
         word.example_items = []
         db.flush()
-        translations_text: str | None
-        if "translations" in fields_set:
-            translations_text = payload.translations
-        else:
-            translations_text = word.translations
-
-        translation_entries: list[str] | None
-        if "translation_entries" in fields_set:
-            translation_entries = payload.translation_entries
-        else:
-            translation_entries = current_translation_entries
-
-        example_text: str | None
-        if "example" in fields_set:
-            example_text = payload.example
-        else:
-            example_text = word.example
-
-        example_entries: list[str] | None
-        if "example_entries" in fields_set:
-            example_entries = payload.example_entries
-        else:
-            example_entries = current_example_entries
+        translations_text: str | None = payload.translations if "translations" in fields_set else word.translations
+        translation_entries: list[str] | None = (
+            payload.translation_entries if "translation_entries" in fields_set else current_translation_entries
+        )
+        example_text: str | None = payload.example if "example" in fields_set else word.example
+        example_entries: list[str] | None = (
+            payload.example_entries if "example_entries" in fields_set else current_example_entries
+        )
 
         sync_word_multivalue_fields(
             word,

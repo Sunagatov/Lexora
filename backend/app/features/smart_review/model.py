@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.db import Base
+
+if TYPE_CHECKING:
+    from app.features.words.model import Word
+
 
 class StudyQueue(Base):
     __tablename__ = "study_queues"
@@ -32,4 +37,4 @@ class StudyQueueItem(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     queue: Mapped[StudyQueue] = relationship("StudyQueue", back_populates="items")
-    word = relationship("Word")
+    word: Mapped[Word] = relationship("Word")

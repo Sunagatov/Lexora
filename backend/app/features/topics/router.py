@@ -19,7 +19,9 @@ router = APIRouter(prefix="/api/topics", tags=["topics"])
 
 @router.get("", response_model=list[TopicResponse])
 def list_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
-    return [TopicResponse.model_validate(topic) for topic in get_all_topics(db)]
+    topics = get_all_topics(db)
+    responses: list[TopicResponse] = [TopicResponse.model_validate(topic) for topic in topics]
+    return responses
 
 
 @router.get("/audit", response_model=TopicAuditResponse)
@@ -32,13 +34,15 @@ def get_topic(topic_id: int, db: Session = Depends(get_db)) -> TopicResponse:
     topic = get_topic_by_id(db, topic_id)
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
-    return TopicResponse.model_validate(topic)
+    response: TopicResponse = TopicResponse.model_validate(topic)
+    return response
 
 
 @router.post("", response_model=TopicResponse, status_code=status.HTTP_201_CREATED)
 def create_topic_route(payload: TopicCreate, db: Session = Depends(get_db)) -> TopicResponse:
     try:
-        return TopicResponse.model_validate(create_topic(db, payload))
+        response: TopicResponse = TopicResponse.model_validate(create_topic(db, payload))
+        return response
     except InvalidTopicNameError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:
@@ -51,7 +55,8 @@ def update_topic_route(topic_id: int, payload: TopicUpdate, db: Session = Depend
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
     try:
-        return TopicResponse.model_validate(update_topic(db, topic, payload))
+        response: TopicResponse = TopicResponse.model_validate(update_topic(db, topic, payload))
+        return response
     except InvalidTopicNameError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:

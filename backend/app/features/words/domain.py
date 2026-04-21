@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.shared.text import normalize_term
 from app.features.topics.model import Topic
-from app.features.words.model import Word
+from app.features.words.model import Word, word_topics
 from app.features.words.exceptions import DuplicateWordInTopicError
 
 
@@ -17,8 +17,11 @@ def existing_normalized_terms(
     """Return normalized terms of active words in the given topics, optionally excluding one word id."""
     stmt = (
         select(Word.term)
+        .join(word_topics, word_topics.c.word_id == Word.id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
         .where(Word.deleted_at.is_(None))
-        .where(Word.topics.any(Topic.id.in_(topic_ids)))
+        .where(Topic.id.in_(topic_ids))
+        .where(Topic.deleted_at.is_(None))
     )
     if exclude_word_id is not None:
         stmt = stmt.where(Word.id != exclude_word_id)

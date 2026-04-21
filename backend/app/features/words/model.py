@@ -22,6 +22,11 @@ from app.shared.constraints import (
     WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN, WORD_POS_MAX_LEN, WORD_COUNT_MAX_LEN,
 )
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.features.topics.model import Topic
+
 word_topics = Table(
     "word_topics",
     Base.metadata,
@@ -92,7 +97,7 @@ class Word(Base):
         index=True,
     )
 
-    topics = relationship("Topic", secondary=word_topics, back_populates="words")
+    topics: Mapped[list[Topic]] = relationship("Topic", secondary=word_topics, back_populates="words")
     translation_items: Mapped[list[WordTranslation]] = relationship(
         "WordTranslation",
         back_populates="word",
