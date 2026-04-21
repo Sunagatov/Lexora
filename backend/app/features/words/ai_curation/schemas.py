@@ -198,6 +198,13 @@ class WordUpdateV2(BaseModel):
             raise ValueError(f"part_of_speech must be one of: {', '.join(PART_OF_SPEECH_VALUES)}")
         return value
 
+    @model_validator(mode="after")
+    def reject_explicit_nulls(self) -> "WordUpdateV2":
+        for field in ("term", "translations", "is_active"):
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
+        return self
+
 
 class WordCreateV2(BaseModel):
     """Full word creation — include term, translations, and all applicable fields."""

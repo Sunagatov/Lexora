@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 from app.shared.constraints import (
@@ -120,6 +120,12 @@ class AiReviewImportWord(BaseModel):
     @classmethod
     def clean_entries(cls, value: list[str] | None) -> list[str] | None:
         return _clean_entries(value)
+
+    @model_validator(mode="after")
+    def reject_explicit_null_translations(self) -> "AiReviewImportWord":
+        if "translations" in self.model_fields_set and self.translations is None:
+            raise ValueError("translations cannot be null; omit it to leave it unchanged")
+        return self
 
 
 class AiReviewImportRequest(BaseModel):

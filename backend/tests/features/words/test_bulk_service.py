@@ -83,7 +83,7 @@ def test_bulk_import_maps_slug_conflict_from_create_topic(monkeypatch) -> None:
     db = MagicMock()
     db.scalar.side_effect = [None, None]
 
-    def fake_create_topic(db_arg, topic_payload):
+    def fake_create_topic(db_arg, topic_payload, commit=False):
         raise TopicSlugConflictError("Topic slug 'travel' already exists")
 
     monkeypatch.setattr(bulk_service, "create_topic", fake_create_topic)
@@ -135,3 +135,34 @@ def test_bulk_import_raises_when_slug_equivalent_topic_is_in_trash() -> None:
         bulk_service.bulk_import(db, payload)
 
     assert exc_info.value.name == "Daily Life"
+
+
+def test_bulk_import_creates_topic_without_committing_early(monkeypatch) -> None:
+    db = MagicMock()
+    db.scalar.side_effect = [None, None, None, None]
+
+    created_topic = SimpleNamespace(id=11, name="Travel", slug="travel", deleted_at=None)
+    monkeypatch.setattr(bulk_service, "Word", DummyWord)
+
+    def fake_create_topic(db_arg, payload, commit=True):
+        assert commit is False
+        return created_topic
+
+    monkeypatch.setattr(bulk_service, "create_topic", fake_create_topic)
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+    monkeypatch.setattr(
+        bulk_service,
+        "sync_word_multivalue_fields",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("boom")),
+    )
+
+    payload = WordBulkCreate(
+        topic_name="Travel",
+        words=[WordInput(term="stay", translations="остаться")],
+    )
+
+    with pytest.raises(RuntimeError):
+        bulk_service.bulk_import(db, payload)
+
+    db.commit.assert_not_called()
+    db.rollback.assert_called_once()

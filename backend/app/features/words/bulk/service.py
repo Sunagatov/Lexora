@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -34,54 +36,64 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
     if not topic_slug:
         raise BulkInvalidTopicNameError(payload.topic_name)
 
-    topic = db.scalar(
-        select(Topic)
-        .where(Topic.slug == topic_slug)
-        .where(Topic.deleted_at.is_(None))
-    )
-    if topic is None:
-        deleted = db.scalar(
+    try:
+        topic = db.scalar(
             select(Topic)
             .where(Topic.slug == topic_slug)
-            .where(Topic.deleted_at.isnot(None))
+            .where(Topic.deleted_at.is_(None))
         )
-        if deleted is not None:
-            raise BulkTopicInTrashError(deleted.name)
-        try:
-            topic = create_topic(db, TopicCreate(name=payload.topic_name))
-        except InvalidTopicNameError:
-            raise BulkInvalidTopicNameError(payload.topic_name)
-        except TopicSlugConflictError as e:
-            raise BulkSlugConflictError(e.detail)
+        if topic is None:
+            deleted = db.scalar(
+                select(Topic)
+                .where(Topic.slug == topic_slug)
+                .where(Topic.deleted_at.isnot(None))
+            )
+            if deleted is not None:
+                raise BulkTopicInTrashError(deleted.name)
+            try:
+                topic = create_topic(db, TopicCreate(name=payload.topic_name), commit=False)
+            except InvalidTopicNameError:
+                raise BulkInvalidTopicNameError(payload.topic_name)
+            except TopicSlugConflictError as e:
+                raise BulkSlugConflictError(e.detail)
 
-    # Use the shared domain helper for duplicate detection — same rule as create/update
-    existing = existing_normalized_terms(db, [topic.id])
+        topic_id = int(cast(object, topic.id))
+        topic_name = str(cast(object, topic.name))
 
-    added_terms: list[str] = []
-    skipped_terms: list[str] = []
-    for w in payload.words:
-        norm = normalize_term(w.term)
-        if norm in existing:
-            skipped_terms.append(w.term)
-            continue
-        word = Word(
-            **w.model_dump(exclude={"translation_entries", "example_entries"}),
-            topics=[topic],
+        # Use the shared domain helper for duplicate detection — same rule as create/update
+        existing = existing_normalized_terms(db, [topic_id])
+
+        added_terms: list[str] = []
+        skipped_terms: list[str] = []
+        for w in payload.words:
+            norm = normalize_term(w.term)
+            if norm in existing:
+                skipped_terms.append(w.term)
+                continue
+            word = Word(
+                **w.model_dump(exclude={"translation_entries", "example_entries"}),
+                topics=[topic],
+            )
+            sync_word_multivalue_fields(
+                word,
+                w.translations,
+                w.translation_entries,
+                w.example,
+                w.example_entries,
+            )
+            db.add(word)
+            existing.add(norm)
+            added_terms.append(w.term)
+
+        db.commit()
+        return BulkImportResponse(
+            topic_id=topic_id,
+            topic_name=topic_name,
+            added=len(added_terms),
+            skipped=len(skipped_terms),
+            added_terms=added_terms,
+            skipped_terms=skipped_terms,
         )
-        sync_word_multivalue_fields(
-            word,
-            w.translations,
-            w.translation_entries,
-            w.example,
-            w.example_entries,
-        )
-        db.add(word)
-        existing.add(norm)
-        added_terms.append(w.term)
-
-    db.commit()
-    return BulkImportResponse(
-        topic_id=topic.id, topic_name=topic.name,
-        added=len(added_terms), skipped=len(skipped_terms),
-        added_terms=added_terms, skipped_terms=skipped_terms,
-    )
+    except Exception:
+        db.rollback()
+        raise

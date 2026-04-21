@@ -46,7 +46,27 @@ def _validate_part_of_speech(value: str | None, sheet_name: str, row_idx: int) -
     return normalized
 
 
-def _get_topic(db: Session, topic_name: str) -> Topic:
+def _get_topic(db: Session, topic_name: str, topic_id: int | None = None) -> Topic:
+    if topic_id is not None:
+        topic: Topic | None = db.scalar(
+            select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None))
+        )
+        if topic is not None:
+            return topic
+
+        deleted: Topic | None = db.scalar(
+            select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.isnot(None))
+        )
+        if deleted is not None:
+            raise InvalidWorkbookError(
+                f"Workbook references topic id {topic_id}, but that topic is currently in Trash."
+            )
+
+        raise InvalidWorkbookError(
+            f"Workbook references unknown topic id {topic_id}. "
+            "Re-export the workbook from Lexora before importing."
+        )
+
     if len(topic_name) > TOPIC_NAME_MAX_LEN:
         raise InvalidWorkbookError(
             f"Topic name '{topic_name}' is too long; maximum is {TOPIC_NAME_MAX_LEN} characters."

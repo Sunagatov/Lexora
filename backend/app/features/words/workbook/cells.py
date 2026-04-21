@@ -122,3 +122,18 @@ def _read_meta_topic_names(workbook) -> dict[str, str]:
         if sheet_name and topic_name:
             result[sheet_name] = topic_name
     return result
+
+
+def _read_meta_topic_refs(workbook) -> dict[str, tuple[int | None, str | None]]:
+    if META_SHEET_NAME not in workbook.sheetnames:
+        return {}
+
+    ws = workbook[META_SHEET_NAME]
+    result: dict[str, tuple[int | None, str | None]] = {}
+    for row_idx in range(2, ws.max_row + 1):
+        sheet_name = _read_str(ws, row_idx, 1)
+        topic_id = _read_optional_int(ws, row_idx, 2, "topic id", META_SHEET_NAME)
+        topic_name = _read_str(ws, row_idx, 3)
+        if sheet_name:
+            result[sheet_name] = (topic_id, topic_name)
+    return result

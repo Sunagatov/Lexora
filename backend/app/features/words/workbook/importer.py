@@ -13,7 +13,7 @@ from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import WorkbookImportResponse, WorkbookImportSheetSummary
 from app.features.words.workbook.cells import (
     _build_header_map,
-    _read_meta_topic_names,
+    _read_meta_topic_refs,
     _read_optional_int,
     _read_str,
     _split_examples_cell,
@@ -252,7 +252,7 @@ def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse
     except Exception as exc:
         raise InvalidWorkbookError("Failed to read XLSX workbook") from exc
 
-    meta_topic_names = _read_meta_topic_names(workbook)
+    meta_topic_refs = _read_meta_topic_refs(workbook)
 
     summaries: list[WorkbookImportSheetSummary] = []
     total_created = 0
@@ -269,8 +269,9 @@ def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse
         if "term" not in header_map or "translations" not in header_map:
             continue
 
-        topic_name = meta_topic_names.get(ws.title, ws.title)
-        topic = _get_topic(db, topic_name)
+        topic_id, topic_name = meta_topic_refs.get(ws.title, (None, None))
+        resolved_topic_name = topic_name or ws.title
+        topic = _get_topic(db, resolved_topic_name, topic_id=topic_id)
 
         summary = _import_sheet(db, ws, header_map, topic)
         summaries.append(summary)

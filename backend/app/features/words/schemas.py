@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.features.words.enrichment import (
     EXAMPLE_TARGET_COUNT,
@@ -61,6 +61,13 @@ class WordUpdate(BaseModel):
     ] | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    @model_validator(mode="after")
+    def reject_explicit_nulls(self) -> "WordUpdate":
+        for field in ("topic_ids", "term", "translations", "is_active"):
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
+        return self
 
 
 class WordResponse(BaseModel):

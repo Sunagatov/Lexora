@@ -1,49 +1,30 @@
-def test_word_response_from_word_filters_deleted_topics(make_topic, make_word, fixed_now) -> None:
-    active_topic = make_topic(
-        id=1,
-        name="Travel",
-        slug="travel",
-        deleted_at=None,
-        created_at=fixed_now,
-        updated_at=fixed_now,
-    )
-    deleted_topic = make_topic(
-        id=2,
-        name="Old",
-        slug="old",
-        deleted_at=fixed_now,
-        created_at=fixed_now,
-        updated_at=fixed_now,
-    )
+import pytest
+from pydantic import ValidationError
 
-    word = make_word(
-        id=10,
-        term="plane",
-        translations="самолет",
-        part_of_speech="noun",
-        knowledge_level=3,
-        example="The plane is late.",
-        notes="common travel word",
-        topics=[active_topic, deleted_topic],
-        created_at=fixed_now,
-        updated_at=fixed_now,
-    )
+from app.features.words.schemas import WordUpdate
 
-    from app.features.words.schemas import WordResponse
 
-    response = WordResponse.from_word(word)
+def test_word_update_rejects_explicit_null_term() -> None:
+    with pytest.raises(ValidationError):
+        WordUpdate(term=None)
 
-    assert response.id == 10
-    assert response.term == "plane"
-    assert response.translations == "самолет"
-    assert response.part_of_speech == "noun"
-    assert response.knowledge_level == 3
-    assert response.example == "The plane is late."
-    assert response.example_count == 1
-    assert response.example_target_count == 3
-    assert response.example_status == "partial"
-    assert response.needs_example_enrichment is True
-    assert response.notes == "common travel word"
-    assert response.topic_ids == [1]
-    assert response.created_at == fixed_now
-    assert response.updated_at == fixed_now
+
+def test_word_update_rejects_explicit_null_translations() -> None:
+    with pytest.raises(ValidationError):
+        WordUpdate(translations=None)
+
+
+def test_word_update_rejects_explicit_null_topic_ids() -> None:
+    with pytest.raises(ValidationError):
+        WordUpdate(topic_ids=None)
+
+
+def test_word_update_rejects_explicit_null_is_active() -> None:
+    with pytest.raises(ValidationError):
+        WordUpdate(is_active=None)
+
+
+def test_word_update_allows_knowledge_level_null() -> None:
+    payload = WordUpdate(knowledge_level=None)
+
+    assert payload.knowledge_level is None

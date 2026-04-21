@@ -8,7 +8,7 @@ import pytest
 
 from app.features.topics.service import InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation import service as ai_curation_service
-from app.features.words.ai_curation.schemas import AiCurationImportRequest, CreateTopicOperation
+from app.features.words.ai_curation.schemas import AiCurationImportRequest, CreateTopicOperation, WordUpdateV2
 from app.features.words.ai_curation.service import AiCurationImportError
 
 
@@ -127,6 +127,11 @@ def test_topic_ref_requires_exactly_one_field() -> None:
             source_topic_id=1,
             word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1, "client_key": "both"}], "term": "bond", "translations": "облигация"}],
         )
+
+
+def test_word_update_v2_rejects_explicit_null_translations() -> None:
+    with pytest.raises(Exception, match="translations cannot be null"):
+        WordUpdateV2(id=1, translations=None)
 
 
 def test_import_stale_update_rejected_when_word_modified_after_export(monkeypatch) -> None:

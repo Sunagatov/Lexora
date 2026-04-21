@@ -56,6 +56,7 @@ def test_assert_topics_exist_raises_missing_ids_in_original_order() -> None:
 
 def test_create_topic_slugifies_and_persists(monkeypatch) -> None:
     db = MagicMock()
+    db.scalar.return_value = None
     payload = TopicCreate(name="Daily Routine", description="desc", parent_topic_id=7, is_active=False)
 
     monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "daily-routine")
@@ -89,6 +90,20 @@ def test_create_topic_raises_when_generated_slug_is_empty(monkeypatch) -> None:
         topic_service.create_topic(db, payload)
 
     assert exc_info.value.name == "!!!"
+
+
+def test_create_topic_rejects_duplicate_active_name(monkeypatch) -> None:
+    db = MagicMock()
+    payload = TopicCreate(name="Travel")
+
+    monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "travel")
+    monkeypatch.setattr(topic_service, "assert_slug_available", MagicMock())
+    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=None)
+
+    with pytest.raises(topic_service.TopicNameConflictError) as exc_info:
+        topic_service.create_topic(db, payload)
+
+    assert "Travel" in exc_info.value.detail
 
 
 def test_update_topic_normalizes_new_slug_and_checks_availability(monkeypatch) -> None:
@@ -144,6 +159,20 @@ def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> Non
         topic_service.update_topic(db, topic, payload)
 
     assert exc_info.value.name == "!!!"
+
+
+def test_update_topic_rejects_duplicate_active_name(monkeypatch) -> None:
+    db = MagicMock()
+    topic = MagicMock(spec=Topic, id=5, name="Banking", slug="banking")
+    payload = TopicUpdate(name="Travel")
+
+    monkeypatch.setattr(topic_service, "assert_slug_available", MagicMock())
+    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=None)
+
+    with pytest.raises(topic_service.TopicNameConflictError) as exc_info:
+        topic_service.update_topic(db, topic, payload)
+
+    assert "Travel" in exc_info.value.detail
 
 
 def test_assert_topic_parent_valid_rejects_self_parent() -> None:

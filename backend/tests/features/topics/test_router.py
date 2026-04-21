@@ -5,7 +5,12 @@ from fastapi import HTTPException
 
 from app.features.topics import router as topic_router
 from app.features.topics.schemas import TopicCreate, TopicUpdate
-from app.features.topics.service import InvalidTopicNameError, InvalidTopicParentError, TopicSlugConflictError
+from app.features.topics.service import (
+    InvalidTopicNameError,
+    InvalidTopicParentError,
+    TopicNameConflictError,
+    TopicSlugConflictError,
+)
 from app.features.topics.refinement_schemas import TopicAuditResponse, TopicSplitPlanRequest
 
 
@@ -65,6 +70,21 @@ def test_create_topic_route_maps_invalid_parent_to_400(monkeypatch) -> None:
     assert exc_info.value.detail == "Parent topic 99 not found"
 
 
+def test_create_topic_route_maps_name_conflict_to_409(monkeypatch) -> None:
+    db = MagicMock()
+
+    def fake_create_topic(db, payload):
+        raise TopicNameConflictError("Active topic name 'Travel' already exists")
+
+    monkeypatch.setattr(topic_router, "create_topic", fake_create_topic)
+
+    with pytest.raises(HTTPException) as exc_info:
+        topic_router.create_topic_route(TopicCreate(name="Travel"), db=db)
+
+    assert exc_info.value.status_code == 409
+    assert "Travel" in exc_info.value.detail
+
+
 def test_update_topic_route_raises_404_when_topic_is_missing(monkeypatch) -> None:
     db = MagicMock()
     monkeypatch.setattr(topic_router, "get_topic_by_id", lambda db, topic_id: None)
@@ -74,6 +94,23 @@ def test_update_topic_route_raises_404_when_topic_is_missing(monkeypatch) -> Non
 
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "Topic not found"
+
+
+def test_update_topic_route_maps_name_conflict_to_409(monkeypatch) -> None:
+    db = MagicMock()
+    topic = MagicMock()
+    monkeypatch.setattr(topic_router, "get_topic_by_id", lambda db, topic_id: topic)
+
+    def fake_update_topic(db, topic_arg, payload):
+        raise TopicNameConflictError("Active topic name 'Travel' already exists")
+
+    monkeypatch.setattr(topic_router, "update_topic", fake_update_topic)
+
+    with pytest.raises(HTTPException) as exc_info:
+        topic_router.update_topic_route(1, TopicUpdate(name="Travel"), db=db)
+
+    assert exc_info.value.status_code == 409
+    assert "Travel" in exc_info.value.detail
 
 
 def test_delete_topic_calls_soft_delete_with_flag(monkeypatch, make_topic) -> None:

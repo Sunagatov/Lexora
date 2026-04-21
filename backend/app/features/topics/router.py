@@ -9,6 +9,7 @@ from app.features.topics.schemas import TopicCreate, TopicResponse, TopicUpdate
 from app.features.topics.service import (
     InvalidTopicNameError,
     InvalidTopicParentError,
+    TopicNameConflictError,
     TopicSlugConflictError,
     create_topic,
     update_topic,
@@ -53,6 +54,8 @@ def create_topic_route(payload: TopicCreate, db: Session = Depends(get_db)) -> T
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except InvalidTopicParentError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
+    except TopicNameConflictError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
     except TopicSlugConflictError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
 
@@ -69,6 +72,8 @@ def update_topic_route(topic_id: int, payload: TopicUpdate, db: Session = Depend
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except InvalidTopicParentError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
+    except TopicNameConflictError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
     except TopicSlugConflictError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
 

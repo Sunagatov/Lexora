@@ -1,13 +1,22 @@
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 from app.features.topics import repository as topic_repository
 from app.features.topics.schemas import TopicUpdate
 
 
+class TopicStub:
+    def __init__(self, *, id: int = 1, name: str, slug: str, description: str, is_active: bool) -> None:
+        self.id = id
+        self.name = name
+        self.slug = slug
+        self.description = description
+        self.is_active = is_active
+        self.deleted_at = None
+
+
 def test_update_topic_applies_only_provided_fields_and_persists() -> None:
     db = MagicMock()
-    topic = SimpleNamespace(
+    topic = TopicStub(
         name="Old",
         slug="old",
         description="old-desc",
@@ -60,6 +69,23 @@ def test_soft_delete_topic_can_delete_all_words(monkeypatch, make_topic) -> None
 
     exclusive.assert_not_called()
     all_words.assert_called_once()
+
+
+def test_soft_delete_topic_soft_deletes_word_when_only_other_topics_are_deleted(make_topic, make_word) -> None:
+    db = MagicMock()
+    active_topic = TopicStub(id=1, name="Active", slug="active", description="", is_active=True)
+    active_topic.deleted_at = None
+    active_topic.words = []
+    deleted_topic = TopicStub(id=2, name="Deleted", slug="deleted", description="", is_active=True)
+    deleted_topic.deleted_at = object()
+    deleted_topic.words = []
+    word = make_word(id=5, deleted_at=None, deleted_via_topic_id=None, topics=[active_topic, deleted_topic])
+    active_topic.words = [word]
+
+    topic_repository.soft_delete_topic(db, active_topic, delete_words=False)
+
+    assert word.deleted_at is not None
+    assert word.deleted_via_topic_id == 1
 
 
 def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(

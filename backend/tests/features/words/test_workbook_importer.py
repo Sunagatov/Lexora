@@ -1,13 +1,24 @@
 from __future__ import annotations
 
+from io import BytesIO
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+
+from openpyxl import Workbook
 
 from app.features.words.workbook import importer as workbook_importer
 
 
-def _make_topic(topic_id=1, name="Animals"):
-    return SimpleNamespace(id=topic_id, name=name, deleted_at=None, is_active=True)
+class TopicStub:
+    def __init__(self, topic_id: int, name: str):
+        self.id = topic_id
+        self.name = name
+        self.deleted_at = None
+        self.is_active = True
+
+
+def _make_topic(topic_id=1, name="Animals") -> TopicStub:
+    return TopicStub(topic_id, name)
 
 
 def _make_existing_word(word_id=10, term="cat", topic_id=1):
@@ -122,3 +133,40 @@ def test_import_sheet_flush_called_for_each_row(monkeypatch) -> None:
     workbook_importer._import_sheet(db, ws, header_map, topic)
 
     assert db.flush.call_count == 2
+
+
+def test_import_words_workbook_prefers_meta_topic_id(monkeypatch) -> None:
+    db = MagicMock()
+    topic = _make_topic(topic_id=77, name="Renamed Topic")
+
+    workbook = Workbook()
+    ws = workbook.active
+    ws.title = "Travel"
+    ws.append(["Knowledge", "Word", "Russian translations"])
+    ws.append([1, "ticket", "билет"])
+    meta = workbook.create_sheet("__lexora_meta")
+    meta.append(["sheet_name", "topic_id", "topic_name", "exported_at"])
+    meta.append(["Travel", 77, "Renamed Topic", "2026-01-01T12:00:00+00:00"])
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+
+    seen: list[tuple[str, int | None, str | None]] = []
+
+    monkeypatch.setattr(workbook_importer, "_get_topic", lambda db_arg, topic_name, topic_id=None: seen.append((topic_name, topic_id, topic.name)) or topic)
+    monkeypatch.setattr(
+        workbook_importer,
+        "_import_sheet",
+        lambda db_arg, ws_arg, header_map_arg, topic_arg: workbook_importer.WorkbookImportSheetSummary(
+            sheet_name=ws_arg.title,
+            topic_name=topic_arg.name,
+            created=0,
+            updated=0,
+            skipped=0,
+        ),
+    )
+
+    result = workbook_importer.import_words_workbook(db, buffer.getvalue())
+
+    assert result.sheets[0].topic_name == "Renamed Topic"
+    assert seen == [("Renamed Topic", 77, "Renamed Topic")]

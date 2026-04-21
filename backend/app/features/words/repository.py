@@ -65,11 +65,7 @@ def _resolve_translation_entries(raw_text: str | None, explicit_entries: list[st
 
 def _resolve_example_entries(raw_text: str | None, explicit_entries: list[str] | None) -> list[str]:
     if explicit_entries is not None:
-        cleaned = _clean_entries(explicit_entries)
-        if cleaned:
-            return cleaned
-        if raw_text is None or not raw_text.strip():
-            return []
+        return _clean_entries(explicit_entries)
     return _split_example_text(raw_text)
 
 
@@ -97,7 +93,10 @@ def sync_word_multivalue_fields(
     resolved_examples = _resolve_example_entries(example_text, example_entries)
 
     word.translations = _build_translation_summary(resolved_translations, translations_text)
-    word.example = _build_example_summary(resolved_examples, example_text)
+    if example_entries is not None:
+        word.example = "\n".join(resolved_examples) or None
+    else:
+        word.example = _build_example_summary(resolved_examples, example_text)
 
     word.translation_items = [
         WordTranslation(position=index, value=value)
