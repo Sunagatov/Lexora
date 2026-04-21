@@ -1,18 +1,7 @@
-"""
-Bulk topic split driver for Lexora.
-
-It reads the live topic audit from prod, selects topics with more than 300
-active words, builds split plans with the existing refinement service, and
-posts dry-run import payloads so the split can be reviewed topic by topic.
-
-Use --live only after reviewing the dry-run artifacts.
-"""
 from __future__ import annotations
 
 import argparse
-import json
 import os
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,144 +9,21 @@ from typing import Any
 
 import httpx
 
+from app.scripts.split_large_topics_io import (
+    audit_topics,
+    build_payload,
+    build_topic_operations,
+    build_word_reassigns,
+    chunk,
+    fetch_json,
+    login,
+    split_plan,
+    topic_artifact_dir,
+    write_json,
+)
+
 MAX_WORD_REASSIGNS_PER_IMPORT = 500
 MIN_SPLIT_WORDS = 300
-
-
-def _slugify(value: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-")
-    return slug or "topic"
-
-
-def _login(http: httpx.Client, base_url: str, password: str) -> str:
-    resp = http.post(f"{base_url}/auth/login", json={"password": password})
-    resp.raise_for_status()
-    return resp.json()["csrf_token"]
-
-
-def _fetch_json(http: httpx.Client, method: str, url: str, csrf: str, **kwargs: Any) -> dict[str, Any]:
-    headers = dict(kwargs.pop("headers", {}))
-    headers["X-CSRF-Token"] = csrf
-    resp = http.request(method, url, headers=headers, **kwargs)
-    resp.raise_for_status()
-    return resp.json()
-
-
-def _audit_topics(http: httpx.Client, base_url: str, csrf: str) -> list[dict[str, Any]]:
-    data = _fetch_json(http, "GET", f"{base_url}/api/topics/audit", csrf)
-    return list(data.get("items", []))
-
-
-def _split_plan(
-    http: httpx.Client,
-    base_url: str,
-    csrf: str,
-    topic_id: int,
-    *,
-    max_new_topics: int,
-) -> dict[str, Any]:
-    return _fetch_json(
-        http,
-        "POST",
-        f"{base_url}/api/topics/{topic_id}/split-plan",
-        csrf,
-        json={"max_new_topics": max_new_topics},
-    )
-
-
-def _build_topic_operations(plan: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, str]]:
-    topic_operations: list[dict[str, Any]] = []
-    client_keys_by_index: dict[str, str] = {}
-    used_keys: set[str] = set()
-
-    for index, subtopic in enumerate(plan.get("proposed_subtopics", [])):
-        if not subtopic.get("is_new_topic"):
-            continue
-        base_key = _slugify(subtopic["name"])
-        client_key = f"{base_key}-{plan['source_topic_id']}-{index + 1}"
-        suffix = 2
-        while client_key in used_keys:
-            client_key = f"{base_key}-{plan['source_topic_id']}-{index + 1}-{suffix}"
-            suffix += 1
-        used_keys.add(client_key)
-        client_keys_by_index[str(index)] = client_key
-        topic_operations.append(
-            {
-                "op": "create_topic",
-                "client_key": client_key,
-                "name": subtopic["name"],
-                "description": subtopic.get("description"),
-                "parent_topic_id": plan["source_topic_id"],
-                "is_active": True,
-            }
-        )
-
-    return topic_operations, client_keys_by_index
-
-
-def _build_word_reassigns(
-    plan: dict[str, Any],
-    client_keys_by_index: dict[str, str],
-    *,
-    created_topic_ids: dict[str, int] | None = None,
-) -> list[dict[str, Any]]:
-    word_reassigns: list[dict[str, Any]] = []
-    for index, subtopic in enumerate(plan.get("proposed_subtopics", [])):
-        if subtopic.get("is_new_topic"):
-            client_key = client_keys_by_index[str(index)]
-            if created_topic_ids is None:
-                topic_ref: dict[str, Any] = {"client_key": client_key}
-            else:
-                topic_id = created_topic_ids.get(client_key)
-                if topic_id is None:
-                    raise RuntimeError(f"Missing created topic id for client_key '{client_key}'")
-                topic_ref = {"topic_id": topic_id}
-        else:
-            topic_ref = {"topic_id": subtopic["topic_id"]}
-
-        for word_id in subtopic.get("word_ids", []):
-            word_reassigns.append(
-                {
-                    "id": word_id,
-                    "add_topic_refs": [topic_ref],
-                    "remove_topic_ids": [],
-                }
-            )
-
-    return word_reassigns
-
-
-def _chunk(items: list[dict[str, Any]], size: int) -> list[list[dict[str, Any]]]:
-    return [items[index : index + size] for index in range(0, len(items), size)]
-
-
-def _build_payload(
-    *,
-    source_topic_id: int,
-    dry_run: bool,
-    topic_operations: list[dict[str, Any]],
-    word_reassigns: list[dict[str, Any]],
-) -> dict[str, Any]:
-    payload: dict[str, Any] = {
-        "schema_version": "lexora.ai-curation.v2",
-        "source_topic_id": source_topic_id,
-        "dry_run": dry_run,
-        "strict_mode": False,
-        "topic_operations": topic_operations,
-        "word_updates": [],
-        "word_creates": [],
-        "word_reassigns": word_reassigns,
-    }
-    return payload
-
-
-def _write_json(path: Path, data: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def _topic_artifact_dir(root: Path, topic: dict[str, Any]) -> Path:
-    return root / f"topic-{topic['topic_id']}" / _slugify(topic["topic_name"])
 
 
 def main() -> None:
@@ -191,10 +57,10 @@ def main() -> None:
 
     with httpx.Client(timeout=120) as http:
         print(f"Logging in to {args.prod_url} ...")
-        csrf = _login(http, args.prod_url, password)
+        csrf = login(http, args.prod_url, password)
         print("Login OK\n")
 
-        audit_items = _audit_topics(http, args.prod_url, csrf)
+        audit_items = audit_topics(http, args.prod_url, csrf)
         candidates = [
             item for item in audit_items
             if item.get("word_count", 0) > MIN_SPLIT_WORDS and item.get("should_review")
@@ -226,13 +92,13 @@ def main() -> None:
                     }
                 )
                 continue
-            topic_dir = _topic_artifact_dir(artifacts_root, topic)
+            topic_dir = topic_artifact_dir(artifacts_root, topic)
             topic_dir.mkdir(parents=True, exist_ok=True)
 
             print(f"Topic {topic_id}: {topic_name} ({topic['word_count']} words)")
 
             try:
-                plan = _split_plan(
+                plan = split_plan(
                     http,
                     args.prod_url,
                     csrf,
@@ -241,7 +107,7 @@ def main() -> None:
                 )
             except httpx.HTTPStatusError as exc:
                 print(f"  skipped: split-plan failed with HTTP {exc.response.status_code}")
-                _write_json(
+                write_json(
                     topic_dir / "split-plan-error.json",
                     {
                         "status_code": exc.response.status_code,
@@ -258,7 +124,7 @@ def main() -> None:
                     }
                 )
                 continue
-            _write_json(topic_dir / "split-plan.json", plan)
+            write_json(topic_dir / "split-plan.json", plan)
 
             if not plan.get("should_split"):
                 print("  skipped: no stable split plan")
@@ -273,9 +139,9 @@ def main() -> None:
                 )
                 continue
 
-            topic_operations, client_keys_by_index = _build_topic_operations(plan)
-            word_reassigns = _build_word_reassigns(plan, client_keys_by_index)
-            batches = _chunk(word_reassigns, MAX_WORD_REASSIGNS_PER_IMPORT) or [[]]
+            topic_operations, client_keys_by_index = build_topic_operations(plan)
+            word_reassigns = build_word_reassigns(plan, client_keys_by_index)
+            batches = chunk(word_reassigns, MAX_WORD_REASSIGNS_PER_IMPORT) or [[]]
             created_topic_ids: dict[str, int] = {}
             total_reassigned = 0
             total_created_topics = len(topic_operations)
@@ -283,13 +149,13 @@ def main() -> None:
             for batch_index, batch_word_reassigns in enumerate(batches, start=1):
                 batch_topic_operations = topic_operations if dry_run or batch_index == 1 else []
                 if not dry_run and batch_index > 1:
-                    batch_word_reassigns = _build_word_reassigns(
+                    batch_word_reassigns = build_word_reassigns(
                         plan,
                         client_keys_by_index,
                         created_topic_ids=created_topic_ids,
                     )[MAX_WORD_REASSIGNS_PER_IMPORT * (batch_index - 1) : MAX_WORD_REASSIGNS_PER_IMPORT * batch_index]
 
-                payload = _build_payload(
+                payload = build_payload(
                     source_topic_id=topic_id,
                     dry_run=dry_run,
                     topic_operations=batch_topic_operations,
@@ -297,10 +163,10 @@ def main() -> None:
                 )
 
                 batch_tag = f"batch-{batch_index:02d}"
-                _write_json(topic_dir / f"{batch_tag}-import-request.json", payload)
+                write_json(topic_dir / f"{batch_tag}-import-request.json", payload)
 
                 try:
-                    response = _fetch_json(
+                    response = fetch_json(
                         http,
                         "POST",
                         f"{args.prod_url}/api/ai-curation/import",
@@ -309,7 +175,7 @@ def main() -> None:
                     )
                 except httpx.HTTPStatusError as exc:
                     print(f"  batch {batch_index:02d} failed with HTTP {exc.response.status_code}")
-                    _write_json(
+                    write_json(
                         topic_dir / f"{batch_tag}-import-error.json",
                         {
                             "status_code": exc.response.status_code,
@@ -327,7 +193,7 @@ def main() -> None:
                         }
                     )
                     break
-                _write_json(topic_dir / f"{batch_tag}-import-response.json", response)
+                write_json(topic_dir / f"{batch_tag}-import-response.json", response)
 
                 if batch_index == 1 and not dry_run:
                     created_topic_ids = {item["client_key"]: item["id"] for item in response.get("created_topics", [])}
@@ -352,7 +218,7 @@ def main() -> None:
                     }
                 )
 
-        _write_json(artifacts_root / f"summary-{run_stamp}.json", summary)
+        write_json(artifacts_root / f"summary-{run_stamp}.json", summary)
         print(f"\nSummary written to {artifacts_root / f'summary-{run_stamp}.json'}")
 
 
