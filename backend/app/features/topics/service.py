@@ -52,16 +52,18 @@ def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
         raise MissingTopicsError(missing)
 
 
-def create_topic(db: Session, payload: TopicCreate) -> Topic:
+def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> Topic:
     server_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
     if not server_slug:
         raise InvalidTopicNameError(payload.name)
     assert_slug_available(db, server_slug)
-    # Attach the generated slug before persisting
     topic = Topic(name=payload.name, slug=server_slug, description=payload.description, is_active=payload.is_active)
     db.add(topic)
-    db.commit()
-    db.refresh(topic)
+    if commit:
+        db.commit()
+        db.refresh(topic)
+    else:
+        db.flush()
     return topic
 
 

@@ -14,6 +14,7 @@ from app.features.words.suggest.router import router as suggest_router
 from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
+from app.features.words.ai_curation.router import router as ai_curation_router
 
 
 def configure_logging() -> None:
@@ -101,3 +102,4 @@ app.include_router(suggest_router, dependencies=[Depends(verify_session), Depend
 app.include_router(smart_review_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(trash_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(stats_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(ai_curation_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])

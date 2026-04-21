@@ -143,7 +143,7 @@ def get_deleted_words(db: Session) -> list[Word]:
     ).all())
 
 
-def create_word(db: Session, payload: WordCreate) -> Word:
+def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
     assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
     topics = db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()
     data = payload.model_dump(
@@ -158,12 +158,15 @@ def create_word(db: Session, payload: WordCreate) -> Word:
         payload.example_entries,
     )
     db.add(word)
-    db.commit()
-    db.refresh(word)
+    if commit:
+        db.commit()
+        db.refresh(word)
+    else:
+        db.flush()
     return word
 
 
-def update_word(db: Session, word: Word, payload: WordUpdate) -> Word:
+def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = True) -> Word:
     fields_set = payload.model_fields_set
     data = payload.model_dump(
         exclude_unset=True,
@@ -213,8 +216,11 @@ def update_word(db: Session, word: Word, payload: WordUpdate) -> Word:
         source = payload.progress_source or "manual"
         record_level_change(db, word.id, old_level, data["knowledge_level"], source)
     db.add(word)
-    db.commit()
-    db.refresh(word)
+    if commit:
+        db.commit()
+        db.refresh(word)
+    else:
+        db.flush()
     return word
 
 
