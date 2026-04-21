@@ -13,16 +13,20 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.features.stats.service import record_level_change
 from app.features.topics.model import Topic
-from app.features.topics.service import TopicSlugConflictError, assert_slug_available
 from app.features.words.domain import assert_no_duplicate_word, existing_normalized_terms
 from app.features.words.model import Word
 from app.features.words.repository import get_word_by_id_including_deleted, sync_word_multivalue_fields
 from app.features.words.schemas import WorkbookImportResponse, WorkbookImportSheetSummary
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
-from app.shared.text import normalize_term, slugify
+from app.shared.constraints import (
+    TOPIC_NAME_MAX_LEN,
+    WORD_TERM_MAX_LEN,
+    WORD_VERB_FORM_MAX_LEN,
+)
+from app.shared.text import normalize_term
 
 LISTS_SHEET_NAME = "Lists"
 META_SHEET_NAME = "__lexora_meta"
+MAX_WORKBOOK_BYTES = 10 * 1024 * 1024
 
 EXPORT_COLUMNS = [
     ("knowledge_level", "Knowledge"),
@@ -327,6 +331,20 @@ def _read_str(ws, row_idx: int, column_idx: int | None) -> str | None:
     return text or None
 
 
+def _validate_max_length(
+    value: str | None,
+    max_len: int,
+    label: str,
+    sheet_name: str,
+    row_idx: int,
+) -> str | None:
+    if value is not None and len(value) > max_len:
+        raise InvalidWorkbookError(
+            f"{sheet_name}, row {row_idx}: {label} must be at most {max_len} characters"
+        )
+    return value
+
+
 def _read_optional_int(
     ws, row_idx: int, column_idx: int | None, label: str, sheet_name: str
 ) -> int | None:
@@ -421,7 +439,12 @@ def _validate_part_of_speech(value: str | None, sheet_name: str, row_idx: int) -
     return normalized
 
 
-def _get_or_create_topic(db: Session, topic_name: str) -> Topic:
+def _get_topic(db: Session, topic_name: str) -> Topic:
+    if len(topic_name) > TOPIC_NAME_MAX_LEN:
+        raise InvalidWorkbookError(
+            f"Topic name '{topic_name}' is too long; maximum is {TOPIC_NAME_MAX_LEN} characters."
+        )
+
     topic = db.scalar(select(Topic).where(Topic.name == topic_name).where(Topic.deleted_at.is_(None)))
     if topic is not None:
         return topic
@@ -432,18 +455,10 @@ def _get_or_create_topic(db: Session, topic_name: str) -> Topic:
             f"Workbook references topic '{topic_name}', but that topic is currently in Trash."
         )
 
-    slug = slugify(topic_name, max_len=TOPIC_SLUG_MAX_LEN)
-    if not slug:
-        raise InvalidWorkbookError(f"Cannot generate a valid slug for topic '{topic_name}'")
-    try:
-        assert_slug_available(db, slug)
-    except TopicSlugConflictError as exc:
-        raise InvalidWorkbookError(str(exc)) from exc
-
-    topic = Topic(name=topic_name, slug=slug, description=None, is_active=True)
-    db.add(topic)
-    db.flush()
-    return topic
+    raise InvalidWorkbookError(
+        f"Workbook references unknown topic '{topic_name}'. "
+        "Import only exported Lexora sheets for existing topics; create new topics in Lexora before importing."
+    )
 
 
 def _find_existing_word(db: Session, topic_id: int, word_id: int | None, term: str) -> Word | None:
@@ -500,6 +515,7 @@ def _import_sheet(
     created = 0
     updated = 0
     skipped = 0
+    seen_word_ids: set[int] = set()
 
     has_knowledge = "knowledge_level" in header_map
     has_pattern = "pattern" in header_map
@@ -511,7 +527,13 @@ def _import_sheet(
     has_notes = "notes" in header_map
 
     for row_idx in range(2, ws.max_row + 1):
-        term = _read_str(ws, row_idx, header_map.get("term"))
+        term = _validate_max_length(
+            _read_str(ws, row_idx, header_map.get("term")),
+            WORD_TERM_MAX_LEN,
+            "word",
+            ws.title,
+            row_idx,
+        )
         if not term:
             continue
 
@@ -522,6 +544,13 @@ def _import_sheet(
             )
 
         word_id = _read_optional_int(ws, row_idx, header_map.get("word_id"), "word id", ws.title)
+        if word_id is not None:
+            if word_id in seen_word_ids:
+                raise InvalidWorkbookError(
+                    f"{ws.title}, row {row_idx}: duplicate Word ID {word_id} in this sheet"
+                )
+            seen_word_ids.add(word_id)
+
         knowledge_value = (
             _read_optional_int(ws, row_idx, header_map.get("knowledge_level"), "knowledge", ws.title)
             if has_knowledge
@@ -541,9 +570,25 @@ def _import_sheet(
             if has_countability
             else None
         )
-        past_simple = _read_str(ws, row_idx, header_map.get("past_simple")) if has_past_simple else None
+        past_simple = (
+            _validate_max_length(
+                _read_str(ws, row_idx, header_map.get("past_simple")),
+                WORD_VERB_FORM_MAX_LEN,
+                "past simple",
+                ws.title,
+                row_idx,
+            )
+            if has_past_simple
+            else None
+        )
         past_participle = (
-            _read_str(ws, row_idx, header_map.get("past_participle"))
+            _validate_max_length(
+                _read_str(ws, row_idx, header_map.get("past_participle")),
+                WORD_VERB_FORM_MAX_LEN,
+                "past participle",
+                ws.title,
+                row_idx,
+            )
             if has_past_participle
             else None
         )
@@ -664,6 +709,11 @@ def _import_sheet(
 
 
 def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse:
+    if len(content) > MAX_WORKBOOK_BYTES:
+        raise InvalidWorkbookError(
+            f"Workbook is too large; maximum size is {MAX_WORKBOOK_BYTES // (1024 * 1024)} MB"
+        )
+
     try:
         workbook = load_workbook(filename=BytesIO(content))
     except Exception as exc:
@@ -687,7 +737,7 @@ def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse
             continue
 
         topic_name = meta_topic_names.get(ws.title, ws.title)
-        topic = _get_or_create_topic(db, topic_name)
+        topic = _get_topic(db, topic_name)
 
         summary = _import_sheet(db, ws, header_map, topic)
         summaries.append(summary)

@@ -123,3 +123,30 @@ def test_validate_part_of_speech_rejects_unknown_value() -> None:
         workbook_service._validate_part_of_speech("article", "Sheet", 7)
 
     assert "part of speech must be blank or one of" in str(exc_info.value)
+
+
+def test_validate_max_length_rejects_too_long_value() -> None:
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service._validate_max_length("abcd", 3, "word", "Sheet", 4)
+
+    assert "word must be at most 3 characters" in str(exc_info.value)
+
+
+def test_import_rejects_oversized_workbook() -> None:
+    content = b"0" * (workbook_service.MAX_WORKBOOK_BYTES + 1)
+
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service.import_words_workbook(SimpleNamespace(), content)
+
+    assert "Workbook is too large" in str(exc_info.value)
+
+
+def test_get_topic_rejects_unknown_topic() -> None:
+    db = SimpleNamespace(
+        scalar=lambda _stmt: None,
+    )
+
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service._get_topic(db, "Renamed Topic")
+
+    assert "unknown topic" in str(exc_info.value)
