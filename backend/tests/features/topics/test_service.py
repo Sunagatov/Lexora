@@ -1,8 +1,8 @@
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
 
+from app.features.topics.model import Topic
 from app.features.topics import service as topic_service
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 
@@ -16,14 +16,14 @@ def test_assert_slug_available_allows_missing_slug() -> None:
 
 def test_assert_slug_available_allows_same_topic_id() -> None:
     db = MagicMock()
-    db.scalar.return_value = SimpleNamespace(id=7, deleted_at=None)
+    db.scalar.return_value = MagicMock(spec=Topic, id=7, deleted_at=None)
 
     topic_service.assert_slug_available(db, "travel", exclude_topic_id=7)
 
 
 def test_assert_slug_available_raises_for_active_conflict() -> None:
     db = MagicMock()
-    db.scalar.return_value = SimpleNamespace(id=9, deleted_at=None)
+    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=None)
 
     with pytest.raises(topic_service.TopicSlugConflictError) as exc_info:
         topic_service.assert_slug_available(db, "travel")
@@ -33,7 +33,7 @@ def test_assert_slug_available_raises_for_active_conflict() -> None:
 
 def test_assert_slug_available_raises_for_deleted_conflict() -> None:
     db = MagicMock()
-    db.scalar.return_value = SimpleNamespace(id=9, deleted_at=object())
+    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=object())
 
     with pytest.raises(topic_service.TopicSlugConflictError) as exc_info:
         topic_service.assert_slug_available(db, "travel")
@@ -93,7 +93,7 @@ def test_create_topic_raises_when_generated_slug_is_empty(monkeypatch) -> None:
 
 def test_update_topic_normalizes_new_slug_and_checks_availability(monkeypatch) -> None:
     db = MagicMock()
-    topic = SimpleNamespace(id=5, slug="old-slug")
+    topic = MagicMock(spec=Topic, id=5, slug="old-slug")
     payload = TopicUpdate(slug="New Slug")
 
     monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "new-slug")
@@ -118,7 +118,7 @@ def test_update_topic_normalizes_new_slug_and_checks_availability(monkeypatch) -
 
 def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> None:
     db = MagicMock()
-    topic = SimpleNamespace(id=5, slug="same-slug")
+    topic = MagicMock(spec=Topic, id=5, slug="same-slug")
     payload = TopicUpdate(slug="same-slug", description="Updated description")
 
     slug_check = MagicMock()
@@ -135,7 +135,7 @@ def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> No
 
 def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> None:
     db = MagicMock()
-    topic = SimpleNamespace(id=5, slug="old-slug")
+    topic = MagicMock(spec=Topic, id=5, slug="old-slug")
     payload = TopicUpdate(slug="!!!")
 
     monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "")
@@ -148,7 +148,7 @@ def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> Non
 
 def test_assert_topic_parent_valid_rejects_self_parent() -> None:
     db = MagicMock()
-    db.scalar.return_value = SimpleNamespace(id=5, parent_topic_id=None, deleted_at=None)
+    db.scalar.return_value = MagicMock(spec=Topic, id=5, parent_topic_id=None, deleted_at=None)
 
     with pytest.raises(topic_service.InvalidTopicParentError) as exc_info:
         topic_service.assert_topic_parent_valid(db, 5, exclude_topic_id=5)
