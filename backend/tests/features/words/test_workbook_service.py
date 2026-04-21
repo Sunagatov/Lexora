@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+import pytest
 from openpyxl import Workbook
 
 from app.features.words import workbook_service
@@ -78,3 +79,47 @@ def test_existing_word_duplicate_check_runs_for_changed_term_or_new_topic() -> N
         "dog",
         topic_was_missing=True,
     ) is True
+
+
+def test_find_existing_word_rejects_word_id_on_wrong_topic(monkeypatch) -> None:
+    word = SimpleNamespace(id=42, deleted_at=None, topics=[SimpleNamespace(id=1)])
+    monkeypatch.setattr(
+        workbook_service,
+        "get_word_by_id_including_deleted",
+        lambda _db, _word_id: word,
+    )
+
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service._find_existing_word(SimpleNamespace(), topic_id=2, word_id=42, term="dog")
+
+    assert "wrong topic sheet" in str(exc_info.value)
+
+
+def test_find_existing_word_allows_word_id_on_existing_topic(monkeypatch) -> None:
+    word = SimpleNamespace(id=42, deleted_at=None, topics=[SimpleNamespace(id=2)])
+    monkeypatch.setattr(
+        workbook_service,
+        "get_word_by_id_including_deleted",
+        lambda _db, _word_id: word,
+    )
+
+    assert workbook_service._find_existing_word(
+        SimpleNamespace(),
+        topic_id=2,
+        word_id=42,
+        term="dog",
+    ) is word
+
+
+def test_validate_countability_rejects_unknown_value() -> None:
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service._validate_countability("sometimes", "Sheet", 7)
+
+    assert "countability must be blank or one of" in str(exc_info.value)
+
+
+def test_validate_part_of_speech_rejects_unknown_value() -> None:
+    with pytest.raises(workbook_service.InvalidWorkbookError) as exc_info:
+        workbook_service._validate_part_of_speech("article", "Sheet", 7)
+
+    assert "part of speech must be blank or one of" in str(exc_info.value)

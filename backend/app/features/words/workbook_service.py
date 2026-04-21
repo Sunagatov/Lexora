@@ -375,6 +375,16 @@ def _normalize_countability(value: str | None) -> str | None:
     return COUNTABILITY_ALIASES.get(normalized.casefold(), normalized)
 
 
+def _validate_countability(value: str | None, sheet_name: str, row_idx: int) -> str | None:
+    normalized = _normalize_countability(value)
+    if normalized is not None and normalized not in COUNTABILITY_VALUES:
+        allowed = ", ".join(COUNTABILITY_VALUES)
+        raise InvalidWorkbookError(
+            f"{sheet_name}, row {row_idx}: countability must be blank or one of: {allowed}"
+        )
+    return normalized
+
+
 def _should_validate_existing_word_duplicate(
     existing: Word,
     term: str,
@@ -399,6 +409,16 @@ def _normalize_part_of_speech(
     if countability:
         return "noun"
     return None
+
+
+def _validate_part_of_speech(value: str | None, sheet_name: str, row_idx: int) -> str | None:
+    normalized = value.strip().lower() if value and value.strip() else None
+    if normalized is not None and normalized not in PART_OF_SPEECH_VALUES:
+        allowed = ", ".join(PART_OF_SPEECH_VALUES)
+        raise InvalidWorkbookError(
+            f"{sheet_name}, row {row_idx}: part of speech must be blank or one of: {allowed}"
+        )
+    return normalized
 
 
 def _get_or_create_topic(db: Session, topic_name: str) -> Topic:
@@ -433,6 +453,11 @@ def _find_existing_word(db: Session, topic_id: int, word_id: int | None, term: s
             raise InvalidWorkbookError(f"Workbook references unknown word id {word_id}")
         if word.deleted_at is not None:
             raise InvalidWorkbookError(f"Workbook references deleted word id {word_id}")
+        if topic_id not in {topic.id for topic in word.topics}:
+            raise InvalidWorkbookError(
+                f"Workbook references word id {word_id} on the wrong topic sheet. "
+                "Keep existing Word IDs only on their exported sheets; leave Word ID blank for new rows."
+            )
         return word
 
     candidates = list(
@@ -508,7 +533,11 @@ def _import_sheet(
         pattern = _read_str(ws, row_idx, header_map.get("pattern")) if has_pattern else None
         examples_text = _read_str(ws, row_idx, header_map.get("examples")) if has_examples else None
         countability = (
-            _normalize_countability(_read_str(ws, row_idx, header_map.get("countability")))
+            _validate_countability(
+                _read_str(ws, row_idx, header_map.get("countability")),
+                ws.title,
+                row_idx,
+            )
             if has_countability
             else None
         )
@@ -546,10 +575,17 @@ def _import_sheet(
             existing.past_participle = (
                 past_participle if has_past_participle else existing.past_participle
             )
-            existing.part_of_speech = _normalize_part_of_speech(
-                _read_str(ws, row_idx, header_map.get("part_of_speech"))
+            part_of_speech_value = (
+                _validate_part_of_speech(
+                    _read_str(ws, row_idx, header_map.get("part_of_speech")),
+                    ws.title,
+                    row_idx,
+                )
                 if has_part_of_speech
-                else None,
+                else None
+            )
+            existing.part_of_speech = _normalize_part_of_speech(
+                part_of_speech_value,
                 existing.countability,
                 existing.past_simple,
                 existing.past_participle,
@@ -576,10 +612,17 @@ def _import_sheet(
         assert_no_duplicate_word(term, existing_normalized_terms(db, [topic.id]))
 
         knowledge_for_create = knowledge_value if knowledge_value is not None else 1
-        part_of_speech = _normalize_part_of_speech(
-            _read_str(ws, row_idx, header_map.get("part_of_speech"))
+        part_of_speech_value = (
+            _validate_part_of_speech(
+                _read_str(ws, row_idx, header_map.get("part_of_speech")),
+                ws.title,
+                row_idx,
+            )
             if has_part_of_speech
-            else None,
+            else None
+        )
+        part_of_speech = _normalize_part_of_speech(
+            part_of_speech_value,
             countability,
             past_simple,
             past_participle,
