@@ -29,6 +29,7 @@ def get_or_create_topic(db: Session, sheet_name: str) -> tuple[Topic, bool]:
     slug = slugify(sheet_name)
     topic: Topic | None = db.scalar(select(Topic).where(Topic.slug == slug))
     if topic:
+        assert topic is not None
         return topic, False
     topic = Topic(name=sheet_name, slug=slug, description=None, is_active=True)
     db.add(topic)

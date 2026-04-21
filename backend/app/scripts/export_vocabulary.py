@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 from openpyxl import Workbook
 from sqlalchemy import select
@@ -20,10 +21,23 @@ def export_workbook(output_path: Path) -> None:
     wb.remove(default_sheet)
 
     with SessionLocal() as db:
-        topics = list(db.scalars(select(Topic).where(Topic.is_active.is_(True)).order_by(Topic.name)))
+        topics = list(cast(list[Topic], db.scalars(select(Topic).where(Topic.is_active.is_(True)).order_by(Topic.name)).all()))
         total_words = 0
         for topic in topics:
-            words = list(db.scalars(select(Word).where(Word.topic_id == topic.id, Word.is_active.is_(True))))
+            topic_words = cast(
+                Any,
+                Word.topics,
+            ).any(Topic.id == topic.id)
+            words = list(
+                cast(
+                    list[Word],
+                    db.scalars(
+                        select(Word)
+                        .where(Word.is_active.is_(True), topic_words)
+                        .order_by(Word.term)
+                    ).all(),
+                )
+            )
             if not words:
                 continue
             write_sheet(wb, topic, words)

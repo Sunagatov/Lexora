@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from io import BytesIO
-from typing import cast
+from typing import Any, cast
 
 from openpyxl import Workbook
 from sqlalchemy import select
@@ -74,14 +74,16 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
                     list[Word],
                     db.scalars(
                         select(Word)
-                    .options(
-                        selectinload(Word.translation_items),
-                        selectinload(Word.example_items),
-                        selectinload(Word.topics),
-                    )
-                    .where(Word.deleted_at.is_(None))
-                    .where(Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None)))
-                    .order_by(Word.term.asc())
+                        .options(
+                            selectinload(Word.translation_items),
+                            selectinload(Word.example_items),
+                            selectinload(Word.topics),
+                        )
+                        .where(Word.deleted_at.is_(None))
+                        .where(
+                            cast(Any, Word.topics).any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
+                        )
+                        .order_by(Word.term.asc())
                     ).all(),
                 )
             )
