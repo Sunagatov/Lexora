@@ -86,6 +86,10 @@ class AiCurationWord(BaseModel):
     translation_entries: list[str]
     pattern: str | None
     example_entries: list[str]
+    example_count: int
+    example_target_count: int
+    example_status: Literal["missing", "partial", "complete"]
+    needs_example_enrichment: bool
     countability: str | None
     part_of_speech: str | None
     past_simple: str | None
@@ -109,6 +113,10 @@ class AiCurationWordLean(BaseModel):
     id: int
     term: str
     example_entries: list[str] | None = None  # omitted when empty
+    example_count: int
+    example_target_count: int
+    example_status: Literal["missing", "partial", "complete"]
+    needs_example_enrichment: bool
 
 
 class AiCurationTopicWordsLeanResponse(BaseModel):

@@ -3,10 +3,11 @@ from __future__ import annotations
 from collections import defaultdict
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
+from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
 from app.features.stats.model import WordProgressEvent
 from app.features.stats.schemas import (
     DailyActivity, LevelCounts, StatsResponse, TopicStat, VocabularyOverview,
@@ -26,7 +27,9 @@ def record_level_change(
 
 def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
     total        = len(words)
-    with_example = sum(1 for w in words if w.example)
+    example_counts = [example_count(w) for w in words]
+    with_example = sum(1 for count in example_counts if count > 0)
+    with_examples_3plus = sum(1 for count in example_counts if count >= EXAMPLE_TARGET_COUNT)
     with_pos     = sum(1 for w in words if w.part_of_speech)
 
     level_counts: dict[int | None, int] = defaultdict(int)
@@ -43,8 +46,10 @@ def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
         total_words=total,
         total_topics=0,  # filled by caller
         with_example=with_example,
+        with_examples_3plus=with_examples_3plus,
         with_pos=with_pos,
         missing_example=total - with_example,
+        needs_example_enrichment=total - with_examples_3plus,
         missing_pos=total - with_pos,
         needs_enrichment=sum(1 for w in words if not w.example or not w.part_of_speech),
     )
@@ -78,6 +83,7 @@ def _build_topic_stats(db: Session, topics: list, word_map: dict) -> list[TopicS
             id=t.id, name=t.name, slug=t.slug, total=len(tw),
             progress=progress, weak_count=weak_count, strong_count=strong_count,
             missing_example=sum(1 for w in tw if not w.example),
+            needs_example_enrichment=sum(1 for w in tw if example_count(w) < EXAMPLE_TARGET_COUNT),
             missing_pos=sum(1 for w in tw if not w.part_of_speech),
         ))
     result.sort(key=lambda t: t.progress)
@@ -125,7 +131,9 @@ def _build_daily_activity(db: Session) -> tuple[list[DailyActivity], str | None]
 
 
 def compute_stats(db: Session) -> StatsResponse:
-    words  = db.scalars(select(Word).where(Word.deleted_at.is_(None))).all()
+    words  = db.scalars(
+        select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
+    ).all()
     topics = db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all()
 
     overview, level_counts, okay_pct = _build_overview(words)

@@ -21,6 +21,7 @@ class TopicStat(BaseModel):
     weak_count: int      # levels 1-2
     strong_count: int    # levels 3-4
     missing_example: int
+    needs_example_enrichment: int
     missing_pos: int
 
 
@@ -36,8 +37,10 @@ class VocabularyOverview(BaseModel):
     total_words: int
     total_topics: int
     with_example: int
+    with_examples_3plus: int
     with_pos: int
     missing_example: int
+    needs_example_enrichment: int
     missing_pos: int
     needs_enrichment: int   # missing example OR pos
 

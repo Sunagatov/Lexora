@@ -5,6 +5,13 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.features.words.enrichment import (
+    EXAMPLE_TARGET_COUNT,
+    example_count as count_examples,
+    example_enrichment_status,
+    needs_example_enrichment,
+)
+
 if TYPE_CHECKING:
     from app.features.words.model import Word
 
@@ -70,6 +77,10 @@ class WordResponse(BaseModel):
     pattern: str | None
     example: str | None
     example_entries: list[str] = Field(default_factory=list)
+    example_count: int
+    example_target_count: int
+    example_status: Literal["missing", "partial", "complete"]
+    needs_example_enrichment: bool
     notes: str | None
     is_active: bool
     deleted_at: datetime | None = None
@@ -80,6 +91,7 @@ class WordResponse(BaseModel):
 
     @classmethod
     def from_word(cls, word: "Word") -> "WordResponse":
+        example_count = count_examples(word)
         return cls(
             id=word.id,
             topic_ids=[t.id for t in word.topics if t.deleted_at is None],
@@ -94,6 +106,10 @@ class WordResponse(BaseModel):
             pattern=word.pattern,
             example=word.example,
             example_entries=[item.value for item in getattr(word, "example_items", [])],
+            example_count=example_count,
+            example_target_count=EXAMPLE_TARGET_COUNT,
+            example_status=example_enrichment_status(example_count),
+            needs_example_enrichment=needs_example_enrichment(word),
             notes=word.notes,
             is_active=word.is_active,
             deleted_at=word.deleted_at,

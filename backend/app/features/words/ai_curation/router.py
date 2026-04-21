@@ -50,13 +50,20 @@ def list_ai_curation_topic_words(
 def export_ai_curation_topic(
     topic_id: int,
     lean: bool = Query(default=False, description="Return minimal export (id, term, examples only) for ChatGPT enrichment"),
+    needs_examples_only: bool = Query(default=False, description="When using lean export, return only words with fewer than 3 examples"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=100, ge=1, le=200),
     db: Session = Depends(get_db),
 ) -> AiCurationTopicWordsLeanResponse | AiCurationTopicWordsResponse:
     try:
         if lean:
-            return export_topic_words_lean_page(db, topic_id=topic_id, page=page, page_size=page_size)
+            return export_topic_words_lean_page(
+                db,
+                topic_id=topic_id,
+                page=page,
+                page_size=page_size,
+                needs_examples_only=needs_examples_only,
+            )
         return export_topic_words_page(db, topic_id=topic_id, page=page, page_size=page_size)
     except AiCurationImportError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

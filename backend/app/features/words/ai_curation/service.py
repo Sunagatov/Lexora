@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic
-from app.features.words.model import Word, word_topics
+from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count, example_enrichment_status, needs_example_enrichment
+from app.features.words.model import Word, WordExample, word_topics
 from app.features.words.repository import _with_details, create_word, update_word
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.ai_curation.schemas import (
@@ -40,6 +41,7 @@ EXPORT_INSTRUCTIONS = [
     "To enrich existing words: use word_updates — include only id and the fields to change.",
     "To add new words: use word_creates — include term, translations, and all applicable fields.",
     "To move words between topics: use word_reassigns.",
+    "Skip words that already have 3 strong example sentences.",
     "Use only allowed countability and part_of_speech values from allowed_values.",
     "Do not create duplicates inside the same target topic.",
 ]
@@ -97,6 +99,7 @@ def list_topics_page(db: Session, page: int, page_size: int) -> AiCurationTopicL
 
 
 def _word_to_export(word: Word) -> AiCurationWord:
+    example_count_value = example_count(word)
     return AiCurationWord(
         id=word.id,
         topic_ids=[t.id for t in word.topics if t.deleted_at is None],
@@ -105,6 +108,10 @@ def _word_to_export(word: Word) -> AiCurationWord:
         translation_entries=[item.value for item in getattr(word, "translation_items", [])],
         pattern=word.pattern,
         example_entries=[item.value for item in getattr(word, "example_items", [])],
+        example_count=example_count_value,
+        example_target_count=EXAMPLE_TARGET_COUNT,
+        example_status=example_enrichment_status(example_count_value),
+        needs_example_enrichment=needs_example_enrichment(word),
         countability=word.countability,
         part_of_speech=word.part_of_speech,
         past_simple=word.past_simple,
@@ -113,6 +120,15 @@ def _word_to_export(word: Word) -> AiCurationWord:
         knowledge_level=word.knowledge_level,
         is_active=word.is_active,
     )
+
+
+def _needs_examples_filter():
+    complete_word_ids = (
+        select(WordExample.word_id)
+        .group_by(WordExample.word_id)
+        .having(func.count(WordExample.id) >= EXAMPLE_TARGET_COUNT)
+    )
+    return ~Word.id.in_(complete_word_ids)
 
 
 def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsResponse:
@@ -158,20 +174,32 @@ def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: in
     )
 
 
-def export_topic_words_lean_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsLeanResponse:
+def export_topic_words_lean_page(
+    db: Session,
+    topic_id: int,
+    page: int,
+    page_size: int,
+    *,
+    needs_examples_only: bool = False,
+) -> AiCurationTopicWordsLeanResponse:
     topic = _get_topic(db, topic_id)
     topic_filter = Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
+    needs_examples_filter = _needs_examples_filter() if needs_examples_only else None
 
-    total = db.scalar(
-        select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), topic_filter)
-    ) or 0
+    count_stmt = select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), topic_filter)
+    if needs_examples_filter is not None:
+        count_stmt = count_stmt.where(needs_examples_filter)
+    total = db.scalar(count_stmt) or 0
     offset = (page - 1) * page_size
+
+    words_stmt = select(Word).where(Word.deleted_at.is_(None), topic_filter)
+    if needs_examples_filter is not None:
+        words_stmt = words_stmt.where(needs_examples_filter)
 
     words = list(
         db.scalars(
             _with_details(
-                select(Word)
-                .where(Word.deleted_at.is_(None), topic_filter)
+                words_stmt
                 .order_by(Word.term.asc(), Word.id.asc())
                 .offset(offset)
                 .limit(page_size)
@@ -179,18 +207,26 @@ def export_topic_words_lean_page(db: Session, topic_id: int, page: int, page_siz
         ).all()
     )
 
-    return AiCurationTopicWordsLeanResponse(
-        source_topic_id=topic.id,
-        exported_at=datetime.now(timezone.utc),
-        total_words=total,
-        words=[
+    lean_words = []
+    for word in words:
+        count = example_count(word)
+        lean_words.append(
             AiCurationWordLean(
                 id=word.id,
                 term=word.term,
                 example_entries=[item.value for item in getattr(word, "example_items", [])] or None,
+                example_count=count,
+                example_target_count=EXAMPLE_TARGET_COUNT,
+                example_status=example_enrichment_status(count),
+                needs_example_enrichment=needs_example_enrichment(word),
             )
-            for word in words
-        ],
+        )
+
+    return AiCurationTopicWordsLeanResponse(
+        source_topic_id=topic.id,
+        exported_at=datetime.now(timezone.utc),
+        total_words=total,
+        words=lean_words,
     )
 
 
