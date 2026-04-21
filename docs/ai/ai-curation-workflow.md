@@ -30,6 +30,9 @@ Practical enrichment rule:
 - model-written examples are preferred over deterministic fillers
 - do not use deterministic template generators for example sentences unless explicitly asked
 - if examples already look natural and varied, leave them alone
+- if you are generating examples in the same session, still keep them natural and avoid template-like repetition
+- if a word already has enough strong examples, do not rewrite it just to make the count look uniform
+- if a word belongs to multiple topics, keep the many-to-many membership instead of forcing a single topic
 
 > **Critical:** always export from prod, never from a local database. Word IDs differ between environments — using a local export will cause the import to fail or corrupt wrong words on prod.
 
@@ -220,6 +223,7 @@ Operational notes from production use:
 
 - The split-plan endpoint is read-only and returns proposed subtopics plus `unassigned_word_ids`.
 - If a topic family is broad but fuzzy, leaving it unsplit is acceptable.
+- If a topic is a part-of-speech umbrella, leave it unsplit for now.
 - If an import hits a backend 500 during repeated DB work, check the prod logs before changing the payload.
 - The live import path reuses the existing v2 curation schema, so create topics with `topic_operations` and move words with `word_reassigns`.
 - Keep split payloads explainable: one word can belong to more than one topic, but the first pass should prefer a single primary bucket.
@@ -231,7 +235,9 @@ Operational notes from production use:
 - For structural topic refinement, add `parent_topic_id` to keep umbrella topics and subtopics connected.
 - Do not split grammar buckets like `Verbs`, `Nouns`, `Adjectives`, `Phrases`, `Adverbs`, `Prepositions`, or `Irregular Verbs` yet.
 - When a topic is broad but semantically messy, it is better to keep it as an umbrella topic than to force weak subtopics.
-- For review, spot-check a sample of proposed entries before live import when the plan is large or newly tuned.
+- For review, spot-check a sample of 10-15 proposed entries before live import when the plan is large or newly tuned.
+- If the split would create weak sibling names or unclear differences, merge them back into one clearer bucket or leave the umbrella alone.
+- If the topic is already clearly broad but the clusters overlap heavily, do not force an automatic split.
 
 ## Service location
 

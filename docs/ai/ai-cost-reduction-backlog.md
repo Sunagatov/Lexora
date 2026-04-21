@@ -40,10 +40,13 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - reuse an existing topic if it already fits closely enough
 - prefer fewer, broader subtopics over many adjacent siblings
 - review dry-run output before live import
+- spot-check 10-15 proposed entries before live import when the split plan is new or large
 - if the app supports hierarchy, keep umbrella topics and add child topics beneath them
 - do not force grammar buckets into the splitter
 - use `parent_topic_id` for subtopics instead of inventing new relation types
 - keep many-to-many membership when a word belongs in multiple topics
+- if a split creates unclear sibling names, merge them back into one clearer bucket
+- if a broad topic is semantically messy, keep it as an umbrella and do not force subtopics
 
 ### Ops hygiene
 
@@ -52,6 +55,7 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - do not use local DB exports for prod imports because IDs differ across environments
 - keep generated artifacts under `backend/.artifacts/ai-curation/`
 - if Alembic startup hits a prepared-statement collision, check the migration engine settings before retrying deploys
+- when the backend starts with Alembic, disable prepared statements on the migration connection if the duplicate-prepared-statement error appears
 - dry-run first, then spot-check a small sample, then live import
 
 ---

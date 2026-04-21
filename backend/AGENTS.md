@@ -82,6 +82,7 @@ When changing this flow:
 - prefer returning stable IDs internally over large textual payloads
 - add observability for latency, cache hit rate, and invalid model responses
 - if Alembic startup fails with a prepared-statement collision, check the shared engine settings and disable prepared statements for the migration path as needed
+- if Alembic startup fails with a duplicate prepared-statement error, fix the migration connection settings first instead of retrying deploys blindly
 
 ## AI curation and topic splitting
 
@@ -105,6 +106,8 @@ Durable rules:
 - for broad topic families, keep umbrella topics and attach subtopics under them instead of replacing the parent topic
 - subtopics are ordinary topic rows with `parent_topic_id`; do not invent a parallel topic system
 - when a word belongs to more than one topic, keep that many-to-many structure intact instead of forcing a single membership
+- spot-check 10-15 proposed entries before live import when the split plan is newly tuned or large
+- if a broad topic is semantically messy, keep it as an umbrella topic instead of forcing weak subtopics
 
 ## Validation
 

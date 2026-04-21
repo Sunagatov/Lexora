@@ -71,6 +71,10 @@ Before opening more code, prefer these summary docs:
 - keep umbrella topics in place and attach subtopics with `parent_topic_id`
 - do not create near-duplicate sibling topics
 - prefer dry-run and spot-check before live import
+- spot-check about 10-15 proposed entries before any live import when the split plan is newly tuned
+- if a topic is broad but overlaps heavily with its neighbors, leave it as an umbrella topic instead of forcing child topics
+- keep many-to-many word membership when a word naturally belongs to more than one topic
+- if Alembic startup hits duplicate prepared statements, check the migration engine settings before retrying the deploy
 
 ## Editing strategy
 
