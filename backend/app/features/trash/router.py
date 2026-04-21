@@ -6,6 +6,8 @@ from app.features.topics.repository import (
     get_deleted_topics, get_topic_by_id_including_deleted, restore_topic,
 )
 from app.features.topics.schemas import TopicResponse
+from app.features.words.domain import assert_word_restore_allowed
+from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.repository import (
     get_deleted_words, get_word_by_id_including_deleted, restore_word,
 )
@@ -36,7 +38,11 @@ def restore_word_route(word_id: int, db: Session = Depends(get_db)) -> WordRespo
             status_code=status.HTTP_409_CONFLICT,
             detail="Cannot restore word: all its topics are deleted. Restore a topic first.",
         )
-    return WordResponse.from_word(restore_word(db, word))
+    try:
+        assert_word_restore_allowed(db, word)
+        return WordResponse.from_word(restore_word(db, word))
+    except DuplicateWordInTopicError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.post("/topics/{topic_id}/restore", response_model=TopicResponse)
@@ -44,7 +50,10 @@ def restore_topic_route(topic_id: int, restore_words: bool = False, db: Session 
     topic = get_topic_by_id_including_deleted(db, topic_id)
     if topic is None or topic.deleted_at is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
-    return restore_topic(db, topic, restore_words=restore_words)
+    try:
+        return restore_topic(db, topic, restore_words=restore_words)
+    except DuplicateWordInTopicError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.delete("/purge", status_code=status.HTTP_204_NO_CONTENT)

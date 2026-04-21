@@ -7,6 +7,7 @@ from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
 from app.features.topics.domain import soft_delete_exclusive_words, soft_delete_all_words
 from app.features.stats.model import WordProgressEvent  # noqa: F401
+from app.features.words.domain import assert_word_restore_allowed
 from app.features.words.model import Word
 
 
@@ -73,22 +74,17 @@ def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> 
 
 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
-    topic_deleted_at = topic.deleted_at
     topic.deleted_at = None
 
-    if restore_words and topic_deleted_at is not None:
+    if restore_words:
         for word in topic.words:
-            # Heuristic: treat any word whose deleted_at is within 5 seconds of the topic's
-            # deleted_at as having been deleted by that same topic-delete operation.
-            # This covers both exclusive words and shared words deleted via delete_words=True.
-            # Risk: a word independently deleted within the same 5-second window will also be
-            # restored.  A precise solution would require storing the originating topic id on
-            # the word row (schema change); the heuristic is accepted as a practical trade-off.
-            if (
-                word.deleted_at is not None
-                and abs((word.deleted_at - topic_deleted_at).total_seconds()) < 5
-            ):
+            if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
+                assert_word_restore_allowed(db, word, restoring_topic_ids={topic.id})
+
+        for word in topic.words:
+            if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
                 word.deleted_at = None
+                word.deleted_via_topic_id = None
 
     db.add(topic)
     db.commit()

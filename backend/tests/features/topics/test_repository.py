@@ -1,4 +1,3 @@
-from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -66,30 +65,32 @@ def test_soft_delete_topic_can_delete_all_words(monkeypatch, make_topic) -> None
 def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
     make_topic,
     make_word,
-    fixed_now,
 ) -> None:
     db = MagicMock()
-    topic = make_topic(id=1, deleted_at=fixed_now)
+    topic = make_topic(id=1, deleted_at=object())
 
-    restore_me = make_word(id=1, deleted_at=fixed_now + timedelta(seconds=2))
+    restore_me = make_word(id=1, deleted_at=object(), deleted_via_topic_id=1)
     restore_me.topics = [topic]
 
-    keep_time_mismatch = make_word(id=2, deleted_at=fixed_now + timedelta(seconds=10))
-    keep_time_mismatch.topics = [topic]
+    keep_other_provenance = make_word(id=2, deleted_at=object(), deleted_via_topic_id=99)
+    keep_other_provenance.topics = [topic]
 
-    # Shared word deleted at the same time — should now be restored too (delete_words=True path)
-    also_restore_shared = make_word(id=3, deleted_at=fixed_now + timedelta(seconds=2))
+    # Shared word deleted by this topic-delete operation — should be restored too.
+    also_restore_shared = make_word(id=3, deleted_at=object(), deleted_via_topic_id=1)
     also_restore_shared.topics = [topic, make_topic(id=99, slug="shared")]
 
-    topic.words = [restore_me, keep_time_mismatch, also_restore_shared]
+    topic.words = [restore_me, keep_other_provenance, also_restore_shared]
 
     result = topic_repository.restore_topic(db, topic, restore_words=True)
 
     assert result is topic
     assert topic.deleted_at is None
     assert restore_me.deleted_at is None
-    assert keep_time_mismatch.deleted_at is not None
+    assert restore_me.deleted_via_topic_id is None
+    assert keep_other_provenance.deleted_at is not None
+    assert keep_other_provenance.deleted_via_topic_id == 99
     assert also_restore_shared.deleted_at is None
+    assert also_restore_shared.deleted_via_topic_id is None
     db.add.assert_called_once_with(topic)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(topic)

@@ -51,6 +51,26 @@ def test_restore_word_route_restores_and_returns_word_response(monkeypatch, make
     assert result.deleted_at is None
 
 
+def test_restore_word_route_raises_409_on_duplicate_term(monkeypatch, make_topic, make_word) -> None:
+    db = object()
+    active_topic = make_topic(id=1, deleted_at=None, slug="travel")
+    word = make_word(id=10, term="plane", deleted_at=object(), topics=[active_topic])
+
+    from app.features.words.exceptions import DuplicateWordInTopicError
+
+    def fake_assert_word_restore_allowed(db_arg, word_arg, restoring_topic_ids=None):
+        raise DuplicateWordInTopicError(word_arg.term)
+
+    monkeypatch.setattr(trash_router, "get_word_by_id_including_deleted", lambda db, word_id: word)
+    monkeypatch.setattr(trash_router, "assert_word_restore_allowed", fake_assert_word_restore_allowed)
+
+    with pytest.raises(HTTPException) as exc_info:
+        trash_router.restore_word_route(10, db=db)
+
+    assert exc_info.value.status_code == 409
+    assert "plane" in exc_info.value.detail
+
+
 def test_restore_topic_route_raises_404_when_topic_is_missing_or_not_deleted(monkeypatch, make_topic) -> None:
     db = object()
     active_topic = make_topic(id=5, deleted_at=None)
@@ -65,6 +85,25 @@ def test_restore_topic_route_raises_404_when_topic_is_missing_or_not_deleted(mon
 
     assert exc_info.value.status_code == 404
     assert exc_info.value.detail == "Deleted topic not found"
+
+
+def test_restore_topic_route_raises_409_on_duplicate_term(monkeypatch, make_topic) -> None:
+    db = object()
+    topic = make_topic(id=5, deleted_at=object())
+
+    from app.features.words.exceptions import DuplicateWordInTopicError
+
+    def fake_restore_topic(db_arg, topic_arg, restore_words=False):
+        raise DuplicateWordInTopicError("plane")
+
+    monkeypatch.setattr(trash_router, "get_topic_by_id_including_deleted", lambda db, topic_id: topic)
+    monkeypatch.setattr(trash_router, "restore_topic", fake_restore_topic)
+
+    with pytest.raises(HTTPException) as exc_info:
+        trash_router.restore_topic_route(5, restore_words=True, db=db)
+
+    assert exc_info.value.status_code == 409
+    assert "plane" in exc_info.value.detail
 
 
 def test_purge_expired_forwards_force_flag(monkeypatch) -> None:
