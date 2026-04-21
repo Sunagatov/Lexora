@@ -209,3 +209,21 @@ def test_assert_topic_parent_valid_rejects_self_parent() -> None:
         topic_service.assert_topic_parent_valid(db, 5, exclude_topic_id=5)
 
     assert "own parent" in exc_info.value.detail
+
+
+def test_assert_topic_has_no_active_children_raises_with_child_names() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = ["Subtopic A", "Subtopic B"]
+
+    with pytest.raises(topic_service.TopicHasActiveChildrenError) as exc_info:
+        topic_service.assert_topic_has_no_active_children(db, 5)
+
+    assert "Subtopic A" in exc_info.value.detail
+    assert "Subtopic B" in exc_info.value.detail
+
+
+def test_assert_topic_has_no_active_children_passes_when_no_children() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = []
+
+    topic_service.assert_topic_has_no_active_children(db, 5)

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.features.topics.service import InvalidTopicNameError, TopicSlugConflictError
+from app.features.topics.service import InvalidTopicNameError, TopicNameConflictError, TopicSlugConflictError
 from app.features.words.bulk import service as bulk_service
 from app.features.words.schemas import WordBulkCreate, WordInput
 
@@ -16,6 +16,7 @@ class DummyWord:
 def test_bulk_import_reuses_existing_topic_and_skips_duplicates(monkeypatch) -> None:
     topic = SimpleNamespace(id=7, name="Travel", deleted_at=None)
     db = MagicMock()
+    # _get_active_topic_by_exact_name finds the topic on first call
     db.scalar.side_effect = [topic]
 
     monkeypatch.setattr(bulk_service, "Word", DummyWord)
@@ -46,7 +47,8 @@ def test_bulk_import_reuses_existing_topic_and_skips_duplicates(monkeypatch) -> 
 def test_bulk_import_raises_when_topic_exists_only_in_trash() -> None:
     deleted_topic = SimpleNamespace(id=9, name="Travel", deleted_at=object())
     db = MagicMock()
-    db.scalar.side_effect = [None, deleted_topic]
+    # exact name active=None, slug active=None, exact name deleted=deleted_topic
+    db.scalar.side_effect = [None, None, deleted_topic]
 
     payload = WordBulkCreate(
         topic_name="Travel",
@@ -61,9 +63,10 @@ def test_bulk_import_raises_when_topic_exists_only_in_trash() -> None:
 
 def test_bulk_import_maps_invalid_topic_name_from_create_topic(monkeypatch) -> None:
     db = MagicMock()
-    db.scalar.side_effect = [None, None]
+    # 4 None values: exact name active, slug active, exact name deleted, slug deleted
+    db.scalar.side_effect = [None, None, None, None]
 
-    def fake_create_topic(db_arg, topic_payload):
+    def fake_create_topic(db_arg, topic_payload, commit=False):
         raise InvalidTopicNameError(topic_payload.name)
 
     monkeypatch.setattr(bulk_service, "create_topic", fake_create_topic)
@@ -81,7 +84,8 @@ def test_bulk_import_maps_invalid_topic_name_from_create_topic(monkeypatch) -> N
 
 def test_bulk_import_maps_slug_conflict_from_create_topic(monkeypatch) -> None:
     db = MagicMock()
-    db.scalar.side_effect = [None, None]
+    # 4 None values: exact name active, slug active, exact name deleted, slug deleted
+    db.scalar.side_effect = [None, None, None, None]
 
     def fake_create_topic(db_arg, topic_payload, commit=False):
         raise TopicSlugConflictError("Topic slug 'travel' already exists")
@@ -124,7 +128,8 @@ def test_bulk_import_reuses_existing_topic_when_name_slugifies_to_same_slug(monk
 def test_bulk_import_raises_when_slug_equivalent_topic_is_in_trash() -> None:
     deleted_topic = SimpleNamespace(id=4, name="Daily Life", slug="daily-life", deleted_at=object())
     db = MagicMock()
-    db.scalar.side_effect = [None, deleted_topic]
+    # exact name active=None, slug active=None, exact name deleted=None, slug deleted=deleted_topic
+    db.scalar.side_effect = [None, None, None, deleted_topic]
 
     payload = WordBulkCreate(
         topic_name="daily-life",
@@ -166,3 +171,65 @@ def test_bulk_import_creates_topic_without_committing_early(monkeypatch) -> None
 
     db.commit.assert_not_called()
     db.rollback.assert_called_once()
+
+
+def test_bulk_import_reuses_existing_topic_when_exact_name_matches_but_slug_differs(monkeypatch) -> None:
+    topic = SimpleNamespace(id=8, name="Travel", slug="travel-2026", deleted_at=None)
+    db = MagicMock()
+    # _get_active_topic_by_exact_name finds it immediately
+    monkeypatch.setattr(bulk_service, "_get_active_topic_by_exact_name", lambda db_arg, topic_name: topic)
+    monkeypatch.setattr(bulk_service, "Word", DummyWord)
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+
+    payload = WordBulkCreate(
+        topic_name="Travel",
+        words=[WordInput(term="ticket", translations="билет")],
+    )
+
+    result = bulk_service.bulk_import(db, payload)
+
+    assert result.topic_id == 8
+    assert result.topic_name == "Travel"
+    assert result.added == 1
+    db.commit.assert_called_once()
+
+
+def test_bulk_import_raises_when_exact_name_match_is_only_in_trash(monkeypatch) -> None:
+    deleted_topic = SimpleNamespace(id=9, name="Travel", slug="travel-archived", deleted_at=object())
+    db = MagicMock()
+    monkeypatch.setattr(bulk_service, "_get_active_topic_by_exact_name", lambda db_arg, topic_name: None)
+    # slug active lookup returns None too
+    db.scalar.return_value = None
+    monkeypatch.setattr(bulk_service, "_get_deleted_topic_by_exact_name", lambda db_arg, topic_name: deleted_topic)
+
+    payload = WordBulkCreate(
+        topic_name="Travel",
+        words=[WordInput(term="ticket", translations="билет")],
+    )
+
+    with pytest.raises(bulk_service.BulkTopicInTrashError) as exc_info:
+        bulk_service.bulk_import(db, payload)
+
+    assert exc_info.value.name == "Travel"
+
+
+def test_bulk_import_maps_name_conflict_from_create_topic(monkeypatch) -> None:
+    db = MagicMock()
+    monkeypatch.setattr(bulk_service, "_get_active_topic_by_exact_name", lambda db_arg, topic_name: None)
+    monkeypatch.setattr(bulk_service, "_get_deleted_topic_by_exact_name", lambda db_arg, topic_name: None)
+    db.scalar.return_value = None
+
+    def fake_create_topic(db_arg, topic_payload, commit=False):
+        raise TopicNameConflictError(f"Active topic name '{topic_payload.name}' already exists")
+
+    monkeypatch.setattr(bulk_service, "create_topic", fake_create_topic)
+
+    payload = WordBulkCreate(
+        topic_name="Travel",
+        words=[WordInput(term="ticket", translations="билет")],
+    )
+
+    with pytest.raises(bulk_service.BulkSlugConflictError) as exc_info:
+        bulk_service.bulk_import(db, payload)
+
+    assert "Travel" in exc_info.value.detail

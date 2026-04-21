@@ -8,6 +8,7 @@ from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.service import (
     InvalidTopicNameError,
     InvalidTopicParentError,
+    TopicHasActiveChildrenError,
     TopicNameConflictError,
     TopicSlugConflictError,
 )
@@ -119,11 +120,33 @@ def test_delete_topic_calls_soft_delete_with_flag(monkeypatch, make_topic) -> No
     called = MagicMock()
 
     monkeypatch.setattr(topic_router, "get_topic_by_id", lambda db, topic_id: topic)
+    monkeypatch.setattr(topic_router, "assert_topic_has_no_active_children", MagicMock())
     monkeypatch.setattr(topic_router, "soft_delete_topic", called)
 
     topic_router.delete_topic(10, delete_words=True, db=db)
 
     called.assert_called_once_with(db, topic, delete_words=True)
+
+
+def test_delete_topic_maps_active_child_conflict_to_409(monkeypatch, make_topic) -> None:
+    db = MagicMock()
+    topic = make_topic(id=10)
+    soft_delete_called = MagicMock()
+
+    monkeypatch.setattr(topic_router, "get_topic_by_id", lambda db, topic_id: topic)
+    monkeypatch.setattr(
+        topic_router,
+        "assert_topic_has_no_active_children",
+        MagicMock(side_effect=TopicHasActiveChildrenError(["Subtopic A"])),
+    )
+    monkeypatch.setattr(topic_router, "soft_delete_topic", soft_delete_called)
+
+    with pytest.raises(HTTPException) as exc_info:
+        topic_router.delete_topic(10, delete_words=False, db=db)
+
+    assert exc_info.value.status_code == 409
+    assert "Subtopic A" in exc_info.value.detail
+    soft_delete_called.assert_not_called()
 
 
 def test_audit_topics_returns_service_result(monkeypatch) -> None:

@@ -2,12 +2,17 @@ from __future__ import annotations
 
 from typing import cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
-from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
+from app.features.topics.service import (
+    create_topic,
+    InvalidTopicNameError,
+    TopicNameConflictError,
+    TopicSlugConflictError,
+)
 from app.features.words.model import Word
 from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
@@ -31,34 +36,57 @@ class BulkInvalidTopicNameError(Exception):
         self.name = name
 
 
+def _get_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
+    normalized = topic_name.strip().casefold()
+    return db.scalar(
+        select(Topic)
+        .where(func.lower(Topic.name) == normalized)
+        .where(Topic.deleted_at.is_(None))
+    )
+
+
+def _get_deleted_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
+    normalized = topic_name.strip().casefold()
+    return db.scalar(
+        select(Topic)
+        .where(func.lower(Topic.name) == normalized)
+        .where(Topic.deleted_at.isnot(None))
+    )
+
+
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
     topic_slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
     if not topic_slug:
         raise BulkInvalidTopicNameError(payload.topic_name)
 
     try:
-        topic = db.scalar(
-            select(Topic)
-            .where(Topic.slug == topic_slug)
-            .where(Topic.deleted_at.is_(None))
-        )
+        topic = _get_active_topic_by_exact_name(db, payload.topic_name)
         if topic is None:
-            deleted = db.scalar(
+            topic = db.scalar(
                 select(Topic)
                 .where(Topic.slug == topic_slug)
-                .where(Topic.deleted_at.isnot(None))
+                .where(Topic.deleted_at.is_(None))
             )
+
+        if topic is None:
+            deleted = _get_deleted_topic_by_exact_name(db, payload.topic_name)
+            if deleted is None:
+                deleted = db.scalar(
+                    select(Topic)
+                    .where(Topic.slug == topic_slug)
+                    .where(Topic.deleted_at.isnot(None))
+                )
             if deleted is not None:
-                raise BulkTopicInTrashError(deleted.name)
+                raise BulkTopicInTrashError(str(deleted.name))
             try:
                 topic = create_topic(db, TopicCreate(name=payload.topic_name), commit=False)
             except InvalidTopicNameError:
                 raise BulkInvalidTopicNameError(payload.topic_name)
-            except TopicSlugConflictError as e:
+            except (TopicSlugConflictError, TopicNameConflictError) as e:
                 raise BulkSlugConflictError(e.detail)
 
-        topic_id = int(cast(object, topic.id))
-        topic_name = str(cast(object, topic.name))
+        topic_id = cast(int, cast(object, topic.id))
+        topic_name = cast(str, cast(object, topic.name))
 
         # Use the shared domain helper for duplicate detection — same rule as create/update
         existing = existing_normalized_terms(db, [topic_id])

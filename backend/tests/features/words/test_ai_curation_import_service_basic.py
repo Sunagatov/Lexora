@@ -204,3 +204,73 @@ def test_import_reassign_adds_and_removes_topics(monkeypatch) -> None:
 
     assert result.reassigned_words == 1
     assert result.reassigned_word_ids == [10]
+
+
+def test_import_dry_run_returns_null_ids_for_created_topics(monkeypatch) -> None:
+    source = _make_topic()
+    new_topic = _make_topic(id=55, name="Retail Banking", slug="retail-banking")
+    new_word = _make_word(id=101, term="overdraft", topics=[new_topic])
+
+    db = _make_db(source, [])
+
+    monkeypatch.setattr(ai_curation_service, "create_topic", lambda db, payload, commit=True: new_topic)
+    monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: new_word)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        dry_run=True,
+        topic_operations=[CreateTopicOperation(client_key="retail-banking", name="Retail Banking")],
+        word_operations=[
+            {
+                "op": "create_new_word",
+                "target_topic_refs": [{"client_key": "retail-banking"}],
+                "term": "overdraft",
+                "translations": "овердрафт",
+            }
+        ],
+    )
+
+    result = ai_curation_service.import_ai_curation(db, payload)
+
+    assert result.dry_run is True
+    assert result.created_words == 1
+    assert result.created_word_ids == []
+    assert len(result.created_topics) == 1
+    assert result.created_topics[0].client_key == "retail-banking"
+    assert result.created_topics[0].id is None
+    db.rollback.assert_called_once()
+    db.commit.assert_not_called()
+
+
+def test_import_non_dry_run_keeps_created_ids(monkeypatch) -> None:
+    source = _make_topic()
+    new_topic = _make_topic(id=55, name="Retail Banking", slug="retail-banking")
+    new_word = _make_word(id=101, term="overdraft", topics=[new_topic])
+
+    db = _make_db(source, [])
+
+    monkeypatch.setattr(ai_curation_service, "create_topic", lambda db, payload, commit=True: new_topic)
+    monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: new_word)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        dry_run=False,
+        topic_operations=[CreateTopicOperation(client_key="retail-banking", name="Retail Banking")],
+        word_operations=[
+            {
+                "op": "create_new_word",
+                "target_topic_refs": [{"client_key": "retail-banking"}],
+                "term": "overdraft",
+                "translations": "овердрафт",
+            }
+        ],
+    )
+
+    result = ai_curation_service.import_ai_curation(db, payload)
+
+    assert result.dry_run is False
+    assert result.created_words == 1
+    assert result.created_word_ids == [101]
+    assert result.created_topics[0].id == 55
+    db.commit.assert_called_once()
+    db.rollback.assert_not_called()

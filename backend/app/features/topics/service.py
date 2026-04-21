@@ -42,6 +42,29 @@ class MissingTopicsError(Exception):
         super().__init__(f"Topics not found: {ids}")
 
 
+class TopicHasActiveChildrenError(Exception):
+    def __init__(self, child_names: list[str]) -> None:
+        self.child_names = child_names
+        self.detail = (
+            "Cannot delete topic while active subtopics exist: "
+            + ", ".join(child_names)
+        )
+        super().__init__(self.detail)
+
+
+def assert_topic_has_no_active_children(db: Session, topic_id: int) -> None:
+    child_names = list(
+        db.scalars(
+            select(Topic.name)
+            .where(Topic.parent_topic_id == topic_id)
+            .where(Topic.deleted_at.is_(None))
+            .order_by(Topic.name.asc())
+        ).all()
+    )
+    if child_names:
+        raise TopicHasActiveChildrenError(child_names)
+
+
 def assert_slug_available(db: Session, slug: str, exclude_topic_id: int | None = None) -> None:
     """Raise TopicSlugConflictError if the slug is taken by any topic including soft-deleted."""
     existing = db.scalar(select(Topic).where(Topic.slug == slug))

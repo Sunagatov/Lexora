@@ -290,19 +290,31 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
 
         if payload.dry_run:
             db.rollback()
+            created_topics_for_response = [
+                CreatedTopicResult(
+                    client_key=item.client_key,
+                    id=None,
+                    name=item.name,
+                    slug=item.slug,
+                )
+                for item in created_topic_results
+            ]
+            created_word_ids_for_response: list[int] = []
         else:
             db.commit()
+            created_topics_for_response = created_topic_results
+            created_word_ids_for_response = created_word_ids
 
         return AiCurationImportResponse(
             source_topic_id=source_topic.id,
             source_topic_name=source_topic.name,
             dry_run=payload.dry_run,
-            created_topics=created_topic_results,
+            created_topics=created_topics_for_response,
             created_words=len(created_word_ids),
             updated_words=len(updated_word_ids),
             reassigned_words=len(reassigned_word_ids),
             unchanged=unchanged,
-            created_word_ids=created_word_ids,
+            created_word_ids=created_word_ids_for_response,
             updated_word_ids=updated_word_ids,
             reassigned_word_ids=reassigned_word_ids,
         )

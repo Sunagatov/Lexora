@@ -9,8 +9,10 @@ from app.features.topics.schemas import TopicCreate, TopicResponse, TopicUpdate
 from app.features.topics.service import (
     InvalidTopicNameError,
     InvalidTopicParentError,
+    TopicHasActiveChildrenError,
     TopicNameConflictError,
     TopicSlugConflictError,
+    assert_topic_has_no_active_children,
     create_topic,
     update_topic,
 )
@@ -95,4 +97,8 @@ def delete_topic(topic_id: int, delete_words: bool = False, db: Session = Depend
     topic = get_topic_by_id(db, topic_id)
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
-    soft_delete_topic(db, topic, delete_words=delete_words)
+    try:
+        assert_topic_has_no_active_children(db, topic.id)
+        soft_delete_topic(db, topic, delete_words=delete_words)
+    except TopicHasActiveChildrenError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)

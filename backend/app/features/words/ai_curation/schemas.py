@@ -297,7 +297,7 @@ class AiCurationImportRequest(BaseModel):
 
 class CreatedTopicResult(BaseModel):
     client_key: str
-    id: int
+    id: int | None = None
     name: str
     slug: str
 
