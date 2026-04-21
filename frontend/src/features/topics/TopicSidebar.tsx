@@ -1,5 +1,5 @@
 import {useRef, useMemo, useState} from 'react'
-import type {ChangeEvent} from 'react'
+import type {ChangeEvent, ReactElement} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic, createTopic} from './api'
@@ -11,7 +11,7 @@ import {TopicButton} from './TopicButton'
 import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
 import {useTopicSidebarPrefs} from './useTopicSidebarPrefs'
-import {buildSidebarGroups, weakCount} from './topicSidebarModel'
+import {buildSidebarGroups, isPosGroup, weakCount, type TopicTreeNode} from './topicSidebarModel'
 import {exportWordsWorkbook, importWordsWorkbook} from '../words/api'
 
 type Props = {
@@ -45,6 +45,7 @@ export function TopicSidebar({
   const [searchOpen,     setSearchOpen]     = useState(false)
   const [deleteTopicId,  setDeleteTopicId]  = useState<number | null>(null)
   const [newTopicName,   setNewTopicName]   = useState('')
+  const [newTopicParentId, setNewTopicParentId] = useState<number | ''>('')
   const [addingTopic,    setAddingTopic]    = useState(false)
   const [topicError,     setTopicError]     = useState<string | null>(null)
   const [workbookBusy,   setWorkbookBusy]   = useState(false)
@@ -54,13 +55,17 @@ export function TopicSidebar({
   const topicsSortRef  = useRef<HTMLButtonElement>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
+  const selectedTopic = useMemo(
+    () => topics.find((t) => t.id === selectedTopicId) ?? null,
+    [topics, selectedTopicId],
+  )
 
   const createTopicMutation = useMutation({
-    mutationFn: () => createTopic(newTopicName.trim()),
+    mutationFn: () => createTopic(newTopicName.trim(), newTopicParentId === '' ? null : newTopicParentId),
     onSuccess: (created) => {
       queryClient.setQueryData<Topic[]>(queryKeys.topics, (cur = []) => [...cur, created])
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      setNewTopicName(''); setAddingTopic(false); setTopicError(null)
+      setNewTopicName(''); setNewTopicParentId(''); setAddingTopic(false); setTopicError(null)
       navigate(routes.topic(created.slug))
     },
     onError: (err: Error) => setTopicError(err instanceof ApiError && err.status === 409 ? err.message : 'Name already exists or is invalid.'),
@@ -81,7 +86,12 @@ export function TopicSidebar({
 
   const needle = topicSearch.toLowerCase().trim()
 
-  const {posTopics, themeTopics, pinnedTopics, recentTopics} = useMemo(() =>
+  const topicOptions = useMemo(
+    () => [...topics].filter((t) => !isPosGroup(t)).sort((a, b) => a.name.localeCompare(b.name)),
+    [topics],
+  )
+
+  const {posTopics, themeTopics, themeTree, pinnedTopics, recentTopics} = useMemo(() =>
     buildSidebarGroups(
       topics, needle, prefs.pinnedIds,
       prefs.posSort, prefs.topicsSort,
@@ -137,6 +147,28 @@ export function TopicSidebar({
     } finally {
       setWorkbookBusy(false)
     }
+  }
+
+  function renderTopicTree(nodes: TopicTreeNode[], level = 0): ReactElement[] {
+    return nodes.flatMap((node) => {
+      const children = renderTopicTree(node.children, level + 1)
+      return [
+        <TopicButton
+          key={node.topic.id}
+          topic={node.topic}
+          level={level}
+          selectedTopicId={selectedTopicId}
+          isSmartReview={isSmartReview}
+          topicCounts={topicCounts}
+          topicProgress={topicProgress}
+          pinnedIds={prefs.pinnedIds}
+          onSelect={handleSelect}
+          onDelete={(id: number) => setDeleteTopicId(id)}
+          onPin={prefs.togglePin}
+        />,
+        ...children,
+      ]
+    })
   }
 
   return (
@@ -292,20 +324,7 @@ export function TopicSidebar({
                 {weakCount(themeTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics, topicProgress, topicCounts)} below 30%</span></>}
               </div>
             )}
-            {!prefs.topicsCollapsed && themeTopics.map((t) => (
-              <TopicButton
-                key={t.id}
-                topic={t}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onDelete={(id: number) => setDeleteTopicId(id)}
-                onPin={prefs.togglePin}
-              />
-            ))}
+            {!prefs.topicsCollapsed && renderTopicTree(themeTree)}
           </div>
         )}
 
@@ -318,26 +337,52 @@ export function TopicSidebar({
         {addingTopic ? (
           <div className="sidebar-new-topic-wrap">
             <div className="sidebar-new-topic-form">
-              <input className="sidebar-new-topic-input" placeholder="Topic name…" value={newTopicName} autoFocus maxLength={200}
-                onChange={(e) => { setNewTopicName(e.target.value); setTopicError(null) }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && newTopicName.trim()) createTopicMutation.mutate()
-                  if (e.key === 'Escape') { setAddingTopic(false); setNewTopicName(''); setTopicError(null) }
+              <select
+                className="sidebar-new-topic-parent"
+                value={newTopicParentId === '' ? '' : String(newTopicParentId)}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setNewTopicParentId(value === '' ? '' : Number(value))
                 }}
-              />
-              <button type="button" className="sidebar-new-topic-save" disabled={!newTopicName.trim() || createTopicMutation.isPending} onClick={() => createTopicMutation.mutate()}>
-                {createTopicMutation.isPending ? '…' : 'Add'}
-              </button>
-              <button type="button" className="sidebar-new-topic-cancel" onClick={() => { setAddingTopic(false); setNewTopicName(''); setTopicError(null) }}>
-                <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                  <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
-                </svg>
-              </button>
+              >
+                <option value="">Top-level topic</option>
+                {topicOptions.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <div className="sidebar-new-topic-row">
+                <input className="sidebar-new-topic-input" placeholder="Topic name…" value={newTopicName} autoFocus maxLength={200}
+                  onChange={(e) => { setNewTopicName(e.target.value); setTopicError(null) }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newTopicName.trim()) createTopicMutation.mutate()
+                    if (e.key === 'Escape') { setAddingTopic(false); setNewTopicName(''); setNewTopicParentId(''); setTopicError(null) }
+                  }}
+                />
+                <button type="button" className="sidebar-new-topic-save" disabled={!newTopicName.trim() || createTopicMutation.isPending} onClick={() => createTopicMutation.mutate()}>
+                  {createTopicMutation.isPending ? '…' : 'Add'}
+                </button>
+                <button type="button" className="sidebar-new-topic-cancel" onClick={() => { setAddingTopic(false); setNewTopicName(''); setNewTopicParentId(''); setTopicError(null) }}>
+                  <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                    <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             {topicError && <div className="sidebar-new-topic-error">{topicError}</div>}
           </div>
         ) : (
-          <button type="button" className="sidebar-add-topic-btn" onClick={() => setAddingTopic(true)}>+ New topic</button>
+          <button
+            type="button"
+            className="sidebar-add-topic-btn"
+            onClick={() => {
+              setNewTopicParentId(selectedTopic && !isPosGroup(selectedTopic) ? selectedTopic.id : '')
+              setAddingTopic(true)
+            }}
+          >
+            + New topic
+          </button>
         )}
         <div className="sidebar-util-row">
           <button type="button" className="sidebar-util-btn" title="Statistics" onClick={() => navigate(routes.stats)}>

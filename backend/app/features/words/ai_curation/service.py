@@ -353,7 +353,12 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
         for op in payload.topic_operations:
             topic = create_topic(
                 db,
-                TopicCreate(name=op.name, description=op.description, is_active=op.is_active),
+                TopicCreate(
+                    name=op.name,
+                    description=op.description,
+                    parent_topic_id=op.parent_topic_id,
+                    is_active=op.is_active,
+                ),
                 commit=False,
             )
             created_topics[op.client_key] = topic

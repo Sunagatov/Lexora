@@ -148,6 +148,7 @@ class CreateTopicOperation(BaseModel):
     client_key: str = Field(min_length=1, max_length=100)
     name: str = Field(min_length=1, max_length=TOPIC_NAME_MAX_LEN)
     description: str | None = None
+    parent_topic_id: int | None = Field(default=None, gt=0)
     is_active: bool = True
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)

@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 from app.features.topics import router as topic_router
 from app.features.topics.schemas import TopicCreate, TopicUpdate
-from app.features.topics.service import InvalidTopicNameError, TopicSlugConflictError
+from app.features.topics.service import InvalidTopicNameError, InvalidTopicParentError, TopicSlugConflictError
 from app.features.topics.refinement_schemas import TopicAuditResponse, TopicSplitPlanRequest
 
 
@@ -48,6 +48,21 @@ def test_create_topic_route_maps_slug_conflict_to_409(monkeypatch) -> None:
 
     assert exc_info.value.status_code == 409
     assert exc_info.value.detail == "Topic slug 'travel' already exists"
+
+
+def test_create_topic_route_maps_invalid_parent_to_400(monkeypatch) -> None:
+    db = object()
+
+    def fake_create_topic(db, payload):
+        raise InvalidTopicParentError("Parent topic 99 not found")
+
+    monkeypatch.setattr(topic_router, "create_topic", fake_create_topic)
+
+    with pytest.raises(HTTPException) as exc_info:
+        topic_router.create_topic_route(TopicCreate(name="Child", parent_topic_id=99), db=db)
+
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Parent topic 99 not found"
 
 
 def test_update_topic_route_raises_404_when_topic_is_missing(monkeypatch) -> None:

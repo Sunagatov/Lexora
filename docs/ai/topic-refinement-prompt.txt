@@ -3,6 +3,7 @@ Take this Lexora topic refinement draft and return ONLY valid JSON.
 Goal:
 - Split one broad topic into smaller, specific, learner-friendly subtopics.
 - Only split topics that have more than 300 active words.
+- Skip part-of-speech umbrellas for now: Verbs, Nouns, Adjectives, Adverbs, Phrases, Prepositions, and Irregular Verbs.
 - Optimize for clear, concise topics with obvious boundaries.
 - Split only when the narrower topics are materially better and easy to distinguish.
 - If a split would create fuzzy or overlapping meanings, keep the topics merged.

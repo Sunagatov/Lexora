@@ -56,20 +56,24 @@ def test_assert_topics_exist_raises_missing_ids_in_original_order() -> None:
 
 def test_create_topic_slugifies_and_persists(monkeypatch) -> None:
     db = MagicMock()
-    payload = TopicCreate(name="Daily Routine", description="desc", is_active=False)
+    payload = TopicCreate(name="Daily Routine", description="desc", parent_topic_id=7, is_active=False)
 
     monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "daily-routine")
     slug_check = MagicMock()
     monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
+    parent_check = MagicMock()
+    monkeypatch.setattr(topic_service, "assert_topic_parent_valid", parent_check)
 
     topic = topic_service.create_topic(db, payload)
 
     assert topic.name == "Daily Routine"
     assert topic.slug == "daily-routine"
     assert topic.description == "desc"
+    assert topic.parent_topic_id == 7
     assert topic.is_active is False
 
     slug_check.assert_called_once_with(db, "daily-routine")
+    parent_check.assert_called_once_with(db, 7)
     db.add.assert_called_once_with(topic)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(topic)
@@ -140,3 +144,13 @@ def test_update_topic_raises_when_slug_produces_empty_string(monkeypatch) -> Non
         topic_service.update_topic(db, topic, payload)
 
     assert exc_info.value.name == "!!!"
+
+
+def test_assert_topic_parent_valid_rejects_self_parent() -> None:
+    db = MagicMock()
+    db.scalar.return_value = SimpleNamespace(id=5, parent_topic_id=None, deleted_at=None)
+
+    with pytest.raises(topic_service.InvalidTopicParentError) as exc_info:
+        topic_service.assert_topic_parent_valid(db, 5, exclude_topic_id=5)
+
+    assert "own parent" in exc_info.value.detail

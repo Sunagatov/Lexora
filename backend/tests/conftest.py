@@ -31,9 +31,11 @@ def make_topic(fixed_now):
         name: str = "Topic",
         slug: str = "topic",
         description: str | None = None,
+        parent_topic_id=None,
         is_active: bool = True,
         deleted_at=None,
         words=None,
+        children=None,
         created_at=None,
         updated_at=None,
     ):
@@ -42,9 +44,11 @@ def make_topic(fixed_now):
             name=name,
             slug=slug,
             description=description,
+            parent_topic_id=parent_topic_id,
             is_active=is_active,
             deleted_at=deleted_at,
             words=list(words or []),
+            children=list(children or []),
             created_at=created_at or fixed_now,
             updated_at=updated_at or fixed_now,
         )

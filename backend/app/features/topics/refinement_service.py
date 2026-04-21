@@ -34,6 +34,16 @@ TOPIC_SPLIT_MIN_WORDS = 300
 TOPIC_NAME_SIMILARITY_REUSE_THRESHOLD = 0.5
 TOPIC_NAME_SIMILARITY_MERGE_THRESHOLD = 0.5
 NAME_STOPWORDS = {"and", "for", "of", "the", "to", "with"}
+PARTS_OF_SPEECH_TOPICS = {
+    "adjectives",
+    "adverbs",
+    "nouns",
+    "parts of speech",
+    "phrases",
+    "prepositions",
+    "verbs",
+    "irregular verbs",
+}
 
 
 @dataclass(frozen=True)
@@ -157,6 +167,11 @@ def _topic_name_similarity(left: str, right: str) -> float:
     return max(coverage, jaccard)
 
 
+def _is_parts_of_speech_topic(topic_name: str) -> bool:
+    normalized = topic_name.casefold().strip()
+    return normalized in PARTS_OF_SPEECH_TOPICS
+
+
 def _active_topics(word: WordLike | object) -> list[Topic]:
     return [topic for topic in getattr(word, "topics", []) if getattr(topic, "deleted_at", None) is None]
 
@@ -174,6 +189,21 @@ def _topic_audit(topic: Topic) -> TopicAuditItem:
             average_topics_per_word=0.0,
             broadness_score=0.0,
             reasons=["empty topic"],
+            should_review=False,
+        )
+    if _is_parts_of_speech_topic(topic.name):
+        return TopicAuditItem(
+            topic_id=topic.id,
+            topic_name=topic.name,
+            word_count=word_count,
+            shared_word_count=sum(1 for word in words if len(_active_topics(word)) > 1),
+            exclusive_word_count=sum(1 for word in words if len(_active_topics(word)) == 1),
+            average_topics_per_word=round(
+                sum(len(_active_topics(word)) for word in words) / word_count,
+                2,
+            ),
+            broadness_score=0.0,
+            reasons=["part-of-speech umbrella topic"],
             should_review=False,
         )
 

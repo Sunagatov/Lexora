@@ -550,6 +550,29 @@
 
 .sidebar-new-topic-form {
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-new-topic-parent {
+  width: 100%;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  color: var(--sidebar-text);
+  padding: 0 8px;
+  font-size: 0.78rem;
+}
+
+.sidebar-new-topic-parent:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sidebar-new-topic-row {
+  width: 100%;
+  display: flex;
   gap: 4px;
   align-items: center;
 }

@@ -9,6 +9,11 @@ export const isPosGroup = (t: Topic) => POS_NAMES.has(t.name.toLowerCase().trim(
 
 type Comparator = (a: Topic, b: Topic) => number
 
+export type TopicTreeNode = {
+  topic: Topic
+  children: TopicTreeNode[]
+}
+
 export function sortTopics(
   topics: Topic[],
   mode: SortMode,
@@ -48,6 +53,57 @@ export function weakCount(
   return list.filter((t) => (progress.get(t.id) ?? 0) < 30 && (counts.get(t.id) ?? 0) > 0).length
 }
 
+function matchesNeedle(topic: Topic, needle: string): boolean {
+  if (!needle) return true
+  const name = topic.name.toLowerCase()
+  const description = (topic.description ?? '').toLowerCase()
+  return name.includes(needle) || description.includes(needle)
+}
+
+function buildTopicTree(
+  topics: Topic[],
+  needle: string,
+  pinnedIds: number[],
+  sortMode: SortMode,
+  progress: Map<number, number>,
+  counts: Map<number, number>,
+): TopicTreeNode[] {
+  const pinned = new Set(pinnedIds)
+  const eligible = topics.filter((t) => !isPosGroup(t) && !pinned.has(t.id))
+  const eligibleById = new Map(eligible.map((topic) => [topic.id, topic]))
+  const childrenByParent = new Map<number | null, Topic[]>()
+
+  for (const topic of eligible) {
+    const parentId = topic.parent_topic_id ?? null
+    const parentExists = parentId !== null && eligibleById.has(parentId)
+    const key = parentExists ? parentId : null
+    const list = childrenByParent.get(key) ?? []
+    list.push(topic)
+    childrenByParent.set(key, list)
+  }
+
+  const build = (parentId: number | null): TopicTreeNode[] => {
+    const siblings = sortTopics(childrenByParent.get(parentId) ?? [], sortMode, progress, counts)
+    return siblings.flatMap((topic) => {
+      const children = build(topic.id)
+      if (!needle) return [{topic, children}]
+      if (matchesNeedle(topic, needle) || children.length > 0) return [{topic, children}]
+      return []
+    })
+  }
+
+  return build(null)
+}
+
+function flattenTopicTree(nodes: TopicTreeNode[]): Topic[] {
+  const flat: Topic[] = []
+  for (const node of nodes) {
+    flat.push(node.topic)
+    flat.push(...flattenTopicTree(node.children))
+  }
+  return flat
+}
+
 export function buildSidebarGroups(
   topics: Topic[],
   needle: string,
@@ -66,13 +122,11 @@ export function buildSidebarGroups(
     topics.filter((t) => isPosGroup(t) && !pinnedIdSet.has(t.id) && (!needle || t.name.toLowerCase().includes(needle))),
     posSort, progress, counts,
   )
-  const themeTopics = sortTopics(
-    topics.filter((t) => !isPosGroup(t) && !pinnedIdSet.has(t.id) && (!needle || t.name.toLowerCase().includes(needle) || (t.description ?? '').toLowerCase().includes(needle))),
-    topicsSort, progress, counts,
-  )
   const pinnedTopics = pinnedIds
     .map((id) => topics.find((t) => t.id === id))
     .filter((t): t is Topic => !!t && (!needle || t.name.toLowerCase().includes(needle)))
+  const themeTree = buildTopicTree(topics, needle, pinnedIds, topicsSort, progress, counts)
+  const themeTopics = flattenTopicTree(themeTree)
 
   const expandedIds = new Set<number>()
   if (!posCollapsed) posTopics.forEach((t) => expandedIds.add(t.id))
@@ -82,5 +136,5 @@ export function buildSidebarGroups(
     .filter((t): t is Topic => !!t && !needle && !pinnedIds.includes(t.id) && !expandedIds.has(t.id))
     .slice(0, 4)
 
-  return {posTopics, themeTopics, pinnedTopics, recentTopics}
+  return {posTopics, themeTopics, themeTree, pinnedTopics, recentTopics}
 }

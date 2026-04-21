@@ -30,6 +30,21 @@ def test_build_topic_audit_only_flags_topics_with_more_than_300_words(monkeypatc
     assert result.items[1].should_review is False
 
 
+def test_build_topic_audit_skips_parts_of_speech_topics(monkeypatch, make_topic, make_word) -> None:
+    verbs_topic = make_topic(
+        id=10,
+        name="Verbs",
+        words=_make_split_words(make_word, start_id=800, term="run", count=637),
+    )
+    db = MagicMock()
+    monkeypatch.setattr(topic_refinement_service, "get_all_topics_with_words", lambda db: [verbs_topic])
+
+    result = topic_refinement_service.build_topic_audit(db)
+
+    assert result.items[0].should_review is False
+    assert "part-of-speech umbrella topic" in result.items[0].reasons
+
+
 def test_build_topic_split_plan_skips_topics_at_300_words(monkeypatch, make_topic, make_word) -> None:
     source_topic = make_topic(
         id=33,

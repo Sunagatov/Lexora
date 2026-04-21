@@ -23,6 +23,12 @@ class InvalidTopicNameError(Exception):
         super().__init__(f"Cannot generate a valid slug from name '{name}'")
 
 
+class InvalidTopicParentError(Exception):
+    def __init__(self, detail: str) -> None:
+        self.detail = detail
+        super().__init__(detail)
+
+
 class MissingTopicsError(Exception):
     def __init__(self, ids: list[int]) -> None:
         self.ids = ids
@@ -52,12 +58,42 @@ def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
         raise MissingTopicsError(missing)
 
 
+def assert_topic_parent_valid(db: Session, parent_topic_id: int | None, *, exclude_topic_id: int | None = None) -> None:
+    if parent_topic_id is None:
+        return
+
+    parent = db.scalar(select(Topic).where(Topic.id == parent_topic_id, Topic.deleted_at.is_(None)))
+    if parent is None:
+        raise InvalidTopicParentError(f"Parent topic {parent_topic_id} not found")
+    if exclude_topic_id is not None and parent.id == exclude_topic_id:
+        raise InvalidTopicParentError("A topic cannot be its own parent")
+
+    seen: set[int] = set()
+    current = parent
+    while current.parent_topic_id is not None:
+        if current.parent_topic_id in seen:
+            break
+        seen.add(current.id)
+        if exclude_topic_id is not None and current.parent_topic_id == exclude_topic_id:
+            raise InvalidTopicParentError("Topic parent cannot be one of its descendants")
+        current = db.scalar(select(Topic).where(Topic.id == current.parent_topic_id, Topic.deleted_at.is_(None)))
+        if current is None:
+            break
+
+
 def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> Topic:
     server_slug = slugify(payload.name, max_len=TOPIC_SLUG_MAX_LEN)
     if not server_slug:
         raise InvalidTopicNameError(payload.name)
     assert_slug_available(db, server_slug)
-    topic = Topic(name=payload.name, slug=server_slug, description=payload.description, is_active=payload.is_active)
+    assert_topic_parent_valid(db, payload.parent_topic_id)
+    topic = Topic(
+        name=payload.name,
+        slug=server_slug,
+        description=payload.description,
+        parent_topic_id=payload.parent_topic_id,
+        is_active=payload.is_active,
+    )
     db.add(topic)
     if commit:
         db.commit()
@@ -81,5 +117,8 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
             if not derived_slug:
                 raise InvalidTopicNameError(payload.name)
             assert_slug_available(db, derived_slug, exclude_topic_id=topic.id)
+
+    if "parent_topic_id" in payload.model_fields_set:
+        assert_topic_parent_valid(db, payload.parent_topic_id, exclude_topic_id=topic.id)
 
     return persist_topic_update(db, topic, payload)

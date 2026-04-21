@@ -1,6 +1,6 @@
 import type {Topic} from '../../shared/types'
 
-export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onDelete, onPin}: {
+export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onDelete, onPin, level = 0}: {
   topic: Topic
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
@@ -10,6 +10,7 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   onSelect: (id: number) => void
   onDelete: (id: number) => void
   onPin: (id: number) => void
+  level?: number
 }) {
   const progress = topicProgress.get(topic.id)
   const isPinned = pinnedIds.includes(topic.id)
@@ -20,6 +21,7 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
       className={`topic-item ${!isSmartReview && topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
       data-pinned={isPinned ? 'true' : undefined}
       title={topic.name}
+      style={{paddingLeft: `${level * 14}px`}}
     >
       <button type="button" className="topic-item-select" onClick={() => onSelect(topic.id)}>
         <span className="topic-item-name">{topic.name}</span>

@@ -165,6 +165,7 @@ Current API surface:
 Practical rule:
 
 - only split topics with more than 300 active words
+- skip part-of-speech umbrellas for now: `Verbs`, `Nouns`, `Adjectives`, `Adverbs`, `Phrases`, `Prepositions`, and `Irregular Verbs`
 - optimize for clear, concise topics with obvious boundaries
 - split only when the narrower topics are materially better and easy to distinguish
 - if a split would create two topics with fuzzy or overlapping meanings, keep them merged

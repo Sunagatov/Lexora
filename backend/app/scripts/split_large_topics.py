@@ -87,6 +87,7 @@ def _build_topic_operations(plan: dict[str, Any]) -> tuple[list[dict[str, Any]],
                 "client_key": client_key,
                 "name": subtopic["name"],
                 "description": subtopic.get("description"),
+                "parent_topic_id": plan["source_topic_id"],
                 "is_active": True,
             }
         )
