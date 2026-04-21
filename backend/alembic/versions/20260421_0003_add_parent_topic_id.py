@@ -1,6 +1,6 @@
 """add parent_topic_id to topics
 
-Revision ID: 20260421_0003_add_parent_topic_id
+Revision ID: 20260421_0003_parent_topic
 Revises: 20260421_0002_add_deleted_via_topic_id
 Create Date: 2026-04-21 16:20:00.000000
 """
@@ -11,7 +11,7 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision = "20260421_0003_add_parent_topic_id"
+revision = "20260421_0003_parent_topic"
 down_revision = "20260421_0002"
 branch_labels = None
 depends_on = None
