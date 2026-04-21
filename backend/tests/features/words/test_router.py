@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi import HTTPException
@@ -7,6 +8,8 @@ from app.features.topics.service import MissingTopicsError
 from app.features.words import router as words_router
 from app.features.words.bulk.service import BulkTopicInTrashError
 from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.ai_review.schemas import AiReviewImportRequest
+from app.features.words.ai_review.service import AiReviewImportError
 from app.features.words.schemas import WordBulkCreate, WordCreate, WordInput, WordUpdate
 
 
@@ -79,3 +82,36 @@ def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
 
     assert exc_info.value.status_code == 409
     assert "exists but is in trash" in exc_info.value.detail
+
+
+def test_export_words_ai_review_maps_missing_topic_to_404(monkeypatch) -> None:
+    def fake_export(db, topic_id, page, page_size):
+        raise AiReviewImportError(f"Topic {topic_id} not found")
+
+    monkeypatch.setattr(words_router, "build_topic_ai_review_export", fake_export)
+
+    with pytest.raises(HTTPException) as exc_info:
+        words_router.export_words_ai_review(topic_id=99, db=object())
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Topic 99 not found"
+
+
+def test_import_words_ai_review_maps_invalid_payload_to_400(monkeypatch) -> None:
+    def fake_import(db, payload):
+        raise AiReviewImportError("Word 10 term mismatch")
+
+    monkeypatch.setattr(words_router, "import_topic_ai_review", fake_import)
+
+    payload = AiReviewImportRequest(
+        topic_id=1,
+        words=[{"id": 10, "term": "run", "example_entries": ["I run every morning."]}],
+    )
+
+    db = MagicMock()
+    with pytest.raises(HTTPException) as exc_info:
+        words_router.import_words_ai_review(payload, db=db)
+
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "Word 10 term mismatch"
+    db.rollback.assert_called_once()

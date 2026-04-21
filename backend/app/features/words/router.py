@@ -27,6 +27,14 @@ from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.bulk import (
     BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
 )
+from app.features.words.ai_review import (
+    AiReviewExportResponse,
+    AiReviewImportError,
+    AiReviewImportRequest,
+    AiReviewImportResponse,
+    build_topic_ai_review_export,
+    import_topic_ai_review,
+)
 
 router = APIRouter(prefix="/api/words", tags=["words"])
 
@@ -91,6 +99,31 @@ async def import_words_xlsx(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     finally:
         await file.close()
+
+
+@router.get("/export/ai-review", response_model=AiReviewExportResponse)
+def export_words_ai_review(
+    topic_id: int = Query(gt=0),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=50, ge=1, le=100),
+    db: Session = Depends(get_db),
+) -> AiReviewExportResponse:
+    try:
+        return build_topic_ai_review_export(db, topic_id=topic_id, page=page, page_size=page_size)
+    except AiReviewImportError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.post("/import/ai-review", response_model=AiReviewImportResponse)
+def import_words_ai_review(
+    payload: AiReviewImportRequest,
+    db: Session = Depends(get_db),
+) -> AiReviewImportResponse:
+    try:
+        return import_topic_ai_review(db, payload)
+    except AiReviewImportError as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.get("/{word_id}", response_model=WordResponse)

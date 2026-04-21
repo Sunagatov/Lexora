@@ -50,7 +50,7 @@ class WordUpdate(BaseModel):
     notes: str | None = None
     is_active: bool | None = None
     progress_source: Literal[
-        "manual", "study_list", "smart_review", "quick_add", "bulk_import", "xlsx_import"
+        "manual", "study_list", "smart_review", "quick_add", "bulk_import", "xlsx_import", "json_import"
     ] | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
