@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.schemas import WordResponse
 
 
@@ -16,7 +17,7 @@ class StudyQueueItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def from_item(cls, item: object) -> "StudyQueueItemResponse":
+    def from_item(cls, item: StudyQueueItem) -> "StudyQueueItemResponse":
         return cls(
             id=item.id,
             word_id=item.word_id,
@@ -39,7 +40,7 @@ class StudyQueueResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def from_queue(cls, queue: object) -> "StudyQueueResponse":
+    def from_queue(cls, queue: StudyQueue) -> "StudyQueueResponse":
         return cls(
             id=queue.id,
             generated_at=queue.generated_at,

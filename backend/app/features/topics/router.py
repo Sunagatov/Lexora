@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import cast
 
 from app.shared.deps import get_db
 from app.features.topics.repository import (
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/api/topics", tags=["topics"])
 
 @router.get("", response_model=list[TopicResponse])
 def list_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
-    return [TopicResponse.model_validate(topic) for topic in get_all_topics(db)]
+    return [cast(TopicResponse, TopicResponse.model_validate(topic)) for topic in get_all_topics(db)]
 
 
 @router.get("/audit", response_model=TopicAuditResponse)
@@ -32,13 +33,13 @@ def get_topic(topic_id: int, db: Session = Depends(get_db)) -> TopicResponse:
     topic = get_topic_by_id(db, topic_id)
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
-    return TopicResponse.model_validate(topic)
+    return cast(TopicResponse, TopicResponse.model_validate(topic))
 
 
 @router.post("", response_model=TopicResponse, status_code=status.HTTP_201_CREATED)
 def create_topic_route(payload: TopicCreate, db: Session = Depends(get_db)) -> TopicResponse:
     try:
-        return TopicResponse.model_validate(create_topic(db, payload))
+        return cast(TopicResponse, TopicResponse.model_validate(create_topic(db, payload)))
     except InvalidTopicNameError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:
@@ -51,7 +52,7 @@ def update_topic_route(topic_id: int, payload: TopicUpdate, db: Session = Depend
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
     try:
-        return TopicResponse.model_validate(update_topic(db, topic, payload))
+        return cast(TopicResponse, TopicResponse.model_validate(update_topic(db, topic, payload)))
     except InvalidTopicNameError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:

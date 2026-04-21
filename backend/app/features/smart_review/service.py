@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from typing import Sequence, cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -44,7 +45,7 @@ def _pick_for_level(
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
 
-    candidates = list(db.scalars(stmt).all())
+    candidates = list(cast(Sequence[Word], db.scalars(stmt).all()))
     random.shuffle(candidates)
 
     picked: list[Word] = []
@@ -125,12 +126,12 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
     if item is None:
         raise QueueItemNotFoundError
 
-    queue = db.get(StudyQueue, item.queue_id)
+    queue = cast(StudyQueue | None, db.get(StudyQueue, item.queue_id))
     now = datetime.now(timezone.utc)
     if queue is None or not queue.is_active or queue.expires_at <= now:
         raise QueueNotActiveError
 
-    word = db.get(Word, item.word_id)
+    word = cast(Word | None, db.get(Word, item.word_id))
     if word is None or word.deleted_at is not None or not word.is_active:
         raise QueueNotActiveError
 
@@ -145,7 +146,7 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
 
 def deactivate_all_queues(db: Session) -> None:
     """Mark all active queues inactive. Does NOT commit — caller owns the transaction."""
-    for q in db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all():
+    for q in cast(Sequence[StudyQueue], db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all()):
         q.is_active = False
 
 

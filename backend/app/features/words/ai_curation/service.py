@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from collections import Counter
 from datetime import datetime, timezone
-from typing import cast
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -271,7 +270,7 @@ def _resolve_topic_ref(
     topic = created_topics.get(ref.client_key or "")
     if topic is None:
         raise AiCurationImportError(f"Referenced client_key '{ref.client_key}' was not created in topic_operations")
-    return cast(Topic, topic)
+    return topic
 
 
 def _current_value(word: Word, field: str):

@@ -31,6 +31,8 @@ def get_active_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
     if queue is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Smart Review is disabled")
     loaded = _load_queue(db, queue.id)
+    if loaded is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found")
     return StudyQueueResponse.from_queue(loaded)
 
 
@@ -41,9 +43,11 @@ def refresh_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Smart Review is disabled",
-        )
+    )
     queue = generate_queue(db)
     loaded = _load_queue(db, queue.id)
+    if loaded is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found")
     return StudyQueueResponse.from_queue(loaded)
 
 
@@ -56,4 +60,6 @@ def complete_item(item_id: int, db: Session = Depends(get_db)) -> StudyQueueResp
     except QueueNotActiveError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found or inactive")
     loaded = _load_queue(db, queue.id)
+    if loaded is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found")
     return StudyQueueResponse.from_queue(loaded)

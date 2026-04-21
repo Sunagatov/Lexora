@@ -1,6 +1,5 @@
 import re
 from datetime import datetime, timezone
-from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -127,26 +126,26 @@ def get_all_words(db: Session, topic_id: int | None = None, search: str | None =
             | Word.past_simple.ilike(needle)
             | Word.past_participle.ilike(needle)
         )
-    return list(cast(list[Word], db.scalars(stmt).all()))
+    return list(db.scalars(stmt).all())
 
 
 def get_word_by_id(db: Session, word_id: int) -> Word | None:
-    return cast(Word | None, db.scalar(_with_details(select(Word).where(Word.id == word_id).where(Word.deleted_at.is_(None)))))
+    return db.scalar(_with_details(select(Word).where(Word.id == word_id).where(Word.deleted_at.is_(None))))
 
 
 def get_word_by_id_including_deleted(db: Session, word_id: int) -> Word | None:
-    return cast(Word | None, db.scalar(_with_details(select(Word).where(Word.id == word_id))))
+    return db.scalar(_with_details(select(Word).where(Word.id == word_id)))
 
 
 def get_deleted_words(db: Session) -> list[Word]:
-    return list(cast(list[Word], db.scalars(
+    return list(db.scalars(
         _with_details(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc()))
-    ).all()))
+    ).all())
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
     assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
-    topics = list(cast(list[Topic], db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()))
+    topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
     data = payload.model_dump(
         exclude={"topic_ids", "translation_entries", "example_entries"}
     )
@@ -194,7 +193,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     for field, value in data.items():
         setattr(word, field, value)
     if payload.topic_ids is not None:
-        word.topics = list(cast(list[Topic], db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all()))
+        word.topics = list(db.scalars(select(Topic).where(Topic.id.in_(payload.topic_ids))).all())
 
     translation_requested = "translations" in fields_set or "translation_entries" in fields_set
     example_requested = "example" in fields_set or "example_entries" in fields_set
