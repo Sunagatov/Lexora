@@ -1,0 +1,137 @@
+[
+  {
+    "topic_id": 2,
+    "topic_name": "Nouns",
+    "word_count": 872,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 1,
+    "topic_name": "Verbs",
+    "word_count": 637,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 4,
+    "topic_name": "Adjectives",
+    "word_count": 563,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 32,
+    "topic_name": "Conflict Boundaries Difficult C",
+    "word_count": 501,
+    "status": "live",
+    "created_topics": 0,
+    "reassigned_words": 103,
+    "artifact_dir": "backend/.artifacts/ai-curation/topic-splits/topic-32/conflict-boundaries-difficult-c"
+  },
+  {
+    "topic_id": 33,
+    "topic_name": "Home Chores DIY Repairs Applian",
+    "word_count": 501,
+    "status": "live",
+    "created_topics": 3,
+    "reassigned_words": 247,
+    "artifact_dir": "backend/.artifacts/ai-curation/topic-splits/topic-33/home-chores-diy-repairs-applian"
+  },
+  {
+    "topic_id": 31,
+    "topic_name": "Internet Social Media Online Co",
+    "word_count": 500,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 34,
+    "topic_name": "Shopping Retail Returns Deliver",
+    "word_count": 500,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 23,
+    "topic_name": "Law Rights Documents Bureaucrac",
+    "word_count": 401,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 25,
+    "topic_name": "Technology IT Software Hardware",
+    "word_count": 401,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 29,
+    "topic_name": "Banking Money Finance Trading I",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 27,
+    "topic_name": "Nature Outdoors Parks Countrysi",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 28,
+    "topic_name": "Public Transport City Navigatio",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 26,
+    "topic_name": "Weather Seasons Climate",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 3,
+    "topic_name": "Phrases",
+    "word_count": 317,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  },
+  {
+    "topic_id": 22,
+    "topic_name": "Education Mentoring School Univ",
+    "word_count": 301,
+    "status": "skipped",
+    "reason": [
+      "skipped by request"
+    ]
+  }
+]
