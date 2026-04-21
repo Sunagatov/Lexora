@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from io import BytesIO
-from typing import cast
 
 from openpyxl import load_workbook
 from sqlalchemy.orm import Session
@@ -163,10 +162,10 @@ def _import_sheet(
             )
             existing.part_of_speech = _normalize_part_of_speech(
                 part_of_speech_value,
-                existing.countability,
-                cast(str | None, existing.past_simple),
-                cast(str | None, existing.past_participle),
-                cast(str | None, existing.part_of_speech),
+                getattr(existing, "countability"),
+                getattr(existing, "past_simple"),
+                getattr(existing, "past_participle"),
+                getattr(existing, "part_of_speech"),
             )
 
             sync_word_multivalue_fields(

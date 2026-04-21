@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from io import BytesIO
-from typing import Any, cast
 
 from openpyxl import Workbook
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
-from app.features.words.model import Word
+from app.features.words.model import Word, word_topics
 from app.features.words.workbook.cells import _normalize_countability
 from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
@@ -53,7 +52,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
     _create_lists_sheet(workbook)
 
     topics: list[Topic] = list(
-        cast(list[Topic], db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all())
+        db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all()
     )
 
     used_titles: set[str] = set()
@@ -70,22 +69,19 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
     else:
         for topic in topics:
             words: list[Word] = list(
-                cast(
-                    list[Word],
-                    db.scalars(
-                        select(Word)
-                        .options(
-                            selectinload(Word.translation_items),
-                            selectinload(Word.example_items),
-                            selectinload(Word.topics),
-                        )
-                        .where(Word.deleted_at.is_(None))
-                        .where(
-                            cast(Any, Word.topics).any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
-                        )
-                        .order_by(Word.term.asc())
-                    ).all(),
-                )
+                db.scalars(
+                    select(Word)
+                    .options(
+                        selectinload(Word.translation_items),
+                        selectinload(Word.example_items),
+                    )
+                    .join(word_topics, Word.id == word_topics.c.word_id)
+                    .join(Topic, Topic.id == word_topics.c.topic_id)
+                    .where(Word.deleted_at.is_(None))
+                    .where(Topic.id == topic.id)
+                    .where(Topic.deleted_at.is_(None))
+                    .order_by(Word.term.asc())
+                ).all()
             )
 
             sheet_title = _safe_sheet_title(topic.name, used_titles)

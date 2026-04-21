@@ -11,6 +11,7 @@ from app.shared.db import SessionLocal
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.stats.model import WordProgressEvent  # noqa: F401 — registers the ORM class so Word.progress_events resolves
+from app.features.words.model import word_topics
 from app.scripts.xlsx_mapping import (
     IGNORED_SHEETS,
     SheetConfig,
@@ -31,14 +32,16 @@ def get_or_create_topic(db: Session, sheet_name: str) -> tuple[Topic, bool]:
     if topic:
         assert topic is not None
         return topic, False
-    topic = Topic(name=sheet_name, slug=slug, description=None, is_active=True)
-    db.add(topic)
+    new_topic = Topic(name=sheet_name, slug=slug, description=None, is_active=True)
+    db.add(new_topic)
     db.flush()
-    return topic, True
+    return new_topic, True
 
 
 def existing_terms(db: Session, topic: Topic) -> set[str]:
-    rows = db.scalars(select(Word.term).where(Word.topics.any(Topic.id == topic.id))).all()
+    rows = db.scalars(
+        select(Word.term).join(word_topics, Word.id == word_topics.c.word_id).where(word_topics.c.topic_id == topic.id)
+    ).all()
     return {t.lower() for t in rows}
 
 
