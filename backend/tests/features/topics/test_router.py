@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from app.features.topics import router as topic_router
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.service import InvalidTopicNameError, TopicSlugConflictError
+from app.features.topics.refinement_schemas import TopicAuditResponse, TopicSplitPlanRequest
 
 
 def test_get_topic_raises_404_when_missing(monkeypatch) -> None:
@@ -71,3 +72,26 @@ def test_delete_topic_calls_soft_delete_with_flag(monkeypatch, make_topic) -> No
     topic_router.delete_topic(10, delete_words=True, db=db)
 
     called.assert_called_once_with(db, topic, delete_words=True)
+
+
+def test_audit_topics_returns_service_result(monkeypatch) -> None:
+    db = object()
+    expected = TopicAuditResponse(items=[])
+    called = MagicMock(return_value=expected)
+    monkeypatch.setattr(topic_router, "build_topic_audit", called)
+
+    result = topic_router.audit_topics(db=db)
+
+    assert result is expected
+    called.assert_called_once_with(db)
+
+
+def test_split_topic_plan_maps_missing_topic_to_404(monkeypatch) -> None:
+    db = object()
+    monkeypatch.setattr(topic_router, "build_topic_split_plan", MagicMock(side_effect=ValueError("missing")))
+
+    with pytest.raises(HTTPException) as exc_info:
+        topic_router.split_topic_plan(99, TopicSplitPlanRequest(), db=db)
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.detail == "Topic not found"
