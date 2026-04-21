@@ -51,4 +51,28 @@ describe('TopicEditModal', () => {
     })
     expect(onCancel).not.toHaveBeenCalled()
   })
+
+  it('blocks close interactions while saving', () => {
+    const topic = makeTopic(2, 'Cleaning and Laundry', 1)
+    const topics = [makeTopic(1, 'Home Chores DIY Repairs Appliances'), topic]
+    const onSave = vi.fn()
+    const onCancel = vi.fn()
+
+    const {container} = render(
+      <TopicEditModal
+        topic={topic}
+        topics={topics}
+        saving
+        error={null}
+        onSave={onSave}
+        onCancel={onCancel}
+      />,
+    )
+
+    fireEvent.click(container.firstElementChild as Element)
+    fireEvent.keyDown(document, {key: 'Escape'})
+
+    expect(onCancel).not.toHaveBeenCalled()
+    expect((screen.getByRole('button', {name: 'Cancel'}) as HTMLButtonElement).disabled).toBe(true)
+  })
 })

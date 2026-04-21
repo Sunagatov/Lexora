@@ -56,7 +56,7 @@ export function TopicSidebarFooter({
                 maxLength={200}
                 onChange={(e) => onNewTopicNameChange(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && newTopicName.trim()) onCreate()
+                  if (e.key === 'Enter' && newTopicName.trim() && !createPending) onCreate()
                   if (e.key === 'Escape') onCancel()
                 }}
               />

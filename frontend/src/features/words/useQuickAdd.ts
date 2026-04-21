@@ -108,6 +108,7 @@ export function useQuickAdd(_onClose: () => void) {
   }
 
   async function save() {
+    if (addWordMutation.isPending) return
     if (!term.trim()) { setFeedback({ok: false, msg: 'Word or phrase is required.'}); termRef.current?.focus(); return }
     if (!translation.trim()) { setFeedback({ok: false, msg: 'Translation is required.'}); return }
     setFeedback(null)
@@ -144,7 +145,10 @@ export function useQuickAdd(_onClose: () => void) {
     createTopicPending: createTopicMutation.isPending,
     canSave: term.trim().length > 0 && translation.trim().length > 0 && !addWordMutation.isPending,
     save, translateOnly, suggestOnly, autoFill,
-    createTopic: () => createTopicMutation.mutate(),
+    createTopic: () => {
+      if (!newTopic.trim() || createTopicMutation.isPending) return
+      createTopicMutation.mutate()
+    },
     cancelNewTopic: () => { setAddingTopic(false); setNewTopic('') },
   }
 }

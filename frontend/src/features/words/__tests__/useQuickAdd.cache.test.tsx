@@ -111,6 +111,13 @@ describe('useQuickAdd cache invalidation', () => {
 
     act(() => {
       result.current.setNewTopic('Astronomy')
+    })
+
+    await waitFor(() => {
+      expect(result.current.newTopic).toBe('Astronomy')
+    })
+
+    act(() => {
       result.current.createTopic()
     })
 
@@ -120,6 +127,83 @@ describe('useQuickAdd cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+
+  it('does not submit a word twice while the save mutation is pending', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
+    vi.mocked(wordsApi.quickAddWord).mockImplementation(() => new Promise<Word>(() => {}))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setTerm('run')
+      result.current.setTranslation('correr')
+      result.current.setTopicId(2)
+    })
+
+    await waitFor(() => {
+      expect(result.current.term).toBe('run')
+      expect(result.current.translation).toBe('correr')
+    })
+
+    act(() => {
+      result.current.save()
+    })
+
+    await waitFor(() => {
+      expect(result.current.savePending).toBe(true)
+    })
+
+    act(() => {
+      result.current.save()
+    })
+
+    expect(wordsApi.quickAddWord).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not create a topic twice while the create mutation is pending', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    vi.mocked(topicsApi.createTopic).mockImplementation(() => new Promise<Topic>(() => {}))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setNewTopic('Astronomy')
+    })
+
+    await waitFor(() => {
+      expect(result.current.newTopic).toBe('Astronomy')
+    })
+
+    act(() => {
+      result.current.createTopic()
+    })
+
+    await waitFor(() => {
+      expect(result.current.createTopicPending).toBe(true)
+    })
+
+    act(() => {
+      result.current.createTopic()
+    })
+
+    expect(topicsApi.createTopic).toHaveBeenCalledTimes(1)
   })
 
   it('creates Inbox automatically and invalidates topics and stats when no Inbox exists', async () => {

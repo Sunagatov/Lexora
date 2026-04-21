@@ -49,16 +49,16 @@ export function TopicEditModal({topic, topics, onSave, onCancel, saving, error}:
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onCancel()
+      if (e.key === 'Escape' && !saving) onCancel()
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [onCancel])
+  }, [onCancel, saving])
 
   const canSave = name.trim().length > 0 && !saving
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
+    <div className="modal-overlay" onClick={() => { if (!saving) onCancel() }}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">Edit topic</h2>
         <div className="wp-field">
@@ -100,12 +100,12 @@ export function TopicEditModal({topic, topics, onSave, onCancel, saving, error}:
         </div>
         {error && <p className="login-error" style={{textAlign: 'left'}}>{error}</p>}
         <div className="modal-actions">
-          <button type="button" className="modal-btn-cancel" onClick={onCancel}>Cancel</button>
+          <button type="button" className="modal-btn-cancel" onClick={onCancel} disabled={saving}>Cancel</button>
           <button
             type="button"
             className="modal-btn-confirm"
             disabled={!canSave}
-          onClick={() => onSave({
+            onClick={() => onSave({
               name: name.trim(),
               description: description.trim() ? description.trim() : null,
               parent_topic_id: parentTopicId === '' ? null : parentTopicId,

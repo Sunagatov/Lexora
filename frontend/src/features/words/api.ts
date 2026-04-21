@@ -54,8 +54,11 @@ export async function exportWordsWorkbook(): Promise<void> {
 
   const blob = await response.blob()
   const disposition = response.headers.get('Content-Disposition') ?? ''
-  const match = disposition.match(/filename="([^"]+)"/)
-  const filename = match?.[1] ?? 'lexora-vocabulary.xlsx'
+  const filenameStarMatch = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+  const filenameMatch = disposition.match(/filename="([^"]+)"/i)
+  const filename = filenameStarMatch?.[1]
+    ? decodeURIComponent(filenameStarMatch[1])
+    : filenameMatch?.[1] ?? 'lexora-vocabulary.xlsx'
 
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -64,7 +67,7 @@ export async function exportWordsWorkbook(): Promise<void> {
   document.body.appendChild(link)
   link.click()
   link.remove()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 export function importWordsWorkbook(file: File): Promise<WorkbookImportResponse> {

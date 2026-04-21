@@ -35,7 +35,12 @@ export function QuickAddSheet({onClose}: Props) {
               placeholder="e.g. ephemeral"
               value={q.term}
               onChange={(e) => q.setTerm(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); q.save().catch(() => {}) } }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (!q.savePending) q.save().catch(() => {})
+                }
+              }}
             />
             <div className="quick-add-actions-row">
               <button type="button" className="quick-add-action-btn quick-add-action-btn-primary"
@@ -63,7 +68,12 @@ export function QuickAddSheet({onClose}: Props) {
               placeholder="e.g. недолговечный"
               value={q.translation}
               onChange={(e) => q.setTranslation(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); q.save().catch(() => {}) } }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  if (!q.savePending) q.save().catch(() => {})
+                }
+              }}
             />
           </div>
 
@@ -85,7 +95,10 @@ export function QuickAddSheet({onClose}: Props) {
                   autoFocus maxLength={200} onChange={(e) => q.setNewTopic(e.target.value)}
                   onKeyDown={(e) => {
                     e.stopPropagation()
-                    if (e.key === 'Enter') { e.preventDefault(); if (q.newTopic.trim()) q.createTopic() }
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (q.newTopic.trim() && !q.createTopicPending) q.createTopic()
+                    }
                     if (e.key === 'Escape') q.cancelNewTopic()
                   }}
                 />
