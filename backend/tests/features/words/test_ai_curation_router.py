@@ -149,7 +149,7 @@ def test_list_topic_words_raises_404_for_missing_topic(monkeypatch) -> None:
 
 def _minimal_import_payload(dry_run: bool = False) -> AiCurationImportRequest:
     return AiCurationImportRequest(
-        schema_version="lexora.ai-curation.v1",
+        schema_version="lexora.ai-curation.v2",
         source_topic_id=1,
         dry_run=dry_run,
         word_operations=[

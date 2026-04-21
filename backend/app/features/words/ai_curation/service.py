@@ -250,6 +250,10 @@ def _load_existing_words(
 def _assert_unique_ids(ids: list[int], label: str) -> None:
     duplicates = sorted(word_id for word_id, count in Counter(ids).items() if count > 1)
     if duplicates:
+        if label == "word_updates":
+            raise AiCurationImportError(f"Duplicate existing word ids in payload: {duplicates}")
+        if label == "word_reassigns":
+            raise AiCurationImportError(f"Duplicate reassign word ids in payload: {duplicates}")
         raise AiCurationImportError(f"Duplicate {label} word ids in payload: {duplicates}")
 
 
@@ -326,9 +330,9 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
     try:
         if payload.exported_at is not None:
             for op in payload.word_updates:
-                _check_stale(words_by_id[op.id], payload.exported_at, "word_updates")
+                _check_stale(words_by_id[op.id], payload.exported_at, "update_existing_word")
             for op in payload.word_reassigns:
-                _check_stale(words_by_id[op.id], payload.exported_at, "word_reassigns")
+                _check_stale(words_by_id[op.id], payload.exported_at, "reassign_word_topics")
 
         for op in payload.topic_operations:
             topic = create_topic(
@@ -348,6 +352,10 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
 
         for op in payload.word_updates:
             word = words_by_id[op.id]
+            if op.term is not None and op.term != word.term:
+                raise AiCurationImportError(
+                    f"word_updates for word {op.id}: term mismatch (payload='{op.term}', db='{word.term}')"
+                )
             if not _has_changes(word, op):
                 unchanged += 1
                 continue
@@ -387,6 +395,10 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
 
         for op in payload.word_reassigns:
             word = words_by_id[op.id]
+            if op.term is not None and op.term != word.term:
+                raise AiCurationImportError(
+                    f"word_reassigns for word {op.id}: term mismatch (payload='{op.term}', db='{word.term}')"
+                )
 
             if payload.strict_mode:
                 created_topic_ids = {t.id for t in created_topics.values()}

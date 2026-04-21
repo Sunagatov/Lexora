@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from math import ceil
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 
@@ -158,6 +158,7 @@ class CreateTopicOperation(BaseModel):
 class WordUpdateV2(BaseModel):
     """Sparse update — only id is required, include only the fields to change."""
     id: int = Field(gt=0)
+    term: str | None = Field(default=None, max_length=WORD_TERM_MAX_LEN)
 
     translations: str | None = Field(default=None, min_length=1)
     translation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
@@ -243,6 +244,7 @@ class WordCreateV2(BaseModel):
 class WordReassignV2(BaseModel):
     """Reassign an existing word to different topics."""
     id: int = Field(gt=0)
+    term: str | None = Field(default=None, max_length=WORD_TERM_MAX_LEN)
     add_topic_refs: list[TopicRef] = Field(default_factory=list, max_length=20)
     remove_topic_ids: list[int] = Field(default_factory=list, max_length=20)
 
@@ -261,11 +263,25 @@ class AiCurationImportRequest(BaseModel):
     word_updates: list[WordUpdateV2] = Field(default_factory=list, max_length=500)
     word_creates: list[WordCreateV2] = Field(default_factory=list, max_length=500)
     word_reassigns: list[WordReassignV2] = Field(default_factory=list, max_length=500)
+    word_operations: list[dict[str, Any]] | None = Field(default=None, exclude=True)
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     @model_validator(mode="after")
     def validate_not_empty(self) -> "AiCurationImportRequest":
+        if self.word_operations:
+            for raw in self.word_operations:
+                op = raw.get("op")
+                data = {k: v for k, v in raw.items() if k != "op"}
+                if op == "create_new_word":
+                    self.word_creates.append(WordCreateV2.model_validate(data))
+                elif op == "update_existing_word":
+                    self.word_updates.append(WordUpdateV2.model_validate(data))
+                elif op == "reassign_word_topics":
+                    self.word_reassigns.append(WordReassignV2.model_validate(data))
+                else:
+                    raise ValueError(f"Unsupported legacy word operation: {op}")
+            self.word_operations = None
         if not self.topic_operations and not self.word_updates and not self.word_creates and not self.word_reassigns:
             raise ValueError("At least one operation must be provided")
         return self

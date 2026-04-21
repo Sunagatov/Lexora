@@ -1,6 +1,7 @@
 Take this Lexora export JSON and return ONLY a valid Lexora v2 import JSON.
 
 Goal:
+- If the export includes example-completeness hints, skip words that already have 3 examples.
 - For every word in the export, add exactly 3 natural English example sentences.
 - Put them into example_entries as an array of exactly 3 strings.
 - Each sentence must use the target word naturally.
