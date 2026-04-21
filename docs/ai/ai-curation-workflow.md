@@ -35,7 +35,7 @@ curl -s -c cookies.txt -X POST https://lexora.zuf.uk/auth/login \
 
 - Open ChatGPT web interface.
 - Attach the export JSON file.
-- Paste the prompt from `animals-page1-chatgpt-prompt.txt` (project root) — it already contains all rules and the expected return shape.
+- Paste the prompt from `docs/ai/chatgpt-enrich-examples-prompt.txt` — it contains all rules and the expected return shape. Replace the last line with the actual prod export JSON.
 
 ChatGPT returns a valid import JSON. Save it as `{topic}-page{N}-import.json`.
 
@@ -84,4 +84,4 @@ Supported `op` values: `update_existing_word`, `create_new_word`, `reassign_word
 
 `backend/app/features/words/ai_curation/` — router, service, schemas.
 
-ChatGPT prompt template: `animals-page1-chatgpt-prompt.txt` (project root).
+ChatGPT prompt template: `docs/ai/chatgpt-enrich-examples-prompt.txt`.

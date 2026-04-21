@@ -1,0 +1,44 @@
+Take this Lexora export JSON and return ONLY a valid Lexora import JSON payload.
+
+Goal:
+- Update existing words only.
+- For every word in the payload, add exactly 3 natural English example sentences.
+- Put them into example_entries as an array of exactly 3 strings.
+- Each sentence must use the target word naturally.
+- Keep schema_version unchanged.
+- Keep exported_at unchanged.
+- Keep source_topic_id unchanged.
+- Keep id and term unchanged for every existing word.
+- Do not create new topics.
+- Do not create new words.
+- Do not reassign topics.
+- Do not include any unchanged optional fields.
+- Only include fields needed for examples-only updates.
+
+Return JSON in this exact high-level shape:
+{
+  "schema_version": "lexora.ai-curation.v1",
+  "source_topic_id": <same source_topic.id>,
+  "exported_at": "<copy from export unchanged>",
+  "dry_run": true,
+  "strict_mode": false,
+  "topic_operations": [],
+  "word_operations": [
+    {
+      "op": "update_existing_word",
+      "id": ...,
+      "term": "...",
+      "example_entries": ["...", "...", "..."]
+    }
+  ]
+}
+
+Rules:
+- Return JSON only. No markdown fences. No explanation.
+- Include one update_existing_word operation for every exported word.
+- Exactly 3 English example sentences per word.
+- No Russian in the examples.
+- Keep examples concise, natural, practical, and vocabulary-app friendly.
+
+Here is the export JSON:
+<paste the prod export JSON here>
