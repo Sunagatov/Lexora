@@ -5,6 +5,9 @@ from unittest.mock import MagicMock
 
 from sqlalchemy.orm import Session
 
+import app.features.topics.model  # noqa: F401 — registers Topic in SQLAlchemy's class registry
+import app.features.stats.model  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
+
 import pytest
 
 from app.features.smart_review import service as smart_review_service
@@ -220,7 +223,7 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
 
     monkeypatch.setattr(smart_review_service, "_pick_for_level_retry_excluded", fake_pick)
 
-    queue = smart_review_service.generate_queue(cast(Session, db))
+    queue = smart_review_service.generate_queue(cast(Session, cast(object, db)))
 
     assert queue.id == 123
     assert queue.total_count == 2
