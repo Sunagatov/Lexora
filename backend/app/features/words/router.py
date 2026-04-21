@@ -18,13 +18,13 @@ from app.features.words.schemas import (
     WordUpdate,
     WorkbookImportResponse,
 )
-from app.features.words.workbook_service import (
+from app.features.words.workbook import (
     InvalidWorkbookError,
     build_words_workbook,
     import_words_workbook,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.bulk_service import (
+from app.features.words.bulk import (
     BulkInvalidTopicNameError, BulkSlugConflictError, BulkTopicInTrashError, bulk_import,
 )
 

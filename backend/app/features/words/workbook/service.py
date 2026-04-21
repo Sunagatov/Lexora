@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word
-from app.features.words.workbook_format import (
+from app.features.words.workbook.cells import _normalize_countability
+from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
     EXTRA_EMPTY_ROWS,
     InvalidWorkbookError,
@@ -18,11 +19,10 @@ from app.features.words.workbook_format import (
     _apply_base_styling,
     _create_lists_sheet,
     _create_meta_sheet,
-    _normalize_countability,
     _safe_sheet_title,
     _set_column_widths,
 )
-from app.features.words.workbook_importer import import_words_workbook
+from app.features.words.workbook.importer import import_words_workbook
 
 __all__ = ["InvalidWorkbookError", "build_words_workbook", "import_words_workbook"]
 

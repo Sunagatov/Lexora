@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.features.topics.service import InvalidTopicNameError, TopicSlugConflictError
-from app.features.words import bulk_service
+from app.features.words.bulk import service as bulk_service
 from app.features.words.schemas import WordBulkCreate, WordInput
 
 

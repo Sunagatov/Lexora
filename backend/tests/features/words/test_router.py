@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 from app.features.topics.service import MissingTopicsError
 from app.features.words import router as words_router
-from app.features.words.bulk_service import BulkTopicInTrashError
+from app.features.words.bulk.service import BulkTopicInTrashError
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.schemas import WordBulkCreate, WordCreate, WordInput, WordUpdate
 

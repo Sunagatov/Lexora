@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db
-from app.features.words.suggest_schemas import SuggestTopicRequest, SuggestTopicResponse
-from app.features.words.suggest_service import (
+from app.features.words.suggest.schemas import SuggestTopicRequest, SuggestTopicResponse
+from app.features.words.suggest.service import (
     AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError, suggest_topic_for_word,
 )
 

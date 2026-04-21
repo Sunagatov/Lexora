@@ -10,7 +10,7 @@ from app.features.auth.router import router as auth_router
 from app.features.health.router import router as health_router
 from app.features.topics.router import router as topics_router
 from app.features.words.router import router as words_router
-from app.features.words.suggest_router import router as suggest_router
+from app.features.words.suggest.router import router as suggest_router
 from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router

@@ -4,9 +4,9 @@ import httpx
 import pytest
 from fastapi import HTTPException
 
-from app.features.words import suggest_router
-from app.features.words.suggest_schemas import SuggestTopicRequest
-from app.features.words.suggest_service import AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError
+from app.features.words.suggest import router as suggest_router
+from app.features.words.suggest.schemas import SuggestTopicRequest
+from app.features.words.suggest.service import AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError
 
 
 def test_suggest_topic_returns_response_model(monkeypatch) -> None:

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.features.words import suggest_service
+from app.features.words.suggest import service as suggest_service
 
 
 class FakeResponse:

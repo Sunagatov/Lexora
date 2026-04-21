@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from app.features.words.workbook_format import (
+from app.features.words.workbook.format import (
     COUNTABILITY_ALIASES,
     COUNTABILITY_VALUES,
     HEADER_ALIASES,
