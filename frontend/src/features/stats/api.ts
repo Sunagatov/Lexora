@@ -20,6 +20,9 @@ export type TopicStat = {
   missing_example: number
   needs_example_enrichment: number
   missing_pos: number
+  reviewed_count: number
+  regressed_count: number
+  never_reviewed_count: number
 }
 
 export type DailyActivity = {
@@ -45,6 +48,50 @@ export type UsageSummary = {
   last_7d_active_seconds: number
 }
 
+export type RetentionSummary = {
+  active_words: number
+  reviewed_words: number
+  never_reviewed_words: number
+  improved_words: number
+  regressed_words: number
+  strong_words: number
+  weak_words: number
+  parked_words: number
+  reviewed_word_share_pct: number
+  improved_word_share_pct: number
+  regressed_word_share_pct: number
+}
+
+export type EfficiencySummary = {
+  total_review_events: number
+  reviews_per_active_minute: number
+  improved_events_per_active_minute: number
+  net_events_per_active_minute: number
+  reviewed_words_per_session: number
+  improved_words_per_session: number
+}
+
+export type ConsistencySummary = {
+  active_streak_days: number
+  study_streak_days: number
+  longest_active_streak_days: number
+  longest_study_streak_days: number
+  active_days_last_30d: number
+  study_days_last_30d: number
+  active_days_last_90d: number
+  study_days_last_90d: number
+}
+
+export type QueueSummary = {
+  total_queues: number
+  active_queues: number
+  completed_queues: number
+  completion_rate_pct: number
+  avg_queue_size: number
+  avg_completion_ratio_pct: number
+  avg_completion_seconds: number
+}
+
 export type VocabularyOverview = {
   total_words: number
   total_topics: number
@@ -62,6 +109,10 @@ export type StatsResponse = {
   level_counts: LevelCounts
   okay_or_better_pct: number
   usage_summary: UsageSummary
+  retention_summary: RetentionSummary
+  efficiency_summary: EfficiencySummary
+  consistency_summary: ConsistencySummary
+  queue_summary: QueueSummary
   usage_daily: UsageDay[]
   topics: TopicStat[]
   daily_activity: DailyActivity[]

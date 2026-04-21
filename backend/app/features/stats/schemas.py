@@ -24,6 +24,9 @@ class TopicStat(BaseModel):
     missing_example: int
     needs_example_enrichment: int
     missing_pos: int
+    reviewed_count: int
+    regressed_count: int
+    never_reviewed_count: int
 
 
 class DailyActivity(BaseModel):
@@ -47,6 +50,50 @@ class UsageSummary(BaseModel):
     longest_session_seconds: int
     today_active_seconds: int
     last_7d_active_seconds: int
+
+
+class RetentionSummary(BaseModel):
+    active_words: int
+    reviewed_words: int
+    never_reviewed_words: int
+    improved_words: int
+    regressed_words: int
+    strong_words: int
+    weak_words: int
+    parked_words: int
+    reviewed_word_share_pct: int
+    improved_word_share_pct: int
+    regressed_word_share_pct: int
+
+
+class EfficiencySummary(BaseModel):
+    total_review_events: int
+    reviews_per_active_minute: float
+    improved_events_per_active_minute: float
+    net_events_per_active_minute: float
+    reviewed_words_per_session: float
+    improved_words_per_session: float
+
+
+class ConsistencySummary(BaseModel):
+    active_streak_days: int
+    study_streak_days: int
+    longest_active_streak_days: int
+    longest_study_streak_days: int
+    active_days_last_30d: int
+    study_days_last_30d: int
+    active_days_last_90d: int
+    study_days_last_90d: int
+
+
+class QueueSummary(BaseModel):
+    total_queues: int
+    active_queues: int
+    completed_queues: int
+    completion_rate_pct: int
+    avg_queue_size: int
+    avg_completion_ratio_pct: int
+    avg_completion_seconds: int
 
 
 class UsageEventCreate(BaseModel):
@@ -73,6 +120,10 @@ class StatsResponse(BaseModel):
     level_counts: LevelCounts
     okay_or_better_pct: int
     usage_summary: UsageSummary
+    retention_summary: RetentionSummary
+    efficiency_summary: EfficiencySummary
+    consistency_summary: ConsistencySummary
+    queue_summary: QueueSummary
     usage_daily: list[UsageDay]
     topics: list[TopicStat]
     daily_activity: list[DailyActivity]   # all recorded days, newest first

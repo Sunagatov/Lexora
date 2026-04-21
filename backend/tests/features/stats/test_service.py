@@ -1,9 +1,25 @@
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+from typing import cast
 
 from app.features.stats import service as stats_service
-from app.features.stats.schemas import UsageEventCreate
+from app.features.stats.model import WordProgressEvent
+from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
+from app.features.topics.model import Topic
+from app.features.words.model import Word
+
+
+def _topic_stub(**kwargs) -> Topic:
+    return cast(Topic, cast(object, SimpleNamespace(**kwargs)))
+
+
+def _word_stub(**kwargs) -> Word:
+    return cast(Word, cast(object, SimpleNamespace(**kwargs)))
+
+
+def _progress_event_stub(**kwargs) -> WordProgressEvent:
+    return cast(WordProgressEvent, cast(object, SimpleNamespace(**kwargs)))
 
 
 def test_record_level_change_adds_progress_event_to_session() -> None:
@@ -82,17 +98,20 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
         (2, 3),
     ]
 
-    topics = [
-        SimpleNamespace(id=1, name="Travel", slug="travel"),
-        SimpleNamespace(id=2, name="Work", slug="work"),
-    ]
+    topics = [_topic_stub(id=1, name="Travel", slug="travel"), _topic_stub(id=2, name="Work", slug="work")]
     word_map = {
-        1: SimpleNamespace(id=1, knowledge_level=1, example=None, part_of_speech="verb"),
-        2: SimpleNamespace(id=2, knowledge_level=4, example="ex", part_of_speech="noun"),
-        3: SimpleNamespace(id=3, knowledge_level=1, example=None, part_of_speech=None),
+        1: _word_stub(id=1, knowledge_level=1, example=None, part_of_speech="verb"),
+        2: _word_stub(id=2, knowledge_level=4, example="ex", part_of_speech="noun"),
+        3: _word_stub(id=3, knowledge_level=1, example=None, part_of_speech=None),
     }
 
-    result = stats_service._build_topic_stats(db, topics, word_map)
+    result = stats_service._build_topic_stats(
+        db,
+        topics,
+        word_map,
+        reviewed_word_ids={1, 2, 3},
+        regressed_word_ids={1},
+    )
 
     assert [item.id for item in result] == [2, 1]
 
@@ -103,6 +122,9 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
     assert work.missing_example == 1
     assert work.needs_example_enrichment == 1
     assert work.missing_pos == 1
+    assert work.reviewed_count == 1
+    assert work.regressed_count == 0
+    assert work.never_reviewed_count == 0
 
     travel = result[1]
     assert travel.progress == 50
@@ -112,24 +134,26 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
     assert travel.missing_example == 1
     assert travel.needs_example_enrichment == 2
     assert travel.missing_pos == 0
+    assert travel.reviewed_count == 2
+    assert travel.regressed_count == 1
+    assert travel.never_reviewed_count == 0
 
 
 def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:
-    db = MagicMock()
-    db.scalars.return_value.all.return_value = [
-        SimpleNamespace(
+    events = [
+        _progress_event_stub(
             word_id=1,
             old_level=1,
             new_level=2,
             created_at=datetime(2026, 1, 10, 10, 0, tzinfo=timezone.utc),
         ),
-        SimpleNamespace(
+        _progress_event_stub(
             word_id=1,
             old_level=2,
             new_level=3,
             created_at=datetime(2026, 1, 10, 12, 0, tzinfo=timezone.utc),
         ),
-        SimpleNamespace(
+        _progress_event_stub(
             word_id=2,
             old_level=4,
             new_level=2,
@@ -137,7 +161,7 @@ def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:
         ),
     ]
 
-    activity, tracking_started_at = stats_service._build_daily_activity(db)
+    activity, tracking_started_at = stats_service._build_daily_activity(events)
 
     assert tracking_started_at == "2026-01-10"
 
@@ -152,6 +176,98 @@ def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:
     assert activity[1].improved == 2
     assert activity[1].downgraded == 0
     assert activity[1].net == 2
+
+
+def test_build_retention_stats_counts_reviewed_improved_and_regressed_words(make_word) -> None:
+    words = [
+        make_word(id=1, knowledge_level=1),
+        make_word(id=2, knowledge_level=3),
+        make_word(id=3, knowledge_level=5),
+    ]
+    level_counts = {None: 0, 1: 1, 2: 0, 3: 1, 4: 0, 5: 1}
+
+    result = stats_service._build_retention_stats(
+        words,
+        level_counts,
+        reviewed_word_ids={1, 2},
+        improved_word_ids={2},
+        regressed_word_ids={1},
+    )
+
+    assert result.active_words == 2
+    assert result.reviewed_words == 2
+    assert result.never_reviewed_words == 1
+    assert result.improved_words == 1
+    assert result.regressed_words == 1
+    assert result.strong_words == 1
+    assert result.weak_words == 1
+    assert result.parked_words == 1
+    assert result.reviewed_word_share_pct == 67
+    assert result.improved_word_share_pct == 50
+    assert result.regressed_word_share_pct == 50
+
+
+def test_build_consistency_stats_computes_active_and_study_streaks() -> None:
+    usage_daily = [
+        UsageDay(date="2026-01-12", active_seconds=10),
+        UsageDay(date="2026-01-11", active_seconds=10),
+        UsageDay(date="2026-01-09", active_seconds=10),
+    ]
+    daily_activity = [
+        DailyActivity(date="2026-01-12", reviewed=1, improved=1, downgraded=0, net=1),
+        DailyActivity(date="2026-01-11", reviewed=1, improved=0, downgraded=1, net=-1),
+        DailyActivity(date="2026-01-10", reviewed=1, improved=1, downgraded=0, net=1),
+    ]
+
+    result = stats_service._build_consistency_stats(
+        usage_daily,
+        daily_activity,
+        now=datetime(2026, 1, 12, 12, 0, tzinfo=timezone.utc),
+    )
+
+    assert result.active_streak_days == 2
+    assert result.study_streak_days == 3
+    assert result.longest_active_streak_days == 2
+    assert result.longest_study_streak_days == 3
+    assert result.active_days_last_30d == 3
+    assert result.study_days_last_30d == 3
+    assert result.active_days_last_90d == 3
+    assert result.study_days_last_90d == 3
+
+
+def test_build_queue_stats_aggregates_completion_and_duration() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [
+        SimpleNamespace(
+            total_count=3,
+            completed_count=3,
+            is_active=False,
+            expires_at=datetime(2026, 1, 10, 12, 0, tzinfo=timezone.utc),
+            generated_at=datetime(2026, 1, 10, 11, 0, tzinfo=timezone.utc),
+            items=[
+                SimpleNamespace(completed_at=datetime(2026, 1, 10, 11, 20, tzinfo=timezone.utc)),
+                SimpleNamespace(completed_at=datetime(2026, 1, 10, 11, 30, tzinfo=timezone.utc)),
+            ],
+        ),
+        SimpleNamespace(
+            total_count=2,
+            completed_count=1,
+            is_active=True,
+            expires_at=datetime(2026, 1, 13, 12, 0, tzinfo=timezone.utc),
+            generated_at=datetime(2026, 1, 12, 11, 0, tzinfo=timezone.utc),
+            items=[SimpleNamespace(completed_at=datetime(2026, 1, 12, 11, 25, tzinfo=timezone.utc))],
+        ),
+    ]
+
+    result = stats_service._build_queue_stats(db, now=datetime(2026, 1, 12, 12, 0, tzinfo=timezone.utc))
+
+    assert result.total_queues == 2
+    assert result.active_queues == 1
+    assert result.completed_queues == 1
+    assert result.completion_rate_pct == 50
+    assert result.avg_queue_size == 2
+    assert result.avg_completion_ratio_pct == 75
+    assert result.avg_completion_seconds == 1800
 
 
 def test_build_usage_stats_groups_by_day_and_session() -> None:
@@ -203,7 +319,8 @@ def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> 
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
     )
 
-    result = stats_service._build_words_added_by_month([active_word])
+    active_words = [active_word]
+    result = stats_service._build_words_added_by_month(active_words)
 
     assert result == {"2026-03": 1}
 
@@ -215,7 +332,8 @@ def test_build_words_added_by_month_excludes_deleted_words_via_caller_filter() -
         deleted_at=None,
         created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
     )
-    result = stats_service._build_words_added_by_month([active])
+    active_words = [active]
+    result = stats_service._build_words_added_by_month(active_words)
 
     assert "2026-01" in result
     assert result["2026-01"] == 1
@@ -251,6 +369,7 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
     #   4. WordProgressEvent in _build_daily_activity
     db.scalars.side_effect = [
         MagicMock(**{"all.return_value": [active_word]}),
+        MagicMock(**{"all.return_value": []}),
         MagicMock(**{"all.return_value": []}),
         MagicMock(**{"all.return_value": []}),
         MagicMock(**{"all.return_value": []}),

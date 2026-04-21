@@ -28,7 +28,7 @@ const MONTH_PERIODS: {value: MonthPeriod; label: string}[] = [
   {value: '6', label: '6 months'}, {value: '12', label: '12 months'}, {value: 'all', label: 'All time'},
 ]
 
-type TopicSort = 'worst' | 'best' | 'largest' | 'weakest'
+type TopicSort = 'worst' | 'best' | 'largest' | 'weakest' | 'most-reviewed' | 'least-reviewed' | 'most-regressed'
 
 export function toLocalDateKey(date: Date): string {
   const year = date.getFullYear()
@@ -75,6 +75,10 @@ function dayLabel(dateStr: string): string {
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('default', {month: 'short', day: 'numeric'})
 }
 
+function formatRate(value: number): string {
+  return `${value.toFixed(1)}/min`
+}
+
 export function StatsPage() {
   const navigate   = useNavigate()
   const {data: s, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
@@ -99,6 +103,10 @@ export function StatsPage() {
     return {reviewed, improved, downgraded, net}
   }, [filteredActivity])
   const usageTotals = s?.usage_summary
+  const retentionTotals = s?.retention_summary
+  const efficiencyTotals = s?.efficiency_summary
+  const consistencyTotals = s?.consistency_summary
+  const queueTotals = s?.queue_summary
 
   const activityChartData = useMemo(() =>
     [...filteredActivity].reverse().slice(-60).map((d) => ({label: dayLabel(d.date), value: d.net})),
@@ -122,7 +130,11 @@ export function StatsPage() {
       case 'best':    return t.sort((a, b) => b.progress - a.progress)
       case 'largest': return t.sort((a, b) => b.total - a.total)
       case 'weakest': return t.sort((a, b) => b.weak_count - a.weak_count)
+      case 'most-reviewed': return t.sort((a, b) => b.reviewed_count - a.reviewed_count)
+      case 'least-reviewed': return t.sort((a, b) => a.reviewed_count - b.reviewed_count)
+      case 'most-regressed': return t.sort((a, b) => b.regressed_count - a.regressed_count)
     }
+    return t
   }, [s, topicSort])
 
   const bestDay  = useMemo(() => filteredActivity.reduce((b, d) => d.net > (b?.net ?? -Infinity) ? d : b, null as DailyActivity | null), [filteredActivity])
@@ -141,6 +153,7 @@ export function StatsPage() {
     {value: enrichComplete, color: '#10b981', label: 'Complete'},
     {value: ov.needs_example_enrichment, color: '#f97316', label: 'Needs 3+ examples'},
   ].filter((sl) => sl.value > 0)
+  const activeMinutes = usageTotals ? Math.round(usageTotals.total_active_seconds / 60) : 0
 
   return (
     <div className="stats-page">
@@ -196,6 +209,110 @@ export function StatsPage() {
               )}
             </>
           ) : <div className="stats-empty">No app activity recorded yet.</div>}
+        </section>
+
+        <section className="stats-section">
+          <SectionTitle>Retention quality</SectionTitle>
+          {retentionTotals ? (
+            <>
+              <div className="stats-cards stats-cards-6">
+                <StatCard value={retentionTotals.reviewed_words} label="Reviewed words" sub={`${retentionTotals.reviewed_word_share_pct}% of library`} />
+                <StatCard value={retentionTotals.never_reviewed_words} label="Never reviewed" />
+                <StatCard value={retentionTotals.improved_words} label="Improved words" sub={`${retentionTotals.improved_word_share_pct}% of reviewed`} />
+                <StatCard value={retentionTotals.regressed_words} label="Regressed words" sub={`${retentionTotals.regressed_word_share_pct}% of reviewed`} />
+                <StatCard value={retentionTotals.strong_words} label="Strong now" />
+                <StatCard value={retentionTotals.parked_words} label="Parked" />
+              </div>
+              <div className="stats-quality-row">
+                {[
+                  {label: 'Reviewed coverage', val: retentionTotals.reviewed_words, color: '#2563eb'},
+                  {label: 'Current strong words', val: retentionTotals.strong_words, color: '#10b981'},
+                  {label: 'Never reviewed', val: retentionTotals.never_reviewed_words, color: '#f97316'},
+                ].map(({label, val, color}) => (
+                  <div key={label} className="stats-quality-item">
+                    <span className="stats-quality-label">{label}</span>
+                    <div className="stats-quality-bar-wrap">
+                      <div className="stats-quality-bar" style={{width: `${Math.round((val / Math.max(1, totalWords)) * 100)}%`, background: color}} />
+                    </div>
+                    <span className="stats-quality-pct">{Math.round((val / Math.max(1, totalWords)) * 100)}%</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : <div className="stats-empty">No retention data yet.</div>}
+        </section>
+
+        <section className="stats-section">
+          <SectionTitle>Consistency</SectionTitle>
+          {consistencyTotals ? (
+            <>
+              <div className="stats-cards stats-cards-6">
+                <StatCard value={consistencyTotals.active_streak_days} label="Active streak" sub="days" />
+                <StatCard value={consistencyTotals.study_streak_days} label="Study streak" sub="days" />
+                <StatCard value={consistencyTotals.longest_active_streak_days} label="Longest active" sub="days" />
+                <StatCard value={consistencyTotals.longest_study_streak_days} label="Longest study" sub="days" />
+                <StatCard value={consistencyTotals.active_days_last_30d} label="Active days" sub="last 30d" />
+                <StatCard value={consistencyTotals.study_days_last_30d} label="Study days" sub="last 30d" />
+              </div>
+              <div className="stats-cards stats-cards-2">
+                <StatCard value={`${Math.round((consistencyTotals.active_days_last_30d / 30) * 100)}%`} label="App consistency" sub="last 30d" />
+                <StatCard value={`${Math.round((consistencyTotals.study_days_last_30d / 30) * 100)}%`} label="Study consistency" sub="last 30d" />
+              </div>
+            </>
+          ) : <div className="stats-empty">No consistency data yet.</div>}
+        </section>
+
+        <section className="stats-section">
+          <SectionTitle>Study efficiency</SectionTitle>
+          {efficiencyTotals ? (
+            <>
+              <div className="stats-cards stats-cards-6">
+                <StatCard value={formatRate(efficiencyTotals.reviews_per_active_minute)} label="Reviews / minute" sub={`${efficiencyTotals.total_review_events.toLocaleString()} review events`} />
+                <StatCard value={formatRate(efficiencyTotals.improved_events_per_active_minute)} label="Improved / minute" />
+                <StatCard value={formatRate(efficiencyTotals.net_events_per_active_minute)} label="Net / minute" />
+                <StatCard value={efficiencyTotals.reviewed_words_per_session.toFixed(1)} label="Reviewed / session" />
+                <StatCard value={efficiencyTotals.improved_words_per_session.toFixed(1)} label="Improved / session" />
+                <StatCard value={activeMinutes.toLocaleString()} label="Active minutes" />
+              </div>
+              <div className="stats-tracking-note">
+                These are derived from active foreground time and review events. Idle time is excluded.
+              </div>
+            </>
+          ) : <div className="stats-empty">No efficiency data yet.</div>}
+        </section>
+
+        <section className="stats-section">
+          <SectionTitle>Queue quality</SectionTitle>
+          {queueTotals && queueTotals.total_queues > 0 ? (
+            <>
+              <div className="stats-cards stats-cards-6">
+                <StatCard value={queueTotals.total_queues} label="Queues" />
+                <StatCard value={queueTotals.completed_queues} label="Completed" />
+                <StatCard value={`${queueTotals.completion_rate_pct}%`} label="Completion rate" />
+                <StatCard value={queueTotals.avg_queue_size} label="Avg queue size" />
+                <StatCard value={`${queueTotals.avg_completion_ratio_pct}%`} label="Avg completion" />
+                <StatCard value={formatDuration(queueTotals.avg_completion_seconds)} label="Avg completion time" />
+              </div>
+              <div className="stats-quality-row">
+                {[
+                  {label: 'Queues completed', val: queueTotals.completed_queues, color: '#10b981'},
+                  {label: 'Queues still active', val: queueTotals.active_queues, color: '#2563eb'},
+                  {label: 'Queues not completed', val: Math.max(0, queueTotals.total_queues - queueTotals.completed_queues), color: '#f97316'},
+                ].map(({label, val, color}) => (
+                  <div key={label} className="stats-quality-item">
+                    <span className="stats-quality-label">{label}</span>
+                    <div className="stats-quality-bar-wrap">
+                      <div className="stats-quality-bar" style={{width: `${Math.round((val / Math.max(1, queueTotals.total_queues)) * 100)}%`, background: color}} />
+                    </div>
+                    <span className="stats-quality-pct">{Math.round((val / Math.max(1, queueTotals.total_queues)) * 100)}%</span>
+                  </div>
+                ))}
+              </div>
+              <div className="stats-tracking-note">
+                Queue quality is based on generated study queues, completion count, and completion time.
+              </div>
+            </>
+          ) : <div className="stats-empty">No smart review queues recorded yet.</div>}
         </section>
 
         <section className="stats-section">
@@ -289,8 +406,21 @@ export function StatsPage() {
           <div className="stats-section-header">
             <SectionTitle>Topics</SectionTitle>
             <PeriodTabs
-              options={(['worst','best','largest','weakest'] as TopicSort[]).map((v) => ({
-                value: v, label: v === 'worst' ? 'Worst first' : v === 'best' ? 'Best first' : v === 'largest' ? 'Largest' : 'Most weak',
+              options={(['worst','best','largest','weakest','most-reviewed','least-reviewed','most-regressed'] as TopicSort[]).map((v) => ({
+                value: v,
+                label: v === 'worst'
+                  ? 'Worst first'
+                  : v === 'best'
+                    ? 'Best first'
+                    : v === 'largest'
+                      ? 'Largest'
+                      : v === 'weakest'
+                        ? 'Most weak'
+                        : v === 'most-reviewed'
+                          ? 'Most reviewed'
+                          : v === 'least-reviewed'
+                            ? 'Least reviewed'
+                            : 'Most regressed',
               }))}
               value={topicSort}
               onChange={setTopicSort}
