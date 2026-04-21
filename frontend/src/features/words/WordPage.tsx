@@ -244,6 +244,7 @@ export function WordPage() {
           message={`"${word.term}" will be moved to Trash and permanently deleted after 30 days.`}
           confirmLabel="Move to Trash"
           danger
+          pending={s.deletePending}
           onConfirm={s.handleDelete}
           onCancel={() => s.setConfirming(false)}
         />

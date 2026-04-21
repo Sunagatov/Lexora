@@ -7,29 +7,49 @@ type Props = {
   confirmLabel?: string
   cancelLabel?: string
   danger?: boolean
+  pending?: boolean
   onConfirm: () => void
   onCancel: () => void
   onClose?: () => void
 }
 
-export function ConfirmModal({title, message, confirmLabel = 'Confirm', cancelLabel = 'Cancel', danger = false, onConfirm, onCancel, onClose}: Props) {
+export function ConfirmModal({
+  title,
+  message,
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  danger = false,
+  pending = false,
+  onConfirm,
+  onCancel,
+  onClose,
+}: Props) {
   const handleClose = onClose ?? onCancel
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') handleClose() }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape' && !pending) handleClose()
+    }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [handleClose])
+  }, [handleClose, pending])
 
   return createPortal(
-    <div className="modal-overlay" onClick={handleClose}>
+    <div className="modal-overlay" onClick={() => { if (!pending) handleClose() }}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">{title}</h2>
         <p className="modal-message">{message}</p>
         <div className="modal-actions">
-          <button type="button" className="modal-btn-cancel" onClick={onCancel}>{cancelLabel}</button>
-          <button type="button" className={`modal-btn-confirm ${danger ? 'modal-btn-danger' : ''}`} onClick={onConfirm}>
-            {confirmLabel}
+          <button type="button" className="modal-btn-cancel" onClick={onCancel} disabled={pending}>
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            className={`modal-btn-confirm ${danger ? 'modal-btn-danger' : ''}`}
+            onClick={onConfirm}
+            disabled={pending}
+          >
+            {pending ? 'Working…' : confirmLabel}
           </button>
         </div>
       </div>

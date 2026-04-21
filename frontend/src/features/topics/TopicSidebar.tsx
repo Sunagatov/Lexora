@@ -373,6 +373,7 @@ export function TopicSidebar({
           title="Delete Topic?"
           message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that belong only to this topic will also be trashed; shared words will not be affected.`}
           confirmLabel="Delete" danger
+          pending={deleteTopicMutation.isPending}
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
           onCancel={() => setDeleteTopicId(null)}
         />

@@ -189,6 +189,7 @@ export function useWordPageState() {
     saveError,
     setSaveError,
     savePending: saveMutation.isPending,
+    deletePending: deleteMutation.isPending,
     confirming,
     setConfirming,
     handleDelete,

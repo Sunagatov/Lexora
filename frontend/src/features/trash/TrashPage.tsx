@@ -141,6 +141,7 @@ export function TrashPage() {
           message="This will permanently delete everything in Trash right now. This cannot be undone."
           confirmLabel="Empty Trash"
           danger
+          pending={purgeMutation.isPending}
           onConfirm={() => purgeMutation.mutate()}
           onCancel={() => setConfirmPurge(false)}
         />
@@ -152,6 +153,7 @@ export function TrashPage() {
           message="Do you also want to restore all words that were deleted with this topic?"
           confirmLabel="Restore topic + words"
           cancelLabel="Restore topic only"
+          pending={restoreTopicMutation.isPending}
           onConfirm={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: true})}
           onCancel={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: false})}
           onClose={() => setRestoreTopicId(null)}

@@ -74,6 +74,7 @@ describe('TrashPage cache invalidation', () => {
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+    const restoreWordMock = vi.mocked(wordsApi.restoreWord)
 
     vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([makeWord(1, 'run')])
     vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([])
@@ -88,8 +89,8 @@ describe('TrashPage cache invalidation', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Restore'}))
 
     await waitFor(() => {
-      expect(wordsApi.restoreWord).toHaveBeenCalled()
-      expect(wordsApi.restoreWord.mock.calls[0]?.[0]).toBe(1)
+      expect(restoreWordMock).toHaveBeenCalled()
+      expect(restoreWordMock.mock.calls[0]?.[0]).toBe(1)
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
