@@ -4,8 +4,10 @@ Start with `AGENTS.md`.
 
 Then load only the smallest relevant context:
 
+- `.claude/generated/request-routing.md`
 - backend task -> `backend/AGENTS.md`
 - frontend task -> `frontend/AGENTS.md`
+- AI curation or enrichment -> `docs/ai/ai-curation-workflow.md` and `docs/ai/example-style-guide.md`
 - architecture question -> `docs/ai/architecture.md`
 - API question -> `docs/ai/api-surface.md`
 - token/cost optimisation -> `docs/ai/ai-cost-reduction-backlog.md`

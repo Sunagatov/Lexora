@@ -11,12 +11,13 @@ This repository is a monorepo for **Lexora**, a personal English vocabulary lear
 ## Read order for low-token work
 
 1. Read this file.
-2. Read the nearest scoped file:
+2. Read `.claude/generated/request-routing.md` if it exists.
+3. Read the nearest scoped file:
    - `backend/AGENTS.md` for backend changes
    - `frontend/AGENTS.md` for frontend changes
    - `docs/ai/ai-curation-workflow.md` for enriching topic words via ChatGPT + REST API
-3. Read only the files directly touched by the task.
-4. Read supporting shared files only if required:
+4. Read only the files directly touched by the task.
+5. Read supporting shared files only if required:
    - backend: `backend/app/shared/config.py`, `backend/app/shared/deps.py`
    - frontend: `frontend/src/shared/http.ts`, `frontend/src/shared/routes.ts`, shared types used by the target feature
 
