@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {Fragment, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
@@ -34,8 +34,8 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
             const hasExpanded = showExample || showNotes || showPattern
 
             return (
-              <>
-                <tr key={word.id} className={`word-row ${lc}`}>
+              <Fragment key={word.id}>
+                <tr className={`word-row ${lc}`}>
                   <td className="word-cell-word">
                     <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
                       {word.term}
@@ -96,7 +96,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             )
           })}
         </tbody>

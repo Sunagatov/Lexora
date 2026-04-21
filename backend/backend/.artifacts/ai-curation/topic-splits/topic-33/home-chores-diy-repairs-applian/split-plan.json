@@ -4,18 +4,14 @@
   "source_word_count": 501,
   "should_split": true,
   "reasons": [
-    "large topic: 501 words",
-    "generic topic name",
-    "compound topic name",
-    "some words already shared with other topics",
-    "meets the >300 word split threshold",
-    "identified 5 candidate subtopics"
+    "topic has more than 300 active words",
+    "identified 4 candidate subtopics"
   ],
   "proposed_subtopics": [
     {
       "name": "Appliances and Home Systems",
-      "topic_id": null,
-      "is_new_topic": true,
+      "topic_id": 87,
+      "is_new_topic": false,
       "description": "Words for kitchen appliances and common household systems.",
       "word_ids": [
         4625,
@@ -126,8 +122,8 @@
     },
     {
       "name": "Cleaning and Laundry",
-      "topic_id": null,
-      "is_new_topic": true,
+      "topic_id": 88,
+      "is_new_topic": false,
       "description": "Words for household cleaning, washing clothes, and fabric care.",
       "word_ids": [
         669,
@@ -221,25 +217,39 @@
         9857,
         9866,
         9868,
+        9938,
         9829,
         1321,
         9821,
         4465,
         4686,
         4685,
+        9648,
         9839,
         9867,
         4691,
         9838,
+        4727,
+        9845,
+        9848,
+        9950,
+        9993,
         9830,
+        4343,
         9820,
         10046,
         9949,
         9952,
+        9847,
+        9900,
+        9947,
+        9850,
         1058,
         4682,
         9828,
         9870,
+        9786,
+        9945,
         9835,
         3242,
         9825,
@@ -251,21 +261,26 @@
         9817,
         9819,
         4684,
-        10006
+        10006,
+        4728,
+        4808,
+        9895,
+        4726,
+        9939
       ],
       "sample_terms": [
         "circular saw",
         "duct tape",
         "electrical tape",
-        "flathead screwdriver",
-        "hammer"
+        "filler",
+        "flathead screwdriver"
       ],
       "confidence": 0.95
     },
     {
       "name": "Storage and Organisation",
-      "topic_id": null,
-      "is_new_topic": true,
+      "topic_id": 89,
+      "is_new_topic": false,
       "description": "Words for storing, sorting, and organising things at home.",
       "word_ids": [
         4633,
@@ -302,42 +317,6 @@
         "cupboard",
         "drawer organizer",
         "hook"
-      ],
-      "confidence": 0.95
-    },
-    {
-      "name": "Conflict and Repair",
-      "topic_id": 60,
-      "is_new_topic": false,
-      "description": "Words for disagreement, apology, compromise, repair, and resolution.",
-      "word_ids": [
-        9938,
-        9648,
-        4727,
-        9845,
-        9848,
-        9950,
-        9993,
-        4343,
-        9847,
-        9900,
-        9947,
-        9850,
-        9786,
-        9945,
-        4728,
-        4808,
-        9895,
-        9951,
-        4726,
-        9939
-      ],
-      "sample_terms": [
-        "filler",
-        "lint roller",
-        "paint",
-        "paint scraper",
-        "paint tray"
       ],
       "confidence": 0.95
     }
@@ -553,6 +532,7 @@
     9942,
     9944,
     9946,
+    9951,
     9953,
     9960,
     9964,

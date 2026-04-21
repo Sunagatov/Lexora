@@ -4,11 +4,7 @@
   "source_word_count": 501,
   "should_split": true,
   "reasons": [
-    "large topic: 501 words",
-    "compound topic name",
-    "many words already shared with other topics",
-    "words belong to several topics on average",
-    "meets the >300 word split threshold",
+    "topic has more than 300 active words",
     "identified 1 candidate subtopics"
   ],
   "proposed_subtopics": [

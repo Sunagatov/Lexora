@@ -1,0 +1,110 @@
+[
+  {
+    "topic_id": 32,
+    "topic_name": "Conflict Boundaries Difficult C",
+    "word_count": 501,
+    "status": "dry_run",
+    "created_topics": 0,
+    "reassigned_words": 0,
+    "artifact_dir": "backend/.artifacts/ai-curation/topic-splits/topic-32/conflict-boundaries-difficult-c"
+  },
+  {
+    "topic_id": 33,
+    "topic_name": "Home Chores DIY Repairs Applian",
+    "word_count": 501,
+    "status": "dry_run",
+    "created_topics": 0,
+    "reassigned_words": 19,
+    "artifact_dir": "backend/.artifacts/ai-curation/topic-splits/topic-33/home-chores-diy-repairs-applian"
+  },
+  {
+    "topic_id": 31,
+    "topic_name": "Internet Social Media Online Co",
+    "word_count": 500,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 34,
+    "topic_name": "Shopping Retail Returns Deliver",
+    "word_count": 500,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 23,
+    "topic_name": "Law Rights Documents Bureaucrac",
+    "word_count": 401,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 25,
+    "topic_name": "Technology IT Software Hardware",
+    "word_count": 401,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 29,
+    "topic_name": "Banking Money Finance Trading I",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 27,
+    "topic_name": "Nature Outdoors Parks Countrysi",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 28,
+    "topic_name": "Public Transport City Navigatio",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 26,
+    "topic_name": "Weather Seasons Climate",
+    "word_count": 400,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  },
+  {
+    "topic_id": 22,
+    "topic_name": "Education Mentoring School Univ",
+    "word_count": 301,
+    "status": "skipped",
+    "reason": [
+      "topic has more than 300 active words",
+      "no stable clusters reached the minimum size"
+    ]
+  }
+]

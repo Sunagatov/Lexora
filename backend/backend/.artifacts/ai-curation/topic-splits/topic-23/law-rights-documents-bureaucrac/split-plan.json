@@ -4,10 +4,7 @@
   "source_word_count": 401,
   "should_split": false,
   "reasons": [
-    "large topic: 401 words",
-    "compound topic name",
-    "some words already shared with other topics",
-    "meets the >300 word split threshold",
+    "topic has more than 300 active words",
     "no stable clusters reached the minimum size"
   ],
   "proposed_subtopics": [],

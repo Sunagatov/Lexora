@@ -17,6 +17,7 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
         id=id,
         term=term,
         translations="ипотека",
+        example=None,
         translation_items=translation_items or [],
         example_items=example_items or [],
         topics=topics if topics is not None else [topic],
@@ -32,18 +33,27 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
     )
 
 
-def test_import_dry_run_does_not_commit(monkeypatch) -> None:
-    source = _make_topic()
-    word = _make_word()
+def _make_db(topic, words):
     db = MagicMock()
-    db.scalar.return_value = source
+    db.scalar.return_value = topic
 
     def fake_scalars(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True})).lower()
         m = MagicMock()
-        m.all.return_value = [word]
+        if "from topics" in sql and "join word_topics" not in sql:
+            m.all.return_value = [topic]
+        else:
+            m.all.return_value = words
         return m
 
     db.scalars.side_effect = fake_scalars
+    return db
+
+
+def test_import_dry_run_does_not_commit(monkeypatch) -> None:
+    source = _make_topic()
+    word = _make_word()
+    db = _make_db(source, [word])
 
     monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: word)
 
@@ -71,15 +81,7 @@ def test_import_dry_run_does_not_commit(monkeypatch) -> None:
 def test_import_live_commits(monkeypatch) -> None:
     source = _make_topic()
     word = _make_word(id=99, term="collateral")
-    db = MagicMock()
-    db.scalar.return_value = source
-
-    def fake_scalars(stmt):
-        m = MagicMock()
-        m.all.return_value = []
-        return m
-
-    db.scalars.side_effect = fake_scalars
+    db = _make_db(source, [])
 
     monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: word)
 
@@ -109,15 +111,7 @@ def test_import_with_new_topic_and_word(monkeypatch) -> None:
     new_topic = _make_topic(id=55, name="Retail Banking", slug="retail-banking")
     new_word = _make_word(id=101, term="overdraft", topics=[new_topic])
 
-    db = MagicMock()
-    db.scalar.return_value = source
-
-    def fake_scalars(stmt):
-        m = MagicMock()
-        m.all.return_value = []
-        return m
-
-    db.scalars.side_effect = fake_scalars
+    db = _make_db(source, [])
 
     monkeypatch.setattr(ai_curation_service, "create_topic", lambda db, payload, commit=True: new_topic)
     monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: new_word)
@@ -148,15 +142,7 @@ def test_import_update_existing_word_enriches_entries(monkeypatch) -> None:
     source = _make_topic()
     word = _make_word(id=10, term="mortgage")
 
-    db = MagicMock()
-    db.scalar.return_value = source
-
-    def fake_scalars(stmt):
-        m = MagicMock()
-        m.all.return_value = [word]
-        return m
-
-    db.scalars.side_effect = fake_scalars
+    db = _make_db(source, [word])
 
     updated_word = _make_word(id=10, term="mortgage")
     monkeypatch.setattr(ai_curation_service, "update_word", lambda db, w, payload, commit=True: updated_word)
@@ -188,15 +174,7 @@ def test_import_reassign_adds_and_removes_topics(monkeypatch) -> None:
     source = topic1
     word = _make_word(id=10, term="mortgage", topics=[topic1])
 
-    db = MagicMock()
-    db.scalar.side_effect = lambda stmt: source
-
-    def fake_scalars(stmt):
-        m = MagicMock()
-        m.all.return_value = [word]
-        return m
-
-    db.scalars.side_effect = fake_scalars
+    db = _make_db(source, [word])
 
     original_resolve = ai_curation_service._resolve_topic_ref
 

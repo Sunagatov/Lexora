@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.features.topics.model import Topic
+from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count, example_enrichment_status, needs_example_enrichment
 from app.features.words.ai_curation import import_service as _import_service
 from app.features.words.ai_curation.common import AiCurationImportError as _AiCurationImportError, _get_topic
@@ -145,14 +146,16 @@ def _needs_examples_filter():
 
 def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsResponse:
     topic = _get_topic(db, topic_id)
-    topic_filter = (Topic.id == topic.id) & Topic.deleted_at.is_(None)
+    subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
 
     total = db.scalar(
-        select(func.count())
+        select(func.count(func.distinct(Word.id)))
         .select_from(Word)
         .join(word_topics, word_topics.c.word_id == Word.id)
         .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None), topic_filter)
+        .where(Word.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None))
+        .where(Topic.id.in_(subtree_topic_ids))
     ) or 0
     offset = (page - 1) * page_size
 
@@ -162,7 +165,10 @@ def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: in
                 select(Word)
                 .join(word_topics, word_topics.c.word_id == Word.id)
                 .join(Topic, Topic.id == word_topics.c.topic_id)
-                .where(Word.deleted_at.is_(None), topic_filter)
+                .where(Word.deleted_at.is_(None))
+                .where(Topic.deleted_at.is_(None))
+                .where(Topic.id.in_(subtree_topic_ids))
+                .distinct()
                 .order_by(Word.term.asc(), Word.id.asc())
                 .offset(offset)
                 .limit(page_size)
@@ -201,15 +207,17 @@ def export_topic_words_lean_page(
     needs_examples_only: bool = False,
 ) -> AiCurationTopicWordsLeanResponse:
     topic = _get_topic(db, topic_id)
-    topic_filter = (Topic.id == topic.id) & Topic.deleted_at.is_(None)
+    subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
     needs_examples_filter = _needs_examples_filter() if needs_examples_only else None
 
     count_stmt = (
-        select(func.count())
+        select(func.count(func.distinct(Word.id)))
         .select_from(Word)
         .join(word_topics, word_topics.c.word_id == Word.id)
         .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None), topic_filter)
+        .where(Word.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None))
+        .where(Topic.id.in_(subtree_topic_ids))
     )
     if needs_examples_filter is not None:
         count_stmt = count_stmt.where(needs_examples_filter)
@@ -220,7 +228,10 @@ def export_topic_words_lean_page(
         select(Word)
         .join(word_topics, word_topics.c.word_id == Word.id)
         .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None), topic_filter)
+        .where(Word.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None))
+        .where(Topic.id.in_(subtree_topic_ids))
+        .distinct()
     )
     if needs_examples_filter is not None:
         words_stmt = words_stmt.where(needs_examples_filter)

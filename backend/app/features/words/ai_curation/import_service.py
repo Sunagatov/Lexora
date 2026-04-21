@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
+from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
@@ -18,7 +19,7 @@ from app.features.words.ai_curation.schemas import (
     WordUpdateV2,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.model import Word
+from app.features.words.model import Word, word_topics
 from app.features.words.repository import _with_details, create_word, update_word
 from app.features.words.schemas import WordCreate, WordUpdate
 
@@ -30,11 +31,17 @@ def _load_existing_words(
 ) -> dict[int, Word]:
     if not word_ids:
         return {}
+    subtree_topic_ids = get_active_subtree_topic_ids(db, source_topic_id)
     words = db.scalars(
         _with_details(
             select(Word)
-            .where(Word.id.in_(word_ids), Word.deleted_at.is_(None))
-            .where(Word.topics.any((Topic.id == source_topic_id) & Topic.deleted_at.is_(None)))
+            .join(word_topics, word_topics.c.word_id == Word.id)
+            .join(Topic, Topic.id == word_topics.c.topic_id)
+            .where(Word.id.in_(word_ids))
+            .where(Word.deleted_at.is_(None))
+            .where(Topic.deleted_at.is_(None))
+            .where(Topic.id.in_(subtree_topic_ids))
+            .distinct()
         )
     ).all()
     return {int(word.id): word for word in words}

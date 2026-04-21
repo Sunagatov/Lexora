@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
+from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.ai_review.schemas import (
     AiReviewAllowedValues,
     AiReviewExportResponse,
@@ -18,7 +19,7 @@ from app.features.words.ai_review.schemas import (
     AiReviewTopic,
     AiReviewWord,
 )
-from app.features.words.model import Word
+from app.features.words.model import Word, word_topics
 from app.features.words.repository import _with_details, update_word
 from app.features.words.schemas import WordUpdate
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
@@ -67,22 +68,36 @@ def build_topic_ai_review_export(
     page_size: int,
 ) -> AiReviewExportResponse:
     topic = _get_topic(db, topic_id)
-    topic_filter = Word.topics.any((Topic.id == topic.id) & Topic.deleted_at.is_(None))
+    subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
     total_words = db.scalar(
-        select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), topic_filter)
+        select(func.count(func.distinct(Word.id)))
+        .select_from(Word)
+        .join(word_topics, word_topics.c.word_id == Word.id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Word.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None))
+        .where(Topic.id.in_(subtree_topic_ids))
     ) or 0
     total_pages = max(1, math.ceil(total_words / page_size))
     offset = (page - 1) * page_size
 
-    words = list(db.scalars(
-        _with_details(
-            select(Word)
-            .where(Word.deleted_at.is_(None), topic_filter)
-            .order_by(Word.term.asc(), Word.id.asc())
-            .offset(offset)
-            .limit(page_size)
+    words = list(
+        db.scalars(
+            _with_details(
+                select(Word)
+                .join(word_topics, word_topics.c.word_id == Word.id)
+                .join(Topic, Topic.id == word_topics.c.topic_id)
+                .where(Word.deleted_at.is_(None))
+                .where(Topic.deleted_at.is_(None))
+                .where(Topic.id.in_(subtree_topic_ids))
+                .distinct()
+                .order_by(Word.term.asc(), Word.id.asc())
+                .offset(offset)
+                .limit(page_size)
+            )
         )
-    ).all())
+        .all()
+    )
 
     return AiReviewExportResponse(
         exported_at=datetime.now(timezone.utc),
@@ -104,11 +119,17 @@ def build_topic_ai_review_export(
 
 
 def _load_import_words(db: Session, topic_id: int, word_ids: list[int]) -> dict[int, Word]:
+    subtree_topic_ids = get_active_subtree_topic_ids(db, topic_id)
     words = db.scalars(
         _with_details(
             select(Word)
-            .where(Word.id.in_(word_ids), Word.deleted_at.is_(None))
-            .where(Word.topics.any((Topic.id == topic_id) & Topic.deleted_at.is_(None)))
+            .join(word_topics, word_topics.c.word_id == Word.id)
+            .join(Topic, Topic.id == word_topics.c.topic_id)
+            .where(Word.id.in_(word_ids))
+            .where(Word.deleted_at.is_(None))
+            .where(Topic.deleted_at.is_(None))
+            .where(Topic.id.in_(subtree_topic_ids))
+            .distinct()
         )
     ).all()
     return {word.id: word for word in words}

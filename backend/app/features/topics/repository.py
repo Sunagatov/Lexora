@@ -51,6 +51,28 @@ def get_deleted_topics(db: Session) -> list[Topic]:
     return list(db.scalars(select(Topic).where(Topic.deleted_at.is_not(None)).order_by(Topic.deleted_at.desc())).all())
 
 
+def get_active_subtree_topic_ids(db: Session, root_topic_id: int) -> list[int]:
+    topics = list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all())
+
+    children_by_parent: dict[int | None, list[int]] = {}
+    for topic in topics:
+        children_by_parent.setdefault(getattr(topic, "parent_topic_id", None), []).append(int(topic.id))
+
+    result: list[int] = []
+    stack = [root_topic_id]
+    seen: set[int] = set()
+
+    while stack:
+        current = stack.pop()
+        if current in seen:
+            continue
+        seen.add(current)
+        result.append(current)
+        stack.extend(children_by_parent.get(current, []))
+
+    return result
+
+
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(topic, field, value)

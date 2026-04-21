@@ -1,0 +1,157 @@
+import {act, renderHook, waitFor} from '@testing-library/react'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {describe, expect, it, vi, beforeEach} from 'vitest'
+import type {ReactNode} from 'react'
+import {useQuickAdd} from '../useQuickAdd'
+import {queryKeys} from '../../../shared/queryKeys'
+import type {Topic, Word} from '../../../shared/types'
+import * as topicsApi from '../../topics/api'
+import * as wordsApi from '../api'
+
+vi.mock('../../topics/api')
+vi.mock('../api')
+
+function makeTopic(id: number, name: string, slug = name.toLowerCase()): Topic {
+  return {
+    id,
+    name,
+    slug,
+    description: null,
+    is_active: true,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  }
+}
+
+function makeWord(id: number, term: string): Word {
+  return {
+    id,
+    topic_ids: [1],
+    term,
+    past_simple: null,
+    past_participle: null,
+    translations: term,
+    translation_entries: undefined,
+    part_of_speech: 'verb',
+    knowledge_level: 1,
+    countability: null,
+    pattern: null,
+    example: null,
+    example_entries: undefined,
+    example_count: 0,
+    example_target_count: 3,
+    example_status: 'missing',
+    needs_example_enrichment: false,
+    notes: null,
+    is_active: true,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  }
+}
+
+function wrapper(queryClient: QueryClient) {
+  return function Wrapper({children}: {children: ReactNode}) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  }
+}
+
+describe('useQuickAdd cache invalidation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('invalidates words, stats, and smart review after saving a word', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setTerm('run')
+      result.current.setTranslation('correr')
+      result.current.setTopicId(2)
+    })
+
+    act(() => {
+      result.current.save()
+    })
+
+    await waitFor(() => {
+      expect(wordsApi.quickAddWord).toHaveBeenCalledWith('run', 'correr', [2])
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
+  })
+
+  it('invalidates topics and stats after creating a topic', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    vi.mocked(topicsApi.createTopic).mockResolvedValue(makeTopic(2, 'Astronomy', 'astronomy'))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setNewTopic('Astronomy')
+      result.current.createTopic()
+    })
+
+    await waitFor(() => {
+      expect(topicsApi.createTopic).toHaveBeenCalledWith('Astronomy')
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+
+  it('creates Inbox automatically and invalidates topics and stats when no Inbox exists', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Verbs')])
+    vi.mocked(topicsApi.createTopic).mockResolvedValue(makeTopic(1, 'Inbox'))
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setTerm('run')
+      result.current.setTranslation('correr')
+    })
+
+    act(() => {
+      result.current.save()
+    })
+
+    await waitFor(() => {
+      expect(topicsApi.createTopic).toHaveBeenCalledWith('Inbox')
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+})

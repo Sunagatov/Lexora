@@ -116,6 +116,30 @@ def test_get_all_words_for_parent_topic_includes_descendants(make_topic, make_wo
     assert db.scalars.call_count == 2
 
 
+def test_get_all_words_for_parent_topic_deduplicates_same_word_seen_via_multiple_topics(make_topic, make_word) -> None:
+    db = MagicMock()
+    parent = make_topic(id=1, parent_topic_id=None)
+    child = make_topic(id=2, parent_topic_id=1)
+    shared_word = make_word(id=10, topics=[parent, child])
+
+    seen_sql: list[str] = []
+    call_count = [0]
+
+    def fake_scalars(stmt):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return MagicMock(all=MagicMock(return_value=[parent, child]))
+        seen_sql.append(str(stmt.compile(compile_kwargs={"literal_binds": True})))
+        return MagicMock(all=MagicMock(return_value=[shared_word]))
+
+    db.scalars.side_effect = fake_scalars
+
+    result = word_repository.get_all_words(db, topic_id=1)
+
+    assert [word.id for word in result] == [10]
+    assert any("select distinct" in sql.lower() for sql in seen_sql)
+
+
 def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> None:
     db = MagicMock()
     db.scalars.return_value.all.return_value = [_make_topic_mock(2), _make_topic_mock(3)]

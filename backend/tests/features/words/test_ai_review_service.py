@@ -62,13 +62,23 @@ def _ai_review_word(word_id, term, notes="updated note"):
 
 def _make_db(topic, words):
     db = MagicMock()
-    db.scalar.return_value = topic
+    def fake_scalar(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+        if "from topics" in sql.lower():
+            return topic
+        return 1
 
     def fake_scalars(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True})).lower()
         m = MagicMock()
-        m.all.return_value = words
+        if "from topics" in sql and "join word_topics" not in sql:
+            m.all.return_value = [topic]
+        else:
+            m.all.return_value = words
+        m._sql = sql
         return m
 
+    db.scalar.side_effect = fake_scalar
     db.scalars.side_effect = fake_scalars
     return db
 
@@ -162,3 +172,68 @@ def test_ai_review_import_dry_run_never_commits(monkeypatch) -> None:
     db.commit.assert_not_called()
     db.rollback.assert_called_once()
     assert result.dry_run is True
+
+
+def test_ai_review_export_for_parent_topic_includes_child_topic_words(monkeypatch) -> None:
+    parent = _make_topic(topic_id=1, name="Parent")
+    child = _make_topic(topic_id=2, name="Child")
+    word = _make_word(word_id=10, term="cat")
+    word.topics = [child]
+
+    captured_sql: list[str] = []
+
+    def fake_scalar(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+        captured_sql.append(sql)
+        if "from topics" in sql.lower():
+            return parent
+        return 1
+
+    def fake_scalars(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+        captured_sql.append(sql)
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db = MagicMock()
+    db.scalar.side_effect = fake_scalar
+    db.scalars.side_effect = fake_scalars
+    monkeypatch.setattr(ai_review_service, "get_active_subtree_topic_ids", lambda db, topic_id: [1, 2])
+
+    result = ai_review_service.build_topic_ai_review_export(db, topic_id=1, page=1, page_size=20)
+
+    assert result.topic_id == 1
+    assert [item.id for item in result.words] == [10]
+    assert any("select distinct" in sql.lower() for sql in captured_sql)
+    assert any("count(distinct" in sql.lower() for sql in captured_sql)
+    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)
+
+
+def test_ai_review_import_accepts_child_topic_word_when_topic_id_is_parent(monkeypatch) -> None:
+    parent = _make_topic(topic_id=1, name="Parent")
+    child = _make_topic(topic_id=2, name="Child")
+    word = _make_word(word_id=10, term="cat")
+    word.topics = [child]
+    db = _make_db(parent, [word])
+
+    captured_sql: list[str] = []
+
+    def fake_scalars(stmt):
+        sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+        captured_sql.append(sql)
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+    monkeypatch.setattr(ai_review_service, "get_active_subtree_topic_ids", lambda db, topic_id: [1, 2])
+
+    payload = _make_payload([
+        _ai_review_word(word.id, word.term),
+    ])
+    result = ai_review_service.import_topic_ai_review(db, payload)
+
+    assert result.updated == 1
+    assert any("select distinct" in sql.lower() for sql in captured_sql)
+    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)

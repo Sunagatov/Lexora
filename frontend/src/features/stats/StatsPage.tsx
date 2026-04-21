@@ -30,14 +30,14 @@ const MONTH_PERIODS: {value: MonthPeriod; label: string}[] = [
 
 type TopicSort = 'worst' | 'best' | 'largest' | 'weakest'
 
-function toLocalDateKey(date: Date): string {
+export function toLocalDateKey(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
 
-function filterByDays(days: DailyActivity[], period: ActivityPeriod): DailyActivity[] {
+export function filterByDays(days: DailyActivity[], period: ActivityPeriod): DailyActivity[] {
   if (period === 'all') return days
   const windowSize = Number(period)
   const cutoff = new Date()

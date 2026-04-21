@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
+from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.model import Word, WordExample, WordTranslation, word_topics
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
@@ -82,25 +83,6 @@ def _build_example_summary(entries: list[str], fallback_raw_text: str | None) ->
     return raw or None
 
 
-def _get_active_subtree_topic_ids(db: Session, root_topic_id: int) -> list[int]:
-    topics = list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all())
-    children_by_parent: dict[int | None, list[int]] = {}
-    for topic in topics:
-        children_by_parent.setdefault(topic.parent_topic_id, []).append(int(topic.id))
-
-    result: list[int] = []
-    stack = [root_topic_id]
-    seen: set[int] = set()
-    while stack:
-        current = stack.pop()
-        if current in seen:
-            continue
-        seen.add(current)
-        result.append(current)
-        stack.extend(children_by_parent.get(current, []))
-    return result
-
-
 def sync_word_multivalue_fields(
     word: Word,
     translations_text: str | None,
@@ -128,14 +110,15 @@ def sync_word_multivalue_fields(
 
 
 def get_all_words(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
-    stmt = _with_details(select(Word).where(Word.deleted_at.is_(None)).order_by(Word.term.asc()))
+    stmt = select(Word).where(Word.deleted_at.is_(None))
     if topic_id is not None:
-        topic_ids = _get_active_subtree_topic_ids(db, topic_id)
+        topic_ids = get_active_subtree_topic_ids(db, topic_id)
         stmt = (
             stmt.join(word_topics, word_topics.c.word_id == Word.id)
             .join(Topic, Topic.id == word_topics.c.topic_id)
             .where(Topic.id.in_(topic_ids))
             .where(Topic.deleted_at.is_(None))
+            .distinct()
         )
     if search:
         needle = f"%{search}%"
@@ -148,6 +131,7 @@ def get_all_words(db: Session, topic_id: int | None = None, search: str | None =
             | Word.past_simple.ilike(needle)
             | Word.past_participle.ilike(needle)
         )
+    stmt = _with_details(stmt).order_by(Word.term.asc(), Word.id.asc())
     return list(db.scalars(stmt).all())
 
 
@@ -222,7 +206,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     example_requested = "example" in fields_set or "example_entries" in fields_set
     if translation_requested or example_requested:
         current_translations_text = word.translations
-        current_example_text = word.example
+        current_example_text = getattr(word, "example", None)
         current_translation_entries = [
             item.value for item in getattr(word, "translation_items", [])
         ]
