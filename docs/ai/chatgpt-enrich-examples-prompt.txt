@@ -1,10 +1,12 @@
 Take this Lexora export JSON and return ONLY a valid Lexora v2 import JSON.
 
 Goal:
-- If the export includes example-completeness hints, skip words that already have 3 examples.
+- If the export includes example-completeness hints, skip words that already have 3 strong examples.
 - For every word in the export, add exactly 3 natural English example sentences.
 - Put them into example_entries as an array of exactly 3 strings.
 - Each sentence must use the target word naturally.
+- Prefer model-written examples over templated filler.
+- If existing examples are already strong and varied, leave them alone.
 
 Rules:
 - Return JSON only. No markdown fences. No explanation.
@@ -16,6 +18,9 @@ Rules:
 - Do not include any other fields.
 - No Russian in the examples.
 - Keep examples concise, natural, practical, and vocabulary-app friendly.
+- Vary sentence structure so the three examples do not feel repetitive.
+- If a word has multiple senses, use the sense that best fits the topic and stay consistent.
+- Keep the examples B1-C1 and suitable for everyday learning use.
 
 Return JSON in this exact shape:
 {

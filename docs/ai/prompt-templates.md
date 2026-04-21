@@ -73,6 +73,32 @@ Prioritise:
 - smaller prompts
 - smaller max_tokens
 - measurement
+
+## 6. Topic refinement / split planning
+
+```text
+You are working in the Lexora repo.
+
+Read only:
+- AGENTS.md
+- backend/AGENTS.md
+- docs/ai/ai-curation-workflow.md
+- docs/ai/topic-refinement-prompt.txt
+- the exact topic refinement files you need
+
+Goal:
+split only clearly broad topics into fewer, broader, human-readable child topics
+without creating near-duplicate siblings or splitting grammar buckets.
+
+Prioritise:
+- prod-only exports
+- dry-run first
+- reuse existing topics when they already fit
+- keep umbrella topics in place
+- parent_topic_id for hierarchy
+- many-to-many word membership
+- spot-check large plans before live import
+```
 ```
 
 ## 5. Architecture question
