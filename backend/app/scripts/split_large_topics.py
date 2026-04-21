@@ -167,6 +167,13 @@ def main() -> None:
     parser.add_argument("--max-new-topics", type=int, default=10, help="Maximum number of candidate subtopics per topic")
     parser.add_argument("--page-size", type=int, default=100, help="Reserved for future pagination compatibility")
     parser.add_argument("--artifacts-dir", default="backend/.artifacts/ai-curation/topic-splits")
+    parser.add_argument(
+        "--skip-topic-id",
+        action="append",
+        type=int,
+        default=[],
+        help="Skip a topic id. Repeatable.",
+    )
     args = parser.parse_args()
 
     if not args.live and not args.dry_run:
@@ -200,22 +207,56 @@ def main() -> None:
         print(f"Found {len(candidates)} topics with more than {MIN_SPLIT_WORDS} active words.\n")
 
         summary: list[dict[str, Any]] = []
+        skipped_ids = set(args.skip_topic_id)
 
         for topic in candidates:
             topic_id = topic["topic_id"]
             topic_name = topic["topic_name"]
+            if topic_id in skipped_ids:
+                print(f"Topic {topic_id}: {topic_name} ({topic['word_count']} words)")
+                print("  skipped by request")
+                summary.append(
+                    {
+                        "topic_id": topic_id,
+                        "topic_name": topic_name,
+                        "word_count": topic["word_count"],
+                        "status": "skipped",
+                        "reason": ["skipped by request"],
+                    }
+                )
+                continue
             topic_dir = _topic_artifact_dir(artifacts_root, topic)
             topic_dir.mkdir(parents=True, exist_ok=True)
 
             print(f"Topic {topic_id}: {topic_name} ({topic['word_count']} words)")
 
-            plan = _split_plan(
-                http,
-                args.prod_url,
-                csrf,
-                topic_id,
-                max_new_topics=args.max_new_topics,
-            )
+            try:
+                plan = _split_plan(
+                    http,
+                    args.prod_url,
+                    csrf,
+                    topic_id,
+                    max_new_topics=args.max_new_topics,
+                )
+            except httpx.HTTPStatusError as exc:
+                print(f"  skipped: split-plan failed with HTTP {exc.response.status_code}")
+                _write_json(
+                    topic_dir / "split-plan-error.json",
+                    {
+                        "status_code": exc.response.status_code,
+                        "response_text": exc.response.text,
+                    },
+                )
+                summary.append(
+                    {
+                        "topic_id": topic_id,
+                        "topic_name": topic_name,
+                        "word_count": topic["word_count"],
+                        "status": "error",
+                        "reason": [f"split-plan failed with HTTP {exc.response.status_code}"],
+                    }
+                )
+                continue
             _write_json(topic_dir / "split-plan.json", plan)
 
             if not plan.get("should_split"):
@@ -257,13 +298,34 @@ def main() -> None:
                 batch_tag = f"batch-{batch_index:02d}"
                 _write_json(topic_dir / f"{batch_tag}-import-request.json", payload)
 
-                response = _fetch_json(
-                    http,
-                    "POST",
-                    f"{args.prod_url}/api/ai-curation/import",
-                    csrf,
-                    json=payload,
-                )
+                try:
+                    response = _fetch_json(
+                        http,
+                        "POST",
+                        f"{args.prod_url}/api/ai-curation/import",
+                        csrf,
+                        json=payload,
+                    )
+                except httpx.HTTPStatusError as exc:
+                    print(f"  batch {batch_index:02d} failed with HTTP {exc.response.status_code}")
+                    _write_json(
+                        topic_dir / f"{batch_tag}-import-error.json",
+                        {
+                            "status_code": exc.response.status_code,
+                            "response_text": exc.response.text,
+                        },
+                    )
+                    summary.append(
+                        {
+                            "topic_id": topic_id,
+                            "topic_name": topic_name,
+                            "word_count": topic["word_count"],
+                            "status": "error",
+                            "reason": [f"import batch {batch_index} failed with HTTP {exc.response.status_code}"],
+                            "artifact_dir": str(topic_dir),
+                        }
+                    )
+                    break
                 _write_json(topic_dir / f"{batch_tag}-import-response.json", response)
 
                 if batch_index == 1 and not dry_run:
@@ -271,22 +333,23 @@ def main() -> None:
 
                 total_reassigned += response.get("reassigned_words", 0)
 
-            print(
-                f"  dry_run={dry_run} created_topics={total_created_topics} "
-                f"reassigned_words={total_reassigned}"
-            )
+            else:
+                print(
+                    f"  dry_run={dry_run} created_topics={total_created_topics} "
+                    f"reassigned_words={total_reassigned}"
+                )
 
-            summary.append(
-                {
-                    "topic_id": topic_id,
-                    "topic_name": topic_name,
-                    "word_count": topic["word_count"],
-                    "status": "dry_run" if dry_run else "live",
-                    "created_topics": total_created_topics,
-                    "reassigned_words": total_reassigned,
-                    "artifact_dir": str(topic_dir),
-                }
-            )
+                summary.append(
+                    {
+                        "topic_id": topic_id,
+                        "topic_name": topic_name,
+                        "word_count": topic["word_count"],
+                        "status": "dry_run" if dry_run else "live",
+                        "created_topics": total_created_topics,
+                        "reassigned_words": total_reassigned,
+                        "artifact_dir": str(topic_dir),
+                    }
+                )
 
         _write_json(artifacts_root / f"summary-{run_stamp}.json", summary)
         print(f"\nSummary written to {artifacts_root / f'summary-{run_stamp}.json'}")
