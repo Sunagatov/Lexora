@@ -1,0 +1,31 @@
+Take this Lexora topic refinement draft and return ONLY valid JSON.
+
+Goal:
+- Split one broad topic into smaller, specific, learner-friendly subtopics.
+- Keep names short, practical, and useful for vocabulary study.
+- A word may fit more than one subtopic if justified.
+
+Rules:
+- Return JSON only. No markdown fences. No explanation.
+- Do not invent words.
+- Do not include duplicate terms in the same subtopic.
+- Prefer real-life groupings over abstract labels.
+- Keep the source topic unchanged.
+
+Return this exact shape:
+{
+  "proposed_subtopics": [
+    {
+      "name": "Cleaning Tools and Supplies",
+      "description": "Words for cleaning tools and products.",
+      "word_terms": ["mop", "sponge", "detergent"]
+    }
+  ],
+  "unassigned_terms": []
+}
+
+Source topic:
+<paste topic name here>
+
+Words:
+<paste the topic's words here, one per line>

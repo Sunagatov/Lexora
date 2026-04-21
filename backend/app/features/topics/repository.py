@@ -1,19 +1,41 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
 from app.features.topics.domain import soft_delete_exclusive_words, soft_delete_all_words
+from app.features.stats.model import WordProgressEvent  # noqa: F401
+from app.features.words.model import Word
 
 
 def get_all_topics(db: Session) -> list[Topic]:
     return list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all())
 
 
+def get_all_topics_with_words(db: Session) -> list[Topic]:
+    stmt = (
+        select(Topic)
+        .where(Topic.deleted_at.is_(None))
+        .options(selectinload(Topic.words).selectinload(Word.topics))
+        .order_by(Topic.name.asc())
+    )
+    return list(db.scalars(stmt).all())
+
+
 def get_topic_by_id(db: Session, topic_id: int) -> Topic | None:
     return db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None)))
+
+
+def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
+    stmt = (
+        select(Topic)
+        .where(Topic.id == topic_id)
+        .where(Topic.deleted_at.is_(None))
+        .options(selectinload(Topic.words).selectinload(Word.topics))
+    )
+    return db.scalar(stmt)
 
 
 def get_topic_by_id_including_deleted(db: Session, topic_id: int) -> Topic | None:

@@ -7,6 +7,12 @@ from app.features.topics.repository import (
 )
 from app.features.topics.schemas import TopicCreate, TopicResponse, TopicUpdate
 from app.features.topics.service import TopicSlugConflictError, InvalidTopicNameError, create_topic, update_topic
+from app.features.topics.refinement_schemas import (
+    TopicAuditResponse,
+    TopicSplitPlanRequest,
+    TopicSplitPlanResponse,
+)
+from app.features.topics.refinement_service import build_topic_audit, build_topic_split_plan
 
 router = APIRouter(prefix="/api/topics", tags=["topics"])
 
@@ -14,6 +20,11 @@ router = APIRouter(prefix="/api/topics", tags=["topics"])
 @router.get("", response_model=list[TopicResponse])
 def list_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
     return get_all_topics(db)
+
+
+@router.get("/audit", response_model=TopicAuditResponse)
+def audit_topics(db: Session = Depends(get_db)) -> TopicAuditResponse:
+    return build_topic_audit(db)
 
 
 @router.get("/{topic_id}", response_model=TopicResponse)
@@ -45,6 +56,18 @@ def update_topic_route(topic_id: int, payload: TopicUpdate, db: Session = Depend
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except TopicSlugConflictError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
+
+
+@router.post("/{topic_id}/split-plan", response_model=TopicSplitPlanResponse)
+def split_topic_plan(
+    topic_id: int,
+    payload: TopicSplitPlanRequest,
+    db: Session = Depends(get_db),
+) -> TopicSplitPlanResponse:
+    try:
+        return build_topic_split_plan(db, topic_id, payload)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
 
 
 @router.delete("/{topic_id}", status_code=status.HTTP_204_NO_CONTENT)
