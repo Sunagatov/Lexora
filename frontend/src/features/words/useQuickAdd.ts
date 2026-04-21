@@ -40,7 +40,7 @@ export function useQuickAdd(_onClose: () => void) {
   const addWordMutation = useMutation({
     mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
       setTerm('')
       setTranslation('')
@@ -58,7 +58,7 @@ export function useQuickAdd(_onClose: () => void) {
   const createTopicMutation = useMutation({
     mutationFn: () => createTopic(newTopic.trim()),
     onSuccess: (created) => {
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topics})
       setTopicId(created.id)
       setNewTopic('')
       setAddingTopic(false)
@@ -111,7 +111,7 @@ export function useQuickAdd(_onClose: () => void) {
     let resolvedTopicId = topicId
     if (!resolvedTopicId) {
       const inboxId = await ensureInbox(topics, (id) => {
-        queryClient.invalidateQueries({queryKey: queryKeys.topics})
+        void queryClient.invalidateQueries({queryKey: queryKeys.topics})
         setTopicId(id)
       })
       if (!inboxId) { setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'}); return }

@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import type {ReactNode} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
@@ -262,7 +263,7 @@ function ViewRow({label, value, preserveLines = false}: {label: string; value: s
   )
 }
 
-function FormField({label, children}: {label: string; children: React.ReactNode}) {
+function FormField({label, children}: {label: string; children: ReactNode}) {
   return (
     <div className="wp-field">
       <label className="wp-label">{label}</label>

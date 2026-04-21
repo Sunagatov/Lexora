@@ -46,6 +46,7 @@ export function useWordPageState() {
   const word = wordQuery.data
   const topics = topicsQuery.data ?? []
   const topic = word ? resolveWordContextTopic(word, topics, fromTopicSlug) : undefined
+  const wordIdForEffect = word?.id
 
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(numericWordId, payload),
@@ -121,14 +122,14 @@ export function useWordPageState() {
       return
     }
 
-    if (!word) return
+    if (!wordIdForEffect) return
 
-    if (draftWordIdRef.current !== word.id) {
+    if (draftWordIdRef.current !== wordIdForEffect) {
       setDraft(toEditState(word))
-      draftWordIdRef.current = word.id
+      draftWordIdRef.current = wordIdForEffect
       setSaveError(null)
     }
-  }, [editing, word?.id])
+  }, [editing, wordIdForEffect, word])
 
   function set(field: keyof EditState, value: string | string[]) {
     setDraft((d) => (d ? {...d, [field]: value} : d))

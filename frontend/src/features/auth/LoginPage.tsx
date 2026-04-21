@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import type {FormEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {login} from './api'
 import {ApiError} from '../../shared/apiError'
@@ -10,7 +11,7 @@ export function LoginPage() {
   const [loading, setLoading]   = useState(false)
   const navigate = useNavigate()
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError(null)

@@ -1,4 +1,5 @@
 import {createPortal} from 'react-dom'
+import type {RefObject} from 'react'
 
 export type SortMode = 'default' | 'weakest' | 'strongest' | 'largest' | 'az' | 'za'
 
@@ -19,7 +20,7 @@ export const SORT_OPTIONS: {value: SortMode; label: string}[] = [
 export function SortMenu({options, current, anchorRef, onSelect, onClose}: {
   options: {value: SortMode; label: string}[]
   current: SortMode
-  anchorRef: React.RefObject<HTMLButtonElement | null>
+  anchorRef: RefObject<HTMLButtonElement | null>
   onSelect: (v: SortMode) => void
   onClose: () => void
 }) {

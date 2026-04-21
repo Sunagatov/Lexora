@@ -30,9 +30,9 @@ export function TrashPage() {
     mutationFn: restoreWord,
     onSuccess: (restored) => {
       queryClient.setQueryData<Word[]>(queryKeys.trashWords, (cur = []) => cur.filter((w) => w.id !== restored.id))
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topics})
     },
     onError: (err: Error) => {
       alert(err.message)
@@ -43,10 +43,10 @@ export function TrashPage() {
     mutationFn: ({id, restoreWords}: {id: number; restoreWords: boolean}) => restoreTopic(id, restoreWords),
     onSuccess: (restored) => {
       queryClient.setQueryData<Topic[]>(queryKeys.trashTopics, (cur = []) => cur.filter((t) => t.id !== restored.id))
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       setRestoreTopicId(null)
     },
   })
@@ -54,8 +54,8 @@ export function TrashPage() {
   const purgeMutation = useMutation({
     mutationFn: purgeTrash,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
-      queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       setConfirmPurge(false)
     },
   })

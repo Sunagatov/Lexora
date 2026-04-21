@@ -1,4 +1,5 @@
 import {createContext, useContext, useState} from 'react'
+import type {ReactNode} from 'react'
 
 type DrawerCtx = {
   drawerOpen: boolean
@@ -9,7 +10,7 @@ type DrawerCtx = {
 
 const DrawerContext = createContext<DrawerCtx | null>(null)
 
-export function DrawerProvider({children}: {children: React.ReactNode}) {
+export function DrawerProvider({children}: {children: ReactNode}) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [hasDrawer, setHasDrawer]   = useState(false)
   return (

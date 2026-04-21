@@ -1,3 +1,5 @@
+import type {ReactNode} from 'react'
+
 // Shared chart components for the Stats page
 
 export type DonutSlice = {value: number; color: string; label: string}
@@ -72,7 +74,7 @@ export function StatCard({value, label, sub}: {value: string | number; label: st
   )
 }
 
-export function SectionTitle({children}: {children: React.ReactNode}) {
+export function SectionTitle({children}: {children: ReactNode}) {
   return <h2 className="stats-section-title">{children}</h2>
 }
 

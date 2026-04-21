@@ -21,12 +21,12 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
 
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(queryKeys.words, ctx.prev)
-      queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
-      queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
   })
 

@@ -1,3 +1,4 @@
+import type {KeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from './useQuickAdd'
 
@@ -6,7 +7,7 @@ type Props = {onClose: () => void}
 export function QuickAddSheet({onClose}: Props) {
   const q = useQuickAdd(onClose)
 
-  function handleSheetKeyDown(e: React.KeyboardEvent) {
+  function handleSheetKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Escape') onClose()
   }
 

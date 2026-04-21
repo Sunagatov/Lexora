@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react'
 import type {StatsResponse} from './api'
 import {SectionTitle} from './StatsComponents'
 
@@ -6,7 +7,7 @@ export function InsightsStrip({s}: {s: StatsResponse}) {
   const strongest = [...s.topics].sort((a, b) => b.progress - a.progress)[0]
   const mostWeak = [...s.topics].sort((a, b) => b.weak_count - a.weak_count)[0]
 
-  const insights: {icon: string; text: React.ReactNode}[] = []
+  const insights: {icon: string; text: ReactNode}[] = []
 
   if (weakest && weakest.progress < 30)
     insights.push({icon: '⚠️', text: <><strong>{weakest.name}</strong> needs most attention — {weakest.progress}% progress</>})

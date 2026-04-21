@@ -1,4 +1,5 @@
 import {useRef, useMemo, useState} from 'react'
+import type {ChangeEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {deleteTopic, createTopic} from './api'
@@ -67,8 +68,8 @@ export function TopicSidebar({
   const deleteTopicMutation = useMutation({
     mutationFn: (id: number) => deleteTopic(id, false),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.topics})
-      queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
       setDeleteTopicId(null)
     },
   })
@@ -109,7 +110,7 @@ export function TopicSidebar({
     }
   }
 
-  async function handleImportWorkbookChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImportWorkbookChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
