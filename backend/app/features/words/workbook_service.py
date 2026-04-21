@@ -89,7 +89,14 @@ PART_OF_SPEECH_VALUES = [
     "preposition",
     "other",
 ]
-COUNTABILITY_VALUES = ["Countable", "Uncountable", "Both"]
+COUNTABILITY_VALUES = ["Countable", "Uncountable", "Both", "Plural", "Collective"]
+COUNTABILITY_ALIASES = {
+    "countable": "Countable",
+    "uncountable": "Uncountable",
+    "both": "Both",
+    "plural": "Plural",
+    "collective": "Collective",
+}
 EXTRA_EMPTY_ROWS = 30
 
 
@@ -165,7 +172,9 @@ def _add_validations(workbook: Workbook, ws, last_row: int) -> None:
         type="list", formula1=f"={LISTS_SHEET_NAME}!$A$1:$A$5", allow_blank=True
     )
     countability_dv = DataValidation(
-        type="list", formula1=f"={LISTS_SHEET_NAME}!$B$1:$B$3", allow_blank=True
+        type="list",
+        formula1=f"={LISTS_SHEET_NAME}!$B$1:$B${len(COUNTABILITY_VALUES)}",
+        allow_blank=True,
     )
     pos_dv = DataValidation(
         type="list", formula1=f"={LISTS_SHEET_NAME}!$C$1:$C$7", allow_blank=True
@@ -210,6 +219,10 @@ def _example_entries_for_export(word: Word) -> str | None:
     if word.example_items:
         return "\n".join(item.value for item in word.example_items)
     return word.example
+
+
+def _countability_for_export(word: Word) -> str | None:
+    return _normalize_countability(word.countability)
 
 
 def build_words_workbook(db: Session) -> tuple[str, bytes]:
@@ -264,7 +277,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
                 ws.cell(row=row_idx, column=3, value=_translation_entries_for_export(word))
                 ws.cell(row=row_idx, column=4, value=word.pattern)
                 ws.cell(row=row_idx, column=5, value=_example_entries_for_export(word))
-                ws.cell(row=row_idx, column=6, value=word.countability)
+                ws.cell(row=row_idx, column=6, value=_countability_for_export(word))
                 ws.cell(row=row_idx, column=7, value=word.part_of_speech)
                 ws.cell(row=row_idx, column=8, value=word.past_simple)
                 ws.cell(row=row_idx, column=9, value=word.past_participle)
@@ -357,7 +370,17 @@ def _normalize_countability(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip()
-    return normalized or None
+    if not normalized:
+        return None
+    return COUNTABILITY_ALIASES.get(normalized.casefold(), normalized)
+
+
+def _should_validate_existing_word_duplicate(
+    existing: Word,
+    term: str,
+    topic_was_missing: bool,
+) -> bool:
+    return topic_was_missing or normalize_term(term) != normalize_term(existing.term)
 
 
 def _normalize_part_of_speech(
@@ -500,13 +523,16 @@ def _import_sheet(
         existing = _find_existing_word(db, topic.id, word_id, term)
 
         if existing is not None:
-            if topic.id not in {t.id for t in existing.topics}:
+            existing_topic_ids = {t.id for t in existing.topics}
+            topic_was_missing = topic.id not in existing_topic_ids
+            if topic_was_missing:
                 existing.topics.append(topic)
 
-            assert_no_duplicate_word(
-                term,
-                existing_normalized_terms(db, [topic.id], exclude_word_id=existing.id),
-            )
+            if _should_validate_existing_word_duplicate(existing, term, topic_was_missing):
+                assert_no_duplicate_word(
+                    term,
+                    existing_normalized_terms(db, [topic.id], exclude_word_id=existing.id),
+                )
 
             old_level = existing.knowledge_level
 

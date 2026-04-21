@@ -131,6 +131,8 @@ export function WordPage() {
                   <option value="Countable">Countable</option>
                   <option value="Uncountable">Uncountable</option>
                   <option value="Both">Both</option>
+                  <option value="Plural">Plural</option>
+                  <option value="Collective">Collective</option>
                 </select>
               </FormField>
             )}
