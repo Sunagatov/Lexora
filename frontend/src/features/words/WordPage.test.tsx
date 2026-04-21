@@ -200,3 +200,42 @@ describe('WordPage — cache invalidation after delete', () => {
     })
   })
 })
+
+describe('WordPage — topic editing', () => {
+  beforeEach(() => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([
+      makeTopic(1, 'alpha-topic', 'Alpha Topic'),
+      makeTopic(2, 'beta-topic', 'Beta Topic'),
+    ])
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    vi.mocked(wordsApi.fetchWords).mockResolvedValue([word1])
+    vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
+  })
+
+  it('can add an additional topic before saving', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const router = buildRouter('/words/1/edit')
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('alpha')).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByLabelText('Beta Topic'))
+    fireEvent.click(screen.getByText('Save'))
+
+    await waitFor(() => {
+      expect(wordsApi.updateWord).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({topic_ids: [1, 2]}),
+      )
+    })
+  })
+})

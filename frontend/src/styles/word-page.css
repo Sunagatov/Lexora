@@ -192,6 +192,72 @@
 
 .wp-textarea { resize: vertical; min-height: 80px; }
 
+.wp-topic-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-2);
+}
+
+.wp-topic-clear {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.wp-topic-clear:disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.wp-topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  background: var(--surface-2);
+}
+
+.wp-topic-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.wp-topic-option:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.wp-topic-option.is-selected {
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.wp-topic-option input {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.wp-topic-empty {
+  padding: 8px;
+  font-size: 0.88rem;
+  color: var(--text-2);
+}
+
 .word-page-edit-actions {
   flex-shrink: 0;
   display: flex;

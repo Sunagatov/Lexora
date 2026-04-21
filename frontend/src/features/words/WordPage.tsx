@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
@@ -9,6 +10,7 @@ export function WordPage() {
   const s = useWordPageState()
   const navigate = useNavigate()
   const location = useLocation()
+  const [topicSearch, setTopicSearch] = useState('')
 
   if (s.isInvalidWordId) return <NotFoundPage />
   if (s.isLoading) return <div className="word-page-loading">Loading…</div>
@@ -24,11 +26,25 @@ export function WordPage() {
   const examplesToView = word.example_entries?.length
     ? word.example_entries.join('\n')
     : word.example
+  const topicOptions = [...topics].sort((a, b) => a.name.localeCompare(b.name))
+  const filteredTopicOptions = topicSearch.trim()
+    ? topicOptions.filter((topic) => topic.name.toLowerCase().includes(topicSearch.trim().toLowerCase()))
+    : topicOptions
+  const selectedTopicIds = new Set(draft?.topic_ids.map(Number).filter((n) => n > 0) ?? [])
   const backRoute = topic?.slug
     ? routes.topic(topic.slug)
     : s.fromTopicSlug
       ? routes.topic(s.fromTopicSlug)
       : routes.home
+
+  function toggleTopic(topicId: number, checked: boolean) {
+    if (!draft) return
+    const current = draft.topic_ids.map(Number).filter((n) => n > 0)
+    const next = checked
+      ? Array.from(new Set([...current, topicId])).map(String)
+      : current.filter((id) => id !== topicId).map(String)
+    set('topic_ids', next)
+  }
 
   return (
     <div className="word-page">
@@ -124,15 +140,38 @@ export function WordPage() {
                 <option value="other">Other</option>
               </select>
             </FormField>
-            <FormField label="Primary topic">
-              <select
+            <FormField label="Topics">
+              <input
                 className="wp-input"
-                value={draft.topic_ids[0] ?? ''}
-                onChange={(e) => set('topic_ids', e.target.value ? [e.target.value, ...draft.topic_ids.slice(1)] : draft.topic_ids.slice(1))}
-              >
-                <option value="">— select topic —</option>
-                {topics.map((t) => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
-              </select>
+                value={topicSearch}
+                placeholder="Filter topics"
+                onChange={(e) => setTopicSearch(e.target.value)}
+              />
+              <div className="wp-topic-meta">
+                <span>{selectedTopicIds.size} selected</span>
+                <button
+                  type="button"
+                  className="wp-topic-clear"
+                  onClick={() => set('topic_ids', [])}
+                  disabled={selectedTopicIds.size === 0}
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="wp-topic-list">
+                {filteredTopicOptions.length > 0 ? filteredTopicOptions.map((t) => (
+                  <label key={t.id} className={`wp-topic-option ${selectedTopicIds.has(t.id) ? 'is-selected' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTopicIds.has(t.id)}
+                      onChange={(e) => toggleTopic(t.id, e.target.checked)}
+                    />
+                    <span>{t.name}</span>
+                  </label>
+                )) : (
+                  <div className="wp-topic-empty">No topics match.</div>
+                )}
+              </div>
             </FormField>
             {isNoun && (
               <FormField label="Countability">
