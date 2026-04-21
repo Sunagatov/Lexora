@@ -187,7 +187,7 @@ def export_topic_words_lean_page(db: Session, topic_id: int, page: int, page_siz
             AiCurationWordLean(
                 id=word.id,
                 term=word.term,
-                example_entries=[item.value for item in getattr(word, "example_items", [])],
+                example_entries=[item.value for item in getattr(word, "example_items", [])] or None,
             )
             for word in words
         ],

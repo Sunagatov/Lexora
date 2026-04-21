@@ -119,8 +119,41 @@ All fields in `word_creates` are optional except `term`, `translations`, and `ta
 }
 ```
 
+## Automated enrichment (no manual copy-paste)
+
+Instead of manually shuttling JSON between the API and ChatGPT, run the enrichment script. It exports all pages automatically, calls the Anthropic API, and imports the results.
+
+```bash
+cd backend
+
+# Dry run first — validates everything without writing
+PROD_PASSWORD=xxx ANTHROPIC_API_KEY=xxx \
+../.venv/bin/python -m app.scripts.enrich_examples --topic-id 6 --dry-run
+
+# Live run — commits to the database
+PROD_PASSWORD=xxx ANTHROPIC_API_KEY=xxx \
+../.venv/bin/python -m app.scripts.enrich_examples --topic-id 6 --live
+
+# Resume from page 4 after a failure
+PROD_PASSWORD=xxx ANTHROPIC_API_KEY=xxx \
+../.venv/bin/python -m app.scripts.enrich_examples --topic-id 6 --live --start-page 4
+```
+
+Provider is auto-detected from whichever API key is set. If Claude hits rate limits, switch to OpenAI:
+
+```bash
+# OpenAI fallback
+PROD_PASSWORD=xxx OPENAI_API_KEY=xxx \
+../.venv/bin/python -m app.scripts.enrich_examples --topic-id 6 --live --provider openai
+```
+
+Default models: `claude-haiku-4-5-20251001` (Anthropic) · `gpt-4o-mini` (OpenAI).
+Override with `--model <model-id>`.
+
 ## Service location
 
 `backend/app/features/words/ai_curation/` — router, service, schemas.
 
-ChatGPT prompt template: `docs/ai/chatgpt-enrich-examples-prompt.txt`.
+Enrichment script: `backend/app/scripts/enrich_examples.py`.
+
+ChatGPT prompt template (manual fallback): `docs/ai/chatgpt-enrich-examples-prompt.txt`.

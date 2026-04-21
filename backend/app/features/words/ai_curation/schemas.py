@@ -108,7 +108,7 @@ class AiCurationTopicWordsResponse(BaseModel):
 class AiCurationWordLean(BaseModel):
     id: int
     term: str
-    example_entries: list[str]
+    example_entries: list[str] | None = None  # omitted when empty
 
 
 class AiCurationTopicWordsLeanResponse(BaseModel):

@@ -45,6 +45,7 @@ def list_ai_curation_topic_words(
 @router.get(
     "/topics/{topic_id}/export",
     response_model=AiCurationTopicWordsLeanResponse | AiCurationTopicWordsResponse,
+    response_model_exclude_none=True,
 )
 def export_ai_curation_topic(
     topic_id: int,
