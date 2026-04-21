@@ -60,6 +60,14 @@ Keep route changes aligned with `frontend/src/app/router.tsx`:
 - keep filters, pagination, and quick-add behavior coherent
 - preserve mobile drawer / sidebar behavior when editing study layout
 
+## Topic and word editing notes
+
+- word edit mode supports multiple topic memberships; do not reduce it back to a single-topic swap
+- topic lists now render as a tree when parent topics exist
+- keep broad umbrella topics visible when adding subtopics
+- prefer clear topic boundaries over creating many similar siblings
+- do not route the app back to a slow landing page if a faster dashboard-style screen already exists
+
 ## Validation
 
 Use the smallest relevant validation first:

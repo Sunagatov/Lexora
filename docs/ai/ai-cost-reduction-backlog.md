@@ -14,6 +14,38 @@ on every request, then allows up to `max_tokens = 40`.
 
 That is fine for a small topic catalog, but it creates avoidable token growth, latency growth, and noisy outputs as the catalog expands.
 
+## Lexora-specific reusable rules
+
+These are the rules that have repeatedly mattered in later Lexora work and should be treated as defaults.
+
+### Enrichment
+
+- export from prod only
+- use lean exports
+- use `needs_examples_only=true` when you only need unfinished words
+- treat 3 natural English examples per word as the completion threshold
+- skip already-complete words
+- keep examples natural, not templated
+- prefer page-by-page work and avoid pasting large histories back into prompts
+
+### Topic splitting
+
+- only split topics with more than 300 active words
+- skip part-of-speech umbrella topics for now
+- keep umbrella topics intact
+- split only when the new buckets are clearly narrower and easy to explain
+- if the split would produce fuzzy or near-duplicate topics, do not split
+- reuse an existing topic if it already fits closely enough
+- prefer fewer, broader subtopics over many adjacent siblings
+- review dry-run output before live import
+
+### Ops hygiene
+
+- Vault is the source of truth for prod deploys, logs, SSH, config, and secrets
+- do not use stale maintainer scripts
+- do not use local DB exports for prod imports because IDs differ across environments
+- keep generated artifacts under `backend/.artifacts/ai-curation/`
+
 ---
 
 ## Priority 0 — highest ROI
