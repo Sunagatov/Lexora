@@ -67,6 +67,7 @@ def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
     make_word,
 ) -> None:
     db = MagicMock()
+    db.scalars.return_value.all.return_value = []
     topic = make_topic(id=1, deleted_at=object())
 
     restore_me = make_word(id=1, deleted_at=object(), deleted_via_topic_id=1)

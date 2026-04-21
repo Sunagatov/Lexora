@@ -158,12 +158,27 @@ def test_update_word_allows_clearing_knowledge_level_without_progress_event(monk
 
 def test_soft_delete_word_marks_deleted_and_persists(make_word) -> None:
     db = MagicMock()
-    word = make_word(deleted_at=None)
+    word = make_word(deleted_at=None, deleted_via_topic_id=7)
 
     result = word_repository.soft_delete_word(db, word)
 
     assert result is word
     assert word.deleted_at is not None
+    assert word.deleted_via_topic_id is None
+    db.add.assert_called_once_with(word)
+    db.commit.assert_called_once()
+    db.refresh.assert_called_once_with(word)
+
+
+def test_restore_word_clears_deleted_provenance(make_word) -> None:
+    db = MagicMock()
+    word = make_word(deleted_at=object(), deleted_via_topic_id=7)
+
+    result = word_repository.restore_word(db, word)
+
+    assert result is word
+    assert word.deleted_at is None
+    assert word.deleted_via_topic_id is None
     db.add.assert_called_once_with(word)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(word)

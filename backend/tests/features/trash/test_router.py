@@ -32,7 +32,8 @@ def test_restore_word_route_raises_409_when_all_topics_are_deleted(monkeypatch, 
 
 
 def test_restore_word_route_restores_and_returns_word_response(monkeypatch, make_topic, make_word) -> None:
-    db = object()
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = []
     active_topic = make_topic(id=1, deleted_at=None, slug="travel")
     deleted_topic = make_topic(id=2, deleted_at=object(), slug="deleted")
     word = make_word(id=10, deleted_at=object(), topics=[active_topic, deleted_topic])

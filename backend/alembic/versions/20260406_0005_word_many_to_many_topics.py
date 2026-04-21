@@ -22,42 +22,51 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # 1. Create join table
-    op.create_table(
-        "word_topics",
-        sa.Column("word_id", sa.Integer(), sa.ForeignKey("words.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("topic_id", sa.Integer(), sa.ForeignKey("topics.id", ondelete="CASCADE"), nullable=False),
-        sa.PrimaryKeyConstraint("word_id", "topic_id"),
-    )
-    op.create_index("ix_word_topics_word_id", "word_topics", ["word_id"])
-    op.create_index("ix_word_topics_topic_id", "word_topics", ["topic_id"])
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    word_columns = {col["name"] for col in insp.get_columns("words")}
 
-    # 2. Migrate existing data: every word already has a topic_id
-    op.execute(
-        "INSERT INTO word_topics (word_id, topic_id) "
-        "SELECT id, topic_id FROM words WHERE topic_id IS NOT NULL"
-    )
+    if not insp.has_table("word_topics"):
+        op.create_table(
+            "word_topics",
+            sa.Column("word_id", sa.Integer(), sa.ForeignKey("words.id", ondelete="CASCADE"), nullable=False),
+            sa.Column("topic_id", sa.Integer(), sa.ForeignKey("topics.id", ondelete="CASCADE"), nullable=False),
+            sa.PrimaryKeyConstraint("word_id", "topic_id"),
+        )
+        op.create_index("ix_word_topics_word_id", "word_topics", ["word_id"])
+        op.create_index("ix_word_topics_topic_id", "word_topics", ["topic_id"])
 
-    # 3. Drop the old FK column — use batch mode so SQLAlchemy reflects the
-    #    actual FK constraint name (Supabase may auto-generate a different name)
-    with op.batch_alter_table("words", recreate="never") as batch_op:
-        batch_op.drop_index("ix_words_topic_id")
-        batch_op.drop_constraint("words_topic_id_fkey", type_="foreignkey")
-        batch_op.drop_column("topic_id")
+        if "topic_id" in word_columns:
+            op.execute(
+                "INSERT INTO word_topics (word_id, topic_id) "
+                "SELECT id, topic_id FROM words WHERE topic_id IS NOT NULL"
+            )
+
+    if "topic_id" in word_columns:
+        with op.batch_alter_table("words", recreate="never") as batch_op:
+            if "ix_words_topic_id" in {index["name"] for index in insp.get_indexes("words")}:
+                batch_op.drop_index("ix_words_topic_id")
+            batch_op.drop_constraint("words_topic_id_fkey", type_="foreignkey")
+            batch_op.drop_column("topic_id")
 
 
 def downgrade() -> None:
     # Re-add topic_id (picks an arbitrary topic per word — best-effort rollback)
-    op.add_column("words", sa.Column("topic_id", sa.Integer(), nullable=True))
-    op.execute(
-        "UPDATE words w SET topic_id = ("
-        "  SELECT topic_id FROM word_topics wt WHERE wt.word_id = w.id LIMIT 1"
-        ")"
-    )
-    op.alter_column("words", "topic_id", nullable=False)
-    op.create_foreign_key("words_topic_id_fkey", "words", "topics", ["topic_id"], ["id"], ondelete="CASCADE")
-    op.create_index("ix_words_topic_id", "words", ["topic_id"])
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
 
-    op.drop_index("ix_word_topics_topic_id", table_name="word_topics")
-    op.drop_index("ix_word_topics_word_id", table_name="word_topics")
-    op.drop_table("word_topics")
+    if "topic_id" not in {col["name"] for col in insp.get_columns("words")}:
+        op.add_column("words", sa.Column("topic_id", sa.Integer(), nullable=True))
+        op.execute(
+            "UPDATE words w SET topic_id = ("
+            "  SELECT topic_id FROM word_topics wt WHERE wt.word_id = w.id LIMIT 1"
+            ")"
+        )
+        op.alter_column("words", "topic_id", nullable=False)
+        op.create_foreign_key("words_topic_id_fkey", "words", "topics", ["topic_id"], ["id"], ondelete="CASCADE")
+        op.create_index("ix_words_topic_id", "words", ["topic_id"])
+
+    if insp.has_table("word_topics"):
+        op.drop_index("ix_word_topics_topic_id", table_name="word_topics")
+        op.drop_index("ix_word_topics_word_id", table_name="word_topics")
+        op.drop_table("word_topics")

@@ -16,10 +16,20 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("words", sa.Column("past_simple", sa.String(length=255), nullable=True))
-    op.add_column("words", sa.Column("past_participle", sa.String(length=255), nullable=True))
+    bind = op.get_bind()
+    columns = {col["name"] for col in sa.inspect(bind).get_columns("words")}
+
+    if "past_simple" not in columns:
+        op.add_column("words", sa.Column("past_simple", sa.String(length=255), nullable=True))
+    if "past_participle" not in columns:
+        op.add_column("words", sa.Column("past_participle", sa.String(length=255), nullable=True))
 
 
 def downgrade() -> None:
-    op.drop_column("words", "past_participle")
-    op.drop_column("words", "past_simple")
+    bind = op.get_bind()
+    columns = {col["name"] for col in sa.inspect(bind).get_columns("words")}
+
+    if "past_participle" in columns:
+        op.drop_column("words", "past_participle")
+    if "past_simple" in columns:
+        op.drop_column("words", "past_simple")

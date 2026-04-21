@@ -17,14 +17,33 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("words",  sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True))
-    op.add_column("topics", sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True))
-    op.create_index("ix_words_deleted_at",  "words",  ["deleted_at"])
-    op.create_index("ix_topics_deleted_at", "topics", ["deleted_at"])
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+
+    word_columns = {col["name"] for col in insp.get_columns("words")}
+    topic_columns = {col["name"] for col in insp.get_columns("topics")}
+
+    if "deleted_at" not in word_columns:
+        op.add_column("words", sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True))
+    if "deleted_at" not in topic_columns:
+        op.add_column("topics", sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True))
+
+    if "ix_words_deleted_at" not in {index["name"] for index in insp.get_indexes("words")}:
+        op.create_index("ix_words_deleted_at", "words", ["deleted_at"])
+    if "ix_topics_deleted_at" not in {index["name"] for index in insp.get_indexes("topics")}:
+        op.create_index("ix_topics_deleted_at", "topics", ["deleted_at"])
 
 
 def downgrade() -> None:
-    op.drop_index("ix_words_deleted_at",  table_name="words")
-    op.drop_index("ix_topics_deleted_at", table_name="topics")
-    op.drop_column("words",  "deleted_at")
-    op.drop_column("topics", "deleted_at")
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+
+    if "ix_words_deleted_at" in {index["name"] for index in insp.get_indexes("words")}:
+        op.drop_index("ix_words_deleted_at", table_name="words")
+    if "ix_topics_deleted_at" in {index["name"] for index in insp.get_indexes("topics")}:
+        op.drop_index("ix_topics_deleted_at", table_name="topics")
+
+    if "deleted_at" in {col["name"] for col in insp.get_columns("words")}:
+        op.drop_column("words", "deleted_at")
+    if "deleted_at" in {col["name"] for col in insp.get_columns("topics")}:
+        op.drop_column("topics", "deleted_at")
