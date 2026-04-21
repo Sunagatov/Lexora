@@ -69,3 +69,6 @@ Notes:
 - Keep the plan human-reviewable.
 - If a cluster is too small, leave it unassigned.
 - If a topic should later be split in the app, use a parent/child topic relationship rather than replacing the parent.
+- If a split would make fuzzy siblings or near-duplicate names, keep the umbrella topic instead.
+- Do not split grammar buckets or part-of-speech umbrellas yet.
+- Prefer fewer, broader child topics over many narrow ones.

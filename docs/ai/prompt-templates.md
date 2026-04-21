@@ -73,6 +73,7 @@ Prioritise:
 - smaller prompts
 - smaller max_tokens
 - measurement
+- use stable repo docs first so the model does not re-derive known invariants
 
 ## 6. Topic refinement / split planning
 
@@ -98,6 +99,8 @@ Prioritise:
 - parent_topic_id for hierarchy
 - many-to-many word membership
 - spot-check large plans before live import
+- under-split rather than over-split when the topic family is mixed
+- avoid near-duplicate sibling names and fuzzy boundaries
 ```
 ```
 
