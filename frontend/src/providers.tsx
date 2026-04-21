@@ -1,8 +1,10 @@
+import {useEffect} from 'react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {DrawerProvider} from './shared/DrawerContext'
 import {ApiError} from './shared/apiError'
 import {redirectIfUnauthorized} from './shared/authRedirect'
+import {bootstrapSession} from './features/auth/api'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +24,12 @@ queryClient.getQueryCache().subscribe((event) => {
 })
 
 export function Providers({children}: PropsWithChildren) {
+  useEffect(() => {
+    if (!localStorage.getItem('csrf_token')) {
+      void bootstrapSession()
+    }
+  }, [])
+
   return (
     <QueryClientProvider client={queryClient}>
       <DrawerProvider>{children}</DrawerProvider>

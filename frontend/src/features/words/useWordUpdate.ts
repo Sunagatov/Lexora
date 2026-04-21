@@ -14,13 +14,15 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
     onMutate: async ({wordId, level}) => {
       onMutate()
       await queryClient.cancelQueries({queryKey: queryKeys.words})
-      const prev = queryClient.getQueryData<Word[]>(queryKeys.words)
+      const prevWordQueries = queryClient.getQueriesData<Word[]>({queryKey: queryKeys.words})
       patchWordLevel(queryClient, wordId, level)
-      return {prev}
+      return {prevWordQueries}
     },
 
     onError: (_e, _v, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(queryKeys.words, ctx.prev)
+      for (const [key, data] of ctx?.prevWordQueries ?? []) {
+        queryClient.setQueryData(key, data)
+      }
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
 
