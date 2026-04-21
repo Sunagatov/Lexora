@@ -41,6 +41,20 @@ def test_countability_for_export_uses_canonical_value() -> None:
     assert workbook_service._countability_for_export(word) == "Uncountable"
 
 
+def test_meta_sheet_preserves_full_topic_name_when_sheet_title_is_truncated() -> None:
+    full_topic_name = "Public Transport City Navigation Long Original Name"
+    sheet_title = workbook_service._safe_sheet_title(full_topic_name, set())
+    workbook = Workbook()
+
+    workbook_service._create_meta_sheet(workbook, [(sheet_title, 28, full_topic_name)])
+
+    meta = workbook[workbook_service.META_SHEET_NAME]
+    assert len(sheet_title) == 31
+    assert sheet_title != full_topic_name
+    assert meta.cell(row=2, column=1).value == sheet_title
+    assert meta.cell(row=2, column=3).value == full_topic_name
+
+
 def test_existing_word_duplicate_check_skips_unchanged_word_id_row() -> None:
     existing = SimpleNamespace(term="Dog")
 
