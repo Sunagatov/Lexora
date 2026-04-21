@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 revision = "20260421_0003_add_parent_topic_id"
-down_revision = "20260421_0002_add_deleted_via_topic_id"
+down_revision = "20260421_0002"
 branch_labels = None
 depends_on = None
 
