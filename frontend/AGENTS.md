@@ -53,6 +53,8 @@ Keep route changes aligned with `frontend/src/app/router.tsx`:
 - `/trash`
 - `/stats`
 
+If the root route is changed, keep it on the faster dashboard-style screen rather than a slow study screen when that matches current product direction.
+
 ## UI/UX guardrails
 
 - keep study flow fast and low-friction
@@ -64,6 +66,8 @@ Keep route changes aligned with `frontend/src/app/router.tsx`:
 
 - word edit mode supports multiple topic memberships; do not reduce it back to a single-topic swap
 - topic lists now render as a tree when parent topics exist
+- subtopics are still topics; keep the hierarchy visible in the UI
+- root navigation should stay on the faster dashboard-style screen if the product already uses one
 - keep broad umbrella topics visible when adding subtopics
 - prefer clear topic boundaries over creating many similar siblings
 - do not route the app back to a slow landing page if a faster dashboard-style screen already exists

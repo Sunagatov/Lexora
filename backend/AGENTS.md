@@ -60,6 +60,7 @@ Important settings include:
 - smart review tuning
 - CORS origins
 - model provider settings for topic suggestion
+- Alembic startup behavior and DB lock timeouts
 
 ## AI suggestion path
 
@@ -80,6 +81,7 @@ When changing this flow:
 - cache repeated lookups
 - prefer returning stable IDs internally over large textual payloads
 - add observability for latency, cache hit rate, and invalid model responses
+- if Alembic startup fails with a prepared-statement collision, check the shared engine settings and disable prepared statements for the migration path as needed
 
 ## AI curation and topic splitting
 
@@ -100,6 +102,9 @@ Durable rules:
 - prefer fewer, broader subtopics over many very similar siblings
 - if a split would make two confusing topics, merge them back into one clearer bucket
 - use review-first dry runs before any live import
+- for broad topic families, keep umbrella topics and attach subtopics under them instead of replacing the parent topic
+- subtopics are ordinary topic rows with `parent_topic_id`; do not invent a parallel topic system
+- when a word belongs to more than one topic, keep that many-to-many structure intact instead of forcing a single membership
 
 ## Validation
 

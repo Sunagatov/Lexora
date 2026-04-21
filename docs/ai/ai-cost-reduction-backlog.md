@@ -26,6 +26,8 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - treat 3 natural English examples per word as the completion threshold
 - skip already-complete words
 - keep examples natural, not templated
+- prefer model-written examples over deterministic filler
+- do not use deterministic template generators unless explicitly asked
 - prefer page-by-page work and avoid pasting large histories back into prompts
 
 ### Topic splitting
@@ -38,6 +40,10 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - reuse an existing topic if it already fits closely enough
 - prefer fewer, broader subtopics over many adjacent siblings
 - review dry-run output before live import
+- if the app supports hierarchy, keep umbrella topics and add child topics beneath them
+- do not force grammar buckets into the splitter
+- use `parent_topic_id` for subtopics instead of inventing new relation types
+- keep many-to-many membership when a word belongs in multiple topics
 
 ### Ops hygiene
 
@@ -45,6 +51,8 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 - do not use stale maintainer scripts
 - do not use local DB exports for prod imports because IDs differ across environments
 - keep generated artifacts under `backend/.artifacts/ai-curation/`
+- if Alembic startup hits a prepared-statement collision, check the migration engine settings before retrying deploys
+- dry-run first, then spot-check a small sample, then live import
 
 ---
 

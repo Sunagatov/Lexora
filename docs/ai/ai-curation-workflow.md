@@ -27,6 +27,9 @@ Practical enrichment rule:
 - if a word already has 3 strong examples, skip it
 - replace examples only when they are weak, repetitive, templated, or not natural
 - keep examples in B1-C1 style and use the target word naturally
+- model-written examples are preferred over deterministic fillers
+- do not use deterministic template generators for example sentences unless explicitly asked
+- if examples already look natural and varied, leave them alone
 
 > **Critical:** always export from prod, never from a local database. Word IDs differ between environments — using a local export will cause the import to fail or corrupt wrong words on prod.
 
@@ -189,6 +192,16 @@ Practical rule:
 - avoid subtopics that differ only by tiny scope wording
 - keep umbrella topics broad and human-readable
 - treat the splitter as review-first, not automatic taxonomy expansion
+- use subtopics as ordinary topics with `parent_topic_id`; the umbrella stays in place
+- keep many-to-many word membership intact when a word genuinely fits more than one topic
+
+Topic hierarchy rule:
+
+- a subtopic is still a topic row
+- the parent topic remains visible as the umbrella
+- add child topics only when they are materially narrower and easy to explain
+- if the child would be too similar to the parent or sibling topics, keep the parent only
+- do not create a separate hierarchy mechanism outside the normal topics table
 
 Suggested split buckets for broad conflict / boundaries topics:
 
@@ -215,6 +228,10 @@ Operational notes from production use:
 - If the biggest topics are grammar buckets, skip them until there is a better family-specific plan.
 - If the generated sibling topics look too similar on the topics page, the plan is too fine-grained.
 - Prefer adding subtopics only when the new boundaries will be easy for a human to explain.
+- For structural topic refinement, add `parent_topic_id` to keep umbrella topics and subtopics connected.
+- Do not split grammar buckets like `Verbs`, `Nouns`, `Adjectives`, `Phrases`, `Adverbs`, `Prepositions`, or `Irregular Verbs` yet.
+- When a topic is broad but semantically messy, it is better to keep it as an umbrella topic than to force weak subtopics.
+- For review, spot-check a sample of proposed entries before live import when the plan is large or newly tuned.
 
 ## Service location
 

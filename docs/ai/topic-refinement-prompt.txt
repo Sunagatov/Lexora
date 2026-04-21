@@ -20,6 +20,9 @@ Goal:
 - If a proposed subtopic would be too close to an existing topic, reuse the existing topic instead of creating a new one.
 - Do not force a split just because the topic is large.
 - Keep umbrella topics broad; subtopics should be obviously narrower.
+- If the topic is a grammar bucket or part-of-speech umbrella, leave it unsplit for now.
+- If the split would create confusing siblings, prefer the umbrella topic and return a smaller plan.
+- If you are unsure, under-split rather than over-split.
 
 Rules:
 - Return JSON only. No markdown fences. No explanation.
@@ -65,3 +68,4 @@ Notes:
 - Keep examples natural, not templated, if you are also writing examples in the same session.
 - Keep the plan human-reviewable.
 - If a cluster is too small, leave it unassigned.
+- If a topic should later be split in the app, use a parent/child topic relationship rather than replacing the parent.
