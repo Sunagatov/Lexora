@@ -10,6 +10,7 @@ type Props = {
   topicProgress: Map<number, number>
   pinnedIds: number[]
   onSelect: (id: number) => void
+  onEdit: (id: number) => void
   onDelete: (id: number) => void
   onPin: (id: number) => void
 }
@@ -23,6 +24,7 @@ function renderNodes(
   pinnedIds: number[],
   level: number,
   onSelect: (id: number) => void,
+  onEdit: (id: number) => void,
   onDelete: (id: number) => void,
   onPin: (id: number) => void,
 ): ReactElement[] {
@@ -36,6 +38,7 @@ function renderNodes(
       pinnedIds,
       level + 1,
       onSelect,
+      onEdit,
       onDelete,
       onPin,
     )
@@ -51,6 +54,7 @@ function renderNodes(
         topicProgress={topicProgress}
         pinnedIds={pinnedIds}
         onSelect={onSelect}
+        onEdit={onEdit}
         onDelete={onDelete}
         onPin={onPin}
       />,
@@ -67,8 +71,9 @@ export function TopicSidebarTree({
   topicProgress,
   pinnedIds,
   onSelect,
+  onEdit,
   onDelete,
   onPin,
 }: Props) {
-  return <>{renderNodes(nodes, selectedTopicId, isSmartReview, topicCounts, topicProgress, pinnedIds, 0, onSelect, onDelete, onPin)}</>
+  return <>{renderNodes(nodes, selectedTopicId, isSmartReview, topicCounts, topicProgress, pinnedIds, 0, onSelect, onEdit, onDelete, onPin)}</>
 }

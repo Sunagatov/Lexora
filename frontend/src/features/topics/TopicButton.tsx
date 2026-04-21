@@ -1,6 +1,6 @@
 import type {Topic} from '../../shared/types'
 
-export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onDelete, onPin, level = 0}: {
+export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0}: {
   topic: Topic
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
@@ -8,6 +8,7 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   isSmartReview: boolean
   pinnedIds: number[]
   onSelect: (id: number) => void
+  onEdit: (id: number) => void
   onDelete: (id: number) => void
   onPin: (id: number) => void
   level?: number
@@ -37,6 +38,14 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
         >
           <svg width="11" height="11" viewBox="0 0 12 12" fill={isPinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
             <path d="M5 1l1 3-3 2 1 1 2-1 1 4 1-4 2 1 1-1-3-2 1-3z" />
+          </svg>
+        </button>
+        <button type="button" className="topic-item-edit" title="Edit topic"
+          onClick={(e) => { e.stopPropagation(); onEdit(topic.id) }}
+        >
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 8.5V10h1.5L10 3.5 8.5 2 2 8.5z" />
+            <path d="M7.5 2.5l2 2" />
           </svg>
         </button>
         <span className="topic-item-actions-sep" />

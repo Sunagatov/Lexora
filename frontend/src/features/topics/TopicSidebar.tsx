@@ -2,7 +2,7 @@ import {useRef, useMemo, useState} from 'react'
 import type {ChangeEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
-import {deleteTopic, createTopic} from './api'
+import {deleteTopic, createTopic, updateTopic, type TopicUpdatePayload} from './api'
 import type {StudyQueue, Topic} from '../../shared/types'
 import {ApiError} from '../../shared/apiError'
 import {ConfirmModal} from '../../shared/ConfirmModal'
@@ -16,6 +16,7 @@ import {TopicSidebarGroup} from './TopicSidebarGroup'
 import {TopicSidebarListSection} from './TopicSidebarListSection'
 import {TopicSidebarTree} from './TopicSidebarTree'
 import {TopicSidebarFooter} from './TopicSidebarFooter'
+import {TopicEditModal} from './TopicEditModal'
 import {exportWordsWorkbook, importWordsWorkbook} from '../words/api'
 
 type Props = {
@@ -44,14 +45,20 @@ export function TopicSidebar({
     prefs.addRecentId(id)
     onSelect(id)
   }
+  function handleEditTopic(id: number) {
+    setEditTopicId(id)
+    setEditTopicError(null)
+  }
   const [posSortOpen,    setPosSortOpen]    = useState(false)
   const [topicsSortOpen, setTopicsSortOpen] = useState(false)
   const [searchOpen,     setSearchOpen]     = useState(false)
   const [deleteTopicId,  setDeleteTopicId]  = useState<number | null>(null)
+  const [editTopicId,    setEditTopicId]    = useState<number | null>(null)
   const [newTopicName,   setNewTopicName]   = useState('')
   const [newTopicParentId, setNewTopicParentId] = useState<number | ''>('')
   const [addingTopic,    setAddingTopic]    = useState(false)
   const [topicError,     setTopicError]     = useState<string | null>(null)
+  const [editTopicError, setEditTopicError] = useState<string | null>(null)
   const [workbookBusy,   setWorkbookBusy]   = useState(false)
   const searchRef      = useRef<HTMLInputElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
@@ -62,6 +69,10 @@ export function TopicSidebar({
   const selectedTopic = useMemo(
     () => topics.find((t) => t.id === selectedTopicId) ?? null,
     [topics, selectedTopicId],
+  )
+  const editingTopic = useMemo(
+    () => topics.find((t) => t.id === editTopicId) ?? null,
+    [topics, editTopicId],
   )
 
   const createTopicMutation = useMutation({
@@ -86,6 +97,24 @@ export function TopicSidebar({
       void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       setDeleteTopicId(null)
     },
+  })
+
+  const updateTopicMutation = useMutation({
+    mutationFn: ({id, payload}: {id: number; payload: TopicUpdatePayload}) => updateTopic(id, payload),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<Topic[]>(queryKeys.topics, (cur = []) =>
+        cur.map((topic) => (topic.id === updated.id ? updated : topic)),
+      )
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      setEditTopicId(null)
+      setEditTopicError(null)
+      navigate(routes.topic(updated.slug), {replace: true})
+    },
+    onError: (err: Error) => setEditTopicError(
+      err instanceof ApiError && err.status === 409 ? err.message : err.message || 'Could not save topic.',
+    ),
   })
 
   const needle = topicSearch.toLowerCase().trim()
@@ -212,6 +241,7 @@ export function TopicSidebar({
                 topicProgress={topicProgress}
                 pinnedIds={prefs.pinnedIds}
                 onSelect={handleSelect}
+                onEdit={handleEditTopic}
                 onDelete={(id: number) => setDeleteTopicId(id)}
                 onPin={prefs.togglePin}
               />
@@ -230,6 +260,7 @@ export function TopicSidebar({
                 topicProgress={topicProgress}
                 pinnedIds={prefs.pinnedIds}
                 onSelect={handleSelect}
+                onEdit={handleEditTopic}
                 onDelete={(id: number) => setDeleteTopicId(id)}
                 onPin={prefs.togglePin}
               />
@@ -266,6 +297,7 @@ export function TopicSidebar({
                 topicProgress={topicProgress}
                 pinnedIds={prefs.pinnedIds}
                 onSelect={handleSelect}
+                onEdit={handleEditTopic}
                 onDelete={(id: number) => setDeleteTopicId(id)}
                 onPin={prefs.togglePin}
               />
@@ -300,6 +332,7 @@ export function TopicSidebar({
               topicProgress={topicProgress}
               pinnedIds={prefs.pinnedIds}
               onSelect={handleSelect}
+              onEdit={handleEditTopic}
               onDelete={(id: number) => setDeleteTopicId(id)}
               onPin={prefs.togglePin}
             />
@@ -342,6 +375,17 @@ export function TopicSidebar({
           confirmLabel="Delete" danger
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
           onCancel={() => setDeleteTopicId(null)}
+        />
+      )}
+
+      {editTopicId !== null && editingTopic && (
+        <TopicEditModal
+          topic={editingTopic}
+          topics={topics}
+          saving={updateTopicMutation.isPending}
+          error={editTopicError}
+          onCancel={() => { setEditTopicId(null); setEditTopicError(null) }}
+          onSave={(payload) => updateTopicMutation.mutate({id: editingTopic.id, payload})}
         />
       )}
     </>

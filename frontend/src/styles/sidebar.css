@@ -353,6 +353,7 @@
 .topic-item:hover .topic-item-actions { display: flex; }
 
 .topic-item-pin,
+.topic-item-edit,
 .topic-item-delete {
   background: transparent;
   border: none;
@@ -367,6 +368,7 @@
 }
 
 .topic-item-pin:hover  { color: #a5b4fc; }
+.topic-item-edit:hover { color: #67e8f9; }
 .topic-item-pin.pinned { color: #a5b4fc; display: flex; }
 .topic-item-delete:hover { color: #f87171; }
 
