@@ -1016,7 +1016,7 @@ def test_import_duplicate_new_word_propagates_error_and_rolls_back(monkeypatch) 
         ],
     )
 
-    with pytest.raises(DuplicateWordInTopicError):
+    with pytest.raises(AiCurationImportError):
         ai_curation_service.import_ai_curation(db, payload)
 
     assert call_count[0] == 2
@@ -1223,3 +1223,59 @@ def test_import_stale_reassign_rejected_when_word_modified_after_export(monkeypa
 
     with pytest.raises(AiCurationImportError, match="reassign_word_topics"):
         ai_curation_service.import_ai_curation(db, payload)
+
+
+# ---------------------------------------------------------------------------
+# Domain error normalisation — nested exceptions become AiCurationImportError
+# ---------------------------------------------------------------------------
+
+def test_import_topic_slug_conflict_is_normalized_to_ai_curation_import_error(monkeypatch) -> None:
+    from app.features.topics.service import TopicSlugConflictError
+
+    source = _make_topic()
+    db = MagicMock()
+    db.scalar.return_value = source
+    db.scalars.side_effect = lambda stmt: MagicMock(**{"all.return_value": []})
+
+    def raise_slug_conflict(db, payload, commit=True):
+        raise TopicSlugConflictError("Topic slug 'banking' already exists")
+
+    monkeypatch.setattr(ai_curation_service, "create_topic", raise_slug_conflict)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        topic_operations=[{"op": "create_topic", "client_key": "banking", "name": "Banking"}],
+        word_operations=[],
+    )
+
+    with pytest.raises(AiCurationImportError, match="banking"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+    db.rollback.assert_called_once()
+    db.commit.assert_not_called()
+
+
+def test_import_invalid_topic_name_is_normalized_to_ai_curation_import_error(monkeypatch) -> None:
+    from app.features.topics.service import InvalidTopicNameError
+
+    source = _make_topic()
+    db = MagicMock()
+    db.scalar.return_value = source
+    db.scalars.side_effect = lambda stmt: MagicMock(**{"all.return_value": []})
+
+    def raise_invalid_name(db, payload, commit=True):
+        raise InvalidTopicNameError("!!!!")
+
+    monkeypatch.setattr(ai_curation_service, "create_topic", raise_invalid_name)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        topic_operations=[{"op": "create_topic", "client_key": "bad", "name": "!!!!"}],
+        word_operations=[],
+    )
+
+    with pytest.raises(AiCurationImportError, match="slug"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+    db.rollback.assert_called_once()
+    db.commit.assert_not_called()

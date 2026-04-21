@@ -83,6 +83,31 @@ class QueueNotActiveError(Exception):
     pass
 
 
+def _has_any_candidates(db: Session, excluded_ids: set[int]) -> bool:
+    level_buckets = {
+        1: settings.smart_review_level_1_count,
+        2: settings.smart_review_level_2_count,
+        3: settings.smart_review_level_3_count,
+        4: settings.smart_review_level_4_count,
+        5: settings.smart_review_level_5_count,
+    }
+    for level, needed in level_buckets.items():
+        if needed <= 0:
+            continue
+        stmt = (
+            select(Word.id)
+            .where(Word.is_active.is_(True))
+            .where(Word.deleted_at.is_(None))
+            .where(Word.knowledge_level == level)
+            .limit(1)
+        )
+        if excluded_ids:
+            stmt = stmt.where(Word.id.not_in(excluded_ids))
+        if db.scalar(stmt) is not None:
+            return True
+    return False
+
+
 def _queue_needs_regeneration(queue: StudyQueue) -> bool:
     if len(queue.items) != queue.total_count:
         return True
@@ -177,9 +202,14 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
         .order_by(StudyQueue.generated_at.desc())
     )
     if queue is not None:
+        if queue.total_count == 0:
+            cooldown_ids = _cooldown_word_ids(db)
+            if _has_any_candidates(db, cooldown_ids):
+                return generate_queue(db)
+            return queue
         if _queue_needs_regeneration(queue):
             return generate_queue(db)
-        if queue.completed_count >= queue.total_count and queue.total_count > 0:
+        if queue.completed_count >= queue.total_count:
             return generate_queue(db)
         return queue
     return generate_queue(db)

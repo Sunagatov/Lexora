@@ -168,7 +168,13 @@ def import_topic_ai_review(db: Session, payload: AiReviewImportRequest) -> AiRev
             update_payload = _build_update_payload(item)
             updated_ids.append(word.id)
             if not payload.dry_run:
-                update_word(db, word, update_payload)
+                update_word(db, word, update_payload, commit=False)
+
+        if payload.dry_run:
+            db.rollback()
+        else:
+            db.commit()
+
     except Exception:
         db.rollback()
         raise

@@ -182,6 +182,7 @@ def _import_sheet(
                 record_level_change(db, existing.id, old_level, existing.knowledge_level, "xlsx_import")
 
             db.add(existing)
+            db.flush()
             updated += 1
             continue
 
@@ -228,6 +229,7 @@ def _import_sheet(
         )
 
         db.add(word)
+        db.flush()
         created += 1
 
     return WorkbookImportSheetSummary(

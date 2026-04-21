@@ -8,7 +8,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
-from app.features.topics.service import create_topic
+from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
+from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count, example_enrichment_status, needs_example_enrichment
 from app.features.words.model import Word, WordExample, word_topics
 from app.features.words.repository import _with_details, create_word, update_word
@@ -26,9 +27,7 @@ from app.features.words.ai_curation.schemas import (
     CreatedTopicResult,
     PaginationMeta,
     TopicRef,
-    WordCreateV2,
     WordUpdateV2,
-    WordReassignV2,
 )
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
@@ -474,6 +473,17 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
             updated_word_ids=updated_word_ids,
             reassigned_word_ids=reassigned_word_ids,
         )
+    except InvalidTopicNameError as e:
+        db.rollback()
+        raise AiCurationImportError(
+            f"Cannot generate a valid slug from topic name '{e.name}'"
+        ) from e
+    except TopicSlugConflictError as e:
+        db.rollback()
+        raise AiCurationImportError(e.detail) from e
+    except DuplicateWordInTopicError as e:
+        db.rollback()
+        raise AiCurationImportError(str(e)) from e
     except Exception:
         db.rollback()
         raise

@@ -301,3 +301,38 @@ def test_get_or_create_active_queue_regenerates_when_item_count_drifted(monkeypa
     result = smart_review_service.get_or_create_active_queue(db)
 
     assert result is regenerated
+
+
+def test_get_or_create_active_queue_regenerates_stale_empty_queue_when_candidates_exist(monkeypatch) -> None:
+    empty_queue = SimpleNamespace(is_active=True, total_count=0, completed_count=0, items=[])
+    regenerated = SimpleNamespace(id=101)
+
+    db = MagicMock()
+    db.scalar.return_value = empty_queue
+
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
+    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: set())
+    monkeypatch.setattr(smart_review_service, "_has_any_candidates", lambda db_arg, excluded: True)
+    monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+
+    result = smart_review_service.get_or_create_active_queue(db)
+
+    assert result is regenerated
+
+
+def test_get_or_create_active_queue_keeps_empty_queue_when_no_candidates_exist(monkeypatch) -> None:
+    empty_queue = SimpleNamespace(is_active=True, total_count=0, completed_count=0, items=[])
+
+    db = MagicMock()
+    db.scalar.return_value = empty_queue
+
+    generate = MagicMock()
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
+    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: set())
+    monkeypatch.setattr(smart_review_service, "_has_any_candidates", lambda db_arg, excluded: False)
+    monkeypatch.setattr(smart_review_service, "generate_queue", generate)
+
+    result = smart_review_service.get_or_create_active_queue(db)
+
+    assert result is empty_queue
+    generate.assert_not_called()

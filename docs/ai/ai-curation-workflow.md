@@ -193,6 +193,7 @@ Operational notes from production use:
 - The live import path reuses the existing v2 curation schema, so create topics with `topic_operations` and move words with `word_reassigns`.
 - Keep split payloads explainable: one word can belong to more than one topic, but the first pass should prefer a single primary bucket.
 - For broad-topic splits, export the full topic page by page from prod first, then build the split plan from the actual prod word IDs.
+- For many topics at once, use `backend/app/scripts/split_large_topics.py`. It reads the prod audit, builds per-topic split plans, and writes dry-run import artifacts under `backend/.artifacts/ai-curation/topic-splits/`.
 
 ## Service location
 
