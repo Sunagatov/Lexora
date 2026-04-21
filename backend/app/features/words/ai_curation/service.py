@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import logging
 from collections import Counter
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic
@@ -27,6 +27,8 @@ from app.features.words.ai_curation.schemas import (
     UpdateExistingWordOperation,
 )
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
+
+logger = logging.getLogger(__name__)
 
 
 EXPORT_INSTRUCTIONS = [
@@ -268,21 +270,9 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
                     unchanged += 1
                     continue
 
-                update_payload = WordUpdate(
-                    translations=op.translations,
-                    translation_entries=op.translation_entries,
-                    pattern=op.pattern,
-                    example_entries=op.example_entries,
-                    countability=op.countability,
-                    part_of_speech=op.part_of_speech,
-                    past_simple=op.past_simple,
-                    past_participle=op.past_participle,
-                    notes=op.notes,
-                    knowledge_level=op.knowledge_level,
-                    is_active=op.is_active,
-                    progress_source="json_import",
-                )
-                update_word(db, word, update_payload, commit=False)
+                data = op.model_dump(exclude_unset=True, exclude={"op", "id", "term"})
+                data["progress_source"] = "json_import"
+                update_word(db, word, WordUpdate(**data), commit=False)
                 updated_word_ids.append(word.id)
                 continue
 
@@ -323,6 +313,24 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
                         f"Word {op.id} term mismatch: expected '{word.term}', got '{op.term}'"
                     )
 
+                if payload.strict_mode:
+                    created_topic_ids = {t.id for t in created_topics.values()}
+                    bad_adds = [
+                        ref for ref in op.add_topic_refs
+                        if ref.topic_id is not None and ref.topic_id not in created_topic_ids
+                    ]
+                    if bad_adds:
+                        raise AiCurationImportError(
+                            f"strict_mode: reassign_word_topics for word {op.id} may only add "
+                            f"topics created in this request"
+                        )
+                    bad_removes = [tid for tid in op.remove_topic_ids if tid != payload.source_topic_id]
+                    if bad_removes:
+                        raise AiCurationImportError(
+                            f"strict_mode: reassign_word_topics for word {op.id} may only remove "
+                            f"the source topic ({payload.source_topic_id}), got: {bad_removes}"
+                        )
+
                 current_topic_ids = {t.id for t in word.topics if t.deleted_at is None}
                 add_topic_ids = {
                     _resolve_topic_ref(db, ref, created_topics).id
@@ -352,6 +360,24 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
             db.rollback()
         else:
             db.commit()
+
+        logger.info(
+            "ai_curation.import: source_topic_id=%s dry_run=%s strict_mode=%s "
+            "created_topics=%s created_words=%s updated_words=%s reassigned_words=%s unchanged=%s "
+            "created_topic_ids=%s created_word_ids=%s updated_word_ids=%s reassigned_word_ids=%s",
+            source_topic.id,
+            payload.dry_run,
+            payload.strict_mode,
+            len(created_topic_results),
+            len(created_word_ids),
+            len(updated_word_ids),
+            len(reassigned_word_ids),
+            unchanged,
+            [r.id for r in created_topic_results],
+            created_word_ids,
+            updated_word_ids,
+            reassigned_word_ids,
+        )
 
         return AiCurationImportResponse(
             source_topic_id=source_topic.id,

@@ -42,14 +42,19 @@ class PaginationMeta(BaseModel):
     page_size: int
     total_items: int
     total_pages: int
+    has_next: bool
+    has_prev: bool
 
     @classmethod
     def build(cls, page: int, page_size: int, total_items: int) -> "PaginationMeta":
+        total_pages = max(1, ceil(total_items / page_size)) if page_size > 0 else 1
         return cls(
             page=page,
             page_size=page_size,
             total_items=total_items,
-            total_pages=max(1, ceil(total_items / page_size)) if page_size > 0 else 1,
+            total_pages=total_pages,
+            has_next=page < total_pages,
+            has_prev=page > 1,
         )
 
 
@@ -228,6 +233,7 @@ class AiCurationImportRequest(BaseModel):
     schema_version: Literal["lexora.ai-curation.v1"] = SCHEMA_VERSION
     source_topic_id: int = Field(gt=0)
     dry_run: bool = False
+    strict_mode: bool = False
     topic_operations: list[TopicOperation] = Field(default_factory=list, max_length=50)
     word_operations: list[WordOperation] = Field(min_length=1, max_length=500)
 

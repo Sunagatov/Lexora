@@ -31,7 +31,7 @@ def _topic_summary(**kwargs):
 
 
 def _pagination(**kwargs):
-    defaults = dict(page=1, page_size=50, total_items=1, total_pages=1)
+    defaults = dict(page=1, page_size=50, total_items=1, total_pages=1, has_next=False, has_prev=False)
     defaults.update(kwargs)
     return PaginationMeta(**defaults)
 
@@ -655,3 +655,225 @@ def test_topic_ref_requires_exactly_one_field() -> None:
                 }
             ],
         )
+
+
+# ---------------------------------------------------------------------------
+# Bug fix: partial update must not clear unset fields
+# ---------------------------------------------------------------------------
+
+def test_update_existing_word_only_passes_set_fields_to_update_word(monkeypatch) -> None:
+    """ChatGPT returns only example_entries — translations/notes must NOT be wiped."""
+    source = _make_topic()
+    word = _make_word(id=10, term="mortgage")
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    captured: list = []
+
+    def capture_update(db, w, payload, commit=True):
+        captured.append(payload)
+        return w
+
+    monkeypatch.setattr(ai_curation_service, "update_word", capture_update)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        word_operations=[
+            {
+                "op": "update_existing_word",
+                "id": 10,
+                "term": "mortgage",
+                "example_entries": ["Rates rose.", "Payments are due."],
+            }
+        ],
+    )
+
+    ai_curation_service.import_ai_curation(db, payload)
+
+    assert len(captured) == 1
+    update_payload = captured[0]
+    # Only example_entries + progress_source should be set
+    assert "example_entries" in update_payload.model_fields_set
+    assert "progress_source" in update_payload.model_fields_set
+    # translations, notes, countability must NOT have been explicitly set
+    assert "translations" not in update_payload.model_fields_set
+    assert "notes" not in update_payload.model_fields_set
+    assert "countability" not in update_payload.model_fields_set
+
+
+# ---------------------------------------------------------------------------
+# Strict mode
+# ---------------------------------------------------------------------------
+
+def test_strict_mode_allows_reassign_to_request_created_topic(monkeypatch) -> None:
+    source = _make_topic(id=1)
+    new_topic = _make_topic(id=55, name="Retail Banking")
+    word = _make_word(id=10, term="mortgage", topics=[source])
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    monkeypatch.setattr(ai_curation_service, "create_topic", lambda db, payload, commit=True: new_topic)
+    monkeypatch.setattr(ai_curation_service, "update_word", lambda db, w, payload, commit=True: w)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        strict_mode=True,
+        topic_operations=[{"op": "create_topic", "client_key": "retail", "name": "Retail Banking"}],
+        word_operations=[
+            {
+                "op": "reassign_word_topics",
+                "id": 10,
+                "term": "mortgage",
+                "add_topic_refs": [{"client_key": "retail"}],
+                "remove_topic_ids": [1],
+            }
+        ],
+    )
+
+    result = ai_curation_service.import_ai_curation(db, payload)
+    assert result.reassigned_words == 1
+
+
+def test_strict_mode_rejects_reassign_to_pre_existing_topic(monkeypatch) -> None:
+    source = _make_topic(id=1)
+    word = _make_word(id=10, term="mortgage", topics=[source])
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        strict_mode=True,
+        word_operations=[
+            {
+                "op": "reassign_word_topics",
+                "id": 10,
+                "term": "mortgage",
+                "add_topic_refs": [{"topic_id": 99}],  # existing topic not in this request
+                "remove_topic_ids": [1],
+            }
+        ],
+    )
+
+    with pytest.raises(AiCurationImportError, match="strict_mode"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+
+def test_strict_mode_rejects_removing_non_source_topic(monkeypatch) -> None:
+    source = _make_topic(id=1)
+    other = _make_topic(id=2, name="Other")
+    word = _make_word(id=10, term="mortgage", topics=[source, other])
+
+    db = MagicMock()
+    db.scalar.return_value = source
+
+    def fake_scalars(stmt):
+        m = MagicMock()
+        m.all.return_value = [word]
+        return m
+
+    db.scalars.side_effect = fake_scalars
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        strict_mode=True,
+        word_operations=[
+            {
+                "op": "reassign_word_topics",
+                "id": 10,
+                "term": "mortgage",
+                "add_topic_refs": [],
+                "remove_topic_ids": [2],  # not the source topic
+            }
+        ],
+    )
+
+    with pytest.raises(AiCurationImportError, match="strict_mode"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+
+# ---------------------------------------------------------------------------
+# Audit logging
+# ---------------------------------------------------------------------------
+
+def test_import_logs_audit_on_commit(monkeypatch, caplog) -> None:
+    import logging
+    source = _make_topic()
+    word = _make_word(id=99, term="collateral")
+
+    db = MagicMock()
+    db.scalar.return_value = source
+    db.scalars.side_effect = lambda stmt: MagicMock(**{"all.return_value": []})
+
+    monkeypatch.setattr(ai_curation_service, "create_word", lambda db, payload, commit=True: word)
+
+    payload = AiCurationImportRequest(
+        source_topic_id=1,
+        dry_run=False,
+        word_operations=[
+            {
+                "op": "create_new_word",
+                "target_topic_refs": [{"topic_id": 1}],
+                "term": "collateral",
+                "translations": "залог",
+            }
+        ],
+    )
+
+    with caplog.at_level(logging.INFO, logger="app.features.words.ai_curation.service"):
+        ai_curation_service.import_ai_curation(db, payload)
+
+    assert any("ai_curation.import" in r.message for r in caplog.records)
+    assert any("created_words=1" in r.message for r in caplog.records)
+
+
+# ---------------------------------------------------------------------------
+# Pagination: has_next / has_prev
+# ---------------------------------------------------------------------------
+
+def test_pagination_meta_build_has_next_and_has_prev() -> None:
+    meta = PaginationMeta.build(page=2, page_size=10, total_items=35)
+    assert meta.total_pages == 4
+    assert meta.has_prev is True
+    assert meta.has_next is True
+
+
+def test_pagination_meta_build_first_page_no_prev() -> None:
+    meta = PaginationMeta.build(page=1, page_size=10, total_items=35)
+    assert meta.has_prev is False
+    assert meta.has_next is True
+
+
+def test_pagination_meta_build_last_page_no_next() -> None:
+    meta = PaginationMeta.build(page=4, page_size=10, total_items=35)
+    assert meta.has_prev is True
+    assert meta.has_next is False
+
+
+def test_pagination_meta_build_single_page() -> None:
+    meta = PaginationMeta.build(page=1, page_size=50, total_items=3)
+    assert meta.has_prev is False
+    assert meta.has_next is False
