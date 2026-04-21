@@ -81,6 +81,26 @@ When changing this flow:
 - prefer returning stable IDs internally over large textual payloads
 - add observability for latency, cache hit rate, and invalid model responses
 
+## AI curation and topic splitting
+
+For topic enrichment and split work, read `docs/ai/ai-curation-workflow.md` and `docs/ai/topic-refinement-prompt.txt` first.
+
+Durable rules:
+
+- export from prod only; do not use local DB exports for prod imports because IDs differ
+- treat 3 good example sentences per word as the completion threshold
+- use lean exports and `needs_examples_only=true` when you only need unfinished words
+- when splitting broad topics, prefer clear subtopics with obvious boundaries
+- split only topics with more than 300 active words
+- skip part-of-speech umbrella topics for now
+- keep the broad topic as an umbrella unless the split is genuinely clean
+- create new topics first, then reassign words; do not delete the umbrella automatically
+- reuse an existing topic if it already fits closely enough
+- avoid duplicate or near-duplicate topic names
+- prefer fewer, broader subtopics over many very similar siblings
+- if a split would make two confusing topics, merge them back into one clearer bucket
+- use review-first dry runs before any live import
+
 ## Validation
 
 Use the smallest useful validation first:

@@ -21,6 +21,13 @@ Call the **lean** export endpoint **against prod** for the target topic. Save th
 
 The lean export (`?lean=true`) returns only `id`, `term`, `example_entries`, and a small example-completeness hint per word — no translations, no topic metadata, no allowed values. Use `needs_examples_only=true` when you want only words that still need enrichment. This is all ChatGPT needs for examples enrichment, and less input means faster responses and fewer hallucinations.
 
+Practical enrichment rule:
+
+- treat 3 natural English examples as the done threshold
+- if a word already has 3 strong examples, skip it
+- replace examples only when they are weak, repetitive, templated, or not natural
+- keep examples in B1-C1 style and use the target word naturally
+
 > **Critical:** always export from prod, never from a local database. Word IDs differ between environments — using a local export will cause the import to fail or corrupt wrong words on prod.
 
 To find `topic_id`: `GET /api/ai-curation/topics`.
@@ -179,6 +186,9 @@ Practical rule:
 - prefer fewer, broader subtopics instead of many adjacent sibling topics
 - if two candidate buckets are too similar, merge them into one clearer bucket
 - when in doubt, optimize for clean boundaries over maximum topic count
+- avoid subtopics that differ only by tiny scope wording
+- keep umbrella topics broad and human-readable
+- treat the splitter as review-first, not automatic taxonomy expansion
 
 Suggested split buckets for broad conflict / boundaries topics:
 
@@ -196,11 +206,15 @@ Suggested split buckets for broad conflict / boundaries topics:
 Operational notes from production use:
 
 - The split-plan endpoint is read-only and returns proposed subtopics plus `unassigned_word_ids`.
+- If a topic family is broad but fuzzy, leaving it unsplit is acceptable.
 - If an import hits a backend 500 during repeated DB work, check the prod logs before changing the payload.
 - The live import path reuses the existing v2 curation schema, so create topics with `topic_operations` and move words with `word_reassigns`.
 - Keep split payloads explainable: one word can belong to more than one topic, but the first pass should prefer a single primary bucket.
 - For broad-topic splits, export the full topic page by page from prod first, then build the split plan from the actual prod word IDs.
 - For many topics at once, use `backend/app/scripts/split_large_topics.py`. It reads the prod audit, builds per-topic split plans, and writes dry-run import artifacts under `backend/.artifacts/ai-curation/topic-splits/`.
+- If the biggest topics are grammar buckets, skip them until there is a better family-specific plan.
+- If the generated sibling topics look too similar on the topics page, the plan is too fine-grained.
+- Prefer adding subtopics only when the new boundaries will be easy for a human to explain.
 
 ## Service location
 

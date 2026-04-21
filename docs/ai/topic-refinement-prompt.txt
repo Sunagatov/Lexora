@@ -16,6 +16,10 @@ Goal:
 - If two candidate names feel like near-synonyms or tiny scope variants, merge them into one clearer bucket.
 - Avoid creating two topics that would look confusing side by side on the topics page.
 - Return a dry-run plan, not a live write.
+- If the family is too mixed to split cleanly, return fewer buckets or no split at all.
+- If a proposed subtopic would be too close to an existing topic, reuse the existing topic instead of creating a new one.
+- Do not force a split just because the topic is large.
+- Keep umbrella topics broad; subtopics should be obviously narrower.
 
 Rules:
 - Return JSON only. No markdown fences. No explanation.
@@ -56,5 +60,8 @@ Words:
 
 Notes:
 - Build from prod export only.
+- Export from prod, never from local DB, because IDs differ by environment.
+- Treat 3 natural English example sentences per word as the done threshold for enrichment.
+- Keep examples natural, not templated, if you are also writing examples in the same session.
 - Keep the plan human-reviewable.
 - If a cluster is too small, leave it unassigned.
