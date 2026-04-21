@@ -39,10 +39,10 @@ def test_create_word_route_maps_missing_topics_to_400(monkeypatch) -> None:
 
 
 def test_update_word_route_maps_duplicate_word_to_409(monkeypatch) -> None:
-    monkeypatch.setattr(words_router, "get_word_by_id", lambda db, word_id: SimpleNamespace(id=word_id))
-    monkeypatch.setattr(words_router, "assert_topics_exist", lambda db, topic_ids: None)
+    monkeypatch.setattr(words_router, "get_word_by_id", lambda db_arg, word_id: SimpleNamespace(id=word_id))
+    monkeypatch.setattr(words_router, "assert_topics_exist", lambda db_arg, topic_ids: None)
 
-    def fake_update_word(db, word, payload):
+    def fake_update_word(db_arg, word, payload):
         raise DuplicateWordInTopicError(payload.term or "term")
 
     monkeypatch.setattr(words_router, "update_word", fake_update_word)
@@ -67,7 +67,7 @@ def test_delete_word_route_raises_404_when_missing(monkeypatch) -> None:
 
 
 def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
-    def fake_bulk_import(db, payload):
+    def fake_bulk_import(db_arg, payload):
         raise BulkTopicInTrashError(payload.topic_name)
 
     monkeypatch.setattr(words_router, "bulk_import", fake_bulk_import)
@@ -85,7 +85,7 @@ def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
 
 
 def test_export_words_ai_review_maps_missing_topic_to_404(monkeypatch) -> None:
-    def fake_export(db, topic_id, page, page_size):
+    def fake_export(db_arg, topic_id, page, page_size):
         raise AiReviewImportError(f"Topic {topic_id} not found")
 
     monkeypatch.setattr(words_router, "build_topic_ai_review_export", fake_export)
@@ -98,7 +98,7 @@ def test_export_words_ai_review_maps_missing_topic_to_404(monkeypatch) -> None:
 
 
 def test_import_words_ai_review_maps_invalid_payload_to_400(monkeypatch) -> None:
-    def fake_import(db, payload):
+    def fake_import(db_arg, payload):
         raise AiReviewImportError("Word 10 term mismatch")
 
     monkeypatch.setattr(words_router, "import_topic_ai_review", fake_import)

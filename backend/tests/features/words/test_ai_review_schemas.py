@@ -7,16 +7,14 @@ from app.features.words.schemas import WordUpdate
 
 def test_ai_review_import_allows_clean_example_enrichment() -> None:
     payload = AiReviewImportRequest(
-        mode="enrich_existing_words_only",
         topic_id=1,
-        topic={"id": 1, "name": "Banking"},
-        pagination={"page": 1, "page_size": 50, "total_words": 1, "total_pages": 1},
-        allowed_values={"countability": ["Countable"], "part_of_speech": ["noun"]},
-        instructions=["Keep ids unchanged."],
+        dry_run=False,
         words=[
             {
                 "id": 10,
                 "term": "mortgage",
+                "translations": "ипотека",
+                "translation_entries": ["ипотека"],
                 "example_entries": [
                     "They applied for a mortgage last month.",
                     "The mortgage payment is due tomorrow.",

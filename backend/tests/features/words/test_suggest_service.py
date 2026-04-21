@@ -11,10 +11,11 @@ class FakeResponse:
     def __init__(self, content: str):
         self._content = content
 
-    def raise_for_status(self) -> None:
+    @staticmethod
+    def raise_for_status() -> None:
         return None
 
-    def json(self) -> dict:
+    def json(self) -> dict[str, object]:
         return {
             "choices": [
                 {
@@ -27,7 +28,7 @@ class FakeResponse:
 
 
 class FakeAsyncClient:
-    last_request = None
+    last_request: dict[str, object] | None = None
 
     def __init__(self, *args, **kwargs):
         self.kwargs = kwargs
@@ -111,8 +112,13 @@ def test_suggest_topic_for_word_raises_malformed_on_empty_choices_response(monke
     class EmptyChoicesClient(FakeAsyncClient):
         async def post(self, url, headers, json):
             class Resp:
-                def raise_for_status(self): return None
-                def json(self): return {"choices": []}
+                @staticmethod
+                def raise_for_status() -> None:
+                    return None
+
+                @staticmethod
+                def json() -> dict[str, list[object]]:
+                    return {"choices": []}
             return Resp()
 
     db = MagicMock()

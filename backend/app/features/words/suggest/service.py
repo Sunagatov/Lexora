@@ -59,7 +59,7 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
         logger.warning("word.suggest_topic.no_topics")
         raise NoTopicsError
 
-    topic_list = "\n".join(f"- {t.name}" for t in topics)
+    topic_list = "\n".join(f"- {topic.name}" for topic in topics)
     user_message = f"Word: {term}\nTranslation: {translation}\n\nTopics:\n{topic_list}"
 
     try:
@@ -98,10 +98,10 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
         raise AiMalformedResponseError() from e
 
     suggested = _extract_choice_content(payload)
-    topic_names = {t.name for t in topics}
+    topic_names = {topic.name for topic in topics}
 
     if suggested not in topic_names:
-        match = next((t.name for t in topics if t.name.lower() == suggested.lower()), None)
+        match = next((topic.name for topic in topics if topic.name.lower() == suggested.lower()), None)
         if match is None:
             logger.warning("word.suggest_topic.unknown_topic")
             raise AiUnknownTopicError(suggested)

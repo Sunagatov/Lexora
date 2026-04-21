@@ -7,9 +7,9 @@ from pathlib import Path
 from openpyxl import Workbook
 from sqlalchemy import select
 
-from app.db.session import SessionLocal
-from app.models.topic import Topic
-from app.models.word import Word
+from app.features.topics.model import Topic
+from app.features.words.model import Word
+from app.shared.db import SessionLocal
 from app.scripts.xlsx_export import write_sheet
 
 

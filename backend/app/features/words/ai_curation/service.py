@@ -101,7 +101,7 @@ def _word_to_export(word: Word) -> AiCurationWord:
     example_count_value = example_count(word)
     return AiCurationWord(
         id=word.id,
-        topic_ids=[t.id for t in word.topics if t.deleted_at is None],
+        topic_ids=[topic.id for topic in word.topics if topic.deleted_at is None],
         term=word.term,
         translations=word.translations,
         translation_entries=[item.value for item in getattr(word, "translation_items", [])],
@@ -400,7 +400,7 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
                 )
 
             if payload.strict_mode:
-                created_topic_ids = {t.id for t in created_topics.values()}
+                created_topic_ids = {topic.id for topic in created_topics.values()}
                 bad_adds = [
                     ref for ref in op.add_topic_refs
                     if ref.topic_id is not None and ref.topic_id not in created_topic_ids
@@ -417,7 +417,7 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
                         f"the source topic ({payload.source_topic_id}), got: {bad_removes}"
                     )
 
-            current_topic_ids = {t.id for t in word.topics if t.deleted_at is None}
+            current_topic_ids = {topic.id for topic in word.topics if topic.deleted_at is None}
             add_topic_ids = {
                 _resolve_topic_ref(db, ref, created_topics).id
                 for ref in op.add_topic_refs

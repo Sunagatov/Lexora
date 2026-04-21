@@ -6,14 +6,14 @@ from unittest.mock import MagicMock
 from app.features.words.workbook import importer as workbook_importer
 
 
-def _make_topic(id=1, name="Animals"):
-    return SimpleNamespace(id=id, name=name, deleted_at=None, is_active=True)
+def _make_topic(topic_id=1, name="Animals"):
+    return SimpleNamespace(id=topic_id, name=name, deleted_at=None, is_active=True)
 
 
-def _make_existing_word(id=10, term="cat", topic_id=1):
-    topic = _make_topic(id=topic_id)
+def _make_existing_word(word_id=10, term="cat", topic_id=1):
+    topic = _make_topic(topic_id=topic_id)
     return SimpleNamespace(
-        id=id,
+        id=word_id,
         term=term,
         translations="кошка",
         topics=[topic],
@@ -60,8 +60,11 @@ def _patch_sheet_deps(monkeypatch, *, find_existing_returns=None, should_validat
                         lambda db, topic_id, word_id, term: find_existing_returns)
     monkeypatch.setattr(workbook_importer, "assert_no_duplicate_word",
                         lambda term, existing_terms: None)
-    monkeypatch.setattr(workbook_importer, "existing_normalized_terms",
-                        lambda db, topic_ids, exclude_word_id=None: set())
+    monkeypatch.setattr(
+        workbook_importer,
+        "existing_normalized_terms",
+        lambda db_arg, topic_ids, exclude_word_id=None: set(),
+    )
     monkeypatch.setattr(workbook_importer, "sync_word_multivalue_fields",
                         lambda *args, **kwargs: None)
     monkeypatch.setattr(workbook_importer, "_should_validate_existing_word_duplicate",

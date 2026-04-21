@@ -391,7 +391,6 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-top-width: 3px;
-  border-left-width: 1px;
   border-radius: 14px;
   padding: 12px 14px;
   box-shadow: var(--shadow-sm);
@@ -514,4 +513,3 @@
 }
 
 .smart-review-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-

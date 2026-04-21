@@ -5,8 +5,8 @@ from typing import NamedTuple
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-from app.models.topic import Topic
-from app.models.word import Word
+from app.features.topics.model import Topic
+from app.features.words.model import Word
 
 HEADERS: dict[str, tuple[str, ...]] = {
     "verb":         ("Knowledge", "Word", "Russian translations", "Typical prepositions / patterns", "Examples (EN + RU)"),

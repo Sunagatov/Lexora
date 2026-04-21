@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 from logging.config import dictConfig
 
 from fastapi import Depends, FastAPI, Request
@@ -52,10 +53,24 @@ def configure_logging() -> None:
 configure_logging()
 logger = logging.getLogger(__name__)
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    logger.info(
+        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s",
+        settings.smart_review_enabled,
+        len(settings.cors_allowed_origins),
+    )
+    try:
+        yield
+    finally:
+        logger.info("app.stopped")
+
+
 app = FastAPI(
     title="Lexora API",
     version="0.1.0",
     description="Backend API for a personal English vocabulary learning application.",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -65,20 +80,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    logger.info(
-        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s",
-        settings.smart_review_enabled,
-        len(settings.cors_allowed_origins),
-    )
-
-
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    logger.info("app.stopped")
 
 
 @app.middleware("http")

@@ -9,14 +9,14 @@ from app.features.words.ai_review import service as ai_review_service
 from app.features.words.ai_review.schemas import AiReviewImportRequest, AiReviewImportWord
 
 
-def _make_topic(id=1, name="Animals"):
-    return SimpleNamespace(id=id, name=name, deleted_at=None)
+def _make_topic(topic_id=1, name="Animals"):
+    return SimpleNamespace(id=topic_id, name=name, deleted_at=None)
 
 
-def _make_word(id=10, term="cat", example_items=None, translation_items=None):
+def _make_word(word_id=10, term="cat", example_items=None, translation_items=None):
     topic = _make_topic()
     return SimpleNamespace(
-        id=id,
+        id=word_id,
         term=term,
         translations="кошка",
         translation_items=translation_items or [],
@@ -43,9 +43,9 @@ def _make_payload(words, dry_run=False):
     )
 
 
-def _ai_review_word(id, term, notes="updated note"):
+def _ai_review_word(word_id, term, notes="updated note"):
     return AiReviewImportWord(
-        id=id,
+        id=word_id,
         term=term,
         translations="кошка",
         translation_entries=["кошка"],
@@ -84,9 +84,9 @@ def test_ai_review_import_calls_update_word_with_commit_false(monkeypatch) -> No
 
     calls_commit_flag = []
 
-    def capture(db, w, payload, commit=True):
+    def capture(db_arg, word, payload, commit=True):
         calls_commit_flag.append(commit)
-        return w
+        return word
 
     monkeypatch.setattr(ai_review_service, "update_word", capture)
 
@@ -99,15 +99,15 @@ def test_ai_review_import_calls_update_word_with_commit_false(monkeypatch) -> No
 
 def test_ai_review_import_uses_single_commit_for_multiple_updates(monkeypatch) -> None:
     topic = _make_topic()
-    word_a = _make_word(id=10, term="cat")
-    word_b = _make_word(id=11, term="dog")
+    word_a = _make_word(word_id=10, term="cat")
+    word_b = _make_word(word_id=11, term="dog")
     db = _make_db(topic, [word_a, word_b])
 
     update_calls = []
 
-    def capture(db, w, payload, commit=True):
-        update_calls.append((w.id, commit))
-        return w
+    def capture(db_arg, word, payload, commit=True):
+        update_calls.append((word.id, commit))
+        return word
 
     monkeypatch.setattr(ai_review_service, "update_word", capture)
 
@@ -123,17 +123,17 @@ def test_ai_review_import_uses_single_commit_for_multiple_updates(monkeypatch) -
 
 def test_ai_review_import_rolls_back_all_when_second_update_fails(monkeypatch) -> None:
     topic = _make_topic()
-    word_a = _make_word(id=10, term="cat")
-    word_b = _make_word(id=11, term="dog")
+    word_a = _make_word(word_id=10, term="cat")
+    word_b = _make_word(word_id=11, term="dog")
     db = _make_db(topic, [word_a, word_b])
 
     call_count = [0]
 
-    def boom_on_second(db, w, payload, commit=True):
+    def boom_on_second(db_arg, word, payload, commit=True):
         call_count[0] += 1
         if call_count[0] == 2:
             raise RuntimeError("DB exploded on second word")
-        return w
+        return word
 
     monkeypatch.setattr(ai_review_service, "update_word", boom_on_second)
 

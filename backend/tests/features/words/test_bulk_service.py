@@ -19,7 +19,7 @@ def test_bulk_import_reuses_existing_topic_and_skips_duplicates(monkeypatch) -> 
     db.scalar.side_effect = [topic]
 
     monkeypatch.setattr(bulk_service, "Word", DummyWord)
-    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db, topic_ids: {"go"})
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: {"go"})
 
     payload = WordBulkCreate(
         topic_name="Travel",

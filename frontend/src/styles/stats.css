@@ -301,7 +301,6 @@
 }
 
 .stats-chart-col {
-  flex-shrink: 0;
   min-width: 28px;
   flex: 1;
   display: flex;

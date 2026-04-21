@@ -5,8 +5,10 @@ from unittest.mock import MagicMock
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from app.features.words.ai_curation import router as ai_curation_router
+from app.features.words.ai_curation import service as ai_curation_service
 from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
@@ -190,23 +192,21 @@ def test_import_router_maps_error_to_400(monkeypatch) -> None:
 # Service-level tests — import_ai_curation
 # ---------------------------------------------------------------------------
 
-from app.features.words.ai_curation import service as ai_curation_service
-
 
 def _make_topic(id=1, name="Banking", slug="banking", deleted_at=None):
-    t = SimpleNamespace(id=id, name=name, slug=slug, description=None, is_active=True, deleted_at=deleted_at)
-    return t
+    topic = SimpleNamespace(id=id, name=name, slug=slug, description=None, is_active=True, deleted_at=deleted_at)
+    return topic
 
 
 def _make_word(id=10, term="mortgage", topics=None, translation_items=None, example_items=None):
-    t = _make_topic()
+    topic = _make_topic()
     return SimpleNamespace(
         id=id,
         term=term,
         translations="ипотека",
         translation_items=translation_items or [],
         example_items=example_items or [],
-        topics=topics if topics is not None else [t],
+        topics=topics if topics is not None else [topic],
         countability=None,
         part_of_speech=None,
         past_simple=None,
@@ -242,8 +242,6 @@ def test_import_dry_run_does_not_commit(monkeypatch) -> None:
     word = _make_word()
     db = MagicMock()
     db.scalar.return_value = source
-
-    calls = []
 
     def fake_scalars(stmt):
         m = MagicMock()
@@ -614,8 +612,6 @@ def test_import_rollback_on_failure(monkeypatch) -> None:
 # ---------------------------------------------------------------------------
 # Schema-level validation
 # ---------------------------------------------------------------------------
-
-from pydantic import ValidationError
 
 
 def test_schema_rejects_invalid_countability() -> None:

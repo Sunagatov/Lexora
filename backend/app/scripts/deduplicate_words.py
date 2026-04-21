@@ -27,10 +27,19 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from typing import TypedDict
 
 from sqlalchemy import text
 
 from app.shared.db import SessionLocal
+
+
+class WordRow(TypedDict):
+    id: int
+    term: str
+    knowledge_level: int
+    is_active: bool
+    topic_ids: list[int]
 
 
 def _normalize(term: str) -> str:
@@ -46,7 +55,7 @@ def _check_word_topics_exists(db) -> bool:
     ).scalar()
 
 
-def _load_words(db) -> list[dict]:
+def _load_words(db) -> list[WordRow]:
     """Load all words with their topic_ids from word_topics (post-migration schema)."""
     rows = db.execute(
         text(
@@ -64,18 +73,18 @@ def _load_words(db) -> list[dict]:
             "term": r.term,
             "knowledge_level": r.knowledge_level or 0,
             "is_active": r.deleted_at is None,
-            "topic_ids": list(r.topic_ids),
+            "topic_ids": list(r.topic_ids or []),
         }
         for r in rows
     ]
 
 
-def _pick_canonical(members: list[dict]) -> dict:
+def _pick_canonical(members: list[WordRow]) -> WordRow:
     """Active words first, then highest knowledge_level, then lowest id."""
     return max(members, key=lambda w: (w["is_active"], w["knowledge_level"], -w["id"]))
 
 
-def _merge_group(db, canonical: dict, dup_ids: list[int], all_topic_ids: list[int]) -> None:
+def _merge_group(db, canonical: WordRow, dup_ids: list[int], all_topic_ids: list[int]) -> None:
     # 1. Link canonical to all topics from the group
     existing = {
         r[0]
@@ -136,7 +145,7 @@ def run(apply: bool) -> None:
 
         words = _load_words(db)
 
-        groups: dict[str, list[dict]] = defaultdict(list)
+        groups: dict[str, list[WordRow]] = defaultdict(list)
         for w in words:
             groups[_normalize(w["term"])].append(w)
 
