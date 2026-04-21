@@ -109,6 +109,18 @@ Durable rules:
 - spot-check 10-15 proposed entries before live import when the split plan is newly tuned or large
 - if a broad topic is semantically messy, keep it as an umbrella topic instead of forcing weak subtopics
 
+## Backend correctness invariants
+
+These are easy to regress and should stay stable:
+
+- when deleting a topic, check whether a word still has any **active** topics left; raw topic count is not enough
+- update payloads should reject explicit `null` for fields that are meant to be omitted to keep unchanged
+- workbook imports should resolve the exported `topic_id` first and only fall back to topic name when metadata is missing
+- `example_entries: []` should clear examples instead of silently reusing old raw example text
+- bulk topic creation should stay atomic; create the topic without an early commit and roll back the whole import on failure
+- duplicate active topic names are invalid even when slugs differ
+- prefer targeted tests for these contracts instead of broad scans
+
 ## Validation
 
 Use the smallest useful validation first:

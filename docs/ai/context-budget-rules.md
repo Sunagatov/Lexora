@@ -76,6 +76,19 @@ Before opening more code, prefer these summary docs:
 - keep many-to-many word membership when a word naturally belongs to more than one topic
 - if Alembic startup hits duplicate prepared statements, check the migration engine settings before retrying the deploy
 
+## Durable backend/frontend invariants
+
+Use these as stable defaults when you only need the repo shape, not the full source:
+
+- topic deletes must consider remaining active topics, not just raw topic count
+- explicit `null` should be rejected for update fields that are meant to be omitted
+- workbook imports should resolve topic IDs from exported metadata before falling back to names
+- `example_entries: []` means clear examples, not reuse stale raw text
+- bulk topic imports should stay atomic and not commit the topic before the rest succeeds
+- duplicate active topic names are invalid even if slugs differ
+- the study drawer should not leak open state across route changes
+- cache invalidation should cover stats, smart review, and trash when active topics or words change
+
 ## Editing strategy
 
 - modify as few files as possible

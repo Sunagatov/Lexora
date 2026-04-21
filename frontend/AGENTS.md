@@ -72,6 +72,14 @@ If the root route is changed, keep it on the faster dashboard-style screen rathe
 - prefer clear topic boundaries over creating many similar siblings
 - do not route the app back to a slow landing page if a faster dashboard-style screen already exists
 
+## Frontend correctness invariants
+
+- when active words or topics change, invalidate the dependent caches that drive stats, smart review, and trash views
+- Smart Review should not render sidebar counts and progress from stale word data while the shared word cache is still loading
+- the mobile study drawer should reset on route enter and exit so drawer state does not leak between screens
+- clamp or normalize out-of-range pagination params back into the URL instead of letting the UI and URL disagree
+- keep the tree hierarchy and many-to-many topic membership intact in the UI
+
 ## Validation
 
 Use the smallest relevant validation first:

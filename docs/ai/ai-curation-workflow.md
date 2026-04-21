@@ -69,6 +69,18 @@ Set `"dry_run": false` in the file, POST again. The backend commits the changes.
 
 `dry_run: true` runs the full import logic — validates IDs, checks for stale data, resolves topic refs — then calls `db.rollback()` instead of `db.commit()`. Nothing is saved. Safe to run repeatedly.
 
+## Import guardrails
+
+These rules keep AI-assisted imports stable:
+
+- use the exported `topic_id` as the primary topic identity when it is available
+- fall back to topic name only when metadata is missing
+- when a payload includes `example_entries: []`, treat that as an explicit clear operation
+- keep bulk imports atomic; do not commit a newly created topic before the rest of the import succeeds
+- reject duplicate active topic names even if slugs differ
+- when a split plan gets fuzzy, keep the umbrella topic instead of forcing weak child topics
+- when a split plan is large or newly tuned, spot-check 10-15 proposed entries before live import
+
 ## Import payload shape (v2)
 
 Three separate arrays replace the old `word_operations` discriminated union.
