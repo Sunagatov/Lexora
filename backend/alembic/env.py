@@ -3,6 +3,7 @@ from __future__ import annotations
 from logging.config import fileConfig
 
 from alembic import context
+from sqlalchemy import text
 from sqlalchemy import engine_from_config, pool
 
 from app.shared.config import settings
@@ -42,6 +43,8 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
+        connection.execute(text("SET statement_timeout = 0"))
+        connection.execute(text("SET lock_timeout = 0"))
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():

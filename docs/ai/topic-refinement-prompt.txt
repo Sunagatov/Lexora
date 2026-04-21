@@ -2,7 +2,7 @@ Take this Lexora topic refinement draft and return ONLY valid JSON.
 
 Goal:
 - Split one broad topic into smaller, specific, learner-friendly subtopics.
-- Only split topics that have 300 or more active words.
+- Only split topics that have more than 300 active words.
 - Keep names short, practical, and useful for vocabulary study.
 - A word may fit more than one subtopic if justified, but prefer one primary bucket.
 - Keep the source topic in place.

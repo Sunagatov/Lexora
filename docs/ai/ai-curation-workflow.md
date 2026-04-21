@@ -164,7 +164,7 @@ Current API surface:
 
 Practical rule:
 
-- only split topics with 300 or more active words
+- only split topics with more than 300 active words
 - keep the original broad topic in place
 - create specific topics first
 - reassign words into the new topics

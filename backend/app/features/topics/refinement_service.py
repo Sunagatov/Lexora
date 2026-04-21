@@ -244,12 +244,12 @@ def _topic_audit(topic: Topic) -> TopicAuditItem:
     if average_topics_per_word >= 2.5:
         score += 0.15
         reasons.append("words belong to several topics on average")
-    if word_count >= TOPIC_SPLIT_MIN_WORDS:
+    if word_count > TOPIC_SPLIT_MIN_WORDS:
         score += 0.25
-        reasons.append(f"meets the {TOPIC_SPLIT_MIN_WORDS}+ word split threshold")
+        reasons.append(f"meets the >{TOPIC_SPLIT_MIN_WORDS} word split threshold")
 
     score = min(score, 1.0)
-    should_review = word_count >= TOPIC_SPLIT_MIN_WORDS
+    should_review = word_count > TOPIC_SPLIT_MIN_WORDS
 
     return TopicAuditItem(
         topic_id=topic.id,
@@ -338,13 +338,13 @@ def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest)
         )
 
     audit = _topic_audit(topic)
-    if len(words) < TOPIC_SPLIT_MIN_WORDS:
+    if len(words) <= TOPIC_SPLIT_MIN_WORDS:
         return TopicSplitPlanResponse(
             source_topic_id=topic.id,
             source_topic_name=topic.name,
             source_word_count=len(words),
             should_split=False,
-            reasons=[f"topic has fewer than {TOPIC_SPLIT_MIN_WORDS} active words"],
+            reasons=[f"topic has {TOPIC_SPLIT_MIN_WORDS} or fewer active words"],
             proposed_subtopics=[],
             unassigned_word_ids=[word.id for word in words],
         )
@@ -465,7 +465,7 @@ Split one broad topic into smaller, specific, learner-friendly topics.
 Rules:
 - Return JSON only.
 - Propose between 2 and {max_new_topics} subtopics.
-- Only split topics with 300 or more active words.
+- Only split topics with more than 300 active words.
 - Keep names short, practical, and specific.
 - Do not invent words.
 - Reuse an existing active topic if it already matches a subtopic closely.
