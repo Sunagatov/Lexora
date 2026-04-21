@@ -2,40 +2,15 @@
   "source_topic_id": 28,
   "source_topic_name": "Public Transport City Navigatio",
   "source_word_count": 400,
-  "should_split": true,
+  "should_split": false,
   "reasons": [
     "large topic: 400 words",
     "compound topic name",
     "some words already shared with other topics",
-    "meets the 300+ word split threshold",
-    "identified 1 candidate subtopics"
+    "meets the >300 word split threshold",
+    "no stable clusters reached the minimum size"
   ],
-  "proposed_subtopics": [
-    {
-      "name": "Laundry and Fabric Care",
-      "topic_id": null,
-      "is_new_topic": true,
-      "description": "Words for washing clothes, ironing, and fabric care.",
-      "word_ids": [
-        3484,
-        3512,
-        3933,
-        7729,
-        7730,
-        7731,
-        7732,
-        8089
-      ],
-      "sample_terms": [
-        "closure",
-        "top",
-        "line",
-        "metro line",
-        "bus line"
-      ],
-      "confidence": 0.95
-    }
-  ],
+  "proposed_subtopics": [],
   "unassigned_word_ids": [
     28,
     192,
@@ -89,7 +64,10 @@
     3356,
     3357,
     3358,
+    3484,
+    3512,
     3932,
+    3933,
     3982,
     3986,
     4019,
@@ -170,6 +148,10 @@
     7638,
     7726,
     7727,
+    7729,
+    7730,
+    7731,
+    7732,
     7734,
     7735,
     7744,
@@ -398,6 +380,7 @@
     8086,
     8087,
     8088,
+    8089,
     8090,
     8091,
     8092,

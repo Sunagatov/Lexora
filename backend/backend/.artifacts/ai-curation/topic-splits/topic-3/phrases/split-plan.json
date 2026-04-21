@@ -5,7 +5,7 @@
   "should_split": false,
   "reasons": [
     "large topic: 317 words",
-    "meets the 300+ word split threshold",
+    "meets the >300 word split threshold",
     "no stable clusters reached the minimum size"
   ],
   "proposed_subtopics": [],

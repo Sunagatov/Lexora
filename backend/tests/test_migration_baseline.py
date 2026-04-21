@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def test_initial_migration_contains_current_schema_surface() -> None:
-    text = Path("backend/alembic/versions/20260406_0001_initial_tables.py").read_text(encoding="utf-8")
+    text = Path("alembic/versions/20260406_0001_initial_tables.py").read_text(encoding="utf-8")
 
     required_tokens = [
         'op.create_table(\n        "topics"',

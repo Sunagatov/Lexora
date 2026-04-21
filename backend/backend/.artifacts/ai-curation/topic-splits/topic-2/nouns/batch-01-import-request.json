@@ -1,25 +1,35 @@
 {
   "schema_version": "lexora.ai-curation.v2",
   "source_topic_id": 2,
-  "dry_run": false,
+  "dry_run": true,
   "strict_mode": false,
-  "topic_operations": [
-    {
-      "op": "create_topic",
-      "client_key": "diy-hand-tools-2-1",
-      "name": "DIY Hand Tools",
-      "description": "Words for basic tools used in repairs, fixing, and assembly.",
-      "is_active": true
-    }
-  ],
+  "topic_operations": [],
   "word_updates": [],
   "word_creates": [],
   "word_reassigns": [
     {
+      "id": 89,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
       "id": 730,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 754,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -28,7 +38,43 @@
       "id": 964,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1089,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1164,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1172,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1174,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -37,7 +83,7 @@
       "id": 1182,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -46,7 +92,16 @@
       "id": 1186,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1198,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -55,7 +110,7 @@
       "id": 1284,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -64,7 +119,16 @@
       "id": 1390,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
+        }
+      ],
+      "remove_topic_ids": []
+    },
+    {
+      "id": 1439,
+      "add_topic_refs": [
+        {
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -73,7 +137,7 @@
       "id": 1321,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []
@@ -82,7 +146,7 @@
       "id": 1058,
       "add_topic_refs": [
         {
-          "client_key": "diy-hand-tools-2-1"
+          "topic_id": 83
         }
       ],
       "remove_topic_ids": []

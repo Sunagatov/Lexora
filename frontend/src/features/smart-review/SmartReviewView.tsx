@@ -16,8 +16,12 @@ export function SmartReviewView({queue, isLoading}: Props) {
     'smart_review',
   )
 
-  function handleUpdate(wordId: number, level: WordKnowledgeLevel) {
-    update.updateLevel(wordId, level)
+  async function handleUpdate(wordId: number, level: WordKnowledgeLevel) {
+    try {
+      await update.updateLevelAsync(wordId, level)
+    } catch {
+      return
+    }
     if (queue) {
       const item = queue.items.find((i) => i.word_id === wordId)
       if (item && !item.is_completed) completeItem(item.id)

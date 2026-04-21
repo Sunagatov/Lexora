@@ -1,29 +1,22 @@
 {
   "source_topic_id": 2,
   "source_topic_name": "Nouns",
-  "dry_run": false,
-  "created_topics": [
-    {
-      "client_key": "diy-hand-tools-2-1",
-      "id": 83,
-      "name": "DIY Hand Tools",
-      "slug": "diy-hand-tools"
-    }
-  ],
+  "dry_run": true,
+  "created_topics": [],
   "created_words": 0,
   "updated_words": 0,
   "reassigned_words": 8,
-  "unchanged": 0,
+  "unchanged": 8,
   "created_word_ids": [],
   "updated_word_ids": [],
   "reassigned_word_ids": [
-    730,
-    964,
-    1182,
-    1186,
-    1284,
-    1390,
-    1321,
-    1058
+    89,
+    754,
+    1089,
+    1164,
+    1172,
+    1174,
+    1198,
+    1439
   ]
 }

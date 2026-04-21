@@ -59,6 +59,7 @@ export function TopicSidebar({
     mutationFn: () => createTopic(newTopicName.trim()),
     onSuccess: (created) => {
       queryClient.setQueryData<Topic[]>(queryKeys.topics, (cur = []) => [...cur, created])
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       setNewTopicName(''); setAddingTopic(false); setTopicError(null)
       navigate(routes.topic(created.slug))
     },
@@ -70,6 +71,10 @@ export function TopicSidebar({
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: queryKeys.topics})
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       setDeleteTopicId(null)
     },
   })

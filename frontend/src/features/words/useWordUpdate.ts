@@ -31,7 +31,10 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
   })
 
   return {
-    updateLevel: (wordId: number, level: WordKnowledgeLevel) => mutation.mutate({wordId, level}),
+    updateLevel: (wordId: number, level: WordKnowledgeLevel) =>
+      mutation.mutate({wordId, level}),
+    updateLevelAsync: (wordId: number, level: WordKnowledgeLevel) =>
+      mutation.mutateAsync({wordId, level}),
     pendingWordId: mutation.isPending ? (mutation.variables?.wordId ?? null) : null,
   }
 }

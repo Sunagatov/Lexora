@@ -33,6 +33,8 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
     onError: (err: Error) => {
       alert(err.message)
@@ -47,6 +49,8 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setRestoreTopicId(null)
     },
   })
