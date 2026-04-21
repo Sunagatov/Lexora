@@ -3,14 +3,26 @@ Take this Lexora topic refinement draft and return ONLY valid JSON.
 Goal:
 - Split one broad topic into smaller, specific, learner-friendly subtopics.
 - Keep names short, practical, and useful for vocabulary study.
-- A word may fit more than one subtopic if justified.
+- A word may fit more than one subtopic if justified, but prefer one primary bucket.
+- Keep the source topic in place.
+- Return a dry-run plan, not a live write.
 
 Rules:
 - Return JSON only. No markdown fences. No explanation.
 - Do not invent words.
 - Do not include duplicate terms in the same subtopic.
 - Prefer real-life groupings over abstract labels.
-- Keep the source topic unchanged.
+- Prefer these broad buckets when they fit the actual words:
+  - Safety, Abuse, and Control
+  - Boundaries, Privacy, and Consent
+  - Conflict and Repair
+  - Communication Tools and Scripts
+  - Emotions, Trust, and Coping
+  - Relationships and Workplace Situations
+  - Expectations and Accountability
+  - Needs and Requests
+  - Conflict Tactics and Tone
+  - Reflection and Review
 
 Return this exact shape:
 {
@@ -29,3 +41,8 @@ Source topic:
 
 Words:
 <paste the topic's words here, one per line>
+
+Notes:
+- Build from prod export only.
+- Keep the plan human-reviewable.
+- If a cluster is too small, leave it unassigned.

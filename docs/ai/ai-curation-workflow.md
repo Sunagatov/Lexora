@@ -150,6 +150,47 @@ PROD_PASSWORD=xxx OPENAI_API_KEY=xxx \
 Default models: `claude-haiku-4-5-20251001` (Anthropic) · `gpt-4o-mini` (OpenAI).
 Override with `--model <model-id>`.
 
+## Topic splitting workflow
+
+Use this when a topic is too broad or vague and you want smaller, more specific topic groups.
+
+Current API surface:
+
+| Purpose | Method | Path |
+|---|---|---|
+| Topic audit | GET | `/api/topics/audit` |
+| Dry-run topic split plan | POST | `/api/topics/{topic_id}/split-plan` |
+| Enrichment import / live split | POST | `/api/ai-curation/import` |
+
+Practical rule:
+
+- keep the original broad topic in place
+- create specific topics first
+- reassign words into the new topics
+- do not remove the umbrella topic automatically
+- use dry-run before live import
+
+Suggested split buckets for broad conflict / boundaries topics:
+
+- Safety, Abuse, and Control
+- Boundaries, Privacy, and Consent
+- Conflict and Repair
+- Communication Tools and Scripts
+- Emotions, Trust, and Coping
+- Relationships and Workplace Situations
+- Expectations and Accountability
+- Needs and Requests
+- Conflict Tactics and Tone
+- Reflection and Review
+
+Operational notes from production use:
+
+- The split-plan endpoint is read-only and returns proposed subtopics plus `unassigned_word_ids`.
+- If an import hits a backend 500 during repeated DB work, check the prod logs before changing the payload.
+- The live import path reuses the existing v2 curation schema, so create topics with `topic_operations` and move words with `word_reassigns`.
+- Keep split payloads explainable: one word can belong to more than one topic, but the first pass should prefer a single primary bucket.
+- For broad-topic splits, export the full topic page by page from prod first, then build the split plan from the actual prod word IDs.
+
 ## Service location
 
 `backend/app/features/words/ai_curation/` — router, service, schemas.

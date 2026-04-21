@@ -50,6 +50,17 @@ Lexora already has one AI-assisted path: topic suggestion for words. Before addi
 - cache repeat lookups
 - log latency and failure modes
 
+For topic-enrichment work, prefer the workflow documented in `docs/ai/ai-curation-workflow.md` and `docs/ai/topic-refinement-prompt.txt`:
+
+- export from prod only
+- use lean export when possible
+- treat 3 strong example sentences as the default "complete" threshold
+- for broad topics, split by safe reassignment first instead of deleting the umbrella topic
+- dry-run before any live import
+- keep the topic split plan explainable and human-reviewable
+- create new topics first, then reassign words in batches
+- avoid deterministic filler generators for example sentences unless explicitly requested
+
 See `docs/ai/ai-cost-reduction-backlog.md` before modifying the suggestion flow.
 
 ## Validation rule
