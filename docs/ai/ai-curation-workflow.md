@@ -165,6 +165,9 @@ Current API surface:
 Practical rule:
 
 - only split topics with more than 300 active words
+- optimize for clear, concise topics with obvious boundaries
+- split only when the narrower topics are materially better and easy to distinguish
+- if a split would create two topics with fuzzy or overlapping meanings, keep them merged
 - keep the original broad topic in place
 - create specific topics first
 - reassign words into the new topics
