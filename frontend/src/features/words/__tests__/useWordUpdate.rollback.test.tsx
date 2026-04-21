@@ -22,10 +22,34 @@ describe('useWordUpdate rollback', () => {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   }
 
+  function makeWord(id: number, term: string, knowledge_level: Word['knowledge_level']): Word {
+    return {
+      id,
+      topic_ids: [1],
+      term,
+      past_simple: null,
+      past_participle: null,
+      translations: term,
+      translation_entries: undefined,
+      part_of_speech: 'verb',
+      knowledge_level,
+      countability: null,
+      pattern: null,
+      example: null,
+      example_entries: undefined,
+      example_count: 0,
+      example_target_count: 3,
+      example_status: 'missing',
+      needs_example_enrichment: true,
+      notes: null,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+  }
+
   it('restores exact ["words"] key on failed mutation', async () => {
-    const prevData: Word[] = [
-      {id: 1, term: 'run', translations: 'бежать', knowledge_level: 2, updated_at: new Date().toISOString()},
-    ]
+    const prevData: Word[] = [makeWord(1, 'run', 2)]
 
     queryClient.setQueryData(queryKeys.words, prevData)
 
@@ -44,9 +68,7 @@ describe('useWordUpdate rollback', () => {
 
   it('restores topic-scoped ["words", topicId] key on failed mutation', async () => {
     const topicId = 42
-    const prevData: Word[] = [
-      {id: 1, term: 'run', translations: 'бежать', knowledge_level: 2, updated_at: new Date().toISOString()},
-    ]
+    const prevData: Word[] = [makeWord(1, 'run', 2)]
 
     queryClient.setQueryData([...queryKeys.words, topicId], prevData)
 
@@ -64,9 +86,9 @@ describe('useWordUpdate rollback', () => {
   })
 
   it('restores all ["words", ...] query family on failed mutation', async () => {
-    const rootData: Word[] = [{id: 1, term: 'run', translations: 'бежать', knowledge_level: 2, updated_at: new Date().toISOString()}]
-    const topic1Data: Word[] = [{id: 2, term: 'walk', translations: 'идти', knowledge_level: 3, updated_at: new Date().toISOString()}]
-    const topic2Data: Word[] = [{id: 3, term: 'jump', translations: 'прыгать', knowledge_level: 1, updated_at: new Date().toISOString()}]
+    const rootData: Word[] = [makeWord(1, 'run', 2)]
+    const topic1Data: Word[] = [makeWord(2, 'walk', 3)]
+    const topic2Data: Word[] = [makeWord(3, 'jump', 1)]
 
     queryClient.setQueryData(queryKeys.words, rootData)
     queryClient.setQueryData([...queryKeys.words, 1], topic1Data)
