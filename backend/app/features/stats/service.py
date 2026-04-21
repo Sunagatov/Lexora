@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
+from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -8,9 +10,10 @@ from sqlalchemy.orm import Session, selectinload
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
-from app.features.stats.model import WordProgressEvent
+from app.features.stats.model import AppUsageEvent, WordProgressEvent
 from app.features.stats.schemas import (
-    DailyActivity, LevelCounts, StatsResponse, TopicStat, VocabularyOverview,
+    DailyActivity, LevelCounts, StatsResponse, TopicStat, UsageDay, UsageEventCreate,
+    UsageSummary, VocabularyOverview,
 )
 
 
@@ -25,6 +28,21 @@ def record_level_change(
     db.add(WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source))
 
 
+def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
+    existing = db.scalar(select(AppUsageEvent).where(AppUsageEvent.event_key == payload.event_key))
+    if existing is not None:
+        return
+
+    db.add(
+        AppUsageEvent(
+            event_key=payload.event_key,
+            session_key=payload.session_key,
+            route=payload.route,
+            active_seconds=payload.active_seconds,
+        )
+    )
+
+
 def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
     total        = len(words)
     example_counts = [example_count(w) for w in words]
@@ -36,7 +54,7 @@ def _build_overview(words: list) -> tuple[VocabularyOverview, dict, int]:
     for w in words:
         level_counts[w.knowledge_level] += 1
 
-    active_total = sum(level_counts[l] for l in (1, 2, 3, 4))
+    active_total = sum(level_counts[level] for level in (1, 2, 3, 4))
     okay_pct = (
         round(((level_counts[3] + level_counts[4]) / active_total) * 100)
         if active_total > 0 else 0
@@ -98,6 +116,65 @@ def _build_words_added_by_month(words: list) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def _build_usage_stats(db: Session) -> tuple[UsageSummary, list[UsageDay], str | None]:
+    events = db.scalars(select(AppUsageEvent).order_by(AppUsageEvent.created_at.asc())).all()
+    if not events:
+        return (
+            UsageSummary(
+                total_active_seconds=0,
+                active_days=0,
+                sessions=0,
+                avg_session_seconds=0,
+                longest_session_seconds=0,
+                today_active_seconds=0,
+                last_7d_active_seconds=0,
+            ),
+            [],
+            None,
+        )
+
+    daily_seconds: dict[str, int] = defaultdict(int)
+    per_session_seconds: dict[str, int] = defaultdict(int)
+    today = datetime.now(timezone.utc).date()
+    last_7d_cutoff = today - timedelta(days=6)
+
+    for event in events:
+        day = event.created_at.date().isoformat()
+        daily_seconds[day] += event.active_seconds
+        per_session_seconds[event.session_key] += event.active_seconds
+
+    total_active_seconds = sum(daily_seconds.values())
+    active_days = len(daily_seconds)
+    sessions = len(per_session_seconds)
+    longest_session_seconds = max(per_session_seconds.values(), default=0)
+    avg_session_seconds = round(total_active_seconds / sessions) if sessions > 0 else 0
+    today_active_seconds = daily_seconds.get(today.isoformat(), 0)
+    last_7d_active_seconds = sum(
+        seconds for day, seconds in daily_seconds.items()
+        if last_7d_cutoff.isoformat() <= day <= today.isoformat()
+    )
+
+    usage_daily = [
+        UsageDay(date=day, active_seconds=seconds)
+        for day, seconds in sorted(daily_seconds.items(), reverse=True)
+    ]
+    usage_started_at = min(daily_seconds.keys()) if daily_seconds else None
+
+    return (
+        UsageSummary(
+            total_active_seconds=total_active_seconds,
+            active_days=active_days,
+            sessions=sessions,
+            avg_session_seconds=avg_session_seconds,
+            longest_session_seconds=longest_session_seconds,
+            today_active_seconds=today_active_seconds,
+            last_7d_active_seconds=last_7d_active_seconds,
+        ),
+        usage_daily,
+        usage_started_at,
+    )
+
+
 def _build_daily_activity(db: Session) -> tuple[list[DailyActivity], str | None]:
     events = db.scalars(
         select(WordProgressEvent).order_by(WordProgressEvent.created_at.asc())
@@ -131,10 +208,10 @@ def _build_daily_activity(db: Session) -> tuple[list[DailyActivity], str | None]
 
 
 def compute_stats(db: Session) -> StatsResponse:
-    words  = db.scalars(
+    words = cast(list[Word], db.scalars(
         select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
-    ).all()
-    topics = db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all()
+    ).all())
+    topics = cast(list[Topic], db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all())
 
     overview, level_counts, okay_pct = _build_overview(words)
     overview = overview.model_copy(update={"total_topics": len(topics)})
@@ -142,6 +219,7 @@ def compute_stats(db: Session) -> StatsResponse:
     word_map     = {w.id: w for w in words}
     topic_stats  = _build_topic_stats(db, topics, word_map)
     words_by_month = _build_words_added_by_month(words)
+    usage_summary, usage_daily, usage_started_at = _build_usage_stats(db)
     daily_activity, tracking_started_at = _build_daily_activity(db)
 
     return StatsResponse(
@@ -155,8 +233,11 @@ def compute_stats(db: Session) -> StatsResponse:
             level_5=level_counts[5],
         ),
         okay_or_better_pct=okay_pct,
+        usage_summary=usage_summary,
+        usage_daily=usage_daily,
         topics=topic_stats,
         daily_activity=daily_activity,
         words_added_by_month=words_by_month,
         tracking_started_at=tracking_started_at,
+        usage_started_at=usage_started_at,
     )

@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 from app.features.stats import service as stats_service
+from app.features.stats.schemas import UsageEventCreate
 
 
 def test_record_level_change_adds_progress_event_to_session() -> None:
@@ -22,6 +23,26 @@ def test_record_level_change_adds_progress_event_to_session() -> None:
     assert event.old_level == 1
     assert event.new_level == 3
     assert event.source == "manual"
+
+
+def test_record_usage_event_is_idempotent() -> None:
+    db = MagicMock()
+    db.scalar.return_value = None
+    payload = UsageEventCreate(
+        event_key="event-123456",
+        session_key="session-123456",
+        route="/smart-review",
+        active_seconds=17,
+    )
+
+    stats_service.record_usage_event(db, payload)
+
+    event = db.add.call_args.args[0]
+    assert isinstance(event, stats_service.AppUsageEvent)
+    assert event.event_key == "event-123456"
+    assert event.session_key == "session-123456"
+    assert event.route == "/smart-review"
+    assert event.active_seconds == 17
 
 
 def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> None:
@@ -133,6 +154,46 @@ def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:
     assert activity[1].net == 2
 
 
+def test_build_usage_stats_groups_by_day_and_session() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [
+        SimpleNamespace(
+            session_key="session-a",
+            active_seconds=30,
+            route="/smart-review",
+            created_at=datetime(2026, 1, 10, 10, 0, tzinfo=timezone.utc),
+        ),
+        SimpleNamespace(
+            session_key="session-a",
+            active_seconds=45,
+            route="/topics/travel",
+            created_at=datetime(2026, 1, 10, 11, 0, tzinfo=timezone.utc),
+        ),
+        SimpleNamespace(
+            session_key="session-b",
+            active_seconds=15,
+            route="/stats",
+            created_at=datetime(2026, 1, 11, 9, 0, tzinfo=timezone.utc),
+        ),
+    ]
+
+    summary, daily, started_at = stats_service._build_usage_stats(db)
+
+    assert started_at == "2026-01-10"
+    assert summary.total_active_seconds == 90
+    assert summary.active_days == 2
+    assert summary.sessions == 2
+    assert summary.avg_session_seconds == 45
+    assert summary.longest_session_seconds == 75
+    assert summary.today_active_seconds >= 0
+    assert summary.last_7d_active_seconds >= 0
+
+    assert daily[0].date == "2026-01-11"
+    assert daily[0].active_seconds == 15
+    assert daily[1].date == "2026-01-10"
+    assert daily[1].active_seconds == 75
+
+
 def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> None:
     # Only non-deleted words (deleted_at=None) are passed by compute_stats, so deleted
     # words must not appear in the monthly totals.
@@ -183,12 +244,14 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
     _ = deleted_word_january  # not returned by the active-words query — that's the invariant
 
     db = MagicMock()
-    # compute_stats calls db.scalars three times in order:
+    # compute_stats calls db.scalars four times in order:
     #   1. active words   (deleted_at IS NULL)
     #   2. active topics  (deleted_at IS NULL)
-    #   3. WordProgressEvent in _build_daily_activity
+    #   3. AppUsageEvent in _build_usage_stats
+    #   4. WordProgressEvent in _build_daily_activity
     db.scalars.side_effect = [
         MagicMock(**{"all.return_value": [active_word]}),
+        MagicMock(**{"all.return_value": []}),
         MagicMock(**{"all.return_value": []}),
         MagicMock(**{"all.return_value": []}),
     ]

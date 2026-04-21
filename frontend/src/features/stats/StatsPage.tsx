@@ -37,7 +37,7 @@ export function toLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export function filterByDays(days: DailyActivity[], period: ActivityPeriod): DailyActivity[] {
+export function filterByDays<T extends {date: string}>(days: T[], period: ActivityPeriod): T[] {
   if (period === 'all') return days
   const windowSize = Number(period)
   const cutoff = new Date()
@@ -45,6 +45,16 @@ export function filterByDays(days: DailyActivity[], period: ActivityPeriod): Dai
   cutoff.setDate(cutoff.getDate() - (windowSize - 1))
   const cutoffKey = toLocalDateKey(cutoff)
   return days.filter((d) => d.date >= cutoffKey)
+}
+
+export function formatDuration(seconds: number): string {
+  if (seconds <= 0) return '0s'
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainder = seconds % 60
+  if (hours > 0) return `${hours}h ${String(minutes).padStart(2, '0')}m`
+  if (minutes > 0) return `${minutes}m ${remainder > 0 ? `${remainder}s` : ''}`.trim()
+  return `${remainder}s`
 }
 
 function filterByMonths(entries: [string, number][], period: MonthPeriod): [string, number][] {
@@ -70,6 +80,7 @@ export function StatsPage() {
   const {data: s, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
 
   const [activityPeriod, setActivityPeriod] = useState<ActivityPeriod>('30')
+  const [usagePeriod,    setUsagePeriod]    = useState<ActivityPeriod>('30')
   const [monthPeriod,    setMonthPeriod]    = useState<MonthPeriod>('all')
   const [topicSort,      setTopicSort]      = useState<TopicSort>('worst')
   const [topicExpanded,  setTopicExpanded]  = useState(false)
@@ -78,15 +89,24 @@ export function StatsPage() {
     () => s ? filterByDays(s.daily_activity, activityPeriod) : [],
     [s, activityPeriod],
   )
+  const filteredUsage = useMemo(
+    () => s ? filterByDays(s.usage_daily, usagePeriod) : [],
+    [s, usagePeriod],
+  )
   const activityTotals = useMemo(() => {
     let reviewed = 0, improved = 0, downgraded = 0, net = 0
     for (const d of filteredActivity) { reviewed += d.reviewed; improved += d.improved; downgraded += d.downgraded; net += d.net }
     return {reviewed, improved, downgraded, net}
   }, [filteredActivity])
+  const usageTotals = s?.usage_summary
 
   const activityChartData = useMemo(() =>
     [...filteredActivity].reverse().slice(-60).map((d) => ({label: dayLabel(d.date), value: d.net})),
     [filteredActivity],
+  )
+  const usageChartData = useMemo(() =>
+    [...filteredUsage].reverse().slice(-60).map((d) => ({label: dayLabel(d.date), value: d.active_seconds})),
+    [filteredUsage],
   )
   const monthChartData = useMemo(() => {
     if (!s) return []
@@ -146,6 +166,36 @@ export function StatsPage() {
             <StatCard value={s.level_counts.level_4} label="Strong (lvl 4)" />
             <StatCard value={`${s.okay_or_better_pct}%`} label="Okay or better" />
           </div>
+        </section>
+
+        <section className="stats-section">
+          <div className="stats-section-header">
+            <SectionTitle>App time</SectionTitle>
+            <PeriodTabs options={ACTIVITY_PERIODS} value={usagePeriod} onChange={setUsagePeriod} />
+          </div>
+          {usageTotals ? (
+            <>
+              <div className="stats-cards stats-cards-4">
+                <StatCard value={formatDuration(usageTotals.total_active_seconds)} label="Active time" sub={`${usageTotals.active_days.toLocaleString()} active days`} />
+                <StatCard value={formatDuration(usageTotals.today_active_seconds)} label="Today" />
+                <StatCard value={formatDuration(usageTotals.last_7d_active_seconds)} label="This week" />
+                <StatCard value={usageTotals.sessions.toLocaleString()} label="Sessions" />
+              </div>
+              <div className="stats-cards stats-cards-2">
+                <StatCard value={formatDuration(usageTotals.avg_session_seconds)} label="Avg session" />
+                <StatCard value={formatDuration(usageTotals.longest_session_seconds)} label="Longest session" />
+              </div>
+              {usageChartData.length > 0
+                ? <BarChart data={usageChartData} color="#2563eb" formatValue={formatDuration} />
+                : <div className="stats-empty">No app activity recorded for this period.</div>
+              }
+              {s.usage_started_at && (
+                <div className="stats-tracking-note">
+                  Active time tracking started {dayLabel(s.usage_started_at)}. Idle time is excluded.
+                </div>
+              )}
+            </>
+          ) : <div className="stats-empty">No app activity recorded yet.</div>}
         </section>
 
         <section className="stats-section">

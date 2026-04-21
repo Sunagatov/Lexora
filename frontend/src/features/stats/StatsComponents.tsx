@@ -39,14 +39,22 @@ export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
   )
 }
 
-export function BarChart({data, color = 'var(--accent)'}: {data: {label: string; value: number}[]; color?: string}) {
+export function BarChart({
+  data,
+  color = 'var(--accent)',
+  formatValue,
+}: {
+  data: {label: string; value: number}[]
+  color?: string
+  formatValue?: (value: number) => string
+}) {
   const max = Math.max(1, ...data.map((d) => Math.abs(d.value)))
   return (
     <div className="stats-chart">
       {data.map((d, i) => (
         <div key={i} className="stats-chart-col">
           <span className="stats-chart-count" style={d.value < 0 ? {color: 'var(--danger, #dc2626)'} : {}}>
-            {d.value !== 0 ? d.value : ''}
+            {d.value !== 0 ? (formatValue ? formatValue(d.value) : d.value) : ''}
           </span>
           <div className="stats-chart-bar-wrap">
             <div
