@@ -2,15 +2,19 @@ Take this Lexora topic refinement draft and return ONLY valid JSON.
 
 Goal:
 - Split one broad topic into smaller, specific, learner-friendly subtopics.
+- Only split topics that have 300 or more active words.
 - Keep names short, practical, and useful for vocabulary study.
 - A word may fit more than one subtopic if justified, but prefer one primary bucket.
 - Keep the source topic in place.
+- Reuse an existing active topic if it already matches a subtopic closely enough.
+- Do not create duplicate or near-duplicate topics.
 - Return a dry-run plan, not a live write.
 
 Rules:
 - Return JSON only. No markdown fences. No explanation.
 - Do not invent words.
 - Do not include duplicate terms in the same subtopic.
+- Do not create two subtopics that are very similar in meaning or wording.
 - Prefer real-life groupings over abstract labels.
 - Prefer these broad buckets when they fit the actual words:
   - Safety, Abuse, and Control

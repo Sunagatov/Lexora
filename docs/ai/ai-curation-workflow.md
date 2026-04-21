@@ -164,11 +164,14 @@ Current API surface:
 
 Practical rule:
 
+- only split topics with 300 or more active words
 - keep the original broad topic in place
 - create specific topics first
 - reassign words into the new topics
 - do not remove the umbrella topic automatically
 - use dry-run before live import
+- reuse an existing active topic if one already matches a candidate bucket closely
+- do not create duplicate or near-duplicate topic names
 
 Suggested split buckets for broad conflict / boundaries topics:
 
