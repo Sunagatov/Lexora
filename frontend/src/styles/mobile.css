@@ -189,7 +189,7 @@
 
   .toolbar-controls-row {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr) auto auto;
     gap: 6px;
     align-items: stretch;
   }
@@ -200,6 +200,11 @@
     width: 100%;
     min-width: 0;
     flex: initial;
+  }
+
+  .toolbar-control-level {
+    padding-left: 10px;
+    padding-right: 24px;
   }
 
   .toolbar-search-toggle {
@@ -339,8 +344,13 @@
   }
 
   .toolbar-controls-row {
-    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.08fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) auto auto;
     gap: 5px;
+  }
+
+  .toolbar-control-level {
+    padding-left: 8px;
+    padding-right: 22px;
   }
 
   .toolbar-reset-btn {

@@ -239,6 +239,23 @@
 
 .quick-add-new-topic-btn:hover { background: var(--accent-light); }
 
+@media (max-width: 860px) {
+  .quick-add-topic-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quick-add-select,
+  .quick-add-new-topic-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .quick-add-new-topic-btn {
+    padding: 10px 14px;
+  }
+}
+
 .quick-add-feedback {
   font-size: 0.85rem;
   font-weight: 500;

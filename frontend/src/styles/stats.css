@@ -538,6 +538,15 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
   .stats-daily-header,
   .stats-daily-row { grid-template-columns: 1fr 60px 60px 70px 50px; }
 
+  .stats-daily-table {
+    overflow-x: auto;
+  }
+
+  .stats-daily-header,
+  .stats-daily-row {
+    min-width: 430px;
+  }
+
   .stats-section-header { flex-direction: column; gap: 8px; }
 
   .stats-donut-row { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -559,4 +568,13 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 
   .stats-daily-header,
   .stats-daily-row { grid-template-columns: 1fr 52px 52px 52px 44px; }
+
+  .stats-daily-table {
+    overflow-x: auto;
+  }
+
+  .stats-daily-header,
+  .stats-daily-row {
+    min-width: 390px;
+  }
 }
