@@ -1,6 +1,6 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {MemoryRouter, Route, Routes, useNavigate} from 'react-router-dom'
-import {describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {DrawerProvider, useDrawer} from '../../../shared/DrawerContext'
 import {StudyPage} from '../StudyPage'
 
@@ -46,7 +46,11 @@ vi.mock('../useStudyState', () => ({
 }))
 
 vi.mock('../../topics/TopicSidebar', () => ({
-  TopicSidebar: () => <div data-testid="topic-sidebar" />,
+  TopicSidebar: ({onSelect}: {onSelect: (id: number) => void}) => (
+    <div data-testid="topic-sidebar">
+      <button type="button" onClick={() => onSelect(1)}>select topic</button>
+    </div>
+  ),
 }))
 
 vi.mock('../../smart-review/SmartReviewView', () => ({
@@ -60,6 +64,25 @@ vi.mock('../../words/QuickAddSheet', () => ({
 vi.mock('../../words/WordCollectionView', () => ({
   WordCollectionView: () => <div data-testid="word-collection" />,
 }))
+
+beforeEach(() => {
+  const store = new Map<string, string>()
+  Object.defineProperty(window, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        store.set(key, value)
+      },
+      removeItem: (key: string) => {
+        store.delete(key)
+      },
+      clear: () => {
+        store.clear()
+      },
+    },
+  })
+})
 
 function Shell() {
   const navigate = useNavigate()
@@ -101,6 +124,27 @@ describe('StudyPage drawer lifecycle', () => {
     await waitFor(() => {
       expect(screen.getByTestId('drawer-state').textContent).toBe('closed')
       expect(document.querySelector('.mobile-drawer.open')).toBeNull()
+    })
+  })
+
+  it('closes the drawer when selecting a topic', async () => {
+    render(
+      <DrawerProvider>
+        <MemoryRouter initialEntries={['/study']}>
+          <Shell />
+          <Routes>
+            <Route path="/study" element={<StudyPage />} />
+          </Routes>
+        </MemoryRouter>
+      </DrawerProvider>,
+    )
+
+    fireEvent.click(screen.getByText('open drawer'))
+    expect(screen.getByTestId('drawer-state').textContent).toBe('open')
+
+    fireEvent.click(screen.getAllByText('select topic')[0])
+    await waitFor(() => {
+      expect(screen.getByTestId('drawer-state').textContent).toBe('closed')
     })
   })
 })

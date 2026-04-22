@@ -71,7 +71,8 @@ export function StudyPage() {
     totalWords: s.totalWords,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
-    onSelect: s.selectTopic, onSelectSmartReview: s.selectSmartReview,
+    onSelect: (id: number) => { setDrawerOpen(false); s.selectTopic(id) },
+    onSelectSmartReview: () => { setDrawerOpen(false); s.selectSmartReview() },
     smartQueue: s.smartQueue,
   }
   const desktopSidebarStyle = {'--sidebar-w': `${sidebarWidth}px`} as CSSProperties

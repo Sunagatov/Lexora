@@ -22,7 +22,7 @@ export function useTopicState(
 
   function selectTopic(id: number) {
     const topic = topics.find((t) => t.id === id)
-    if (topic) navigate(routes.topic(topic.slug))
+    if (topic) navigate({pathname: routes.topic(topic.slug), search: ''})
   }
 
   function selectSmartReview() {
