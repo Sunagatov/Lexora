@@ -1,46 +1,17 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import type {StudyQueue, WordKnowledgeLevel} from '../../shared/types'
 import {useSmartReview} from './useSmartReview'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useWordFilter} from '../words/useWordFilter'
 import {WordCollectionView} from '../words/WordCollectionView'
+import {useResponsivePageSize} from '../../shared/useResponsivePageSize'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
-
-const SMART_REVIEW_MOBILE_PAGE_SIZE = 5
-const SMART_REVIEW_DESKTOP_PAGE_SIZE = 10
-const SMART_REVIEW_MOBILE_BREAKPOINT = '(max-width: 860px)'
-
-function getSmartReviewDefaultPageSize() {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return SMART_REVIEW_DESKTOP_PAGE_SIZE
-  return window.matchMedia(SMART_REVIEW_MOBILE_BREAKPOINT).matches
-    ? SMART_REVIEW_MOBILE_PAGE_SIZE
-    : SMART_REVIEW_DESKTOP_PAGE_SIZE
-}
 
 export function SmartReviewView({queue, isLoading}: Props) {
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
-  const [defaultPageSize, setDefaultPageSize] = useState(() => getSmartReviewDefaultPageSize())
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return
-
-    const media = window.matchMedia(SMART_REVIEW_MOBILE_BREAKPOINT)
-    const update = () => setDefaultPageSize(media.matches ? SMART_REVIEW_MOBILE_PAGE_SIZE : SMART_REVIEW_DESKTOP_PAGE_SIZE)
-
-    update()
-    if (media.addEventListener) {
-      media.addEventListener('change', update)
-      return () => media.removeEventListener('change', update)
-    }
-
-    media.addListener(update)
-
-    return () => {
-      media.removeListener?.(update)
-    }
-  }, [])
+  const defaultPageSize = useResponsivePageSize(20, 40)
 
   const filter = useWordFilter(words, {defaultPageSize})
   const update = useWordUpdate(

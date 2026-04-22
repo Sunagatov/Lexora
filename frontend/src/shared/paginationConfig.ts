@@ -1,4 +1,4 @@
-const fallbackPageSizes = [5, 10, 20, 50, 100]
+const fallbackPageSizes = [20, 40, 50, 100]
 const configuredPageSizes = (import.meta.env.VITE_PAGE_SIZES ?? fallbackPageSizes.join(','))
   .split(',')
   .map((value: string) => Number(value.trim()))
@@ -8,7 +8,7 @@ export const PAGE_SIZES: number[] = Array.from(new Set<number>(configuredPageSiz
 if (PAGE_SIZES.length === 0) {
   PAGE_SIZES.push(...fallbackPageSizes)
 }
-const fallbackDefaultPageSize = 10
+const fallbackDefaultPageSize = 20
 const rawDefault = Number(import.meta.env.VITE_DEFAULT_PAGE_SIZE ?? fallbackDefaultPageSize)
 export const DEFAULT_PAGE_SIZE = PAGE_SIZES.includes(rawDefault)
   ? rawDefault

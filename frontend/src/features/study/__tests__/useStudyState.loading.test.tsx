@@ -77,6 +77,7 @@ describe('useStudyState loading', () => {
 
     expect(result.current.isLoading).toBe(false)
     expect(result.current.isWordsLoading).toBe(false)
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith([], expect.objectContaining({syncUrl: false}))
   })
 
   it('tracks the shared words query separately on topic routes', () => {

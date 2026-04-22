@@ -27,11 +27,13 @@ function parseSort(v: string | null): SortOption {
 
 type UseWordFilterOptions = {
   defaultPageSize?: number
+  syncUrl?: boolean
 }
 
 export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions = {}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [frozenIds, setFrozenIds]       = useState<number[] | null>(null)
+  const syncUrl = options.syncUrl ?? true
   const requestedDefaultPageSize = options.defaultPageSize ?? DEFAULT_PAGE_SIZE
   const defaultPageSize = PAGE_SIZES.includes(requestedDefaultPageSize)
     ? requestedDefaultPageSize
@@ -44,6 +46,10 @@ export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions 
   const pageSize    = searchParams.has('pageSize') ? parsePageSize(searchParams.get('pageSize')) : defaultPageSize
 
   function setParam(key: string, value: string | null, resetPage = true) {
+    if (!syncUrl) {
+      if (resetPage) setFrozenIds(null)
+      return
+    }
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev)
       if (value === null || value === '') next.delete(key)
@@ -67,6 +73,7 @@ export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions 
   const safePage      = Math.min(page, totalPages)
 
   useEffect(() => {
+    if (!syncUrl) return
     if (safePage === page) return
 
     setSearchParams((prev) => {
@@ -75,7 +82,7 @@ export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions 
       else next.set('page', String(safePage))
       return next
     }, {replace: true})
-  }, [page, safePage, setSearchParams])
+  }, [page, safePage, setSearchParams, syncUrl])
 
   const pageWords     = useMemo(
     () => filteredWords.slice((safePage - 1) * pageSize, safePage * pageSize),

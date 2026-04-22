@@ -60,12 +60,12 @@ describe('useWordFilter URL sync', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=5')
+      expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=3')
     })
   })
 
-  it('supports a smaller route-specific default page size', async () => {
-    const words = Array.from({length: 20}, (_, index) => ({
+  it('supports a route-specific default page size', async () => {
+    const words = Array.from({length: 80}, (_, index) => ({
       id: index + 1,
       topic_ids: [],
       term: `word-${index + 1}`,
@@ -87,11 +87,11 @@ describe('useWordFilter URL sync', () => {
 
     render(
       <MemoryRouter initialEntries={[{pathname: '/', search: ''}]}>
-        <Probe words={words} defaultPageSize={5} />
+        <Probe words={words} defaultPageSize={40} />
       </MemoryRouter>,
     )
 
-    expect(screen.getByTestId('search').getAttribute('data-page-size')).toBe('5')
-    expect(screen.getByTestId('search').getAttribute('data-total-pages')).toBe('4')
+    expect(screen.getByTestId('search').getAttribute('data-page-size')).toBe('40')
+    expect(screen.getByTestId('search').getAttribute('data-total-pages')).toBe('2')
   })
 })

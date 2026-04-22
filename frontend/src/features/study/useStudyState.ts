@@ -10,6 +10,7 @@ import {useWordUpdate} from '../words/useWordUpdate'
 import {useSmartReview} from '../smart-review/useSmartReview'
 import {queryKeys} from '../../shared/queryKeys'
 import {routes} from '../../shared/routes'
+import {useResponsivePageSize} from '../../shared/useResponsivePageSize'
 
 export function useStudyState() {
   const location      = useLocation()
@@ -31,6 +32,7 @@ export function useStudyState() {
 
   const topicState  = useTopicState(topics, topicCounts, topicProgress)
   const smartReview = useSmartReview(isSmartReview)
+  const defaultPageSize = useResponsivePageSize(20, 40)
 
   // Fetch words scoped to the selected topic from the server.
   const wordsQuery = useQuery({
@@ -41,7 +43,7 @@ export function useStudyState() {
 
   const topicWords = wordsQuery.data ?? []
 
-  const filter = useWordFilter(topicWords)
+  const filter = useWordFilter(topicWords, {defaultPageSize, syncUrl: !isSmartReview})
   const update = useWordUpdate(() =>
     filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
   )
