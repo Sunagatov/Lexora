@@ -134,7 +134,17 @@ export function StudyPage() {
             <div className="sticky-controls">
               <div className="card topic-header-card topic-header-card-desktop">
                 <div className="topic-header-main">
-                  <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
+                  <div className="topic-header-title-row">
+                    <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
+                    {s.selectedTopicId !== null && (
+                      <div className="topic-header-count">{s.filteredWordCount} of {s.topicWordCount} words</div>
+                    )}
+                  </div>
+                  <div className="topic-header-subtitle topic-header-subtitle-desktop">
+                    {s.selectedTopicId !== null
+                      ? (s.filteredWordCount === s.topicWordCount ? 'Reviewing the full topic.' : '')
+                      : 'Select a topic to start reviewing words.'}
+                  </div>
                 </div>
                 <div className="level-summary">
                   {ACTIVE_LEVELS.map((l) => (

@@ -347,7 +347,7 @@
 
 @media (max-width: 860px) {
   .word-page {
-    padding-bottom: 60px;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
   
   .word-page-hero-wrap {
@@ -396,9 +396,18 @@
   .word-page-term { font-size: 1.6rem; }
 
   .word-page-view-row {
-    grid-template-columns: 90px 1fr;
+    grid-template-columns: 1fr;
     padding: 12px 14px;
-    gap: 8px;
+    gap: 4px;
+    align-items: start;
+  }
+
+  .word-page-view-label {
+    font-size: 0.68rem;
+  }
+
+  .word-page-view-value {
+    font-size: 0.9rem;
   }
 
   .word-page-edit-form { padding: 14px; }

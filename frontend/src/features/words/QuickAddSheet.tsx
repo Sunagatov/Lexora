@@ -1,4 +1,4 @@
-import type {KeyboardEvent} from 'react'
+import {useEffect, useRef, type KeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from './useQuickAdd'
 
@@ -6,19 +6,62 @@ type Props = {onClose: () => void}
 
 export function QuickAddSheet({onClose}: Props) {
   const q = useQuickAdd(onClose)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const id = window.requestAnimationFrame(() => q.termRef.current?.focus())
+    return () => {
+      window.cancelAnimationFrame(id)
+      previousFocusRef.current?.focus?.()
+    }
+  }, [q.termRef])
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  function focusableElements() {
+    return Array.from(
+      sheetRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? [],
+    ).filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null)
+  }
 
   function handleSheetKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Escape') onClose()
+    if (e.key !== 'Tab') return
+
+    const focusables = focusableElements()
+    if (focusables.length === 0) return
+
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    const current = document.activeElement
+
+    if (e.shiftKey && current === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && current === last) {
+      e.preventDefault()
+      first.focus()
+    }
   }
 
   return createPortal(
     <>
       <div className="quick-add-overlay" onClick={onClose} />
-      <div className="quick-add-sheet" role="dialog" aria-label="Add word" onKeyDown={handleSheetKeyDown}>
+      <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown}>
         <div className="quick-add-handle" />
 
         <div className="quick-add-header">
-          <span className="quick-add-title">Add word</span>
+          <span className="quick-add-title" id="quick-add-title">Add word</span>
           <button type="button" className="quick-add-close" onClick={onClose} aria-label="Close">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>

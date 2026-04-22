@@ -163,14 +163,51 @@
     top: 0;
     z-index: 10;
     background: var(--bg);
-    padding: 4px 0 2px;
-    gap: 4px;
+    padding: 6px 0 4px;
+    gap: 6px;
     flex-shrink: 0;
   }
 
-  /* Topic header card is hidden on all devices */
-  .topic-header-card-desktop {
+  .topic-header-card {
+    padding: 10px 14px;
+    gap: 0;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .topic-header-card .level-summary {
     display: none;
+  }
+
+  .topic-header-subtitle-desktop {
+    display: none;
+  }
+
+  .topic-header-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topic-header-title {
+    font-size: 0.92rem;
+  }
+
+  .topic-header-count {
+    font-size: 0.72rem;
+  }
+
+  .topic-header-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .level-summary {
+    gap: 3px;
+  }
+
+  .level-chip {
+    min-width: 36px;
+    padding: 3px 6px 4px;
   }
 
   .mobile-progress-strip {
@@ -178,45 +215,78 @@
   }
 
   /* Toolbar */
-  .toolbar-card {
-    padding: 8px;
+  .toolbar-card { padding: 10px; gap: 8px; }
+
+  .toolbar-search-row-desktop,
+  .toolbar-controls-row,
+  .toolbar-meta-row {
+    display: none;
+  }
+
+  .toolbar-mobile-row {
+    display: flex;
+    align-items: center;
     gap: 6px;
   }
 
-  .toolbar-search-row {
+  .toolbar-mobile-select {
     display: block;
-  }
-
-  .toolbar-controls-row {
-    display: grid;
-    grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.95fr) auto auto;
-    gap: 6px;
-    align-items: stretch;
-  }
-
-  .toolbar-control,
-  .toolbar-control-sort,
-  .toolbar-control-level {
-    width: 100%;
+    flex: 1;
     min-width: 0;
-    flex: initial;
+    height: 38px;
+    padding: 0 24px 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 7px center;
   }
 
-  .toolbar-control-sort {
-    flex-basis: auto;
+
+  .toolbar-mobile-search-row {
+    display: flex;
   }
 
-  .toolbar-control-level {
-    padding-left: 10px;
-    padding-right: 24px;
+  .toolbar-mobile-search-row .toolbar-mobile-search-wrap {
+    flex: 1;
+    min-width: 0;
+    position: relative;
   }
 
-  .toolbar-search-toggle {
+  .toolbar-mobile-search-wrap {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .toolbar-mobile-search {
+    padding-right: 40px;
+  }
+
+  .toolbar-mobile-clear {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--text-2);
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
 
-  .toolbar-search-row-desktop { display: none; }
-  .toolbar-search-row-mobile  { display: flex; }
 
   .toolbar-reset-btn {
     width: auto;
@@ -292,6 +362,7 @@
     border-radius: 10px;
   }
 
+
   /* Compact mobile pagination */
   .pagination-bar {
     padding: 12px 0 16px;
@@ -325,6 +396,7 @@
   .card:has(.word-table-wrap) {
     display: none;
   }
+
 }
 
 @media (max-width: 480px) {
@@ -348,19 +420,17 @@
     padding: 7px;
   }
 
-  .toolbar-controls-row {
-    grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.95fr) auto auto;
-    gap: 5px;
+  .toolbar-mobile-row {
+    gap: 6px;
   }
 
-  .toolbar-control-level {
-    padding-left: 8px;
-    padding-right: 22px;
+  .toolbar-mobile-clear {
+    width: 26px;
+    height: 26px;
   }
 
-  .toolbar-reset-btn {
-    min-width: 72px;
-    padding-inline: 8px;
+  .toolbar-filters-btn {
+    padding-inline: 10px;
   }
 
   .toolbar-control,
@@ -402,4 +472,16 @@
 
   .page-nav {
     min-width: 48px;
-  }}
+  }
+
+  .fab {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    right: 14px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .fab-hidden {
+    transform: translateY(10px) scale(0.95);
+  }
+}

@@ -27,17 +27,45 @@
 }
 
 .topic-header-card {
-  display: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .topic-header-main {
   min-width: 0;
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.topic-header-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.topic-header-count {
+  flex-shrink: 0;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.topic-header-subtitle {
+  color: var(--text-2);
+  font-size: 0.86rem;
+  line-height: 1.4;
 }
 
 .topic-header-title {
   font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,37 +75,44 @@
 
 .level-summary {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .level-chip {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 10px 5px;
+  padding: 3px 7px 4px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   gap: 1px;
-  min-width: 52px;
+  min-width: 40px;
 }
 
 .level-chip-label {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.75;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
 }
 
 .level-chip-value {
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
+
+/* Muted chip colors — scoped so word rows/cards keep their vivid colors */
+.level-chip.level-1 { background: #fef7f7; color: #e05252; border-color: #fecaca; }
+.level-chip.level-2 { background: #f5f9ff; color: #4a80d4; border-color: #bfdbfe; }
+.level-chip.level-3 { background: #f8f5ff; color: #8b5cf6; border-color: #ddd6fe; }
+.level-chip.level-4 { background: #f0fdf8; color: #10b981; border-color: #a7f3d0; }
 
 /* Parked chip — visually separated from the 1-4 progress chips */
 .level-chip-parked {
-  opacity: 0.6;
+  opacity: 0.5;
   border-style: dashed;
 }
 
