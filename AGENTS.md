@@ -30,6 +30,14 @@ Do **not** scan the whole repo unless the task explicitly requires a full audit.
 - `docker-compose.yml` — local orchestration for DB + backend + frontend
 - `docs/ai/` — compact project context for coding assistants
 
+## Vault and prod access
+
+- When a task touches prod data, use the Vault-managed app checkout and secrets, not repo-local `.env` files.
+- For Lexora prod API work, the backend secret source is usually `/Users/zufar/IdeaProjects/Vault/scripts/secrets/view.sh lexora-backend .env.prod`.
+- For live authenticated API calls, log in with `/auth/login`, capture the returned `csrf_token`, and reuse the session cookie plus `X-CSRF-Token` header for protected routes.
+- For topic cleanup, prefer reading `/api/topics/audit` and `/api/topics` first, then rename or split from concrete data instead of guessing names.
+- For prod writes, keep changes small and reversible: rename in place when IDs must stay stable; split only when the topic family is genuinely broad and cleanly separable.
+
 ## Important invariants
 
 - Authenticated backend routes rely on **session cookie + CSRF header**.

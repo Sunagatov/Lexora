@@ -50,6 +50,13 @@ Stay consistent with this pattern unless there is a clear reason not to.
 
 Do not accidentally break this contract.
 
+## Prod and Vault workflow
+
+- For prod API calls, use the Vault-managed backend secret source, usually `/Users/zufar/IdeaProjects/Vault/scripts/secrets/view.sh lexora-backend .env.prod`.
+- Typical live API sequence: log in with `/auth/login`, extract `csrf_token`, then reuse the session cookie plus `X-CSRF-Token` for protected endpoints.
+- When changing live topic names or topic structure, fetch `/api/topics/audit` and `/api/topics` first so the rename/split plan is based on current prod data.
+- Prefer in-place topic renames when the topic ID must stay stable; use split or reparenting only when the change is structural, not cosmetic.
+
 ## Config and env themes
 
 Important settings include:
