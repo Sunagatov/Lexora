@@ -64,6 +64,24 @@ function makeQueue(word: Word, isCompleted = false): StudyQueue {
   }
 }
 
+function mockMatchMedia(matches: boolean) {
+  const media = {
+    matches,
+    media: '(max-width: 860px)',
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: vi.fn(() => media),
+  })
+}
+
 describe('SmartReviewView', () => {
   const completeItem = vi.fn()
   const refresh = vi.fn()
@@ -71,6 +89,7 @@ describe('SmartReviewView', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockMatchMedia(false)
     vi.mocked(useSmartReview).mockReturnValue({
       queue: makeQueue(makeWord(11, 'run')),
       isLoading: false,
@@ -104,6 +123,20 @@ describe('SmartReviewView', () => {
       pageEnd: 1,
       resetFilters: vi.fn(),
     } as never)
+  })
+
+  it('uses the desktop default page size on wide screens', () => {
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 10})
+  })
+
+  it('uses the mobile default page size on narrow screens', () => {
+    mockMatchMedia(true)
+
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 5})
   })
 
   it('does not complete the queue item when the level update fails', async () => {

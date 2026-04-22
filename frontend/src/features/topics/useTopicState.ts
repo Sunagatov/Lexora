@@ -26,7 +26,7 @@ export function useTopicState(
   }
 
   function selectSmartReview() {
-    navigate(routes.smartReview)
+    navigate({pathname: routes.smartReview, search: ''})
   }
 
   return {

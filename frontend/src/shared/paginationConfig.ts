@@ -8,7 +8,8 @@ export const PAGE_SIZES: number[] = Array.from(new Set<number>(configuredPageSiz
 if (PAGE_SIZES.length === 0) {
   PAGE_SIZES.push(...fallbackPageSizes)
 }
-const rawDefault = Number(import.meta.env.VITE_DEFAULT_PAGE_SIZE ?? PAGE_SIZES[0])
+const fallbackDefaultPageSize = 10
+const rawDefault = Number(import.meta.env.VITE_DEFAULT_PAGE_SIZE ?? fallbackDefaultPageSize)
 export const DEFAULT_PAGE_SIZE = PAGE_SIZES.includes(rawDefault)
   ? rawDefault
   : PAGE_SIZES[0]

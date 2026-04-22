@@ -60,7 +60,7 @@ describe('useWordFilter URL sync', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=9')
+      expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=5')
     })
   })
 
