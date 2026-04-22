@@ -25,15 +25,23 @@ function parseSort(v: string | null): SortOption {
   return valid.includes(v as SortOption) ? (v as SortOption) : 'level-asc'
 }
 
-export function useWordFilter(topicWords: Word[]) {
+type UseWordFilterOptions = {
+  defaultPageSize?: number
+}
+
+export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions = {}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [frozenIds, setFrozenIds]       = useState<number[] | null>(null)
+  const requestedDefaultPageSize = options.defaultPageSize ?? DEFAULT_PAGE_SIZE
+  const defaultPageSize = PAGE_SIZES.includes(requestedDefaultPageSize)
+    ? requestedDefaultPageSize
+    : DEFAULT_PAGE_SIZE
 
   const wordSearch  = searchParams.get('search') ?? ''
   const levelFilter = parseLevel(searchParams.get('level'))
   const sortBy      = parseSort(searchParams.get('sort'))
   const page        = parsePage(searchParams.get('page'))
-  const pageSize    = parsePageSize(searchParams.get('pageSize'))
+  const pageSize    = searchParams.has('pageSize') ? parsePageSize(searchParams.get('pageSize')) : defaultPageSize
 
   function setParam(key: string, value: string | null, resetPage = true) {
     setSearchParams((prev) => {
@@ -50,7 +58,7 @@ export function useWordFilter(topicWords: Word[]) {
   const setLevelFilter = (v: 'all' | WordKnowledgeLevel) => setParam('level', v === 'all' ? null : String(v))
   const setSortBy      = (v: SortOption)                 => setParam('sort', v === 'level-asc' ? null : v)
   const setPage        = (p: number)                     => setParam('page', p === 1 ? null : String(p), false)
-  const setPageSize    = (n: number)                     => setParam('pageSize', n === DEFAULT_PAGE_SIZE ? null : String(n))
+  const setPageSize    = (n: number)                     => setParam('pageSize', n === defaultPageSize ? null : String(n))
   const resetFilters   = ()                              => { setSearchParams({}, {replace: true}); setFrozenIds(null) }
 
   const levelSummary  = useMemo(() => buildLevelSummary(topicWords), [topicWords])
@@ -69,7 +77,10 @@ export function useWordFilter(topicWords: Word[]) {
     }, {replace: true})
   }, [page, safePage, setSearchParams])
 
-  const pageWords     = useMemo(() => filteredWords.slice((safePage - 1) * pageSize, safePage * pageSize), [filteredWords, safePage, pageSize])
+  const pageWords     = useMemo(
+    () => filteredWords.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [filteredWords, safePage, pageSize],
+  )
   const pageStart     = pageWords.length > 0 ? (safePage - 1) * pageSize + 1 : 0
   const pageEnd       = pageWords.length > 0 ? pageStart + pageWords.length - 1 : 0
 

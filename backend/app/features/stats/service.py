@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.features.stats.aggregates import (
@@ -32,17 +33,15 @@ def record_level_change(
 
 
 def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
-    existing = db.scalar(select(AppUsageEvent).where(AppUsageEvent.event_key == payload.event_key))
-    if existing is not None:
-        return
-
-    db.add(
-        AppUsageEvent(
+    db.execute(
+        insert(AppUsageEvent)
+        .values(
             event_key=payload.event_key,
             session_key=payload.session_key,
             route=payload.route,
             active_seconds=payload.active_seconds,
         )
+        .on_conflict_do_nothing(index_elements=[AppUsageEvent.event_key])
     )
 
 

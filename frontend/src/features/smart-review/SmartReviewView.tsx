@@ -10,7 +10,7 @@ type Props = {queue: StudyQueue | null; isLoading: boolean}
 export function SmartReviewView({queue, isLoading}: Props) {
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
-  const filter = useWordFilter(words)
+  const filter = useWordFilter(words, {defaultPageSize: 5})
   const update = useWordUpdate(
     () => filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
     'smart_review',

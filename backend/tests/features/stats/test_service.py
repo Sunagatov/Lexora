@@ -43,7 +43,6 @@ def test_record_level_change_adds_progress_event_to_session() -> None:
 
 def test_record_usage_event_is_idempotent() -> None:
     db = MagicMock()
-    db.scalar.return_value = None
     payload = UsageEventCreate(
         event_key="event-123456",
         session_key="session-123456",
@@ -53,12 +52,11 @@ def test_record_usage_event_is_idempotent() -> None:
 
     stats_service.record_usage_event(db, payload)
 
-    event = db.add.call_args.args[0]
-    assert isinstance(event, stats_service.AppUsageEvent)
-    assert event.event_key == "event-123456"
-    assert event.session_key == "session-123456"
-    assert event.route == "/smart-review"
-    assert event.active_seconds == 17
+    assert db.execute.call_count == 1
+    statement = db.execute.call_args.args[0]
+    assert "app_usage_events" in str(statement)
+    assert "ON CONFLICT" in str(statement).upper()
+    assert db.add.call_count == 0
 
 
 def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> None:
@@ -313,7 +311,7 @@ def test_build_usage_stats_groups_by_day_and_session() -> None:
 def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> None:
     # Only non-deleted words (deleted_at=None) are passed by compute_stats, so deleted
     # words must not appear in the monthly totals.
-    active_word = SimpleNamespace(
+    active_word = _word_stub(
         id=1,
         deleted_at=None,
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
@@ -327,7 +325,7 @@ def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> 
 
 def test_build_words_added_by_month_excludes_deleted_words_via_caller_filter() -> None:
     # Callers pass only active words; deleted words with different created_at must be absent.
-    active = SimpleNamespace(
+    active = _word_stub(
         id=1,
         deleted_at=None,
         created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),

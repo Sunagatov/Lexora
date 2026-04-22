@@ -32,18 +32,18 @@ export function Pagination({page, totalPages, onPage, pageSize, onPageSize}: Pro
   return (
     <div className="pagination-shell">
       <div className="pagination pagination-desktop">
-        <button className="page-btn page-nav" disabled={page === 1} onClick={() => onPage(page - 1)}>← Prev</button>
+        <button type="button" className="page-btn page-nav" disabled={page === 1} onClick={() => onPage(page - 1)}>← Prev</button>
         {tokens.map((t, i) => t === '…'
           ? <span key={`e${i}`} className="page-ellipsis">…</span>
-          : <button key={t} className={`page-btn ${t === page ? 'page-btn-active' : ''}`} onClick={() => onPage(t)}>{t}</button>
+          : <button type="button" key={t} className={`page-btn ${t === page ? 'page-btn-active' : ''}`} onClick={() => onPage(t)}>{t}</button>
         )}
-        <button className="page-btn page-nav" disabled={page === totalPages} onClick={() => onPage(page + 1)}>Next →</button>
+        <button type="button" className="page-btn page-nav" disabled={page === totalPages} onClick={() => onPage(page + 1)}>Next →</button>
         {sizeSelect}
       </div>
       <div className="pagination pagination-mobile">
-        <button className="page-btn page-nav-mobile" disabled={page === 1} onClick={() => onPage(page - 1)}>←</button>
+        <button type="button" className="page-btn page-nav-mobile" disabled={page === 1} onClick={() => onPage(page - 1)}>←</button>
         <span className="page-label">Page {page} of {totalPages}</span>
-        <button className="page-btn page-nav-mobile" disabled={page === totalPages} onClick={() => onPage(page + 1)}>→</button>
+        <button type="button" className="page-btn page-nav-mobile" disabled={page === totalPages} onClick={() => onPage(page + 1)}>→</button>
         {sizeSelect}
       </div>
     </div>
