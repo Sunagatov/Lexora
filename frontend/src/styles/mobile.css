@@ -189,7 +189,7 @@
 
   .toolbar-controls-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr) auto auto;
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.95fr) auto auto;
     gap: 6px;
     align-items: stretch;
   }
@@ -200,6 +200,10 @@
     width: 100%;
     min-width: 0;
     flex: initial;
+  }
+
+  .toolbar-control-sort {
+    flex-basis: auto;
   }
 
   .toolbar-control-level {
@@ -246,6 +250,7 @@
     display: none;
   }
 
+  .toolbar-control,
   .search-input,
   .dropdown-trigger,
   .btn {
@@ -344,7 +349,7 @@
   }
 
   .toolbar-controls-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) auto auto;
+    grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.95fr) auto auto;
     gap: 5px;
   }
 
@@ -358,6 +363,7 @@
     padding-inline: 8px;
   }
 
+  .toolbar-control,
   .search-input,
   .dropdown-trigger,
   .btn {
