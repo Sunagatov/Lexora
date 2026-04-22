@@ -43,3 +43,9 @@ class TopicResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TopicSidebarStatsResponse(BaseModel):
+    total_words: int
+    topic_counts: dict[int, int]
+    topic_progress: dict[int, int]

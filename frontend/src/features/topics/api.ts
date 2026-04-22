@@ -3,6 +3,14 @@ import type {Topic} from '../../shared/types'
 
 export const fetchTopics = () => request<Topic[]>('/api/topics')
 
+export type TopicSidebarStats = {
+  total_words: number
+  topic_counts: Record<number, number>
+  topic_progress: Record<number, number>
+}
+
+export const fetchTopicSidebarStats = () => request<TopicSidebarStats>('/api/topics/sidebar-stats')
+
 export type TopicUpdatePayload = {
   name?: string
   description?: string | null

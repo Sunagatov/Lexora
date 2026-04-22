@@ -1,7 +1,9 @@
+import {useMemo} from 'react'
 import {useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchTopics} from '../topics/api'
 import {fetchWords} from '../words/api'
+import {fetchTopicSidebarStats} from '../topics/api'
 import {useTopicState} from '../topics/useTopicState'
 import {useWordFilter} from '../words/useWordFilter'
 import {useWordUpdate} from '../words/useWordUpdate'
@@ -14,13 +16,20 @@ export function useStudyState() {
   const isSmartReview = location.pathname === routes.smartReview
 
   const topicsQuery   = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
-  // All-words query: used only for sidebar counts/progress, not for the word list.
-  const allWordsQuery = useQuery({queryKey: queryKeys.words, queryFn: () => fetchWords()})
+  const sidebarStatsQuery = useQuery({queryKey: queryKeys.topicSidebar, queryFn: fetchTopicSidebarStats})
 
   const topics = topicsQuery.data  ?? []
-  const words  = allWordsQuery.data ?? []
+  const sidebarStats = sidebarStatsQuery.data ?? {total_words: 0, topic_counts: {}, topic_progress: {}}
+  const topicCounts = useMemo(
+    () => new Map(Object.entries(sidebarStats.topic_counts).map(([id, count]) => [Number(id), count] as const)),
+    [sidebarStats.topic_counts],
+  )
+  const topicProgress = useMemo(
+    () => new Map(Object.entries(sidebarStats.topic_progress).map(([id, progress]) => [Number(id), progress] as const)),
+    [sidebarStats.topic_progress],
+  )
 
-  const topicState  = useTopicState(topics, words)
+  const topicState  = useTopicState(topics, topicCounts, topicProgress)
   const smartReview = useSmartReview(isSmartReview)
 
   // Fetch words scoped to the selected topic from the server.
@@ -39,7 +48,7 @@ export function useStudyState() {
 
   return {
     isSmartReview,
-    topics, words, topicWords,
+    topics, totalWords: sidebarStats.total_words, topicWords,
     selectedTopic: topicState.selectedTopic,
     selectedTopicId: topicState.selectedTopicId, topicCounts: topicState.topicCounts, topicProgress: topicState.topicProgress,
     topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
@@ -51,10 +60,11 @@ export function useStudyState() {
     pageWords: filter.pageWords, page: filter.page, totalPages: filter.totalPages,
     setPage: filter.setPage, pageSize: filter.pageSize, setPageSize: filter.setPageSize,
     pageStart: filter.pageStart, pageEnd: filter.pageEnd, resetFilters: filter.resetFilters,
-    overallWordCount: words.length, topicWordCount: topicWords.length,
+    overallWordCount: sidebarStats.total_words, topicWordCount: topicWords.length,
     filteredWordCount: filter.filteredWords.length,
     updateLevel: update.updateLevel, pendingWordId: update.pendingWordId,
     smartQueue: smartReview.queue,
-    isLoading: topicsQuery.isLoading || allWordsQuery.isLoading || wordsQuery.isLoading || (isSmartReview && smartReview.isLoading),
+    isLoading: topicsQuery.isLoading || sidebarStatsQuery.isLoading || (isSmartReview && smartReview.isLoading),
+    isWordsLoading: wordsQuery.isLoading,
   }
 }

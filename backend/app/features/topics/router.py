@@ -5,13 +5,14 @@ from app.shared.deps import get_db
 from app.features.topics.repository import (
     get_all_topics, get_topic_by_id, soft_delete_topic,
 )
-from app.features.topics.schemas import TopicCreate, TopicResponse, TopicUpdate
+from app.features.topics.schemas import TopicCreate, TopicResponse, TopicSidebarStatsResponse, TopicUpdate
 from app.features.topics.service import (
     InvalidTopicNameError,
     InvalidTopicParentError,
     TopicHasActiveChildrenError,
     TopicNameConflictError,
     TopicSlugConflictError,
+    compute_topic_sidebar_stats,
     assert_topic_has_no_active_children,
     create_topic,
     update_topic,
@@ -31,6 +32,11 @@ def list_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
     topics = get_all_topics(db)
     responses: list[TopicResponse] = [TopicResponse.model_validate(topic) for topic in topics]
     return responses
+
+
+@router.get("/sidebar-stats", response_model=TopicSidebarStatsResponse)
+def sidebar_stats(db: Session = Depends(get_db)) -> TopicSidebarStatsResponse:
+    return compute_topic_sidebar_stats(db)
 
 
 @router.get("/audit", response_model=TopicAuditResponse)

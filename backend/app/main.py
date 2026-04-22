@@ -18,6 +18,7 @@ from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
 from app.features.words.ai_curation.router import router as ai_curation_router
+from app.shared.db import USING_SQLITE_FALLBACK, ensure_database_schema
 
 
 def configure_logging() -> None:
@@ -58,10 +59,12 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger.info(
-        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s",
+        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s, sqliteFallback=%s",
         settings.smart_review_enabled,
         len(settings.cors_allowed_origins),
+        USING_SQLITE_FALLBACK,
     )
+    ensure_database_schema()
     try:
         yield
     finally:

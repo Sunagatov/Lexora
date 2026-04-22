@@ -20,7 +20,13 @@ def _load_queue(db: Session, queue_id: int) -> StudyQueue | None:
         select(StudyQueue)
         .where(StudyQueue.id == queue_id)
         .options(
-            selectinload(StudyQueue.items).selectinload(StudyQueueItem.word).selectinload(Word.topics)
+            selectinload(StudyQueue.items)
+            .selectinload(StudyQueueItem.word)
+            .selectinload(Word.topics), selectinload(StudyQueue.items)
+            .selectinload(StudyQueueItem.word)
+            .selectinload(Word.translation_items), selectinload(StudyQueue.items)
+            .selectinload(StudyQueueItem.word)
+            .selectinload(Word.example_items),
         )
     )
 

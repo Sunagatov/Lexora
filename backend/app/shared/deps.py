@@ -7,12 +7,13 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.shared.config import settings
-from app.shared.db import SessionLocal
+from app.shared.db import SessionLocal, ensure_database_schema
 
 ALGORITHM = "HS256"
 
 
 def get_db() -> Generator[Session, None, None]:
+    ensure_database_schema()
     db = SessionLocal()
     try:
         yield db

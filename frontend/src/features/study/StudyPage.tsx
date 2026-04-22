@@ -23,14 +23,12 @@ export function StudyPage() {
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
-    totalWords: s.words.length,
+    totalWords: s.totalWords,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
     onSelect: s.selectTopic, onSelectSmartReview: s.selectSmartReview,
     smartQueue: s.smartQueue,
   }
-
-  if (s.isLoading) return <div className="study-loading">Loading…</div>
 
   return (
     <>
@@ -87,6 +85,7 @@ export function StudyPage() {
                 pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
                 pendingWordId={s.pendingWordId} onUpdate={s.updateLevel}
                 fromTopicSlug={s.selectedTopic?.slug}
+                isLoading={s.isWordsLoading}
               />
             )}
           </>

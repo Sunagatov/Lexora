@@ -16,12 +16,15 @@ vi.mock('../../words/useWordUpdate')
 vi.mock('../../smart-review/useSmartReview')
 
 describe('useStudyState loading', () => {
-  it('waits for the shared words query on the smart-review route', () => {
+  it('does not wait for the shared words query on the smart-review route', () => {
     vi.mocked(useLocation).mockReturnValue({pathname: '/smart-review'} as ReturnType<typeof useLocation>)
-    vi.mocked(useQuery)
-      .mockReturnValueOnce({data: [], isLoading: false} as never)
-      .mockReturnValueOnce({data: [], isLoading: true} as never)
-      .mockReturnValueOnce({data: [], isLoading: false} as never)
+    const responses = [
+      {data: [], isLoading: false},
+      {data: {total_words: 0, topic_counts: {}, topic_progress: {}}, isLoading: false},
+      {data: [], isLoading: false},
+    ]
+    let call = 0
+    vi.mocked(useQuery).mockImplementation(() => responses[call++ % responses.length] as never)
 
     vi.mocked(useTopicState).mockReturnValue({
       selectedTopicId: null,
@@ -72,6 +75,70 @@ describe('useStudyState loading', () => {
 
     const {result} = renderHook(() => useStudyState())
 
-    expect(result.current.isLoading).toBe(true)
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isWordsLoading).toBe(false)
+  })
+
+  it('tracks the shared words query separately on topic routes', () => {
+    vi.mocked(useLocation).mockReturnValue({pathname: '/topics/demo'} as ReturnType<typeof useLocation>)
+    const responses = [
+      {data: [], isLoading: false},
+      {data: {total_words: 0, topic_counts: {}, topic_progress: {}}, isLoading: false},
+      {data: [], isLoading: true},
+    ]
+    let call = 0
+    vi.mocked(useQuery).mockImplementation(() => responses[call++ % responses.length] as never)
+
+    vi.mocked(useTopicState).mockReturnValue({
+      selectedTopicId: 1,
+      selectedTopic: {id: 1, name: 'Demo', slug: 'demo'} as never,
+      topicCounts: new Map(),
+      topicProgress: new Map(),
+      topicSearch: '',
+      setTopicSearch: vi.fn(),
+      selectTopic: vi.fn(),
+      selectSmartReview: vi.fn(),
+    } as never)
+
+    vi.mocked(useWordFilter).mockReturnValue({
+      wordSearch: '',
+      setWordSearch: vi.fn(),
+      levelFilter: 'all',
+      setLevelFilter: vi.fn(),
+      sortBy: 'term',
+      setSortBy: vi.fn(),
+      frozenIds: null,
+      setFrozenIds: vi.fn(),
+      levelSummary: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, unset: 0},
+      filteredWords: [],
+      pageWords: [],
+      page: 1,
+      totalPages: 1,
+      pageSize: 20,
+      setPage: vi.fn(),
+      setPageSize: vi.fn(),
+      pageStart: 0,
+      pageEnd: 0,
+      resetFilters: vi.fn(),
+    } as never)
+
+    vi.mocked(useWordUpdate).mockReturnValue({
+      updateLevel: vi.fn(),
+      updateLevelAsync: vi.fn(),
+      pendingWordId: null,
+    } as never)
+
+    vi.mocked(useSmartReview).mockReturnValue({
+      queue: null,
+      isLoading: false,
+      completeItem: vi.fn(),
+      refresh: vi.fn(),
+      isRefreshing: false,
+    } as never)
+
+    const {result} = renderHook(() => useStudyState())
+
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isWordsLoading).toBe(true)
   })
 })

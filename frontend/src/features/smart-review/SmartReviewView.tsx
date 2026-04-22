@@ -8,7 +8,7 @@ import {WordCollectionView} from '../words/WordCollectionView'
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 
 export function SmartReviewView({queue, isLoading}: Props) {
-  const {completeItem, refresh, isRefreshing} = useSmartReview()
+  const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const filter = useWordFilter(words)
   const update = useWordUpdate(

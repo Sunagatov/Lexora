@@ -25,6 +25,7 @@ type Props = {
   pendingWordId: number | null
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
   fromTopicSlug?: string
+  isLoading?: boolean
   // empty state
   emptyMessage?: string
 }
@@ -35,6 +36,7 @@ export function WordCollectionView({
   pageStart, pageEnd, levelSummary, topicName,
   pageWords, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, onUpdate, fromTopicSlug,
+  isLoading = false,
   emptyMessage = 'No words match the current filters.',
 }: Props) {
   function handlePage(p: number) {
@@ -64,7 +66,9 @@ export function WordCollectionView({
       </div>
 
       <div className="main-inner">
-        {pageWords.length === 0 ? (
+        {isLoading && pageWords.length === 0 ? (
+          <div className="empty-state">Loading topic words…</div>
+        ) : pageWords.length === 0 ? (
           <div className="empty-state">{emptyMessage}</div>
         ) : (
           <>
