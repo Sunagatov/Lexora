@@ -9,6 +9,37 @@
   position: relative;
 }
 
+.desktop-sidebar.is-resizing {
+  user-select: none;
+}
+
+.desktop-sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 20;
+}
+
+.desktop-sidebar-resizer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 4px;
+  width: 1px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.12s;
+}
+
+.desktop-sidebar-resizer:hover::before,
+.desktop-sidebar.is-resizing .desktop-sidebar-resizer::before {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* ── Stats strip ─────────────────────────────────────────────────────────── */
 .sidebar-counts {
   display: flex;
@@ -666,6 +697,10 @@
   .sidebar-search-desktop  { display: none; }
   .sidebar-search-toggle   { display: flex; }
   .sidebar-search-mobile-row { display: flex; }
+
+  .desktop-sidebar-resizer {
+    display: none;
+  }
 }
 
 .sidebar-util-icon { font-size: 0.9rem; line-height: 1; }
