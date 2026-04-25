@@ -1,39 +1,13 @@
-# Claude / Cloudy CLI entrypoint for Lexora
+# Claude CLI Adapter For Lexora
 
-Start with `AGENTS.md`.
+@AGENTS.md
 
-Then load only the smallest relevant context:
+Claude-specific workflow:
 
-- `.claude/generated/request-routing.md`
-- backend task -> `backend/AGENTS.md`
-- frontend task -> `frontend/AGENTS.md`
-- AI curation or enrichment -> `docs/ai/ai-curation-workflow.md` and `docs/ai/example-style-guide.md`
-- architecture question -> `docs/ai/architecture.md`
-- API question -> `docs/ai/api-surface.md`
-- token/cost optimisation -> `docs/ai/ai-cost-reduction-backlog.md`
-- prompt hygiene / context budgeting -> `docs/ai/context-budget-rules.md`
+- Treat `AGENTS.md` as the bootloader and `docs/ai/*` as canonical project context.
+- Use `docs/ai/request-routing-guide.md` before opening source files.
+- Load only the relevant module adapter (`backend/AGENTS.md` or `frontend/AGENTS.md`) after routing.
+- Keep `.claude/*` guidance small; do not duplicate current implementation state there.
+- Prefer focused diffs, exact file paths, and a short validation summary.
 
-## Hard rule
-
-Do not read the whole repository by default.
-
-For most tasks, read:
-
-- one agent file
-- the directly affected feature files
-- at most 1–3 shared helper files
-
-## Output preference
-
-Prefer:
-
-- exact file paths
-- focused diffs
-- regression test ideas
-- short explanation of why the change is needed
-
-Avoid:
-
-- repeating repository-wide summaries in every answer
-- proposing large refactors without evidence
-- touching auth/CSRF plumbing unless required
+Canonical details live in `docs/ai/`. This file is an adapter only.

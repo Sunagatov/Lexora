@@ -1,40 +1,36 @@
 # Lexora
 
-**A modern English vocabulary learning app focused on topic-based study, fast review, and practical progress tracking.**
+Lexora is a personal English vocabulary learning app focused on topic-based study, review, word management, and progress tracking.
 
-Lexora is a personal learning project for studying English vocabulary in a clean workspace: choose a topic, browse its words, search and filter quickly, and update your knowledge level word by word.
+## Project Shape
 
----
+- `backend/` — FastAPI backend, Alembic migrations, and pytest tests.
+- `frontend/` — React/Vite frontend and Vitest tests.
+- `docs/ai/` — canonical AI-agent context and source-level project maps.
+- `scripts/ai/` — local AI documentation helper scripts.
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
+Prerequisites:
 
-- Docker Desktop
-- Node.js 20+
-- npm
-- Python 3.12+ only if you want to run the backend outside Docker
+- Docker Desktop for the compose-based local stack.
+- Node.js 20+ and npm for frontend work outside Docker.
+- Python 3.12+ for backend work outside Docker.
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Sunagatov/Lexora.git
-cd Lexora
-```
-
-### 2. Configure environment
+Local environment files are intentionally not documentation. Use the example env files as templates and do not commit secret values.
 
 ```bash
 cp .env.example .env
-# Edit .env to set APP_PASSWORD, SECRET_KEY, API_KEY, and any other values you need.
 ```
 
-### 3. Start with Docker Compose
+Local compose metadata is in `docker-compose.yml`. Run Docker only when you explicitly intend to start the local stack.
 
-```bash
-docker compose up --build
-```
+## Developer Docs
 
-The app will be available at:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
+- Backend notes: `backend/README.md`
+- Frontend notes: `frontend/README.md`
+- AI-agent bootloader: `AGENTS.md`
+- AI-agent docs index: `docs/ai/README.md`
+- Current repo map for agents: `docs/ai/repo-map.md`
+
+Detailed current implementation state for AI agents lives in `docs/ai/`, not in this README.

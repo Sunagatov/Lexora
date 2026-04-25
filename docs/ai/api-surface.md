@@ -94,11 +94,71 @@ Known errors:
 - `404` queue item not found
 - `404` queue inactive / missing
 
-## Also mounted in app
+## AI curation
 
-The app wiring also confirms these router groups exist:
+### `GET /api/ai-curation/topics`
+Lists topics for curation workflows with pagination.
+
+### `GET /api/ai-curation/topics/{topic_id}/words`
+Exports a paginated topic word set.
+
+### `GET /api/ai-curation/topics/{topic_id}/export`
+Exports a full or lean paginated topic word set.
+
+Query params include:
+- `lean`
+- `needs_examples_only`
+- `page`
+- `page_size`
+
+### `POST /api/ai-curation/import`
+Imports reviewed AI curation payloads.
+
+## Health and public config
+
+### `GET /health`
+Returns service health.
+
+### `GET /api/config/public`
+Returns public, non-secret config values for the frontend.
+
+## Trash
+
+### `GET /api/trash/words`
+Lists deleted words.
+
+### `GET /api/trash/topics`
+Lists deleted topics.
+
+### `POST /api/trash/words/{word_id}/restore`
+Restores one deleted word.
+
+### `POST /api/trash/topics/{topic_id}/restore`
+Restores one deleted topic.
+
+### `DELETE /api/trash/purge`
+Hard-deletes expired trash, or all trash with `force=true`.
+
+## Stats
+
+### `GET /api/stats`
+Returns aggregate stats.
+
+### `POST /api/stats/usage`
+Records a usage event.
+
+## Mounted in app
+
+The app wiring confirms these router groups exist:
 
 - `health`
+- `auth`
+- `topics`
+- `words`
+- `words/suggest`
+- `words/agent_router`
+- `words/ai_curation`
+- `smart_review`
 - `trash`
 - `stats`
 

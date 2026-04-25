@@ -53,7 +53,7 @@ These are the rules that have repeatedly mattered in later Lexora work and shoul
 
 ### Ops hygiene
 
-- Vault is the source of truth for prod deploys, logs, SSH, config, and secrets
+- Runtime/deployment operations, logs, SSH, config, and secrets are not owned by Lexora source docs.
 - do not use stale maintainer scripts
 - do not use local DB exports for prod imports because IDs differ across environments
 - keep generated artifacts under `backend/.artifacts/ai-curation/`

@@ -1,85 +1,83 @@
-# Repo map (compact)
+# Lexora Repo Map
 
-This is a **working map**, not a full file listing.
+This is a compact working map, not a full file listing. Verify exact files with `find` or `rg` before editing.
 
 ## Root
 
-- `README.md`
-- `docker-compose.yml`
-- `backend/`
-- `frontend/`
+- `README.md` — human-facing project overview and local start notes.
+- `AGENTS.md` — canonical AI bootloader.
+- `CLAUDE.md`, `CODEX.md`, `AMAZONQ.md` — thin agent adapters.
+- `.claude/`, `.amazonq/`, `.github/copilot-instructions.md` — tool-specific adapters only.
+- `docker-compose.yml` — local orchestration metadata.
+- `scripts/ai/` — local agent/doc helper scripts.
+- `docs/ai/` — canonical repo-wide AI context.
+- `docs/archive/` — historical docs; not active guidance.
 
 ## Backend
 
-Start here for backend changes:
+Backend source lives in `backend/app/`.
 
-- `backend/app/main.py` — app wiring, middleware, mounted routers
-- `backend/app/shared/config.py` — settings and env-driven config
-- `backend/app/shared/deps.py` — DB session, session auth, CSRF auth, API key auth
+- `backend/app/main.py` wires FastAPI, middleware, lifespan, and routers.
+- `backend/app/shared/` contains config, DB/session helpers, auth dependencies, constraints, and text helpers.
+- `backend/alembic/` contains migrations.
+- `backend/tests/` contains pytest coverage.
+- `backend/pyproject.toml` defines backend dependencies and ruff settings.
+- `backend/pytest.ini` configures tests.
 
-Representative feature folders confirmed from app wiring:
+Active backend feature areas:
 
 - `backend/app/features/auth/`
 - `backend/app/features/health/`
 - `backend/app/features/topics/`
 - `backend/app/features/words/`
+- `backend/app/features/words/suggest/`
+- `backend/app/features/words/ai_curation/`
+- `backend/app/features/words/ai_review/`
+- `backend/app/features/words/bulk/`
+- `backend/app/features/words/workbook/`
 - `backend/app/features/smart_review/`
 - `backend/app/features/trash/`
 - `backend/app/features/stats/`
 
-Representative files inspected:
-
-- `backend/app/features/auth/router.py`
-- `backend/app/features/topics/router.py`
-- `backend/app/features/words/router.py`
-- `backend/app/features/words/suggest_router.py`
-- `backend/app/features/words/suggest_service.py`
-- `backend/app/features/smart_review/router.py`
+Backend scripts live in `backend/app/scripts/`. Treat scripts that call live services as operational tools; do not run them unless explicitly requested.
 
 ## Frontend
 
-Start here for frontend changes:
+Frontend source lives in `frontend/src/`.
 
-- `frontend/src/main.tsx` — app bootstrap
-- `frontend/src/app/router.tsx` — route table
-- `frontend/src/shared/http.ts` — shared request helper
-- `frontend/src/features/words/api.ts` — word-related API client
-- `frontend/src/features/study/StudyPage.tsx` — main study screen
+- `frontend/src/main.tsx` bootstraps React.
+- `frontend/src/providers.tsx` wires providers.
+- `frontend/src/app/router.tsx` owns the route table.
+- `frontend/src/layout/` contains application layout.
+- `frontend/src/shared/` contains shared HTTP, routes, query keys, types, and utilities.
+- `frontend/src/styles/` contains CSS split by UI area.
+- `frontend/src/test/` contains test setup.
+- `frontend/package.json` defines frontend scripts and dependencies.
 
-## Quick lookup by task
+Active frontend feature areas:
 
-### Login/auth problem
-Read:
-- backend auth router
-- backend shared deps
-- frontend shared http
-- login feature files
+- `frontend/src/features/auth/`
+- `frontend/src/features/study/`
+- `frontend/src/features/topics/`
+- `frontend/src/features/words/`
+- `frontend/src/features/smart-review/`
+- `frontend/src/features/trash/`
+- `frontend/src/features/stats/`
 
-### Topic CRUD problem
-Read:
-- topics router/service/repository/schemas
-- any topic UI components/hooks
+## Tests
 
-### Word CRUD or filtering problem
-Read:
-- words router/service/repository/schemas
-- `frontend/src/features/words/api.ts`
-- study page / word collection components
+- Backend tests: `backend/tests/`.
+- Frontend tests: colocated `*.test.tsx` files and `frontend/src/**/__tests__/`.
+- Prefer targeted tests for the feature being changed before broader validation.
 
-### Smart review problem
-Read:
-- smart review router/service/model/schemas
-- smart review frontend view/state files
+## Configuration
 
-### AI topic suggestion problem
-Read:
-- `backend/app/features/words/suggest_router.py`
-- `backend/app/features/words/suggest_service.py`
-- any quick-add or suggestion UI that calls it
+- Backend config names are documented in `docs/ai/env-reference.md` and defined in `backend/app/shared/config.py`.
+- Frontend runtime build variables are represented in Vite config and frontend env typings.
+- Do not open or print local `.env` files or secret payloads.
 
-## Hard rule
+## Archive And Generated-Looking Areas
 
-For most tasks, you should not need more than:
-- 1 agent file
-- 3–8 source files
-- 1–3 shared helper/config files
+- `docs/archive/` is historical only.
+- `.claude/generated/request-routing.md` is a compatibility pointer, not generated source-of-truth.
+- Do not treat archived or generated-looking files as active guidance when canonical docs exist.

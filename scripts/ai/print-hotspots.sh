@@ -7,7 +7,7 @@ case "$task" in
   ai-curation)
     printf '%s\n' \
       'AGENTS.md' \
-      '.claude/generated/request-routing.md' \
+      'docs/ai/request-routing-guide.md' \
       'docs/ai/ai-curation-workflow.md' \
       'docs/ai/chatgpt-enrich-examples-prompt.txt' \
       'docs/ai/example-style-guide.md' \
@@ -18,32 +18,27 @@ case "$task" in
   backend)
     printf '%s\n' \
       'AGENTS.md' \
-      '.claude/generated/request-routing.md' \
+      'docs/ai/request-routing-guide.md' \
       'backend/AGENTS.md' \
       'backend/app/main.py' \
-      'backend/app/shared/config.py' \
-      'backend/app/shared/deps.py' \
-      'backend/app/features/<feature>/'
+      'backend/app/features/<feature>/' \
+      'backend/tests/features/<feature>/'
     ;;
   frontend)
     printf '%s\n' \
       'AGENTS.md' \
-      '.claude/generated/request-routing.md' \
+      'docs/ai/request-routing-guide.md' \
       'frontend/AGENTS.md' \
-      'frontend/src/shared/http.ts' \
-      'frontend/src/shared/routes.ts' \
-      'frontend/src/features/<feature>/'
+      'frontend/src/features/<feature>/' \
+      'frontend/src/shared/http.ts'
     ;;
-  vault)
+  docs)
     printf '%s\n' \
-      'CLAUDE.md' \
-      '.claude/generated/request-routing.md' \
-      '.claude/generated/app-surfaces.md' \
-      'README.md' \
-      'STRUCTURE.md' \
-      'config/apps.yaml' \
-      'scripts/lib/manifest.sh' \
-      'Taskfile.yml'
+      'AGENTS.md' \
+      'docs/ai/README.md' \
+      'docs/ai/request-routing-guide.md' \
+      'docs/ai/repo-map.md' \
+      'docs/ai/token-budget-rules.md'
     ;;
   *)
     cat >&2 <<'EOF'
@@ -53,7 +48,7 @@ Task types:
   ai-curation
   backend
   frontend
-  vault
+  docs
 EOF
     exit 1
     ;;

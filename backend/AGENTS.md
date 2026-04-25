@@ -1,148 +1,50 @@
-# Backend instructions — Lexora
+# Backend Agent Notes
+
+Backend source lives in `backend/app/`. Read `AGENTS.md` and `docs/ai/request-routing-guide.md` before using this module note.
 
 ## Stack
 
 - Python 3.12
 - FastAPI
 - SQLAlchemy 2
-- psycopg 3
 - Alembic
 - Pydantic 2
-- httpx
+- pytest
+- ruff
 
-## Entry points and shared files
+## Read Order
 
-Read these first when doing backend work:
+For backend work, start with the target feature folder and nearby tests. Only add shared files when needed:
 
-- `backend/app/main.py`
-- `backend/app/shared/config.py`
-- `backend/app/shared/deps.py`
+- app wiring: `backend/app/main.py`
+- config: `backend/app/shared/config.py`
+- auth/dependencies: `backend/app/shared/deps.py`
+- DB/session behavior: `backend/app/shared/db.py`
 
-Then read only the target feature folder.
+## Source Shape
 
-## Confirmed feature groups
+- `backend/app/features/auth/`
+- `backend/app/features/health/`
+- `backend/app/features/topics/`
+- `backend/app/features/words/`
+- `backend/app/features/smart_review/`
+- `backend/app/features/trash/`
+- `backend/app/features/stats/`
+- `backend/tests/`
+- `backend/alembic/`
 
-- `auth`
-- `health`
-- `topics`
-- `words`
-- `smart_review`
-- `trash`
-- `stats`
+## Local Rules
 
-## Current architectural pattern
-
-Typical backend flow:
-
-1. router validates HTTP concerns
-2. service applies business rules
-3. repository/model layer performs DB work
-4. schemas shape API payloads
-
-Stay consistent with this pattern unless there is a clear reason not to.
-
-## Auth and request invariants
-
-- Protected API routers use `verify_session` and `verify_csrf`.
-- Session auth is cookie-based.
-- CSRF token is returned on login and later sent by the frontend as `X-CSRF-Token`.
-- Bulk import also uses `X-Api-Key`.
-
-Do not accidentally break this contract.
-
-## Prod and Vault workflow
-
-- For prod API calls, use the Vault-managed backend secret source, usually `/Users/zufar/IdeaProjects/Vault/scripts/secrets/view.sh lexora-backend .env.prod`.
-- Typical live API sequence: log in with `/auth/login`, extract `csrf_token`, then reuse the session cookie plus `X-CSRF-Token` for protected endpoints.
-- When changing live topic names or topic structure, fetch `/api/topics/audit` and `/api/topics` first so the rename/split plan is based on current prod data.
-- Prefer in-place topic renames when the topic ID must stay stable; use split or reparenting only when the change is structural, not cosmetic.
-
-## Config and env themes
-
-Important settings include:
-
-- Postgres connection values
-- session cookie settings
-- secret key / app password / API key
-- smart review tuning
-- CORS origins
-- model provider settings for topic suggestion
-- Alembic startup behavior and DB lock timeouts
-
-## AI suggestion path
-
-The current suggestion flow:
-
-- reads all active topics from DB
-- builds a topic list prompt
-- sends a chat completion request
-- expects the model to return exactly one existing topic name
-
-This is the highest-value place to reduce model cost and latency.
-
-When changing this flow:
-
-- keep deterministic fallbacks first
-- reduce prompt size aggressively
-- reduce output tokens aggressively
-- cache repeated lookups
-- prefer returning stable IDs internally over large textual payloads
-- add observability for latency, cache hit rate, and invalid model responses
-- if Alembic startup fails with a prepared-statement collision, check the shared engine settings and disable prepared statements for the migration path as needed
-- if Alembic startup fails with a duplicate prepared-statement error, fix the migration connection settings first instead of retrying deploys blindly
-
-## AI curation and topic splitting
-
-For topic enrichment and split work, read `docs/ai/ai-curation-workflow.md` and `docs/ai/topic-refinement-prompt.txt` first.
-
-Durable rules:
-
-- export from prod only; do not use local DB exports for prod imports because IDs differ
-- treat 3 good example sentences per word as the completion threshold
-- use lean exports and `needs_examples_only=true` when you only need unfinished words
-- when splitting broad topics, prefer clear subtopics with obvious boundaries
-- split only topics with more than 300 active words
-- skip part-of-speech umbrella topics for now
-- keep the broad topic as an umbrella unless the split is genuinely clean
-- create new topics first, then reassign words; do not delete the umbrella automatically
-- reuse an existing topic if it already fits closely enough
-- avoid duplicate or near-duplicate topic names
-- prefer fewer, broader subtopics over many very similar siblings
-- if a split would make two confusing topics, merge them back into one clearer bucket
-- use review-first dry runs before any live import
-- for broad topic families, keep umbrella topics and attach subtopics under them instead of replacing the parent topic
-- subtopics are ordinary topic rows with `parent_topic_id`; do not invent a parallel topic system
-- when a word belongs to more than one topic, keep that many-to-many structure intact instead of forcing a single membership
-- spot-check 10-15 proposed entries before live import when the split plan is newly tuned or large
-- if a broad topic is semantically messy, keep it as an umbrella topic instead of forcing weak subtopics
-
-## Alembic / migration rules
-
-- `alembic/env.py` — `SET LOCAL` statements must be **inside** `with context.begin_transaction()`, not before it. Placing them outside triggers SQLAlchemy 2 autobegin which causes migrations to silently no-op (exit 0, table never created). This burned us 2026-04-21.
-- The Dockerfile CMD runs `alembic upgrade head && uvicorn ...` on every container start.
-- Prod migrations are also run explicitly by Vault's `prod:migrate` task (called automatically inside `prod:deploy`, `prod:release`, and `prod:ship`).
-- If `alembic upgrade head` exits 0 but the table still doesn't exist, check: (1) is `alembic_version` already stamped at head without the DDL having run? (2) are SET statements outside the transaction block in `env.py`?
-
-## Backend correctness invariants
-
-These are easy to regress and should stay stable:
-
-- when deleting a topic, check whether a word still has any **active** topics left; raw topic count is not enough
-- update payloads should reject explicit `null` for fields that are meant to be omitted to keep unchanged
-- workbook imports should resolve the exported `topic_id` first and only fall back to topic name when metadata is missing
-- `example_entries: []` should clear examples instead of silently reusing old raw example text
-- bulk topic creation should stay atomic; create the topic without an early commit and roll back the whole import on failure
-- duplicate active topic names are invalid even when slugs differ
-- prefer targeted tests for these contracts instead of broad scans
+- Keep router/service/repository/schema separation where the feature already uses it.
+- Preserve session-cookie plus CSRF behavior for protected routers.
+- Do not read or print env/secret values.
+- Do not run live operational scripts unless explicitly requested.
 
 ## Validation
 
-Use the smallest useful validation first:
+From `backend/`, prefer the smallest relevant pytest target first. Broader local checks are:
 
 ```bash
-cd backend
 python -m pytest
 ruff check .
 ```
-
-If a task only touches one feature, prefer tests for that feature instead of a broad scan.
