@@ -77,7 +77,8 @@ Read:
 
 Read:
 
-- `docs/ai/ai-curation.md` or `docs/ai/ai-curation-workflow.md` when the task is about vocabulary curation.
+- `docs/ai/ai-curation-workflow.md` when the task is about vocabulary curation.
+- `docs/ai/ai-curation.md` only for a compact schema reference.
 - `docs/ai/ai-cost-reduction-backlog.md` when the task is about AI cost or prompt behavior.
 - Exact backend feature files under `backend/app/features/words/` only after choosing the workflow.
 

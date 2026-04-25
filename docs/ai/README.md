@@ -16,8 +16,13 @@
 
 Specialized AI/product docs:
 
-- `ai-curation.md`, `ai-curation-workflow.md`, `example-style-guide.md`, and prompt `.txt` files support vocabulary curation workflows.
-- `ai-cost-reduction-backlog.md` tracks model-cost reduction ideas.
+- `ai-curation-workflow.md` owns the canonical current AI curation workflow and v2 payload shape.
+- `ai-curation.md` is a compact reference/pointer, not a duplicate workflow.
+- `example-style-guide.md` supports examples writing style.
+- Prompt `.txt` files are reusable prompt templates, not architecture docs.
+- `ai-cost-reduction-backlog.md` is a backlog of ideas, not current implementation truth.
+
+Current-state entrypoints are `architecture.md` plus `repo-map.md`. Do not create another current-state summary unless it removes duplication.
 
 ## Adapter Files
 

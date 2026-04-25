@@ -1,165 +1,103 @@
-# Confirmed API surface
+# Confirmed API Surface
 
-This file lists **confirmed** routes based on inspected code. It is intentionally incomplete rather than speculative.
+This is a concise route summary based on inspected routers. Inspect router and schema files before changing request/response contracts.
+
+## Auth And Protection
+
+- Public: `GET /health`, `GET /api/config/public`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`.
+- API-key protected: `POST /api/words/bulk` uses `X-Api-Key`.
+- Session + CSRF protected: routers mounted in `backend/app/main.py` with `verify_session` and `verify_csrf`.
+
+Protected router groups:
+
+- `/api/topics`
+- `/api/words`
+- `/api/smart-review`
+- `/api/trash`
+- `/api/stats`
+- `/api/ai-curation`
 
 ## Auth
 
-### `POST /auth/login`
-- request: password payload
-- success: returns `{ ok: true, csrf_token: string }`
-- side effect: sets `session` cookie
+- `POST /auth/login` — validates password, sets `session` cookie, returns `csrf_token`.
+- `POST /auth/logout` — deletes `session` cookie.
+- `GET /auth/session` — validates existing session cookie and returns a CSRF token.
 
-### `POST /auth/logout`
-- success: returns `{ ok: true }`
-- side effect: deletes `session` cookie
+## Health And Public Config
+
+- `GET /health` — service health.
+- `GET /api/config/public` — public non-secret config values for frontend use.
 
 ## Topics
 
-### `GET /api/topics`
-Returns all topics.
+- `GET /api/topics` — list topics.
+- `GET /api/topics/sidebar-stats` — topic sidebar stats.
+- `GET /api/topics/audit` — topic refinement/audit summary.
+- `GET /api/topics/{topic_id}` — get one topic.
+- `POST /api/topics` — create topic.
+- `PUT /api/topics/{topic_id}` — update topic.
+- `POST /api/topics/{topic_id}/split-plan` — build a read-only topic split plan.
+- `DELETE /api/topics/{topic_id}?delete_words={bool}` — soft-delete topic.
 
-### `GET /api/topics/{topic_id}`
-Returns one topic or `404`.
-
-### `POST /api/topics`
-Creates a topic.
-Known errors:
-- `400` invalid topic name
-- `409` slug conflict
-
-### `PUT /api/topics/{topic_id}`
-Updates a topic.
-Known errors:
-- `404` topic not found
-- `400` invalid topic name
-- `409` slug conflict
-
-### `DELETE /api/topics/{topic_id}?delete_words={bool}`
-Soft-deletes a topic.
+Obvious errors from router code include `400` for invalid topic data, `404` for missing topics, and `409` for conflicts such as duplicate names/slugs or active children.
 
 ## Words
 
-### `GET /api/words`
-Query params:
-- `topic_id` (optional, positive int)
-- `search` (optional, min length 1)
+- `GET /api/words` — list words; supports optional `topic_id` and `search`.
+- `GET /api/words/export/xlsx` — export workbook.
+- `POST /api/words/import/xlsx` — import workbook upload.
+- `GET /api/words/export/ai-review` — export a topic page for AI review.
+- `POST /api/words/import/ai-review` — import AI review payload.
+- `GET /api/words/{word_id}` — get one word.
+- `POST /api/words` — create word.
+- `PUT /api/words/{word_id}` — update word.
+- `DELETE /api/words/{word_id}` — soft-delete word.
+- `POST /api/words/suggest-topic` — suggest a topic via the configured model.
+- `POST /api/words/bulk` — bulk create/import words; protected by `X-Api-Key`.
 
-### `GET /api/words/{word_id}`
-Returns one word or `404`.
+Obvious errors from router code include `400` for invalid input, `404` for missing words/topics, `409` for duplicate word/topic conflicts, and model-related `5xx`/`422` errors for topic suggestion.
 
-### `POST /api/words`
-Creates a word.
-Known errors:
-- `400` missing topics
-- `409` duplicate word in topic
+## Smart Review
 
-### `PUT /api/words/{word_id}`
-Updates a word.
-Known errors:
-- `404` word not found
-- `400` missing topics
-- `409` duplicate word in topic
+- `GET /api/smart-review` — get or create active queue; returns `503` when disabled.
+- `POST /api/smart-review/refresh` — regenerate queue; returns `503` when disabled.
+- `POST /api/smart-review/items/{item_id}/complete` — complete queue item.
 
-### `DELETE /api/words/{word_id}`
-Soft-deletes a word.
+## AI Curation
 
-### `POST /api/words/bulk`
-Bulk create/import words.
-Protected by `X-Api-Key`.
-Known errors:
-- `400` invalid topic name for slug generation
-- `409` topic exists in trash
-- `409` slug conflict
+All current curation docs should use schema `lexora.ai-curation.v2`.
 
-### `POST /api/words/suggest-topic`
-Given a word and translation, returns a suggested topic.
-Known errors include:
-- `503` AI not configured
-- `404` no topics found
-- `422` AI returned unknown topic
-- `504` AI timeout
-- `502` upstream AI HTTP / connection failures
+- `GET /api/ai-curation/topics` — paginated topic list.
+- `GET /api/ai-curation/topics/{topic_id}/words` — full paginated word export.
+- `GET /api/ai-curation/topics/{topic_id}/export` — full or lean export.
+- `POST /api/ai-curation/import` — dry-run or apply v2 curation payload.
 
-## Smart review
-
-### `GET /api/smart-review`
-Returns active queue or `503` when disabled.
-
-### `POST /api/smart-review/refresh`
-Regenerates queue or `503` when disabled.
-
-### `POST /api/smart-review/items/{item_id}/complete`
-Completes a queue item.
-Known errors:
-- `404` queue item not found
-- `404` queue inactive / missing
-
-## AI curation
-
-### `GET /api/ai-curation/topics`
-Lists topics for curation workflows with pagination.
-
-### `GET /api/ai-curation/topics/{topic_id}/words`
-Exports a paginated topic word set.
-
-### `GET /api/ai-curation/topics/{topic_id}/export`
-Exports a full or lean paginated topic word set.
-
-Query params include:
-- `lean`
-- `needs_examples_only`
-- `page`
-- `page_size`
-
-### `POST /api/ai-curation/import`
-Imports reviewed AI curation payloads.
-
-## Health and public config
-
-### `GET /health`
-Returns service health.
-
-### `GET /api/config/public`
-Returns public, non-secret config values for the frontend.
+Export query params include `lean`, `needs_examples_only`, `page`, and `page_size`.
 
 ## Trash
 
-### `GET /api/trash/words`
-Lists deleted words.
-
-### `GET /api/trash/topics`
-Lists deleted topics.
-
-### `POST /api/trash/words/{word_id}/restore`
-Restores one deleted word.
-
-### `POST /api/trash/topics/{topic_id}/restore`
-Restores one deleted topic.
-
-### `DELETE /api/trash/purge`
-Hard-deletes expired trash, or all trash with `force=true`.
+- `GET /api/trash/words` — list deleted words.
+- `GET /api/trash/topics` — list deleted topics.
+- `POST /api/trash/words/{word_id}/restore` — restore deleted word.
+- `POST /api/trash/topics/{topic_id}/restore` — restore deleted topic.
+- `DELETE /api/trash/purge?force={bool}` — hard-delete expired trash, or all trash with force.
 
 ## Stats
 
-### `GET /api/stats`
-Returns aggregate stats.
+- `GET /api/stats` — aggregate stats.
+- `POST /api/stats/usage` — record usage event.
 
-### `POST /api/stats/usage`
-Records a usage event.
+## Mounted Routers
 
-## Mounted in app
-
-The app wiring confirms these router groups exist:
+Confirmed in `backend/app/main.py`:
 
 - `health`
 - `auth`
+- `words_agent_router`
 - `topics`
 - `words`
 - `words/suggest`
-- `words/agent_router`
-- `words/ai_curation`
 - `smart_review`
 - `trash`
 - `stats`
-
-Read their router files before changing those areas.
+- `words/ai_curation`
