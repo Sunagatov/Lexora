@@ -19,7 +19,7 @@ def login(http: httpx.Client, base_url: str, password: str) -> str:
     return resp.json()["csrf_token"]
 
 
-def fetch_json(http: httpx.Client, method: str, url: str, csrf: str, **kwargs: Any) -> dict[str, Any]:
+def fetch_json(http: httpx.Client, method: str, url: str, csrf: str, **kwargs: Any) -> Any:
     headers = dict(kwargs.pop("headers", {}))
     headers["X-CSRF-Token"] = csrf
     resp = http.request(method, url, headers=headers, **kwargs)

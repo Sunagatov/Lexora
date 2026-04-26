@@ -1,0 +1,739 @@
+{
+  "animals_topic_id": 6,
+  "creates": [
+    {
+      "name": "Pets",
+      "description": "Domestic animals people commonly keep at home.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Farm Animals",
+      "description": "Animals commonly kept on farms.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Birds",
+      "description": "Birds and bird-related vocabulary.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Fish & Sea Animals",
+      "description": "Fish, sea creatures, and animals that live mainly in water.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Reptiles & Amphibians",
+      "description": "Snakes, lizards, crocodiles, frogs, toads, turtles, tortoises, and similar animals.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Insects",
+      "description": "Insects and insect-related vocabulary.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Baby Animals",
+      "description": "Vocabulary for young animals and animal family words.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Animal Body Parts",
+      "description": "Animal-specific body parts and external features.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Animal Sounds & Movement",
+      "description": "Animal noises, movement verbs, and basic movement actions.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Animal Behaviour",
+      "description": "Vocabulary describing how animals behave, hunt, protect themselves, communicate, or interact.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Animal Care & Vets",
+      "description": "Vocabulary about vets, animal care, feeding, shelters, treatment, rescue, and pet/animal health.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Forest Animals",
+      "description": "Animals commonly associated with forests and woodland environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Jungle & Rainforest Animals",
+      "description": "Animals commonly associated with jungle and rainforest environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Mountain Animals",
+      "description": "Animals commonly associated with mountains and rocky highland environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Polar Animals",
+      "description": "Animals commonly associated with Arctic, Antarctic, and cold polar environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Desert Animals",
+      "description": "Animals commonly associated with deserts and dry environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Savanna Animals",
+      "description": "Animals commonly associated with savannas.",
+      "parent_topic_id": 6,
+      "is_active": true
+    },
+    {
+      "name": "Grassland Animals",
+      "description": "Animals commonly associated with grasslands, plains, and open grassy environments.",
+      "parent_topic_id": 6,
+      "is_active": true
+    }
+  ],
+  "topic_updates": [],
+  "word_updates": [
+    {
+      "id": 2662,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2710,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2579,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2711,
+      "payload": {
+        "topic_ids": [
+          -1,
+          1,
+          5
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2712,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2583,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2713,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2584,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2586,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2669,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 1133,
+      "payload": {
+        "topic_ids": [
+          -1,
+          2
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2685,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2714,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2694,
+      "payload": {
+        "topic_ids": [
+          -1,
+          7
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2589,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2695,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2593,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2715,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2668,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2716,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2672,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2665,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2674,
+      "payload": {
+        "topic_ids": [
+          -1,
+          2
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2686,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2717,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2657,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2718,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2719,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2658,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 1313,
+      "payload": {
+        "topic_ids": [
+          -1,
+          2
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2693,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2688,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2659,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2720,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2608,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2690,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2691,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2610,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2696,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2676,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2639,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2648,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2701,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2675,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2702,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2703,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2704,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2626,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2683,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2642,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 6082,
+      "payload": {
+        "topic_ids": [
+          -1,
+          1,
+          23,
+          33
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2698,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2660,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2705,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2677,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2707,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2684,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2708,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2647,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2661,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2632,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2666,
+      "payload": {
+        "topic_ids": [
+          -1,
+          7
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2650,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2645,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2667,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2706,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2638,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    },
+    {
+      "id": 2709,
+      "payload": {
+        "topic_ids": [
+          -1
+        ],
+        "progress_source": "json_import"
+      }
+    }
+  ],
+  "delete_topic_ids": []
+}

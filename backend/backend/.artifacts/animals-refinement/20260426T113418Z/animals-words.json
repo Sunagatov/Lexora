@@ -1,0 +1,4226 @@
+[
+  {
+    "id": 2662,
+    "topic_ids": [
+      6
+    ],
+    "term": "alligator",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "аллигатор",
+    "translation_entries": [
+      "аллигатор"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:53:51.515400Z"
+  },
+  {
+    "id": 2578,
+    "topic_ids": [
+      6
+    ],
+    "term": "alpaca",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "альпака",
+    "translation_entries": [
+      "альпака"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2710,
+    "topic_ids": [
+      6
+    ],
+    "term": "ant",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "муравей",
+    "translation_entries": [
+      "муравей"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2579,
+    "topic_ids": [
+      6
+    ],
+    "term": "antelope",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "антилопа",
+    "translation_entries": [
+      "антилопа"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:51.675463Z"
+  },
+  {
+    "id": 2580,
+    "topic_ids": [
+      6
+    ],
+    "term": "baboon",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бабуин",
+    "translation_entries": [
+      "бабуин"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:48.494498Z"
+  },
+  {
+    "id": 2581,
+    "topic_ids": [
+      1,
+      6
+    ],
+    "term": "badger",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "барсук",
+    "translation_entries": [
+      "барсук"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:54.853668Z"
+  },
+  {
+    "id": 2651,
+    "topic_ids": [
+      6,
+      8
+    ],
+    "term": "bat",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "летучая мышь",
+    "translation_entries": [
+      "летучая мышь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:55:16.495790Z"
+  },
+  {
+    "id": 2711,
+    "topic_ids": [
+      1,
+      5,
+      6
+    ],
+    "term": "bear",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "медведь",
+    "translation_entries": [
+      "медведь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2582,
+    "topic_ids": [
+      6
+    ],
+    "term": "beaver",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бобр",
+    "translation_entries": [
+      "бобр"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:57.504581Z"
+  },
+  {
+    "id": 2712,
+    "topic_ids": [
+      6
+    ],
+    "term": "bee",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пчела",
+    "translation_entries": [
+      "пчела"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2583,
+    "topic_ids": [
+      6
+    ],
+    "term": "beetle",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "жук",
+    "translation_entries": [
+      "жук"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:12.981071Z"
+  },
+  {
+    "id": 2713,
+    "topic_ids": [
+      6
+    ],
+    "term": "bird",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "птица",
+    "translation_entries": [
+      "птица"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2584,
+    "topic_ids": [
+      6
+    ],
+    "term": "bison",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бизон",
+    "translation_entries": [
+      "бизон"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:11.683438Z"
+  },
+  {
+    "id": 2585,
+    "topic_ids": [
+      6
+    ],
+    "term": "boar",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кабан, вепрь",
+    "translation_entries": [
+      "кабан, вепрь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-09T08:12:17.805435Z"
+  },
+  {
+    "id": 2586,
+    "topic_ids": [
+      6
+    ],
+    "term": "buffalo",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "буйвол",
+    "translation_entries": [
+      "буйвол"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:00:10.383310Z"
+  },
+  {
+    "id": 2669,
+    "topic_ids": [
+      6
+    ],
+    "term": "bull",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бык",
+    "translation_entries": [
+      "бык"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 1133,
+    "topic_ids": [
+      2,
+      6
+    ],
+    "term": "butterfly",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бабочка",
+    "translation_entries": [
+      "бабочка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2685,
+    "topic_ids": [
+      6
+    ],
+    "term": "camel",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "верблюд",
+    "translation_entries": [
+      "верблюд"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2678,
+    "topic_ids": [
+      6
+    ],
+    "term": "canary",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "канарейка",
+    "translation_entries": [
+      "канарейка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2587,
+    "topic_ids": [
+      6
+    ],
+    "term": "carp",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "карп",
+    "translation_entries": [
+      "карп"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:00:13.296557Z"
+  },
+  {
+    "id": 2714,
+    "topic_ids": [
+      6
+    ],
+    "term": "cat",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кот, кошка",
+    "translation_entries": [
+      "кот, кошка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2588,
+    "topic_ids": [
+      6
+    ],
+    "term": "cheetah",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "гепард",
+    "translation_entries": [
+      "гепард"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:30.634455Z"
+  },
+  {
+    "id": 2694,
+    "topic_ids": [
+      6,
+      7
+    ],
+    "term": "chicken",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "курица, цыплёнок",
+    "translation_entries": [
+      "курица, цыплёнок"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2663,
+    "topic_ids": [
+      6
+    ],
+    "term": "chimpanzee",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "шимпанзе",
+    "translation_entries": [
+      "шимпанзе"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2589,
+    "topic_ids": [
+      6
+    ],
+    "term": "clam",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "моллюск, двустворчатый моллюск",
+    "translation_entries": [
+      "моллюск, двустворчатый моллюск"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:55:21.465039Z"
+  },
+  {
+    "id": 2646,
+    "topic_ids": [
+      6
+    ],
+    "term": "cobra",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кобра",
+    "translation_entries": [
+      "кобра"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:08.428450Z"
+  },
+  {
+    "id": 2590,
+    "topic_ids": [
+      6
+    ],
+    "term": "colt",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "жеребёнок",
+    "translation_entries": [
+      "жеребёнок"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 5,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-09T00:07:07.118487Z"
+  },
+  {
+    "id": 2591,
+    "topic_ids": [
+      6
+    ],
+    "term": "cougar",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пума, кугуар",
+    "translation_entries": [
+      "пума, кугуар"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2695,
+    "topic_ids": [
+      6
+    ],
+    "term": "cow",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "корова",
+    "translation_entries": [
+      "корова"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2592,
+    "topic_ids": [
+      6
+    ],
+    "term": "coyote",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "койот",
+    "translation_entries": [
+      "койот"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:27.718182Z"
+  },
+  {
+    "id": 2593,
+    "topic_ids": [
+      6
+    ],
+    "term": "crab",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "краб",
+    "translation_entries": [
+      "краб"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:25.222425Z"
+  },
+  {
+    "id": 2594,
+    "topic_ids": [
+      6,
+      24
+    ],
+    "term": "crane",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "журавль",
+    "translation_entries": [
+      "журавль"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2595,
+    "topic_ids": [
+      6,
+      8
+    ],
+    "term": "cricket",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "сверчок",
+    "translation_entries": [
+      "сверчок"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:00:58.573017Z"
+  },
+  {
+    "id": 2715,
+    "topic_ids": [
+      6
+    ],
+    "term": "crocodile",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "крокодил",
+    "translation_entries": [
+      "крокодил"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2664,
+    "topic_ids": [
+      5,
+      6
+    ],
+    "term": "crow",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ворона",
+    "translation_entries": [
+      "ворона"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2668,
+    "topic_ids": [
+      6
+    ],
+    "term": "deer",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "олень",
+    "translation_entries": [
+      "олень"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:30.494912Z"
+  },
+  {
+    "id": 2716,
+    "topic_ids": [
+      6
+    ],
+    "term": "dog",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "собака, пёс",
+    "translation_entries": [
+      "собака, пёс"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2672,
+    "topic_ids": [
+      6
+    ],
+    "term": "dolphin",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "дельфин",
+    "translation_entries": [
+      "дельфин"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2665,
+    "topic_ids": [
+      6
+    ],
+    "term": "donkey",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "осёл",
+    "translation_entries": [
+      "осёл"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:32.468728Z"
+  },
+  {
+    "id": 2596,
+    "topic_ids": [
+      6
+    ],
+    "term": "dove",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "голубь, горлица",
+    "translation_entries": [
+      "голубь, горлица"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:01:00.970333Z"
+  },
+  {
+    "id": 2674,
+    "topic_ids": [
+      2,
+      6
+    ],
+    "term": "dragonfly",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "стрекоза",
+    "translation_entries": [
+      "стрекоза"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2686,
+    "topic_ids": [
+      6
+    ],
+    "term": "duck",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "утка",
+    "translation_entries": [
+      "утка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2717,
+    "topic_ids": [
+      6
+    ],
+    "term": "eagle",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "орёл",
+    "translation_entries": [
+      "орёл"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2597,
+    "topic_ids": [
+      6
+    ],
+    "term": "eel",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "угорь",
+    "translation_entries": [
+      "угорь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2657,
+    "topic_ids": [
+      6
+    ],
+    "term": "elephant",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "слон",
+    "translation_entries": [
+      "слон"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:01.867840Z"
+  },
+  {
+    "id": 2598,
+    "topic_ids": [
+      6
+    ],
+    "term": "falcon",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "сокол",
+    "translation_entries": [
+      "сокол"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-24T10:12:17.026196Z"
+  },
+  {
+    "id": 2599,
+    "topic_ids": [
+      6
+    ],
+    "term": "ferret",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "хорёк",
+    "translation_entries": [
+      "хорёк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:02:29.231614Z"
+  },
+  {
+    "id": 2600,
+    "topic_ids": [
+      6
+    ],
+    "term": "finch",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "зяблик",
+    "translation_entries": [
+      "зяблик"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2601,
+    "topic_ids": [
+      6
+    ],
+    "term": "firefly",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "светлячок",
+    "translation_entries": [
+      "светлячок"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:35.307984Z"
+  },
+  {
+    "id": 2679,
+    "topic_ids": [
+      6
+    ],
+    "term": "flamingo",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "фламинго",
+    "translation_entries": [
+      "фламинго"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2718,
+    "topic_ids": [
+      6
+    ],
+    "term": "fox",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лиса",
+    "translation_entries": [
+      "лиса"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2719,
+    "topic_ids": [
+      6
+    ],
+    "term": "frog",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лягушка",
+    "translation_entries": [
+      "лягушка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2602,
+    "topic_ids": [
+      6
+    ],
+    "term": "gazelle",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "газель",
+    "translation_entries": [
+      "газель"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:58:59.332453Z"
+  },
+  {
+    "id": 2603,
+    "topic_ids": [
+      6
+    ],
+    "term": "gecko",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "геккон",
+    "translation_entries": [
+      "геккон"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:01:40.504768Z"
+  },
+  {
+    "id": 2658,
+    "topic_ids": [
+      6
+    ],
+    "term": "giraffe",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "жираф",
+    "translation_entries": [
+      "жираф"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:37.072386Z"
+  },
+  {
+    "id": 1313,
+    "topic_ids": [
+      2,
+      6
+    ],
+    "term": "GOAT",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "величайший всех времён, лучший в истории",
+    "translation_entries": [
+      "величайший всех времён, лучший в истории"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2693,
+    "topic_ids": [
+      6
+    ],
+    "term": "goose",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "гусь",
+    "translation_entries": [
+      "гусь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2688,
+    "topic_ids": [
+      6
+    ],
+    "term": "gorilla",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "горилла",
+    "translation_entries": [
+      "горилла"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2604,
+    "topic_ids": [
+      6
+    ],
+    "term": "gull",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "чайка",
+    "translation_entries": [
+      "чайка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:59.951546Z"
+  },
+  {
+    "id": 2659,
+    "topic_ids": [
+      6
+    ],
+    "term": "hamster",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "хомяк",
+    "translation_entries": [
+      "хомяк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2652,
+    "topic_ids": [
+      6
+    ],
+    "term": "hare",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "заяц",
+    "translation_entries": [
+      "заяц"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:58.134690Z"
+  },
+  {
+    "id": 2571,
+    "topic_ids": [
+      6
+    ],
+    "term": "hawk",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ястреб",
+    "translation_entries": [
+      "ястреб"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:56.202443Z"
+  },
+  {
+    "id": 2572,
+    "topic_ids": [
+      6
+    ],
+    "term": "hedgehog",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ёж",
+    "translation_entries": [
+      "ёж"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:57:55.028768Z"
+  },
+  {
+    "id": 2681,
+    "topic_ids": [
+      6
+    ],
+    "term": "heron",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "цапля",
+    "translation_entries": [
+      "цапля"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2605,
+    "topic_ids": [
+      6
+    ],
+    "term": "herring",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "сельдь",
+    "translation_entries": [
+      "сельдь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2573,
+    "topic_ids": [
+      6
+    ],
+    "term": "hippopotamus",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "бегемот, гиппопотам",
+    "translation_entries": [
+      "бегемот, гиппопотам"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:21.057463Z"
+  },
+  {
+    "id": 2606,
+    "topic_ids": [
+      6
+    ],
+    "term": "hornet",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "шершень",
+    "translation_entries": [
+      "шершень"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2720,
+    "topic_ids": [
+      6
+    ],
+    "term": "horse",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лошадь, конь",
+    "translation_entries": [
+      "лошадь, конь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2607,
+    "topic_ids": [
+      6
+    ],
+    "term": "hyena",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "гиена",
+    "translation_entries": [
+      "гиена"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:02:38.420005Z"
+  },
+  {
+    "id": 2670,
+    "topic_ids": [
+      6
+    ],
+    "term": "iguana",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "игуана",
+    "translation_entries": [
+      "игуана"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2680,
+    "topic_ids": [
+      6
+    ],
+    "term": "jackal",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "шакал",
+    "translation_entries": [
+      "шакал"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2608,
+    "topic_ids": [
+      6
+    ],
+    "term": "jellyfish",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "медуза",
+    "translation_entries": [
+      "медуза"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:02:41.900807Z"
+  },
+  {
+    "id": 2574,
+    "topic_ids": [
+      6
+    ],
+    "term": "kangaroo",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кенгуру",
+    "translation_entries": [
+      "кенгуру"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:24.238867Z"
+  },
+  {
+    "id": 2575,
+    "topic_ids": [
+      6
+    ],
+    "term": "koala",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "коала",
+    "translation_entries": [
+      "коала"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:59:26.806839Z"
+  },
+  {
+    "id": 2609,
+    "topic_ids": [
+      6
+    ],
+    "term": "ladybug",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "божья коровка",
+    "translation_entries": [
+      "божья коровка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-14T22:58:42.372036Z"
+  },
+  {
+    "id": 2653,
+    "topic_ids": [
+      6
+    ],
+    "term": "lemur",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лемур",
+    "translation_entries": [
+      "лемур"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2689,
+    "topic_ids": [
+      6
+    ],
+    "term": "leopard",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "леопард",
+    "translation_entries": [
+      "леопард"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2690,
+    "topic_ids": [
+      6
+    ],
+    "term": "lion",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лев",
+    "translation_entries": [
+      "лев"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2691,
+    "topic_ids": [
+      6
+    ],
+    "term": "lizard",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ящерица",
+    "translation_entries": [
+      "ящерица"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2654,
+    "topic_ids": [
+      6
+    ],
+    "term": "llama",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лама",
+    "translation_entries": [
+      "лама"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2610,
+    "topic_ids": [
+      6
+    ],
+    "term": "lobster",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "омар, лобстер",
+    "translation_entries": [
+      "омар, лобстер"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:02:43.144299Z"
+  },
+  {
+    "id": 2611,
+    "topic_ids": [
+      6
+    ],
+    "term": "lynx",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "рысь",
+    "translation_entries": [
+      "рысь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2612,
+    "topic_ids": [
+      6
+    ],
+    "term": "magpie",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "сорока",
+    "translation_entries": [
+      "сорока"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:02:45.667772Z"
+  },
+  {
+    "id": 2613,
+    "topic_ids": [
+      6
+    ],
+    "term": "manatee",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ламантин",
+    "translation_entries": [
+      "ламантин"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2614,
+    "topic_ids": [
+      6
+    ],
+    "term": "mole",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "крот",
+    "translation_entries": [
+      "крот"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2696,
+    "topic_ids": [
+      6
+    ],
+    "term": "monkey",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "обезьяна",
+    "translation_entries": [
+      "обезьяна"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2676,
+    "topic_ids": [
+      6
+    ],
+    "term": "mosquito",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "комар",
+    "translation_entries": [
+      "комар"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2615,
+    "topic_ids": [
+      2,
+      6
+    ],
+    "term": "moth",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "моль, мотылёк",
+    "translation_entries": [
+      "моль, мотылёк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:03:10.732354Z"
+  },
+  {
+    "id": 2700,
+    "topic_ids": [
+      6,
+      25
+    ],
+    "term": "mouse",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "мышь",
+    "translation_entries": [
+      "мышь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2616,
+    "topic_ids": [
+      6
+    ],
+    "term": "mule",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "мул",
+    "translation_entries": [
+      "мул"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2617,
+    "topic_ids": [
+      6
+    ],
+    "term": "newt",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "тритон",
+    "translation_entries": [
+      "тритон"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2639,
+    "topic_ids": [
+      6
+    ],
+    "term": "octopus",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "осьминог",
+    "translation_entries": [
+      "осьминог"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:03:16.346305Z"
+  },
+  {
+    "id": 2640,
+    "topic_ids": [
+      6
+    ],
+    "term": "otter",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "выдра",
+    "translation_entries": [
+      "выдра"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:24.031481Z"
+  },
+  {
+    "id": 2648,
+    "topic_ids": [
+      6
+    ],
+    "term": "owl",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "сова",
+    "translation_entries": [
+      "сова"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:55:34.728374Z"
+  },
+  {
+    "id": 2641,
+    "topic_ids": [
+      6
+    ],
+    "term": "oyster",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "устрица",
+    "translation_entries": [
+      "устрица"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:26.832895Z"
+  },
+  {
+    "id": 2697,
+    "topic_ids": [
+      6
+    ],
+    "term": "panda",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "панда",
+    "translation_entries": [
+      "панда"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2618,
+    "topic_ids": [
+      6
+    ],
+    "term": "panther",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пантера",
+    "translation_entries": [
+      "пантера"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:03:19.217091Z"
+  },
+  {
+    "id": 2701,
+    "topic_ids": [
+      6
+    ],
+    "term": "parrot",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "попугай",
+    "translation_entries": [
+      "попугай"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2619,
+    "topic_ids": [
+      6
+    ],
+    "term": "peacock",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "павлин",
+    "translation_entries": [
+      "павлин"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:29.698518Z"
+  },
+  {
+    "id": 2620,
+    "topic_ids": [
+      6
+    ],
+    "term": "pelican",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пеликан",
+    "translation_entries": [
+      "пеликан"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:32.062173Z"
+  },
+  {
+    "id": 2675,
+    "topic_ids": [
+      6
+    ],
+    "term": "penguin",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пингвин",
+    "translation_entries": [
+      "пингвин"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2702,
+    "topic_ids": [
+      6
+    ],
+    "term": "pig",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "свинья",
+    "translation_entries": [
+      "свинья"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2703,
+    "topic_ids": [
+      6
+    ],
+    "term": "pigeon",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "голубь",
+    "translation_entries": [
+      "голубь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2621,
+    "topic_ids": [
+      6
+    ],
+    "term": "pony",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "пони",
+    "translation_entries": [
+      "пони"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-09T17:24:16.055604Z"
+  },
+  {
+    "id": 2622,
+    "topic_ids": [
+      6
+    ],
+    "term": "porcupine",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "дикобраз",
+    "translation_entries": [
+      "дикобраз"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2623,
+    "topic_ids": [
+      6
+    ],
+    "term": "quail",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "перепёлка",
+    "translation_entries": [
+      "перепёлка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2704,
+    "topic_ids": [
+      6
+    ],
+    "term": "rabbit",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кролик",
+    "translation_entries": [
+      "кролик"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2576,
+    "topic_ids": [
+      6
+    ],
+    "term": "raccoon",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "енот",
+    "translation_entries": [
+      "енот"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:37.415524Z"
+  },
+  {
+    "id": 2624,
+    "topic_ids": [
+      6,
+      25
+    ],
+    "term": "ram",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "баран",
+    "translation_entries": [
+      "баран"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2692,
+    "topic_ids": [
+      6
+    ],
+    "term": "rat",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "крыса",
+    "translation_entries": [
+      "крыса"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2682,
+    "topic_ids": [
+      6
+    ],
+    "term": "raven",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ворон",
+    "translation_entries": [
+      "ворон"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2625,
+    "topic_ids": [
+      6
+    ],
+    "term": "reindeer",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "северный олень",
+    "translation_entries": [
+      "северный олень"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:39.682924Z"
+  },
+  {
+    "id": 2577,
+    "topic_ids": [
+      6
+    ],
+    "term": "rhino",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "носорог",
+    "translation_entries": [
+      "носорог"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:42.650211Z"
+  },
+  {
+    "id": 2626,
+    "topic_ids": [
+      6
+    ],
+    "term": "rooster",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "петух",
+    "translation_entries": [
+      "петух"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2655,
+    "topic_ids": [
+      2,
+      6
+    ],
+    "term": "salmon",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лосось, сёмга",
+    "translation_entries": [
+      "лосось, сёмга"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:43.097466Z"
+  },
+  {
+    "id": 2683,
+    "topic_ids": [
+      6
+    ],
+    "term": "scorpion",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "скорпион",
+    "translation_entries": [
+      "скорпион"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2671,
+    "topic_ids": [
+      6
+    ],
+    "term": "seagull",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "чайка",
+    "translation_entries": [
+      "чайка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2642,
+    "topic_ids": [
+      6
+    ],
+    "term": "seahorse",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "морской конёк",
+    "translation_entries": [
+      "морской конёк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:56:46.065083Z"
+  },
+  {
+    "id": 6082,
+    "topic_ids": [
+      1,
+      6,
+      23,
+      33
+    ],
+    "term": "seal",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "печать",
+    "translation_entries": [
+      "печать"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "countable",
+    "pattern": null,
+    "example": "I checked the seal around the window.\nThe seal stopped the cold air from coming in.\nWe replaced the seal when it cracked.",
+    "example_entries": [
+      "I checked the seal around the window.",
+      "The seal stopped the cold air from coming in.",
+      "We replaced the seal when it cracked."
+    ],
+    "example_count": 3,
+    "example_target_count": 3,
+    "example_status": "complete",
+    "needs_example_enrichment": false,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-21T11:56:49.618960Z"
+  },
+  {
+    "id": 2698,
+    "topic_ids": [
+      6
+    ],
+    "term": "shark",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "акула",
+    "translation_entries": [
+      "акула"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2660,
+    "topic_ids": [
+      6
+    ],
+    "term": "sheep",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "овца",
+    "translation_entries": [
+      "овца"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:09.642435Z"
+  },
+  {
+    "id": 2656,
+    "topic_ids": [
+      6,
+      7
+    ],
+    "term": "shrimp",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "креветка",
+    "translation_entries": [
+      "креветка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:48.531607Z"
+  },
+  {
+    "id": 2627,
+    "topic_ids": [
+      6
+    ],
+    "term": "skunk",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "скунс",
+    "translation_entries": [
+      "скунс"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2628,
+    "topic_ids": [
+      6
+    ],
+    "term": "slug",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "слизень",
+    "translation_entries": [
+      "слизень"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2643,
+    "topic_ids": [
+      6
+    ],
+    "term": "snail",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "улитка",
+    "translation_entries": [
+      "улитка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-09T17:19:30.399908Z"
+  },
+  {
+    "id": 2705,
+    "topic_ids": [
+      6
+    ],
+    "term": "snake",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "змея",
+    "translation_entries": [
+      "змея"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2677,
+    "topic_ids": [
+      6
+    ],
+    "term": "sparrow",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "воробей",
+    "translation_entries": [
+      "воробей"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2707,
+    "topic_ids": [
+      6
+    ],
+    "term": "spider",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "паук",
+    "translation_entries": [
+      "паук"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2684,
+    "topic_ids": [
+      6
+    ],
+    "term": "squid",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кальмар",
+    "translation_entries": [
+      "кальмар"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2708,
+    "topic_ids": [
+      6
+    ],
+    "term": "squirrel",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "белка",
+    "translation_entries": [
+      "белка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2629,
+    "topic_ids": [
+      6
+    ],
+    "term": "stag",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "самец оленя, олень-самец",
+    "translation_entries": [
+      "самец оленя, олень-самец"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2644,
+    "topic_ids": [
+      6
+    ],
+    "term": "starfish",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "морская звезда",
+    "translation_entries": [
+      "морская звезда"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-09T17:19:36.322716Z"
+  },
+  {
+    "id": 2673,
+    "topic_ids": [
+      6
+    ],
+    "term": "stork",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "аист",
+    "translation_entries": [
+      "аист"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2630,
+    "topic_ids": [
+      6
+    ],
+    "term": "swallow",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ласточка",
+    "translation_entries": [
+      "ласточка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2647,
+    "topic_ids": [
+      6
+    ],
+    "term": "swan",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "лебедь",
+    "translation_entries": [
+      "лебедь"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:55:38.796252Z"
+  },
+  {
+    "id": 2631,
+    "topic_ids": [
+      6
+    ],
+    "term": "termite",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "термит",
+    "translation_entries": [
+      "термит"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2661,
+    "topic_ids": [
+      6
+    ],
+    "term": "tiger",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "тигр",
+    "translation_entries": [
+      "тигр"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:14.617381Z"
+  },
+  {
+    "id": 2632,
+    "topic_ids": [
+      6
+    ],
+    "term": "toad",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "жаба",
+    "translation_entries": [
+      "жаба"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2633,
+    "topic_ids": [
+      6
+    ],
+    "term": "trout",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "форель",
+    "translation_entries": [
+      "форель"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2666,
+    "topic_ids": [
+      6,
+      7
+    ],
+    "term": "turkey",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "индюк",
+    "translation_entries": [
+      "индюк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2650,
+    "topic_ids": [
+      6
+    ],
+    "term": "turtle",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "черепаха",
+    "translation_entries": [
+      "черепаха"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2634,
+    "topic_ids": [
+      6
+    ],
+    "term": "vulture",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "гриф, стервятник",
+    "translation_entries": [
+      "гриф, стервятник"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2635,
+    "topic_ids": [
+      6
+    ],
+    "term": "walrus",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "морж",
+    "translation_entries": [
+      "морж"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2645,
+    "topic_ids": [
+      6
+    ],
+    "term": "wasp",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "оса",
+    "translation_entries": [
+      "оса"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 2,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T10:03:51.742999Z"
+  },
+  {
+    "id": 2636,
+    "topic_ids": [
+      6
+    ],
+    "term": "weasel",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "ласка",
+    "translation_entries": [
+      "ласка"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2667,
+    "topic_ids": [
+      6
+    ],
+    "term": "whale",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "кит",
+    "translation_entries": [
+      "кит"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:54:20.430488Z"
+  },
+  {
+    "id": 2706,
+    "topic_ids": [
+      6
+    ],
+    "term": "wolf",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "волк",
+    "translation_entries": [
+      "волк"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2637,
+    "topic_ids": [
+      6
+    ],
+    "term": "woodpecker",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "дятел",
+    "translation_entries": [
+      "дятел"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 3,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-08T09:55:57.013262Z"
+  },
+  {
+    "id": 2638,
+    "topic_ids": [
+      6
+    ],
+    "term": "yak",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "як",
+    "translation_entries": [
+      "як"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 1,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  },
+  {
+    "id": 2709,
+    "topic_ids": [
+      6
+    ],
+    "term": "zebra",
+    "past_simple": null,
+    "past_participle": null,
+    "translations": "зебра",
+    "translation_entries": [
+      "зебра"
+    ],
+    "part_of_speech": "noun",
+    "knowledge_level": 4,
+    "countability": "Countable",
+    "pattern": null,
+    "example": null,
+    "example_entries": [],
+    "example_count": 0,
+    "example_target_count": 3,
+    "example_status": "missing",
+    "needs_example_enrichment": true,
+    "notes": null,
+    "is_active": true,
+    "deleted_at": null,
+    "created_at": "2026-04-07T16:53:47.101949Z",
+    "updated_at": "2026-04-07T16:53:47.101949Z"
+  }
+]

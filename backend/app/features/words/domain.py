@@ -4,25 +4,19 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.shared.text import normalize_term
-from app.features.topics.model import Topic
-from app.features.words.model import Word, word_topics
+from app.features.words.model import Word
 from app.features.words.exceptions import DuplicateWordInTopicError
 
 
 def existing_normalized_terms(
     db: Session,
-    topic_ids: list[int],
+    topic_ids: list[int] | None = None,
     exclude_word_id: int | None = None,
 ) -> set[str]:
-    """Return normalized terms of active words in the given topics, optionally excluding one word id."""
-    stmt = (
-        select(Word.term)
-        .join(word_topics, word_topics.c.word_id == Word.id)
-        .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None))
-        .where(Topic.id.in_(topic_ids))
-        .where(Topic.deleted_at.is_(None))
-    )
+    """Return normalized terms of all words in the database, optionally excluding one word id."""
+    del topic_ids
+
+    stmt = select(Word.term)
     if exclude_word_id is not None:
         stmt = stmt.where(Word.id != exclude_word_id)
     return {normalize_term(t) for t in db.scalars(stmt).all()}

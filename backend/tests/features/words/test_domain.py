@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from types import SimpleNamespace
+from typing import cast
 
 from app.features.words.domain import (
     assert_no_duplicate_word,
@@ -10,9 +11,10 @@ from app.features.words.domain import (
     existing_normalized_terms,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.model import Word
 
 
-def test_existing_normalized_terms_returns_normalized_set() -> None:
+def test_existing_normalized_terms_returns_global_normalized_set() -> None:
     db = MagicMock()
     db.scalars.return_value.all.return_value = [
         "  Hello ",
@@ -29,7 +31,7 @@ def test_assert_no_duplicate_word_raises_for_normalized_duplicate() -> None:
     with pytest.raises(DuplicateWordInTopicError) as exc_info:
         assert_no_duplicate_word("  HELLO ", {"hello", "world"})
 
-    assert str(exc_info.value) == "Word '  HELLO ' already exists in one of the selected topics"
+    assert str(exc_info.value) == "Word '  HELLO ' already exists in the database"
 
 
 def test_assert_no_duplicate_word_allows_unique_term() -> None:
@@ -51,6 +53,6 @@ def test_assert_word_restore_allowed_checks_active_topics_and_restoring_topic_id
     monkeypatch.setattr("app.features.words.domain.existing_normalized_terms", fake_existing_normalized_terms)
 
     with pytest.raises(DuplicateWordInTopicError):
-        assert_word_restore_allowed(db, word, restoring_topic_ids={3})
+        assert_word_restore_allowed(db, cast(Word, cast(object, word)), restoring_topic_ids={3})
 
     assert seen_topic_ids == [((1, 3), 10)]
