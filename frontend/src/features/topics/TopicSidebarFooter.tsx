@@ -85,12 +85,12 @@ export function TopicSidebarFooter({
           <span className="sidebar-util-icon">🗑</span><span className="sidebar-util-label">Trash</span>
         </button>
       </div>
-      <div className="sidebar-util-row">
-        <button type="button" className="sidebar-util-btn" title="Export Excel workbook" disabled={workbookBusy} onClick={onExport}>
-          <span className="sidebar-util-icon">Export</span><span className="sidebar-util-label">XLSX</span>
+      <div className="sidebar-secondary-actions">
+        <button type="button" className="sidebar-secondary-action-btn" title="Export Excel workbook" disabled={workbookBusy} onClick={onExport}>
+          Export
         </button>
-        <button type="button" className="sidebar-util-btn" title="Import Excel workbook" disabled={workbookBusy} onClick={onImportClick}>
-          <span className="sidebar-util-icon">Import</span><span className="sidebar-util-label">{workbookBusy ? 'Working' : 'XLSX'}</span>
+        <button type="button" className="sidebar-secondary-action-btn" title="Import Excel workbook" disabled={workbookBusy} onClick={onImportClick}>
+          {workbookBusy ? 'Importing…' : 'Import'}
         </button>
       </div>
       <input

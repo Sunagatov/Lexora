@@ -578,6 +578,35 @@
 .sidebar-util-btn:hover { background: rgba(255, 255, 255, 0.06); color: var(--sidebar-text); }
 .sidebar-util-btn + .sidebar-util-btn { border-left: 1px solid rgba(255, 255, 255, 0.06); }
 
+.sidebar-secondary-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 4px 12px 8px;
+}
+
+.sidebar-secondary-action-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+  color: var(--sidebar-text-2);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  transition: color 0.12s, opacity 0.12s;
+  opacity: 0.72;
+}
+
+.sidebar-secondary-action-btn:hover {
+  color: var(--sidebar-text);
+  opacity: 1;
+}
+
+.sidebar-secondary-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 /* ── New topic form ──────────────────────────────────────────────────────── */
 .sidebar-new-topic-wrap { padding: 8px 12px; }
 
