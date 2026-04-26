@@ -56,6 +56,16 @@ function renderNodes(
       )
       : []
 
+    const childrenBlock = expanded ? (
+      <div
+        key={`${node.topic.id}-children`}
+        className="topic-subtopics-scroll"
+        data-level={level + 1}
+      >
+        {children}
+      </div>
+    ) : null
+
     return [
       <TopicButton
         key={node.topic.id}
@@ -74,7 +84,7 @@ function renderNodes(
         onPin={onPin}
         onToggleExpanded={onToggleExpanded}
       />,
-      ...children,
+      ...(childrenBlock ? [childrenBlock] : []),
     ]
   })
 }

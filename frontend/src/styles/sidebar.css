@@ -540,6 +540,30 @@
 
 .topic-item-active .topic-item-pct { color: #a5b4fc; opacity: 1; }
 
+.topic-subtopics-scroll {
+  max-height: clamp(168px, 34vh, 320px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 2px 0 6px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+.topic-subtopics-scroll[data-level='1'] {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  margin-left: 10px;
+}
+
+.topic-subtopics-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.topic-subtopics-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
 .topic-progress-bar {
   position: absolute;
   bottom: 0;

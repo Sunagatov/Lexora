@@ -90,6 +90,7 @@ describe('TopicSidebar disclosure navigation', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Expand Animals'}))
 
     expect(screen.getByRole('button', {name: /^Pets\b/})).not.toBeNull()
+    expect(document.querySelector('.topic-subtopics-scroll')).not.toBeNull()
   })
 
   it('auto-expands the branch for the selected subtopic', () => {
