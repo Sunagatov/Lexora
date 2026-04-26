@@ -77,20 +77,18 @@ export function TopicSidebarFooter({
           + New topic
         </button>
       )}
-      <div className="sidebar-util-row">
+      <div className="sidebar-footer-actions-grid">
         <button type="button" className="sidebar-util-btn" title="Statistics" onClick={onOpenStats}>
           <span className="sidebar-util-icon">📊</span><span className="sidebar-util-label">Stats</span>
         </button>
         <button type="button" className="sidebar-util-btn" title="Trash" onClick={onOpenTrash}>
           <span className="sidebar-util-icon">🗑</span><span className="sidebar-util-label">Trash</span>
         </button>
-      </div>
-      <div className="sidebar-secondary-actions">
         <button type="button" className="sidebar-secondary-action-btn" title="Export Excel workbook" disabled={workbookBusy} onClick={onExport}>
-          Export
+          <span className="sidebar-util-label">Export</span>
         </button>
         <button type="button" className="sidebar-secondary-action-btn" title="Import Excel workbook" disabled={workbookBusy} onClick={onImportClick}>
-          {workbookBusy ? 'Importing…' : 'Import'}
+          <span className="sidebar-util-label">{workbookBusy ? 'Importing…' : 'Import'}</span>
         </button>
       </div>
       <input
