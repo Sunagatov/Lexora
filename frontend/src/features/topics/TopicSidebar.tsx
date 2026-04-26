@@ -154,7 +154,7 @@ export function TopicSidebar({
     [prefs.expandedTopicIds],
   )
 
-  const {posTopics, themeTopics, themeTree, pinnedTopics, recentTopics} = useMemo(() =>
+  const {posTopics, themeTopics, themeTree, pinnedTopics} = useMemo(() =>
     buildSidebarGroups(
       topics, needle, prefs.pinnedIds,
       prefs.posSort, prefs.topicsSort,
@@ -278,26 +278,6 @@ export function TopicSidebar({
             ))}
           </TopicSidebarListSection>
         )}
-        {recentTopics.length > 0 && (
-          <TopicSidebarListSection label="🕒 Recent">
-            {recentTopics.map((t) => (
-              <TopicButton
-                key={t.id}
-                topic={t}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onEdit={handleEditTopic}
-                onDelete={(id: number) => setDeleteTopicId(id)}
-                onPin={prefs.togglePin}
-              />
-            ))}
-          </TopicSidebarListSection>
-        )}
-
         {posTopics.length > 0 && (
           <TopicSidebarGroup
             title="Parts of Speech"

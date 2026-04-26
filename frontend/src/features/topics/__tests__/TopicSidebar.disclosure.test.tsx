@@ -114,4 +114,16 @@ describe('TopicSidebar disclosure navigation', () => {
     expect(screen.queryByRole('button', {name: /^Pets\b/})).toBeNull()
     expect(screen.getByRole('button', {name: 'Expand Animals'}).getAttribute('aria-expanded')).toBe('false')
   })
+
+  it('hides the recent section even when recent topic ids exist in storage', () => {
+    localStorage.setItem('sidebar_recent_topics', JSON.stringify([1]))
+
+    renderSidebar([
+      makeTopic(1, 'Animals'),
+      makeTopic(2, 'Pets', 1),
+    ])
+
+    expect(screen.queryByText('🕒 Recent')).toBeNull()
+    expect(screen.queryByRole('button', {name: /^Animals\b/})).not.toBeNull()
+  })
 })
