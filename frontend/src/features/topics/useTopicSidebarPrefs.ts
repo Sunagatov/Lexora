@@ -28,13 +28,15 @@ export function sanitizeSortMode(raw: unknown, fallback: SortMode): SortMode {
 export function sanitizeIdList(raw: unknown, limit = 5): number[] {
   if (!Array.isArray(raw)) return []
 
-  return Array.from(
+  const ids = Array.from(
     new Set(
       raw
         .map((value) => Number(value))
         .filter((value) => Number.isInteger(value) && value > 0),
     ),
-  ).slice(0, limit)
+  )
+
+  return Number.isFinite(limit) ? ids.slice(0, limit) : ids
 }
 
 export const SIDEBAR_PREF_KEYS = {
@@ -44,6 +46,7 @@ export const SIDEBAR_PREF_KEYS = {
   topicsSort:      'sidebar_topics_sort',
   pinned:          'sidebar_pinned',
   recent:          'sidebar_recent_topics',
+  expandedTopics:  'sidebar_expanded_topics',
 } as const
 
 export function useTopicSidebarPrefs() {
@@ -69,6 +72,10 @@ export function useTopicSidebarPrefs() {
 
   const [recentIds, setRecentIdsRaw] = useState<number[]>(() =>
     sanitizeIdList(loadUnknown(SIDEBAR_PREF_KEYS.recent)),
+  )
+
+  const [expandedTopicIds, setExpandedTopicIdsRaw] = useState<number[]>(() =>
+    sanitizeIdList(loadUnknown(SIDEBAR_PREF_KEYS.expandedTopics), Number.POSITIVE_INFINITY),
   )
 
   function setPosCollapsed(v: boolean) {
@@ -106,6 +113,21 @@ export function useTopicSidebarPrefs() {
     save(SIDEBAR_PREF_KEYS.recent, next)
   }
 
+  function toggleTopicExpanded(id: number) {
+    const next = expandedTopicIds.includes(id)
+      ? expandedTopicIds.filter((x) => x !== id)
+      : [...expandedTopicIds, id]
+
+    setExpandedTopicIdsRaw(next)
+    save(SIDEBAR_PREF_KEYS.expandedTopics, next)
+  }
+
+  function setExpandedTopicIds(ids: number[]) {
+    const next = sanitizeIdList(ids, Number.POSITIVE_INFINITY)
+    setExpandedTopicIdsRaw(next)
+    save(SIDEBAR_PREF_KEYS.expandedTopics, next)
+  }
+
   return {
     posCollapsed,
     setPosCollapsed,
@@ -119,5 +141,8 @@ export function useTopicSidebarPrefs() {
     togglePin,
     recentIds,
     addRecentId,
+    expandedTopicIds,
+    toggleTopicExpanded,
+    setExpandedTopicIds,
   }
 }

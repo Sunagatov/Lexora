@@ -1,4 +1,4 @@
-import {useRef, useMemo, useState} from 'react'
+import {useEffect, useRef, useMemo, useState} from 'react'
 import type {ChangeEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
@@ -64,6 +64,7 @@ export function TopicSidebar({
   const importInputRef = useRef<HTMLInputElement>(null)
   const posSortRef     = useRef<HTMLButtonElement>(null)
   const topicsSortRef  = useRef<HTMLButtonElement>(null)
+  const lastAutoExpandedTopicIdRef = useRef<number | null>(null)
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
   const selectedTopic = useMemo(
@@ -122,6 +123,35 @@ export function TopicSidebar({
   const topicOptions = useMemo(
     () => [...topics].filter((t) => !isPosGroup(t)).sort((a, b) => a.name.localeCompare(b.name)),
     [topics],
+  )
+
+  useEffect(() => {
+    if (selectedTopicId === null) {
+      lastAutoExpandedTopicIdRef.current = null
+      return
+    }
+    if (lastAutoExpandedTopicIdRef.current === selectedTopicId) return
+
+    const byId = new Map(topics.map((topic) => [topic.id, topic]))
+    const expanded = new Set(prefs.expandedTopicIds)
+    let currentId: number | null = selectedTopicId
+    let changed = false
+
+    while (currentId !== null) {
+      if (!expanded.has(currentId)) {
+        expanded.add(currentId)
+        changed = true
+      }
+      currentId = byId.get(currentId)?.parent_topic_id ?? null
+    }
+
+    lastAutoExpandedTopicIdRef.current = selectedTopicId
+    if (changed) prefs.setExpandedTopicIds([...expanded])
+  }, [prefs, selectedTopicId, topics])
+
+  const expandedTopicIds = useMemo(
+    () => new Set(prefs.expandedTopicIds),
+    [prefs.expandedTopicIds],
   )
 
   const {posTopics, themeTopics, themeTree, pinnedTopics, recentTopics} = useMemo(() =>
@@ -331,10 +361,13 @@ export function TopicSidebar({
               topicCounts={topicCounts}
               topicProgress={topicProgress}
               pinnedIds={prefs.pinnedIds}
+              expandedTopicIds={expandedTopicIds}
+              forceExpandAll={!!needle}
               onSelect={handleSelect}
               onEdit={handleEditTopic}
               onDelete={(id: number) => setDeleteTopicId(id)}
               onPin={prefs.togglePin}
+              onToggleExpanded={prefs.toggleTopicExpanded}
             />
           </TopicSidebarGroup>
         )}

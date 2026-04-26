@@ -1,6 +1,8 @@
+import type {CSSProperties} from 'react'
+
 import type {Topic} from '../../shared/types'
 
-export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0}: {
+export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0, hasChildren = false, expanded = false, onToggleExpanded}: {
   topic: Topic
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
@@ -12,19 +14,44 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   onDelete: (id: number) => void
   onPin: (id: number) => void
   level?: number
+  hasChildren?: boolean
+  expanded?: boolean
+  onToggleExpanded?: (id: number) => void
 }) {
   const progress = topicProgress.get(topic.id)
   const isPinned = pinnedIds.includes(topic.id)
   const count    = topicCounts.get(topic.id) ?? 0
+  const style = {
+    paddingLeft: `${level * 14}px`,
+    '--topic-indent': `${level * 14}px`,
+  } as CSSProperties
 
   return (
     <div
       className={`topic-item ${!isSmartReview && topic.id === selectedTopicId ? 'topic-item-active' : ''}`}
       data-pinned={isPinned ? 'true' : undefined}
       title={topic.name}
-      style={{paddingLeft: `${level * 14}px`}}
+      style={style}
     >
-      <button type="button" className="topic-item-select" onClick={() => onSelect(topic.id)}>
+      {hasChildren ? (
+        <button
+          type="button"
+          className={`topic-item-expander ${expanded ? 'expanded' : ''}`}
+          aria-label={`${expanded ? 'Collapse' : 'Expand'} ${topic.name}`}
+          aria-expanded={expanded}
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleExpanded?.(topic.id)
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="4,2 8,6 4,10" />
+          </svg>
+        </button>
+      ) : (
+        <span className="topic-item-expander-spacer" aria-hidden="true" />
+      )}
+      <button type="button" className={`topic-item-select ${hasChildren ? 'has-expander' : ''}`} onClick={() => onSelect(topic.id)}>
         <span className="topic-item-name">{topic.name}</span>
         <span className="topic-item-pct">
           {progress !== undefined ? `${progress}%` : count > 0 ? '—' : ''}

@@ -72,6 +72,9 @@ describe('TopicSidebar cache invalidation', () => {
       togglePin: vi.fn(),
       recentIds: [],
       addRecentId: vi.fn(),
+      expandedTopicIds: [],
+      toggleTopicExpanded: vi.fn(),
+      setExpandedTopicIds: vi.fn(),
     } as never)
     vi.mocked(topicsApi.createTopic).mockResolvedValue(makeTopic(2, 'New topic', 'new-topic'))
     vi.mocked(topicsApi.deleteTopic).mockResolvedValue(undefined)

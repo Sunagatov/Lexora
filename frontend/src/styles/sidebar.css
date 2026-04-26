@@ -424,6 +424,7 @@
 
 /* ── Topic rows ──────────────────────────────────────────────────────────── */
 .topic-item {
+  --topic-indent: 0px;
   width: 100%;
   text-align: left;
   background: transparent;
@@ -436,6 +437,39 @@
   color: var(--sidebar-text);
   margin-bottom: 1px;
   position: relative;
+}
+
+.topic-item-expander,
+.topic-item-expander-spacer {
+  width: 24px;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.topic-item-expander {
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--sidebar-text-2);
+  cursor: pointer;
+  transition: color 0.12s, background 0.12s, transform 0.18s ease;
+}
+
+.topic-item-expander:hover {
+  color: var(--sidebar-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.topic-item-expander.expanded svg {
+  transform: rotate(90deg);
+}
+
+.topic-item-expander svg {
+  transition: transform 0.18s ease;
 }
 
 .topic-item-select {
@@ -451,6 +485,10 @@
   color: inherit;
   text-align: left;
   overflow: hidden;
+}
+
+.topic-item-select.has-expander {
+  padding-left: 4px;
 }
 
 .topic-item:hover { background: rgba(255, 255, 255, 0.06); }
@@ -505,7 +543,7 @@
 .topic-progress-bar {
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: var(--topic-indent, 0px);
   right: 0;
   height: 2px;
   background: rgba(255, 255, 255, 0.06);
