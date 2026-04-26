@@ -26,6 +26,10 @@ def _build_postgres_engine() -> Engine:
         settings.database_url,
         future=True,
         pool_pre_ping=True,
+        # Hosted Postgres poolers can close idle SSL connections underneath us.
+        # Recycle them proactively and prefer reusing the freshest connections.
+        pool_recycle=300,
+        pool_use_lifo=True,
         connect_args={"prepare_threshold": None},
     )
 
