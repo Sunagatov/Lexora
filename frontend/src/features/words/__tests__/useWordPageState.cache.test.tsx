@@ -5,6 +5,7 @@ import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {useWordPageState} from '../useWordPageState'
 import {queryKeys} from '../../../app/queryKeys'
 import type {Topic, Word} from '../../../shared/types'
+import {ApiError} from '../../../shared/apiError'
 import * as wordsApi from '../api'
 import * as topicsApi from '../../topics/api'
 
@@ -69,6 +70,7 @@ function Harness() {
   return (
     <div>
       <div data-testid="draft-state">{s.draft ? 'ready' : 'empty'}</div>
+      <div data-testid="save-error">{s.saveError ?? ''}</div>
       <button type="button" onClick={s.save}>save</button>
       <button type="button" onClick={s.handleDelete}>delete</button>
     </div>
@@ -159,6 +161,38 @@ describe('useWordPageState cache invalidation', () => {
 
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
+    })
+  })
+
+  it('reports duplicate save failures as library-wide, matching the backend rule', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {retry: false},
+        mutations: {retry: false},
+      },
+    })
+
+    vi.mocked(wordsApi.updateWord).mockRejectedValueOnce(
+      new ApiError(409, "Word 'carry' already exists in the database"),
+    )
+
+    renderHarness(queryClient, {
+      pathname: '/words/10/edit',
+      state: {fromTopicSlug: 'alpha'},
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('draft-state').textContent).toBe('ready')
+    })
+
+    fireEvent.click(screen.getByText('save'))
+
+    await waitFor(() => {
+      expect(wordsApi.updateWord).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('save-error').textContent).toBe('A word with this term already exists in your library.')
     })
   })
 })

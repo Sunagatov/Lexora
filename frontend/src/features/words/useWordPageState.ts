@@ -72,7 +72,7 @@ export function useWordPageState() {
     },
     onError: (err: Error) => {
       const msg = err instanceof ApiError && err.status === 409
-        ? 'A word with this term already exists in the selected topic.'
+        ? 'A word with this term already exists in your library.'
         : err instanceof ApiError && (err.status === 400 || err.status === 422)
           ? 'Invalid data — check the fields and try again.'
           : 'Failed to save. Please try again.'

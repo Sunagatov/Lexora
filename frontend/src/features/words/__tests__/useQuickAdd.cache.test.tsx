@@ -5,6 +5,7 @@ import type {ReactNode} from 'react'
 import {useQuickAdd} from '../useQuickAdd'
 import {queryKeys} from '../../../app/queryKeys'
 import type {Topic, Word} from '../../../shared/types'
+import {ApiError} from '../../../shared/apiError'
 import * as topicsApi from '../../topics/api'
 import * as wordsApi from '../api'
 
@@ -237,5 +238,40 @@ describe('useQuickAdd cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+
+  it('reports duplicate quick-add failures as library-wide, matching the backend rule', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
+    vi.mocked(wordsApi.quickAddWord).mockRejectedValue(new ApiError(409, "Word 'run' already exists in the database"))
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setTerm('run')
+      result.current.setTranslation('correr')
+      result.current.setTopicId(2)
+    })
+
+    await waitFor(() => {
+      expect(result.current.term).toBe('run')
+      expect(result.current.translation).toBe('correr')
+      expect(result.current.topicId).toBe(2)
+    })
+
+    act(() => {
+      result.current.save()
+    })
+
+    await waitFor(() => {
+      expect(result.current.feedback?.msg).toBe('"run" already exists in your library')
+    })
   })
 })

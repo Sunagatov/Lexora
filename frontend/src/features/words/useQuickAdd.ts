@@ -52,7 +52,7 @@ export function useQuickAdd(_onClose: () => void) {
     },
     onError: (err: Error) => {
       const msg = err instanceof ApiError && err.status === 409
-        ? `"${term.trim()}" already exists in this topic`
+        ? `"${term.trim()}" already exists in your library`
         : 'Failed to save. Try again.'
       setFeedback({ok: false, msg})
     },

@@ -144,7 +144,7 @@ describe('TrashPage cache invalidation', () => {
     vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([])
     vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([makeTopic(2, 'Alpha')])
     vi.mocked(topicsApi.restoreTopic).mockRejectedValueOnce(
-      new ApiError(409, 'A word with this term already exists in the selected topic.'),
+      new ApiError(409, "Word 'run' already exists in the database"),
     )
 
     renderTrash(queryClient)
@@ -161,7 +161,7 @@ describe('TrashPage cache invalidation', () => {
     })
 
     expect(
-      screen.getByText('A word with this term already exists in the selected topic.'),
+      screen.getByText("Word 'run' already exists in the database"),
     ).toBeTruthy()
     expect(screen.getByRole('button', {name: 'Restore topic only'})).toBeTruthy()
   })
