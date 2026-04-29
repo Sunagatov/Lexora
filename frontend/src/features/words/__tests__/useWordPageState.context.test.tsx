@@ -26,12 +26,13 @@ vi.mock('../../topics/api', () => ({
   fetchTrashTopics: vi.fn(),
 }))
 
-function makeTopic(id: number, slug: string, name = slug): Topic {
+function makeTopic(id: number, slug: string, name = slug, parent_topic_id: number | null = null): Topic {
   return {
     id,
     slug,
     name,
     description: null,
+    parent_topic_id,
     is_active: true,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
@@ -109,6 +110,43 @@ describe('useWordPageState topic context fallback', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('topic-slug').textContent).toBe('beta')
+    })
+  })
+
+  it('preserves a parent topic slug when the word is shown via that topic subtree', async () => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([
+      makeTopic(1, 'parent', 'Parent'),
+      makeTopic(2, 'child', 'Child', 1),
+    ])
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(makeWord({topic_ids: [2]}))
+    vi.mocked(wordsApi.fetchWords).mockResolvedValue([makeWord({topic_ids: [2]})])
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {retry: false},
+        mutations: {retry: false},
+      },
+    })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/words/10',
+              state: {fromTopicSlug: 'parent'},
+            },
+          ]}
+        >
+          <Routes>
+            <Route path="/words/:wordId" element={<Probe />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('topic-slug').textContent).toBe('parent')
     })
   })
 })
