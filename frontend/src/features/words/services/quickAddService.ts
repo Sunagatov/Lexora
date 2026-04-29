@@ -3,6 +3,10 @@ import {createTopic} from '@/features/topics/api/topicsApi'
 import type {Topic} from '@/shared/types'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
+function normalizeTopicName(name: string): string {
+  return name.trim().toLocaleLowerCase()
+}
+
 export async function translateTerm(term: string): Promise<string | null> {
   try {
     const res = await fetch(
@@ -34,7 +38,7 @@ export async function ensureInbox(
   topics: Topic[],
   onCreated: (id: number) => void,
 ): Promise<number | null> {
-  const existing = topics.find((t) => t.name === 'Inbox')
+  const existing = topics.find((t) => normalizeTopicName(t.name) === 'inbox')
   if (existing) return existing.id
   try {
     const created = await createTopic('Inbox')
@@ -44,4 +48,9 @@ export async function ensureInbox(
     redirectIfUnauthorized(error)
     return null
   }
+}
+
+export function findTopicByName(topics: Topic[], name: string): Topic | undefined {
+  const normalizedName = normalizeTopicName(name)
+  return topics.find((topic) => normalizeTopicName(topic.name) === normalizedName)
 }

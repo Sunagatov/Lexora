@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ApiError} from '@/shared/api/apiError'
-import {ensureInbox, suggestTopic} from '@/features/words/services/quickAddService'
+import {ensureInbox, suggestTopic, findTopicByName} from '@/features/words/services/quickAddService'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 
 vi.mock('@/features/topics/api/topicsApi', () => ({
@@ -40,5 +40,24 @@ describe('quickAddService auth handling', () => {
 
     await expect(ensureInbox([], vi.fn())).resolves.toBeNull()
     expect(redirectIfUnauthorized).toHaveBeenCalledWith(expect.objectContaining({status: 401}))
+  })
+
+  it('reuses an existing inbox topic regardless of casing', async () => {
+    const onCreated = vi.fn()
+
+    await expect(
+      ensureInbox([{id: 7, name: 'inbox', slug: 'inbox', description: null, is_active: true, created_at: '', updated_at: ''}], onCreated),
+    ).resolves.toBe(7)
+
+    expect(topicsApi.createTopic).not.toHaveBeenCalled()
+    expect(onCreated).not.toHaveBeenCalled()
+  })
+
+  it('finds topics by name regardless of casing', () => {
+    const topics = [
+      {id: 3, name: 'Phrasal Verbs', slug: 'phrasal-verbs', description: null, is_active: true, created_at: '', updated_at: ''},
+    ]
+
+    expect(findTopicByName(topics, 'phrasal verbs')?.id).toBe(3)
   })
 })

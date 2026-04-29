@@ -8,6 +8,7 @@ import type {Topic, Word} from '@/shared/types'
 import {ApiError} from '@/shared/api/apiError'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 import * as wordsApi from '@/features/words/api/wordsApi'
+import * as quickAddService from '@/features/words/services/quickAddService'
 
 vi.mock('@/features/topics/api/topicsApi')
 vi.mock('@/features/words/api/wordsApi')
@@ -275,6 +276,34 @@ describe('useQuickAdd cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+
+  it('matches AI-suggested topics case-insensitively, following the backend topic-name rule', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Phrasal Verbs', 'phrasal-verbs')])
+    vi.spyOn(quickAddService, 'suggestTopic').mockResolvedValue('phrasal verbs')
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setTerm('run into')
+      result.current.setTranslation('наткнуться')
+    })
+
+    await act(async () => {
+      await result.current.suggestOnly()
+    })
+
+    expect(result.current.topicId).toBe(2)
+    expect(result.current.aiSuggested).toBe(true)
+    expect(result.current.feedback).toBeNull()
   })
 
   it('reports duplicate quick-add failures as library-wide, matching the backend rule', async () => {

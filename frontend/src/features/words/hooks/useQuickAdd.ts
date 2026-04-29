@@ -5,9 +5,10 @@ import {quickAddWord} from '@/features/words/api/wordsApi'
 import {ApiError} from '@/shared/api/apiError'
 import type {Topic} from '@/shared/types'
 import {queryKeys} from '@/app/queryKeys'
-import {translateTerm, suggestTopic, ensureInbox} from '@/features/words/services/quickAddService'
+import {translateTerm, suggestTopic, ensureInbox, findTopicByName} from '@/features/words/services/quickAddService'
 
 const INBOX_TOPIC_NAME = 'Inbox'
+const isInboxTopic = (topic: Topic) => findTopicByName([topic], INBOX_TOPIC_NAME) !== undefined
 
 export function useQuickAdd(_onClose: () => void) {
   const queryClient = useQueryClient()
@@ -28,7 +29,7 @@ export function useQuickAdd(_onClose: () => void) {
 
   useEffect(() => {
     if (topicId !== null || topics.length === 0) return
-    const inbox = topics.find((t) => t.name === INBOX_TOPIC_NAME)
+    const inbox = findTopicByName(topics, INBOX_TOPIC_NAME)
     if (inbox) setTopicId(inbox.id)
   }, [topics, topicId])
 
@@ -36,6 +37,13 @@ export function useQuickAdd(_onClose: () => void) {
     const timeoutId = setTimeout(() => termRef.current?.focus(), 80)
     return () => clearTimeout(timeoutId)
   }, [])
+
+  function focusTermInput() {
+    const input = termRef.current
+    if (input !== null) {
+      input.focus()
+    }
+  }
 
   const addWordMutation = useMutation({
     mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
@@ -76,47 +84,97 @@ export function useQuickAdd(_onClose: () => void) {
   })
 
   async function translateOnly() {
-    if (!term.trim()) { setFeedback({ok: false, msg: 'Enter a word first.'}); termRef.current?.focus(); return }
-    setTranslating(true); setFeedback(null)
-    const result = await translateTerm(term.trim())
+    const trimmedTerm = term.trim()
+
+    if (trimmedTerm.length === 0) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      focusTermInput()
+      return
+    }
+    setTranslating(true)
+    setFeedback(null)
+    const result = await translateTerm(trimmedTerm)
     setTranslating(false)
-    if (result) { setTranslation(result) }
-    else { setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'}) }
+    if (result) {
+      setTranslation(result)
+    } else {
+      setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
+    }
   }
 
   async function suggestOnly() {
-    if (!term.trim()) { setFeedback({ok: false, msg: 'Enter a word first.'}); termRef.current?.focus(); return }
-    if (!translation.trim()) { setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'}); return }
-    setSuggesting(true); setFeedback(null)
-    const suggested = await suggestTopic(term.trim(), translation.trim())
+    const trimmedTerm = term.trim()
+    const trimmedTranslation = translation.trim()
+
+    if (trimmedTerm.length === 0) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      focusTermInput()
+      return
+    }
+    if (trimmedTranslation.length === 0) {
+      setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'})
+      return
+    }
+    setSuggesting(true)
+    setFeedback(null)
+    const suggested = await suggestTopic(trimmedTerm, trimmedTranslation)
     setSuggesting(false)
-    if (!suggested) { setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'}); return }
-    const match = topics.find((t) => t.name === suggested)
-    if (match) { setTopicId(match.id); setAiSuggested(true) }
-    else { setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`}) }
+    if (!suggested) {
+      setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'})
+      return
+    }
+    const match = findTopicByName(topics, suggested)
+    if (match) {
+      setTopicId(match.id)
+      setAiSuggested(true)
+    } else {
+      setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`})
+    }
   }
 
   async function autoFill() {
-    if (!term.trim()) { setFeedback({ok: false, msg: 'Enter a word first.'}); termRef.current?.focus(); return }
+    const trimmedTerm = term.trim()
+
+    if (trimmedTerm.length === 0) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      focusTermInput()
+      return
+    }
     setFeedback(null)
     setTranslating(true)
-    const result = await translateTerm(term.trim())
+    const result = await translateTerm(trimmedTerm)
     setTranslating(false)
-    if (!result) { setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'}); return }
+    if (!result) {
+      setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
+      return
+    }
     setTranslation(result)
     setSuggesting(true)
-    const suggested = await suggestTopic(term.trim(), result)
+    const suggested = await suggestTopic(trimmedTerm, result)
     setSuggesting(false)
     if (suggested) {
-      const match = topics.find((t) => t.name === suggested)
-      if (match) { setTopicId(match.id); setAiSuggested(true) }
+      const match = findTopicByName(topics, suggested)
+      if (match) {
+        setTopicId(match.id)
+        setAiSuggested(true)
+      }
     }
   }
 
   async function save() {
+    const trimmedTerm = term.trim()
+    const trimmedTranslation = translation.trim()
+
     if (addWordMutation.isPending) return
-    if (!term.trim()) { setFeedback({ok: false, msg: 'Word or phrase is required.'}); termRef.current?.focus(); return }
-    if (!translation.trim()) { setFeedback({ok: false, msg: 'Translation is required.'}); return }
+    if (trimmedTerm.length === 0) {
+      setFeedback({ok: false, msg: 'Word or phrase is required.'})
+      focusTermInput()
+      return
+    }
+    if (trimmedTranslation.length === 0) {
+      setFeedback({ok: false, msg: 'Translation is required.'})
+      return
+    }
     setFeedback(null)
     let resolvedTopicId = topicId
     if (!resolvedTopicId) {
@@ -125,15 +183,18 @@ export function useQuickAdd(_onClose: () => void) {
         void queryClient.invalidateQueries({queryKey: queryKeys.stats})
         setTopicId(id)
       })
-      if (!inboxId) { setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'}); return }
+      if (!inboxId) {
+        setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'})
+        return
+      }
       resolvedTopicId = inboxId
     }
     addWordMutation.mutate(resolvedTopicId)
   }
 
   const sortedTopics = [
-    ...topics.filter((t) => t.name === INBOX_TOPIC_NAME),
-    ...topics.filter((t) => t.name !== INBOX_TOPIC_NAME).sort((a, b) => a.name.localeCompare(b.name)),
+    ...topics.filter(isInboxTopic),
+    ...topics.filter((t) => !isInboxTopic(t)).sort((a, b) => a.name.localeCompare(b.name)),
   ]
 
   return {
