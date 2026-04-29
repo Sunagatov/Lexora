@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from unittest.mock import MagicMock
-
-import logging
 
 from app.features.words.ai_curation import service as ai_curation_service
 from app.features.words.ai_curation.schemas import AiCurationImportRequest, CreateTopicOperation

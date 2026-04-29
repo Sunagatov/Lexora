@@ -1,12 +1,11 @@
 import hashlib
-import pytest
 from fastapi import testclient
 
 from app.main import app
 from app.shared.config import settings
 
 
-def test_get_session_returns_csrf_token_when_authenticated(monkeypatch):
+def test_get_session_returns_csrf_token_when_authenticated():
     """GET /auth/session returns csrf_token when session cookie is valid."""
     from jose import jwt
     from datetime import datetime, timezone
@@ -48,7 +47,7 @@ def test_get_session_returns_401_when_no_session_cookie():
     assert response.json()["detail"] == "Not authenticated"
 
 
-def test_get_session_returns_401_when_session_invalid(monkeypatch):
+def test_get_session_returns_401_when_session_invalid():
     """GET /auth/session returns 401 when session cookie is invalid."""
     client = testclient.TestClient(app)
 

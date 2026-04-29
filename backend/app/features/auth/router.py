@@ -2,7 +2,6 @@ import hashlib
 import hmac
 import logging
 from datetime import datetime, timezone
-from typing import cast
 
 from fastapi import APIRouter, Cookie, HTTPException, Response, status
 from jose import JWTError, jwt

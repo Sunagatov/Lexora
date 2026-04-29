@@ -72,8 +72,6 @@ def test_purge_trash_keeps_active_word_that_still_has_surviving_topic(monkeypatc
 
     trash_service.purge_trash(db, force=False)
 
-    # word id 7 must NOT appear among the orphan hard-delete ids
-    call_args = str(db.execute.call_args_list)
     # The word delete execute call won't include id 7 because conditions won't add it
     # We verify by checking _word_loses_all_remaining_topics logic directly
     assert not trash_service._word_loses_all_remaining_topics(safe_word, {1})
