@@ -111,3 +111,7 @@ class Word(Base):
         order_by="WordExample.position",
     )
     progress_events = relationship("WordProgressEvent", back_populates="word", cascade="all, delete-orphan")
+
+
+# Register stats ORM models so Word.progress_events resolves even in isolated imports.
+from app.features.stats.model import WordProgressEvent  # noqa: F401,E402

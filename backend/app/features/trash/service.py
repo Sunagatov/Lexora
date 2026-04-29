@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import or_, select
+from sqlalchemy import bindparam, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
@@ -55,20 +55,27 @@ def purge_trash(db: Session, force: bool = False) -> None:
         result = db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
         deleted_topics = result.rowcount or 0
 
-    conditions = []
+    deleted_words = 0
     if force:
-        conditions.append(Word.deleted_at.isnot(None))
+        word_result = db.execute(Word.__table__.delete().where(Word.deleted_at.isnot(None)))
+        deleted_words += word_result.rowcount or 0
     else:
         cutoff = now - timedelta(days=settings.trash_retention_days)
-        conditions.append((Word.deleted_at.isnot(None)) & (Word.deleted_at < cutoff))
+        word_result = db.execute(
+            Word.__table__.delete().where(
+                (Word.deleted_at.isnot(None)) & (Word.deleted_at < cutoff)
+            )
+        )
+        deleted_words = word_result.rowcount or 0
 
     if words_to_hard_delete_ids:
-        conditions.append(Word.id.in_(words_to_hard_delete_ids))
-
-    deleted_words = 0
-    if conditions:
-        word_result = db.execute(Word.__table__.delete().where(or_(*conditions)))
-        deleted_words = word_result.rowcount or 0
+        orphan_word_result = db.execute(
+            Word.__table__.delete().where(
+                Word.id.in_(bindparam("orphan_word_ids", expanding=True))
+            ),
+            {"orphan_word_ids": sorted(words_to_hard_delete_ids)},
+        )
+        deleted_words += orphan_word_result.rowcount or 0
 
     db.commit()
 
