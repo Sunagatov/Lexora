@@ -386,7 +386,7 @@ export function TopicSidebar({
       {deleteTopicId !== null && (
         <ConfirmModal
           title="Delete Topic?"
-          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that belong only to this topic will also be trashed; shared words will not be affected.`}
+          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`}
           confirmLabel="Delete" danger
           pending={deleteTopicMutation.isPending}
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}

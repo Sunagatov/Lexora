@@ -122,4 +122,21 @@ describe('TopicSidebar cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashWords})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashTopics})
   })
+
+  it('describes deletion impact in terms that match backend behavior', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha')])
+
+    fireEvent.click(screen.getByTitle('Delete topic'))
+
+    expect(
+      screen.getByText(/Words that would lose their last active topic will also be trashed/i),
+    ).toBeTruthy()
+    expect(
+      screen.getByText(/words that still belong to another active topic will stay available/i),
+    ).toBeTruthy()
+  })
 })
