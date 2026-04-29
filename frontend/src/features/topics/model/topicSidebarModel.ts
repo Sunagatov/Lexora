@@ -1,5 +1,5 @@
 import type {Topic} from '@/shared/types'
-import type {SortMode} from '@/features/topics/components/TopicSortMenu'
+import type {SortMode} from '@/features/topics/model/topicSort'
 
 export const POS_NAMES = new Set([
   'adjectives', 'adverbs', 'nouns', 'verbs', 'phrases', 'prepositions', 'irregular verbs',

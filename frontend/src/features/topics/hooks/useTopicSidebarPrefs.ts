@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import type {SortMode} from '@/features/topics/components/TopicSortMenu'
+import type {SortMode} from '@/features/topics/model/topicSort'
 
 const SORT_MODES: readonly SortMode[] = ['default', 'weakest', 'strongest', 'largest', 'az', 'za'] as const
 

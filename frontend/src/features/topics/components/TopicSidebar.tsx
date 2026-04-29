@@ -6,7 +6,7 @@ import {deleteTopic, createTopic, updateTopic, type TopicUpdatePayload} from '@/
 import type {StudyQueue, Topic} from '@/shared/types'
 import {ApiError} from '@/shared/api/apiError'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
-import {SORT_LABELS} from '@/features/topics/components/TopicSortMenu'
+import {SORT_LABELS} from '@/features/topics/model/topicSort'
 import {TopicButton} from '@/features/topics/components/TopicButton'
 import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'

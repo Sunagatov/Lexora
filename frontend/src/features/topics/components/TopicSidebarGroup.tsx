@@ -1,6 +1,6 @@
 import type {ReactNode, RefObject} from 'react'
-import {SortMenu, SORT_OPTIONS} from '@/features/topics/components/TopicSortMenu'
-import type {SortMode} from '@/features/topics/components/TopicSortMenu'
+import {SortMenu} from '@/features/topics/components/TopicSortMenu'
+import {SORT_OPTIONS, type SortMode} from '@/features/topics/model/topicSort'
 
 type Props = {
   title: string
