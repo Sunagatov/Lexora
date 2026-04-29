@@ -11,6 +11,7 @@ export async function bootstrapSession(): Promise<boolean> {
     localStorage.setItem('csrf_token', data.csrf_token)
     return data.authenticated
   } catch {
+    localStorage.removeItem('csrf_token')
     return false
   }
 }

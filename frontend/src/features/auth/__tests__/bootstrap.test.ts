@@ -52,6 +52,7 @@ describe('bootstrapSession', () => {
   })
 
   it('returns false on error', async () => {
+    localStorage.setItem('csrf_token', 'stale-token')
     vi.mocked(http.request).mockRejectedValueOnce(new Error('Network error'))
 
     const result = await bootstrapSession()
