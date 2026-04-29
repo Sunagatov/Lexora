@@ -19,6 +19,7 @@ Specialized AI/product docs:
 - `ai-curation-workflow.md` owns the canonical current AI curation workflow and v2 payload shape.
 - `ai-curation.md` is a compact reference/pointer, not a duplicate workflow.
 - `example-style-guide.md` supports examples writing style.
+- `frontend-refactor-playbook.md` explains the canonical Lexora-style frontend refactor target and migration approach.
 - Prompt `.txt` files are reusable prompt templates, not architecture docs.
 - `ai-cost-reduction-backlog.md` is a backlog of ideas, not current implementation truth.
 

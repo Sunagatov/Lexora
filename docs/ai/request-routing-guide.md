@@ -44,6 +44,10 @@ Read:
 
 Only read `frontend/src/shared/api/http.ts`, `frontend/src/app/routes.ts`, `frontend/src/app/queryKeys.ts`, or shared types when the task touches transport, navigation, contracts, or cache behavior.
 
+For frontend structure or refactor tasks, also read:
+
+- `docs/ai/frontend-refactor-playbook.md`
+
 ## API Contract Change
 
 Read:

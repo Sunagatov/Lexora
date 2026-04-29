@@ -57,4 +57,63 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
     },
   },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'src/**/__tests__/**',
+      'src/test/**',
+    ],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['../../*', '../../../*', '../../../../*', '../../../../../*'],
+            message: 'Use @/ aliases instead of deep relative imports.',
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ['src/shared/**/*.{ts,tsx}'],
+    ignores: ['src/shared/**/__tests__/**'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@/features/*'],
+            message: 'The shared layer must not depend on feature modules.',
+          },
+          {
+            group: ['@/app/layout/*', '@/app/providers'],
+            message: 'The shared layer must not depend on app composition modules.',
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: [
+      'src/features/**/api/**/*.{ts,tsx}',
+      'src/features/**/hooks/**/*.{ts,tsx}',
+      'src/features/**/model/**/*.{ts,tsx}',
+      'src/features/**/services/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@/features/*/components/*'],
+            message: 'Non-UI feature layers must not depend on component modules.',
+          },
+          {
+            group: ['@/features/*/routes/*'],
+            message: 'Non-route feature layers must not depend on route modules.',
+          },
+        ],
+      }],
+    },
+  },
 ]

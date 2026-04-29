@@ -2,6 +2,8 @@
 
 Frontend source lives in `frontend/src/`. Read `AGENTS.md` and `docs/ai/request-routing-guide.md` before using this module note.
 
+For frontend structure or reorganization work, also read `docs/ai/frontend-refactor-playbook.md`.
+
 ## Stack
 
 - React 19
@@ -43,6 +45,8 @@ For frontend work, start with the target feature folder and nearby tests. Only a
 - Keep route changes aligned with `frontend/src/app/router.tsx`.
 - Keep feature changes scoped when possible.
 - Preserve many-to-many topic behavior and topic hierarchy when editing word/topic UI.
+- Keep `shared/` free of feature dependencies.
+- Keep feature `api/`, `hooks/`, `model/`, and `services/` free of route/component imports.
 
 ## Validation
 
