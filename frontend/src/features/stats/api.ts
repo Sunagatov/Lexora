@@ -1,4 +1,4 @@
-import {buildApiUrl, buildRequestHeaders, request} from '../../shared/http'
+import {request} from '../../shared/http'
 
 export type LevelCounts = {
   unset: number
@@ -131,16 +131,9 @@ type UsageEventPayload = {
 }
 
 export async function recordUsageEvent(payload: UsageEventPayload): Promise<void> {
-  const body = JSON.stringify(payload)
-  const response = await fetch(buildApiUrl('/api/stats/usage'), {
+  await request<void>('/api/stats/usage', {
     method: 'POST',
-    headers: buildRequestHeaders(undefined, body),
-    body,
-    credentials: 'include',
+    body: JSON.stringify(payload),
     keepalive: true,
   })
-
-  if (!response.ok) {
-    throw new Error(`Failed to record usage event: ${response.status}`)
-  }
 }

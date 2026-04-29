@@ -1,5 +1,5 @@
-import {ApiError} from './apiError'
-import {routes} from './routes'
+import {ApiError} from '../../shared/apiError'
+import {routes} from '../../app/routes'
 
 export function redirectIfUnauthorized(error: unknown): void {
   if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {

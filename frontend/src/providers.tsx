@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
-import {DrawerProvider} from './shared/DrawerContext'
+import {DrawerProvider} from './layout/DrawerContext'
 import {ApiError} from './shared/apiError'
-import {redirectIfUnauthorized} from './shared/authRedirect'
+import {redirectIfUnauthorized} from './features/auth/redirectIfUnauthorized'
 import {bootstrapSession} from './features/auth/api'
 
 const queryClient = new QueryClient({

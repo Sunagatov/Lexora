@@ -2,8 +2,8 @@ import {useNavigate} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchTopics} from '../features/topics/api'
 import {fetchWords} from '../features/words/api'
-import {queryKeys} from '../shared/queryKeys'
-import {routes} from '../shared/routes'
+import {queryKeys} from '../app/queryKeys'
+import {routes} from '../app/routes'
 
 export function AppFooter() {
   const navigate = useNavigate()

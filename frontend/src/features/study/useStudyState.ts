@@ -8,9 +8,9 @@ import {useTopicState} from '../topics/useTopicState'
 import {useWordFilter} from '../words/useWordFilter'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useSmartReview} from '../smart-review/useSmartReview'
-import {queryKeys} from '../../shared/queryKeys'
-import {routes} from '../../shared/routes'
-import {useResponsivePageSize} from '../../shared/useResponsivePageSize'
+import {queryKeys} from '../../app/queryKeys'
+import {routes} from '../../app/routes'
+import {useResponsivePageSize} from './useResponsivePageSize'
 
 export function useStudyState() {
   const location      = useLocation()

@@ -1,7 +1,7 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {MemoryRouter, Route, Routes, useNavigate} from 'react-router-dom'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {DrawerProvider, useDrawer} from '../../../shared/DrawerContext'
+import {DrawerProvider, useDrawer} from '../../../layout/DrawerContext'
 import {StudyPage} from '../StudyPage'
 
 vi.mock('../useStudyState', () => ({

@@ -3,7 +3,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {useNavigate, useParams} from 'react-router-dom'
 
 import type {Topic} from '../../../shared/types'
-import {routes} from '../../../shared/routes'
+import {routes} from '../../../app/routes'
 import {useTopicState} from '../useTopicState'
 
 vi.mock('react-router-dom')

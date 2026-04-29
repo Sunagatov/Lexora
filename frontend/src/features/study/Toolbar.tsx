@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 import type {WordKnowledgeLevel} from '../../shared/types'
-import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '../../shared/wordDomain'
+import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '../words/wordDomain'
 
 type Props = {
   wordSearch: string; setWordSearch: (v: string) => void

@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react'
 import {useLocation} from 'react-router-dom'
 import {recordUsageEvent} from './api'
+import {redirectIfUnauthorized} from '../../shared/authRedirect'
 
 const SESSION_STORAGE_KEY = 'lexora-usage-session-key'
 const FLUSH_THRESHOLD_SECONDS = 15
@@ -64,7 +65,8 @@ export function UsageTracker() {
         active_seconds: event.activeSeconds,
       })
       pendingEventRef.current = null
-    } catch {
+    } catch (error) {
+      redirectIfUnauthorized(error)
       // Keep the pending payload for the next flush attempt.
     }
   }

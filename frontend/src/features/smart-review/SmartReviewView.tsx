@@ -4,7 +4,7 @@ import {useSmartReview} from './useSmartReview'
 import {useWordUpdate} from '../words/useWordUpdate'
 import {useWordFilter} from '../words/useWordFilter'
 import {WordCollectionView} from '../words/WordCollectionView'
-import {useResponsivePageSize} from '../../shared/useResponsivePageSize'
+import {useResponsivePageSize} from '../study/useResponsivePageSize'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 

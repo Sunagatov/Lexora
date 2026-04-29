@@ -1,11 +1,11 @@
 import {useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent} from 'react'
 import {useStudyState} from './useStudyState'
-import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
+import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '../words/wordDomain'
 import {TopicSidebar} from '../topics/TopicSidebar'
 import {SmartReviewView} from '../smart-review/SmartReviewView'
 import {QuickAddSheet} from '../words/QuickAddSheet'
 import {WordCollectionView} from '../words/WordCollectionView'
-import {useDrawer} from '../../shared/DrawerContext'
+import {useDrawer} from '../../layout/DrawerContext'
 
 const SIDEBAR_WIDTH_KEY = 'study_sidebar_width'
 const DEFAULT_SIDEBAR_WIDTH = 300

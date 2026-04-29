@@ -3,7 +3,7 @@ import type {SubmitEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {login} from './api'
 import {ApiError} from '../../shared/apiError'
-import {routes} from '../../shared/routes'
+import {routes} from '../../app/routes'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')

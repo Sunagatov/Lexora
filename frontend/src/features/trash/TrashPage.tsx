@@ -7,8 +7,8 @@ import {purgeTrash} from './api'
 import {request} from '../../shared/http'
 import type {Word, Topic} from '../../shared/types'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-import {queryKeys} from '../../shared/queryKeys'
-import {routes} from '../../shared/routes'
+import {queryKeys} from '../../app/queryKeys'
+import {routes} from '../../app/routes'
 
 export function TrashPage() {
   const navigate = useNavigate()

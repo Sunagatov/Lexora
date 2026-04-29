@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {fetchSmartReview, completeSmartReviewItem, refreshSmartReview} from './api'
-import {queryKeys} from '../../shared/queryKeys'
+import {queryKeys} from '../../app/queryKeys'
 
 export function useSmartReview(enabled = true) {
   const queryClient = useQueryClient()

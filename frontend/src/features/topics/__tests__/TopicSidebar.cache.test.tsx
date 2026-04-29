@@ -4,7 +4,7 @@ import {describe, expect, it, vi, beforeEach} from 'vitest'
 import {MemoryRouter} from 'react-router-dom'
 import {TopicSidebar} from '../TopicSidebar'
 import {useTopicSidebarPrefs} from '../useTopicSidebarPrefs'
-import {queryKeys} from '../../../shared/queryKeys'
+import {queryKeys} from '../../../app/queryKeys'
 import type {Topic} from '../../../shared/types'
 import * as topicsApi from '../api'
 

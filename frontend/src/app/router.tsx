@@ -6,7 +6,7 @@ import {StudyPage} from '../features/study/StudyPage'
 import {WordPage} from '../features/words/WordPage'
 import {TrashPage} from '../features/trash/TrashPage'
 import {StatsPage} from '../features/stats/StatsPage'
-import {routes} from '../shared/routes'
+import {routes} from './routes'
 
 export const router = createBrowserRouter([
   {path: routes.login, element: <LoginPage />},

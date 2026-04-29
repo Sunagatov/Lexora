@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom'
-import {useDrawer} from '../shared/DrawerContext'
-import {routes} from '../shared/routes'
+import {routes} from '../app/routes'
+import {useDrawer} from './DrawerContext'
 
 export function AppHeader() {
   const navigate = useNavigate()

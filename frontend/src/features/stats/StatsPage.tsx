@@ -5,8 +5,8 @@ import {fetchStats} from './api'
 import type {DailyActivity, TopicStat} from './api'
 import {DonutChart, BarChart, StatCard, SectionTitle, PeriodTabs} from './StatsComponents'
 import {InsightsStrip} from './StatsInsights'
-import {queryKeys} from '../../shared/queryKeys'
-import {routes} from '../../shared/routes'
+import {queryKeys} from '../../app/queryKeys'
+import {routes} from '../../app/routes'
 
 const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak', level_2: 'Basic', level_3: 'Okay', level_4: 'Strong', level_5: 'Parked', unset: 'No level',

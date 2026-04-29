@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
 import type {Topic} from '../../shared/types'
-import {routes} from '../../shared/routes'
+import {routes} from '../../app/routes'
 
 export function useTopicState(
   topics: Topic[],
