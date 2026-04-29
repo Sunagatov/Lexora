@@ -24,6 +24,11 @@ queryClient.getQueryCache().subscribe((event) => {
   }
 })
 
+function replaceRoute(pathname: string) {
+  window.history.replaceState({}, '', pathname)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
 export function Providers({children}: PropsWithChildren) {
   const [authReady, setAuthReady] = useState(false)
 
@@ -35,10 +40,10 @@ export function Providers({children}: PropsWithChildren) {
       if (cancelled) return
       const pathname = window.location.pathname
       if (authenticated && pathname === routes.login) {
-        window.history.replaceState({}, '', routes.home)
+        replaceRoute(routes.home)
       }
       if (!authenticated && pathname !== routes.login) {
-        window.history.replaceState({}, '', routes.login)
+        replaceRoute(routes.login)
       }
       setAuthReady(true)
     }).catch(() => {

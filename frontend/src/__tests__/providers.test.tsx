@@ -139,11 +139,13 @@ describe('Providers auth bootstrap gating', () => {
   it('redirects to login when bootstrapSession reports an expired backend session', async () => {
     localStorage.setItem('csrf_token', 'stale-token')
     vi.mocked(authApi.bootstrapSession).mockResolvedValue(false)
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
 
     renderProviders(<Child />)
 
     await waitFor(() => {
       expect(window.location.pathname).toBe(routes.login)
     })
+    expect(dispatchSpy).toHaveBeenCalledWith(expect.any(PopStateEvent))
   })
 })
