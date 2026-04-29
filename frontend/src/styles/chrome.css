@@ -26,6 +26,34 @@
 }
 .app-header-brand:hover { opacity: 0.75; }
 
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header-logout {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  color: rgba(255,255,255,0.82);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 7px 11px;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+.app-header-logout:hover:not(:disabled) {
+  color: #fff;
+  border-color: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.05);
+}
+.app-header-logout:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
 .app-header-burger {
   display: none;
   background: transparent;

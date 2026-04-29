@@ -6,6 +6,11 @@ export async function login(password: string): Promise<void> {
   localStorage.setItem('csrf_token', data.csrf_token)
 }
 
+export async function logout(): Promise<void> {
+  await request<{ok: boolean}>('/auth/logout', {method: 'POST'})
+  localStorage.removeItem('csrf_token')
+}
+
 export async function bootstrapSession(): Promise<boolean> {
   const hadToken = Boolean(localStorage.getItem('csrf_token'))
 

@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest'
-import {bootstrapSession} from '@/features/auth/api/authApi'
+import {bootstrapSession, logout} from '@/features/auth/api/authApi'
 import * as http from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
 
@@ -90,5 +90,15 @@ describe('bootstrapSession', () => {
     await bootstrapSession()
 
     expect(http.request).toHaveBeenCalledWith('/auth/session')
+  })
+
+  it('calls /auth/logout and clears csrf_token', async () => {
+    localStorage.setItem('csrf_token', 'token')
+    vi.mocked(http.request).mockResolvedValueOnce({ok: true})
+
+    await logout()
+
+    expect(http.request).toHaveBeenCalledWith('/auth/logout', {method: 'POST'})
+    expect(localStorage.getItem('csrf_token')).toBeNull()
   })
 })
