@@ -2,19 +2,19 @@ import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
-import {TrashPage} from '../TrashPage'
-import {queryKeys} from '../../../app/queryKeys'
-import type {Topic, Word} from '../../../shared/types'
-import {ApiError} from '../../../shared/apiError'
-import * as wordsApi from '../../words/api'
-import * as topicsApi from '../../topics/api'
-import * as trashApi from '../api'
-import * as publicConfig from '../../../shared/usePublicConfig'
+import {TrashPage} from '@/features/trash/routes/TrashPage'
+import {queryKeys} from '@/app/queryKeys'
+import type {Topic, Word} from '@/shared/types'
+import {ApiError} from '@/shared/api/apiError'
+import * as wordsApi from '@/features/words/api/wordsApi'
+import * as topicsApi from '@/features/topics/api/topicsApi'
+import * as trashApi from '@/features/trash/api/trashApi'
+import * as publicConfig from '@/shared/config/usePublicConfig'
 
-vi.mock('../../words/api')
-vi.mock('../../topics/api')
-vi.mock('../api')
-vi.mock('../../../shared/usePublicConfig')
+vi.mock('@/features/words/api/wordsApi')
+vi.mock('@/features/topics/api/topicsApi')
+vi.mock('@/features/trash/api/trashApi')
+vi.mock('@/shared/config/usePublicConfig')
 
 function makeWord(id: number, term: string): Word & {deleted_at: string} {
   return {

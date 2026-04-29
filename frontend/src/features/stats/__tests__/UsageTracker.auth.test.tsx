@@ -2,13 +2,13 @@ import {render} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {ApiError} from '../../../shared/apiError'
-import {UsageTracker} from '../UsageTracker'
-import * as statsApi from '../api'
-import * as authRedirect from '../../auth/redirectIfUnauthorized'
+import {ApiError} from '@/shared/api/apiError'
+import {UsageTracker} from '@/features/stats/components/UsageTracker'
+import * as statsApi from '@/features/stats/api/statsApi'
+import * as authRedirect from '@/features/auth/lib/redirectIfUnauthorized'
 
-vi.mock('../api')
-vi.mock('../../auth/redirectIfUnauthorized')
+vi.mock('@/features/stats/api/statsApi')
+vi.mock('@/features/auth/lib/redirectIfUnauthorized')
 
 function makeStorage() {
   const store = new Map<string, string>()

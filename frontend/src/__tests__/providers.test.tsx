@@ -3,16 +3,16 @@ import {fireEvent} from '@testing-library/react'
 import {useMutation} from '@tanstack/react-query'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import type {PropsWithChildren} from 'react'
-import {Providers} from '../providers'
-import * as authApi from '../features/auth/api'
-import {ApiError} from '../shared/apiError'
+import {Providers} from '@/app/providers'
+import * as authApi from '@/features/auth/api/authApi'
+import {ApiError} from '@/shared/api/apiError'
 
-vi.mock('../features/auth/api')
-vi.mock('../features/auth/redirectIfUnauthorized', () => ({
+vi.mock('@/features/auth/api/authApi')
+vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({
   redirectIfUnauthorized: vi.fn(),
 }))
 
-import {redirectIfUnauthorized} from '../features/auth/redirectIfUnauthorized'
+import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 function makeStorage() {
   const store = new Map<string, string>()

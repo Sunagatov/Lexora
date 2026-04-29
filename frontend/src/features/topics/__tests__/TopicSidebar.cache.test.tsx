@@ -2,15 +2,15 @@ import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
 import {MemoryRouter} from 'react-router-dom'
-import {TopicSidebar} from '../TopicSidebar'
-import {useTopicSidebarPrefs} from '../useTopicSidebarPrefs'
-import {queryKeys} from '../../../app/queryKeys'
-import type {Topic} from '../../../shared/types'
-import {ApiError} from '../../../shared/apiError'
-import * as topicsApi from '../api'
+import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
+import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
+import {queryKeys} from '@/app/queryKeys'
+import type {Topic} from '@/shared/types'
+import {ApiError} from '@/shared/api/apiError'
+import * as topicsApi from '@/features/topics/api/topicsApi'
 
-vi.mock('../useTopicSidebarPrefs')
-vi.mock('../api')
+vi.mock('@/features/topics/hooks/useTopicSidebarPrefs')
+vi.mock('@/features/topics/api/topicsApi')
 
 const navigate = vi.fn()
 

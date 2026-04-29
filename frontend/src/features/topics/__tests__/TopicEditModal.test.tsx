@@ -1,8 +1,8 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
-import type {Topic} from '../../../shared/types'
-import {TopicEditModal} from '../TopicEditModal'
+import type {Topic} from '@/shared/types'
+import {TopicEditModal} from '@/features/topics/components/TopicEditModal'
 
 function makeTopic(id: number, name: string, parent_topic_id: number | null = null): Topic {
   return {

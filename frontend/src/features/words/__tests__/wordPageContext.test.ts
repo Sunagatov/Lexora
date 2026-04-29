@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest'
-import type {Topic, Word} from '../../../shared/types'
-import {buildWordLocationState, resolveWordContextTopic} from '../wordPageContext'
+import type {Topic, Word} from '@/shared/types'
+import {buildWordLocationState, resolveWordContextTopic} from '@/features/words/model/wordPageContext'
 
 function makeTopic(id: number, slug: string, name = slug, parent_topic_id: number | null = null): Topic {
   return {

@@ -42,7 +42,7 @@ Read:
 - the target page/component/hook/API files
 - directly related frontend tests
 
-Only read `frontend/src/shared/http.ts`, `frontend/src/shared/routes.ts`, shared types, or query keys when the task touches transport, navigation, contracts, or cache behavior.
+Only read `frontend/src/shared/api/http.ts`, `frontend/src/app/routes.ts`, `frontend/src/app/queryKeys.ts`, or shared types when the task touches transport, navigation, contracts, or cache behavior.
 
 ## API Contract Change
 

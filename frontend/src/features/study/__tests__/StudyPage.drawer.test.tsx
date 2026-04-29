@@ -1,10 +1,10 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {MemoryRouter, Route, Routes, useNavigate} from 'react-router-dom'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {DrawerProvider, useDrawer} from '../../../layout/DrawerContext'
-import {StudyPage} from '../StudyPage'
+import {DrawerProvider, useDrawer} from '@/app/layout/DrawerContext'
+import {StudyPage} from '@/features/study/routes/StudyPage'
 
-vi.mock('../useStudyState', () => ({
+vi.mock('@/features/study/hooks/useStudyState', () => ({
   useStudyState: () => ({
     isSmartReview: false,
     topics: [],
@@ -45,7 +45,7 @@ vi.mock('../useStudyState', () => ({
   }),
 }))
 
-vi.mock('../../topics/TopicSidebar', () => ({
+vi.mock('@/features/topics/components/TopicSidebar', () => ({
   TopicSidebar: ({onSelect}: {onSelect: (id: number) => void}) => (
     <div data-testid="topic-sidebar">
       <button type="button" onClick={() => onSelect(1)}>select topic</button>
@@ -53,15 +53,15 @@ vi.mock('../../topics/TopicSidebar', () => ({
   ),
 }))
 
-vi.mock('../../smart-review/SmartReviewView', () => ({
+vi.mock('@/features/smart-review/components/SmartReviewView', () => ({
   SmartReviewView: () => <div data-testid="smart-review" />,
 }))
 
-vi.mock('../../words/QuickAddSheet', () => ({
+vi.mock('@/features/words/components/QuickAddSheet', () => ({
   QuickAddSheet: () => <div data-testid="quick-add" />,
 }))
 
-vi.mock('../../words/WordCollectionView', () => ({
+vi.mock('@/features/words/components/WordCollectionView', () => ({
   WordCollectionView: () => <div data-testid="word-collection" />,
 }))
 

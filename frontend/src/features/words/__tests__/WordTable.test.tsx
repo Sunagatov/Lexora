@@ -1,8 +1,8 @@
 import {render} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {WordTable} from '../WordTable'
-import type {Word} from '../../../shared/types'
+import {WordTable} from '@/features/words/components/WordTable'
+import type {Word} from '@/shared/types'
 
 function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word {
   return {

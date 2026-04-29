@@ -3,8 +3,8 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {TopicSidebar} from '../TopicSidebar'
-import type {Topic} from '../../../shared/types'
+import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
+import type {Topic} from '@/shared/types'
 
 function makeStorage() {
   const store = new Map<string, string>()

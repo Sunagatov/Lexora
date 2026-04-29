@@ -2,18 +2,18 @@ import {renderHook} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 import {useQuery} from '@tanstack/react-query'
 import {useLocation} from 'react-router-dom'
-import {useStudyState} from '../useStudyState'
-import {useTopicState} from '../../topics/useTopicState'
-import {useWordFilter} from '../../words/useWordFilter'
-import {useWordUpdate} from '../../words/useWordUpdate'
-import {useSmartReview} from '../../smart-review/useSmartReview'
+import {useStudyState} from '@/features/study/hooks/useStudyState'
+import {useTopicState} from '@/features/topics/hooks/useTopicState'
+import {useWordFilter} from '@/features/words/hooks/useWordFilter'
+import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
+import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 
 vi.mock('@tanstack/react-query')
 vi.mock('react-router-dom')
-vi.mock('../../topics/useTopicState')
-vi.mock('../../words/useWordFilter')
-vi.mock('../../words/useWordUpdate')
-vi.mock('../../smart-review/useSmartReview')
+vi.mock('@/features/topics/hooks/useTopicState')
+vi.mock('@/features/words/hooks/useWordFilter')
+vi.mock('@/features/words/hooks/useWordUpdate')
+vi.mock('@/features/smart-review/hooks/useSmartReview')
 
 describe('useStudyState loading', () => {
   it('does not wait for the shared words query on the smart-review route', () => {

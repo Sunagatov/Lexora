@@ -1,7 +1,7 @@
 import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest'
-import {routes} from '../../../app/routes'
-import {ApiError} from '../../../shared/apiError'
-import {redirectIfUnauthorized} from '../redirectIfUnauthorized'
+import {routes} from '@/app/routes'
+import {ApiError} from '@/shared/api/apiError'
+import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 function makeStorage() {
   const store = new Map<string, string>()

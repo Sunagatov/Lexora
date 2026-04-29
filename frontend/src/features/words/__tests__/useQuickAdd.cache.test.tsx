@@ -2,15 +2,15 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
 import type {ReactNode} from 'react'
-import {useQuickAdd} from '../useQuickAdd'
-import {queryKeys} from '../../../app/queryKeys'
-import type {Topic, Word} from '../../../shared/types'
-import {ApiError} from '../../../shared/apiError'
-import * as topicsApi from '../../topics/api'
-import * as wordsApi from '../api'
+import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
+import {queryKeys} from '@/app/queryKeys'
+import type {Topic, Word} from '@/shared/types'
+import {ApiError} from '@/shared/api/apiError'
+import * as topicsApi from '@/features/topics/api/topicsApi'
+import * as wordsApi from '@/features/words/api/wordsApi'
 
-vi.mock('../../topics/api')
-vi.mock('../api')
+vi.mock('@/features/topics/api/topicsApi')
+vi.mock('@/features/words/api/wordsApi')
 
 function makeTopic(id: number, name: string, slug = name.toLowerCase()): Topic {
   return {

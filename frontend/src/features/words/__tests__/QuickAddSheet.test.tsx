@@ -1,10 +1,10 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {QuickAddSheet} from '../QuickAddSheet'
-import * as quickAddHook from '../useQuickAdd'
+import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
+import * as quickAddHook from '@/features/words/hooks/useQuickAdd'
 
-vi.mock('../useQuickAdd', () => ({
+vi.mock('@/features/words/hooks/useQuickAdd', () => ({
   useQuickAdd: vi.fn(),
 }))
 

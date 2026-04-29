@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {useTopicSidebarPrefs} from '../useTopicSidebarPrefs'
+import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
 
 function makeStorage() {
   const store = new Map<string, string>()

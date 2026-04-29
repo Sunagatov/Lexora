@@ -1,13 +1,13 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {ApiError} from '../../../shared/apiError'
-import {exportWordsWorkbook} from '../api'
+import {ApiError} from '@/shared/api/apiError'
+import {exportWordsWorkbook} from '@/features/words/api/wordsApi'
 
-vi.mock('../../auth/redirectIfUnauthorized', () => ({
+vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({
   redirectIfUnauthorized: vi.fn(),
 }))
 
-import {redirectIfUnauthorized} from '../../auth/redirectIfUnauthorized'
+import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 describe('words api auth handling', () => {
   beforeEach(() => {

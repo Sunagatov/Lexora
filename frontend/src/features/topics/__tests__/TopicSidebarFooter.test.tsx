@@ -1,8 +1,8 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
-import type {Topic} from '../../../shared/types'
-import {TopicSidebarFooter} from '../TopicSidebarFooter'
+import type {Topic} from '@/shared/types'
+import {TopicSidebarFooter} from '@/features/topics/components/TopicSidebarFooter'
 
 function makeTopic(id: number, name: string): Topic {
   return {

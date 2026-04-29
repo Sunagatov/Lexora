@@ -1,8 +1,8 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest'
-import {bootstrapSession} from '../api'
-import * as http from '../../../shared/http'
+import {bootstrapSession} from '@/features/auth/api/authApi'
+import * as http from '@/shared/api/http'
 
-vi.mock('../../../shared/http')
+vi.mock('@/shared/api/http')
 
 function makeStorage() {
   const store = new Map<string, string>()

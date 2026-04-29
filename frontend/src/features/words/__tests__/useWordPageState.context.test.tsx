@@ -2,12 +2,12 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter, Route, Routes} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, it, expect, vi, beforeEach} from 'vitest'
-import {useWordPageState} from '../useWordPageState'
-import type {Topic, Word} from '../../../shared/types'
-import * as wordsApi from '../api'
-import * as topicsApi from '../../topics/api'
+import {useWordPageState} from '@/features/words/hooks/useWordPageState'
+import type {Topic, Word} from '@/shared/types'
+import * as wordsApi from '@/features/words/api/wordsApi'
+import * as topicsApi from '@/features/topics/api/topicsApi'
 
-vi.mock('../api', () => ({
+vi.mock('@/features/words/api/wordsApi', () => ({
   fetchWord: vi.fn(),
   fetchWords: vi.fn(),
   updateWord: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock('../api', () => ({
   fetchTrashWords: vi.fn(),
 }))
 
-vi.mock('../../topics/api', () => ({
+vi.mock('@/features/topics/api/topicsApi', () => ({
   fetchTopics: vi.fn(),
   createTopic: vi.fn(),
   deleteTopic: vi.fn(),

@@ -1,8 +1,8 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter, useLocation} from 'react-router-dom'
 import {describe, expect, it} from 'vitest'
-import {useWordFilter} from '../useWordFilter'
-import type {Word} from '../../../shared/types'
+import {useWordFilter} from '@/features/words/hooks/useWordFilter'
+import type {Word} from '@/shared/types'
 
 function Probe({words, defaultPageSize}: {words: Word[]; defaultPageSize?: number}) {
   const filter = useWordFilter(words, {defaultPageSize})

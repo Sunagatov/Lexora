@@ -1,12 +1,12 @@
 import {renderHook, waitFor} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {ReactNode} from 'react'
-import {useWordUpdate} from '../useWordUpdate'
-import * as api from '../api'
-import {queryKeys} from '../../../app/queryKeys'
-import type {Word} from '../../../shared/types'
+import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
+import * as api from '@/features/words/api/wordsApi'
+import {queryKeys} from '@/app/queryKeys'
+import type {Word} from '@/shared/types'
 
-vi.mock('../api')
+vi.mock('@/features/words/api/wordsApi')
 const onMutate = vi.fn()
 
 describe('useWordUpdate rollback', () => {

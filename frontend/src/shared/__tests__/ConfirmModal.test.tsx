@@ -1,7 +1,7 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {ConfirmModal} from '../ConfirmModal'
+import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 
 describe('ConfirmModal', () => {
   it('disables actions while pending', () => {

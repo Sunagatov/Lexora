@@ -1,11 +1,11 @@
 import {createBrowserRouter, Navigate} from 'react-router-dom'
-import {AppLayout} from '../layout/AppLayout'
-import {NotFoundPage} from '../layout/NotFoundPage'
-import {LoginPage} from '../features/auth/LoginPage'
-import {StudyPage} from '../features/study/StudyPage'
-import {WordPage} from '../features/words/WordPage'
-import {TrashPage} from '../features/trash/TrashPage'
-import {StatsPage} from '../features/stats/StatsPage'
+import {AppLayout} from '@/app/layout/AppLayout'
+import {NotFoundPage} from '@/app/layout/NotFoundPage'
+import {LoginPage} from '@/features/auth/components/LoginPage'
+import {StudyPage} from '@/features/study/routes/StudyPage'
+import {WordPage} from '@/features/words/routes/WordPage'
+import {TrashPage} from '@/features/trash/routes/TrashPage'
+import {StatsPage} from '@/features/stats/routes/StatsPage'
 import {routes} from './routes'
 
 export const router = createBrowserRouter([

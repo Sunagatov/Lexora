@@ -2,14 +2,14 @@ import {render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, it, expect, vi, beforeEach} from 'vitest'
-import {WordPage} from './WordPage'
-import {queryKeys} from '../../app/queryKeys'
-import type {Topic, Word} from '../../shared/types'
-import * as wordsApi from './api'
-import * as topicsApi from '../topics/api'
-import * as publicConfig from '../../shared/usePublicConfig'
+import {WordPage} from '@/features/words/routes/WordPage'
+import {queryKeys} from '@/app/queryKeys'
+import type {Topic, Word} from '@/shared/types'
+import * as wordsApi from '@/features/words/api/wordsApi'
+import * as topicsApi from '@/features/topics/api/topicsApi'
+import * as publicConfig from '@/shared/config/usePublicConfig'
 
-vi.mock('./api', () => ({
+vi.mock('@/features/words/api/wordsApi', () => ({
   fetchWord: vi.fn(),
   fetchWords: vi.fn(),
   updateWord: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock('./api', () => ({
   fetchTrashWords: vi.fn(),
 }))
 
-vi.mock('../topics/api', () => ({
+vi.mock('@/features/topics/api/topicsApi', () => ({
   fetchTopics: vi.fn(),
   createTopic: vi.fn(),
   deleteTopic: vi.fn(),
@@ -28,7 +28,7 @@ vi.mock('../topics/api', () => ({
   fetchTrashTopics: vi.fn(),
 }))
 
-vi.mock('../../shared/usePublicConfig', () => ({
+vi.mock('@/shared/config/usePublicConfig', () => ({
   usePublicConfig: vi.fn(),
 }))
 

@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
-import type {Topic} from '../../../shared/types'
-import {buildSidebarGroups} from '../topicSidebarModel'
+import type {Topic} from '@/shared/types'
+import {buildSidebarGroups} from '@/features/topics/model/topicSidebarModel'
 
 function makeTopic(id: number, name: string, parent_topic_id: number | null = null): Topic {
   return {

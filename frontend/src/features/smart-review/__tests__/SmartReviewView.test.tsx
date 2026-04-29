@@ -1,15 +1,15 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
-import type {StudyQueue, Word} from '../../../shared/types'
-import {SmartReviewView} from '../SmartReviewView'
-import {useSmartReview} from '../useSmartReview'
-import {useWordUpdate} from '../../words/useWordUpdate'
-import {useWordFilter} from '../../words/useWordFilter'
+import type {StudyQueue, Word} from '@/shared/types'
+import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
+import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
+import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
+import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 
-vi.mock('../useSmartReview')
-vi.mock('../../words/useWordUpdate')
-vi.mock('../../words/useWordFilter')
-vi.mock('../../words/WordCollectionView', () => ({
+vi.mock('@/features/smart-review/hooks/useSmartReview')
+vi.mock('@/features/words/hooks/useWordUpdate')
+vi.mock('@/features/words/hooks/useWordFilter')
+vi.mock('@/features/words/components/WordCollectionView', () => ({
   WordCollectionView: ({pageWords, onUpdate}: {pageWords: Word[]; onUpdate: (wordId: number, level: 1 | 2 | 3 | 4 | 5) => void}) => (
     <button type="button" onClick={() => onUpdate(pageWords[0]?.id ?? 0, 3)}>
       review first

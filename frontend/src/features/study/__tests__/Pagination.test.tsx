@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
-import {Pagination} from '../Pagination'
+import {Pagination} from '@/features/study/components/Pagination'
 
 describe('Pagination', () => {
   it('keeps desktop and mobile navigation visible but disabled when only one page is available', () => {

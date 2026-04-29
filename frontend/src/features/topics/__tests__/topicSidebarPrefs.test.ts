@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {sanitizeBoolean, sanitizeSortMode, sanitizeIdList} from '../useTopicSidebarPrefs'
+import {sanitizeBoolean, sanitizeSortMode, sanitizeIdList} from '@/features/topics/hooks/useTopicSidebarPrefs'
 
 describe('sanitizeBoolean', () => {
   it('keeps valid booleans', () => {

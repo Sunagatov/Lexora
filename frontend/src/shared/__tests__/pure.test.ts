@@ -1,8 +1,8 @@
 import {describe, it, expect} from 'vitest'
-import {filterAndSort, buildLevelSummary} from '../../features/words/wordDomain'
-import {slugify} from '../slugify'
-import {smartPreview} from '../../features/words/wordPresenter'
-import type {Word} from '../types'
+import {filterAndSort, buildLevelSummary} from '@/features/words/model/wordDomain'
+import {slugify} from '@/shared/lib/slugify'
+import {smartPreview} from '@/features/words/model/wordPresenter'
+import type {Word} from '@/shared/types'
 
 function makeWord(overrides: Partial<Word> = {}): Word {
   return {

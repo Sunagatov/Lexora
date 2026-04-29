@@ -1,23 +1,23 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {ApiError} from '../../../shared/apiError'
-import {ensureInbox, suggestTopic} from '../quickAddService'
-import * as topicsApi from '../../topics/api'
+import {ApiError} from '@/shared/api/apiError'
+import {ensureInbox, suggestTopic} from '@/features/words/services/quickAddService'
+import * as topicsApi from '@/features/topics/api/topicsApi'
 
-vi.mock('../../topics/api', () => ({
+vi.mock('@/features/topics/api/topicsApi', () => ({
   createTopic: vi.fn(),
 }))
 
-vi.mock('../../auth/redirectIfUnauthorized', () => ({
+vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({
   redirectIfUnauthorized: vi.fn(),
 }))
 
-vi.mock('../../../shared/http', () => ({
+vi.mock('@/shared/api/http', () => ({
   request: vi.fn(),
 }))
 
-import {request} from '../../../shared/http'
-import {redirectIfUnauthorized} from '../../auth/redirectIfUnauthorized'
+import {request} from '@/shared/api/http'
+import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 describe('quickAddService auth handling', () => {
   beforeEach(() => {
