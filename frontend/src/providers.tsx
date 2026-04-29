@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {MutationCache, QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {DrawerProvider} from './layout/DrawerContext'
 import {ApiError} from './shared/apiError'
@@ -7,12 +7,12 @@ import {redirectIfUnauthorized} from './features/auth/redirectIfUnauthorized'
 import {bootstrapSession} from './features/auth/api'
 
 const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onError: (error: unknown) => redirectIfUnauthorized(error),
+  }),
   defaultOptions: {
     queries: {
       retry: (_, error: unknown) => !(error instanceof ApiError && (error.status === 401 || error.status === 403)),
-    },
-    mutations: {
-      onError: (error: unknown) => redirectIfUnauthorized(error),
     },
   },
 })

@@ -1,10 +1,18 @@
 import {render, screen, waitFor} from '@testing-library/react'
+import {fireEvent} from '@testing-library/react'
+import {useMutation} from '@tanstack/react-query'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import type {PropsWithChildren} from 'react'
 import {Providers} from '../providers'
 import * as authApi from '../features/auth/api'
+import {ApiError} from '../shared/apiError'
 
 vi.mock('../features/auth/api')
+vi.mock('../features/auth/redirectIfUnauthorized', () => ({
+  redirectIfUnauthorized: vi.fn(),
+}))
+
+import {redirectIfUnauthorized} from '../features/auth/redirectIfUnauthorized'
 
 function makeStorage() {
   const store = new Map<string, string>()
@@ -32,6 +40,23 @@ function makeStorage() {
 
 function Child() {
   return <div>protected app</div>
+}
+
+function MutationChild() {
+  const mutation = useMutation({
+    mutationFn: async () => {
+      throw new ApiError(401, 'Not authenticated')
+    },
+    onError: () => {
+      // Keep a local handler to prove auth redirect still runs globally.
+    },
+  })
+
+  return (
+    <button type="button" onClick={() => mutation.mutate()}>
+      fail mutation
+    </button>
+  )
 }
 
 function renderProviders(children: PropsWithChildren['children']) {
@@ -77,5 +102,17 @@ describe('Providers auth bootstrap gating', () => {
 
     expect(screen.getByText('protected app')).toBeTruthy()
     expect(authApi.bootstrapSession).not.toHaveBeenCalled()
+  })
+
+  it('redirects unauthorized mutation failures even when the mutation defines a local onError handler', async () => {
+    localStorage.setItem('csrf_token', 'existing-token')
+
+    renderProviders(<MutationChild />)
+
+    fireEvent.click(screen.getByRole('button', {name: 'fail mutation'}))
+
+    await waitFor(() => {
+      expect(redirectIfUnauthorized).toHaveBeenCalledWith(expect.objectContaining({status: 401}))
+    })
   })
 })

@@ -1,6 +1,7 @@
 import {buildApiUrl, buildRequestHeaders, request} from '../../shared/http'
 import {ApiError} from '../../shared/apiError'
 import type {Word, WordKnowledgeLevel, WorkbookImportResponse} from '../../shared/types'
+import {redirectIfUnauthorized} from '../auth/redirectIfUnauthorized'
 
 export const fetchWords = (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()
@@ -49,7 +50,9 @@ export async function exportWordsWorkbook(): Promise<void> {
     } catch {
       // ignore parse errors
     }
-    throw new ApiError(response.status, detail)
+    const error = new ApiError(response.status, detail)
+    redirectIfUnauthorized(error)
+    throw error
   }
 
   const blob = await response.blob()

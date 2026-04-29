@@ -1,6 +1,7 @@
 import {request} from '../../shared/http'
 import {createTopic} from '../topics/api'
 import type {Topic} from '../../shared/types'
+import {redirectIfUnauthorized} from '../auth/redirectIfUnauthorized'
 
 export async function translateTerm(term: string): Promise<string | null> {
   try {
@@ -23,7 +24,8 @@ export async function suggestTopic(term: string, translation: string): Promise<s
       body: JSON.stringify({term, translation}),
     })
     return res.topic_name ?? null
-  } catch {
+  } catch (error) {
+    redirectIfUnauthorized(error)
     return null
   }
 }
@@ -38,7 +40,8 @@ export async function ensureInbox(
     const created = await createTopic('Inbox')
     onCreated(created.id)
     return created.id
-  } catch {
+  } catch (error) {
+    redirectIfUnauthorized(error)
     return null
   }
 }

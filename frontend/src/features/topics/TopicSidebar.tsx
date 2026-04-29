@@ -18,6 +18,7 @@ import {TopicSidebarTree} from './TopicSidebarTree'
 import {TopicSidebarFooter} from './TopicSidebarFooter'
 import {TopicEditModal} from './TopicEditModal'
 import {exportWordsWorkbook, importWordsWorkbook} from '../words/api'
+import {redirectIfUnauthorized} from '../auth/redirectIfUnauthorized'
 
 type Props = {
   topics: Topic[]
@@ -175,6 +176,8 @@ export function TopicSidebar({
       setWorkbookBusy(true)
       await exportWordsWorkbook()
     } catch (err) {
+      redirectIfUnauthorized(err)
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) return
       const message = err instanceof Error ? err.message : 'Failed to export workbook.'
       window.alert(message)
     } finally {
@@ -207,6 +210,8 @@ export function TopicSidebar({
         `Workbook imported successfully.\n\nCreated: ${result.created}\nUpdated: ${result.updated}\nSkipped: ${result.skipped}\n\n${perSheet}`,
       )
     } catch (err) {
+      redirectIfUnauthorized(err)
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) return
       const message = err instanceof Error ? err.message : 'Failed to import workbook.'
       window.alert(message)
     } finally {
