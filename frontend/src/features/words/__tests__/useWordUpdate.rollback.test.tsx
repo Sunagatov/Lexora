@@ -69,6 +69,7 @@ describe('useWordUpdate rollback', () => {
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
   })
 
   it('restores topic-scoped ["words", topicId] key on failed mutation', async () => {
@@ -114,7 +115,7 @@ describe('useWordUpdate rollback', () => {
     })
   })
 
-  it('invalidates topic sidebar after a successful level update', async () => {
+  it('invalidates sidebar and stats after a successful level update', async () => {
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
     vi.mocked(api.updateWordKnowledgeLevel).mockResolvedValueOnce(makeWord(1, 'run', 3))
 
@@ -127,5 +128,6 @@ describe('useWordUpdate rollback', () => {
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
   })
 })

@@ -24,12 +24,14 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
         queryClient.setQueryData(key, data)
       }
       void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
 
     onSettled: () => {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
   })
