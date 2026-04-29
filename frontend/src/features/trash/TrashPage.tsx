@@ -4,11 +4,11 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchTrashWords, restoreWord} from '../words/api'
 import {fetchTrashTopics, restoreTopic} from '../topics/api'
 import {purgeTrash} from './api'
-import {request} from '../../shared/http'
 import type {Word, Topic} from '../../shared/types'
 import {ConfirmModal} from '../../shared/ConfirmModal'
 import {queryKeys} from '../../app/queryKeys'
 import {routes} from '../../app/routes'
+import {usePublicConfig} from '../../shared/usePublicConfig'
 
 export function TrashPage() {
   const navigate = useNavigate()
@@ -18,11 +18,7 @@ export function TrashPage() {
   const [restoreTopicError, setRestoreTopicError] = useState<string | null>(null)
   const [restoreWordError, setRestoreWordError] = useState<{id: number; message: string} | null>(null)
 
-  const configQuery = useQuery({
-    queryKey: queryKeys.publicConfig,
-    queryFn: () => request<{trash_retention_days: number}>('/api/config/public'),
-    staleTime: Infinity,
-  })
+  const configQuery = usePublicConfig()
   const settings = configQuery.data
 
   const wordsQuery = useQuery({queryKey: queryKeys.trashWords, queryFn: fetchTrashWords})

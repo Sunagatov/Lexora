@@ -7,6 +7,7 @@ import {queryKeys} from '../../app/queryKeys'
 import type {Topic, Word} from '../../shared/types'
 import * as wordsApi from './api'
 import * as topicsApi from '../topics/api'
+import * as publicConfig from '../../shared/usePublicConfig'
 
 vi.mock('./api', () => ({
   fetchWord: vi.fn(),
@@ -25,6 +26,10 @@ vi.mock('../topics/api', () => ({
   deleteTopic: vi.fn(),
   restoreTopic: vi.fn(),
   fetchTrashTopics: vi.fn(),
+}))
+
+vi.mock('../../shared/usePublicConfig', () => ({
+  usePublicConfig: vi.fn(),
 }))
 
 function makeTopic(id: number, slug: string, name = slug): Topic {
@@ -75,6 +80,9 @@ function buildRouter(initialPath: string) {
 
 describe('WordPage — draft reset on word navigation', () => {
   beforeEach(() => {
+    vi.mocked(publicConfig.usePublicConfig).mockReturnValue({
+      data: {trash_retention_days: 30},
+    } as never)
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'alpha-topic', 'Alpha Topic')])
     vi.mocked(wordsApi.fetchWords).mockResolvedValue([word1, word2])
     vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
@@ -182,6 +190,10 @@ describe('WordPage — cache invalidation after delete', () => {
       expect(screen.getByText('Move to Trash')).toBeTruthy()
     })
 
+    expect(
+      screen.getByText('"alpha" will be moved to Trash and permanently deleted after 30 days.'),
+    ).toBeTruthy()
+
     const confirmBtn = screen.getAllByText('Move to Trash').find(
       (el) => el.tagName === 'BUTTON',
     )
@@ -197,6 +209,35 @@ describe('WordPage — cache invalidation after delete', () => {
       expect(keys).toContainEqual(queryKeys.stats)
       expect(keys).toContainEqual(queryKeys.smartReview)
       expect(keys).toContainEqual(queryKeys.trashWords)
+    })
+  })
+
+  it('uses the backend trash retention setting in the delete confirmation copy', async () => {
+    vi.mocked(publicConfig.usePublicConfig).mockReturnValue({
+      data: {trash_retention_days: 45},
+    } as never)
+
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const router = buildRouter('/words/1/edit')
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Delete')).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByText('Delete'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('"alpha" will be moved to Trash and permanently deleted after 45 days.'),
+      ).toBeTruthy()
     })
   })
 })

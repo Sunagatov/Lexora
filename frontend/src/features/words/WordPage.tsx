@@ -5,10 +5,12 @@ import {routes} from '../../app/routes'
 import {LEVEL_LABELS, levelClass} from './wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
 import {NotFoundPage} from '../../layout/NotFoundPage'
+import {usePublicConfig} from '../../shared/usePublicConfig'
 import {useWordPageState} from './useWordPageState'
 
 export function WordPage() {
   const s = useWordPageState()
+  const publicConfigQuery = usePublicConfig()
   const navigate = useNavigate()
   const location = useLocation()
   const [topicSearch, setTopicSearch] = useState('')
@@ -37,6 +39,7 @@ export function WordPage() {
     : s.fromTopicSlug
       ? routes.topic(s.fromTopicSlug)
       : routes.home
+  const trashRetentionDays = publicConfigQuery.data?.trash_retention_days ?? 30
 
   function toggleTopic(topicId: number, checked: boolean) {
     if (!draft) return
@@ -241,7 +244,7 @@ export function WordPage() {
       {s.confirming && (
         <ConfirmModal
           title="Move to Trash?"
-          message={`"${word.term}" will be moved to Trash and permanently deleted after 30 days.`}
+          message={`"${word.term}" will be moved to Trash and permanently deleted after ${trashRetentionDays} days.`}
           confirmLabel="Move to Trash"
           danger
           pending={s.deletePending}

@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 import {useLocation} from 'react-router-dom'
 import {recordUsageEvent} from './api'
 import {redirectIfUnauthorized} from '../auth/redirectIfUnauthorized'
@@ -41,7 +41,26 @@ export function UsageTracker() {
   const pendingEventRef = useRef<PendingUsageEvent | null>(null)
   const visibleRef = useRef(typeof document === 'undefined' ? false : document.visibilityState === 'visible')
 
-  async function flushPending() {
+  const accrueActiveTime = useCallback((now = Date.now()) => {
+    if (!visibleRef.current) {
+      lastTickAtRef.current = now
+      return
+    }
+    if (now - lastActivityAtRef.current > IDLE_TIMEOUT_MS) {
+      lastTickAtRef.current = now
+      return
+    }
+
+    const elapsedMs = Math.max(0, now - lastTickAtRef.current)
+    if (elapsedMs <= 0) return
+
+    pendingSecondsRef.current += elapsedMs / 1000
+    lastTickAtRef.current = now
+  }, [])
+
+  const flushPending = useCallback(async (now = Date.now()) => {
+    accrueActiveTime(now)
+
     if (pendingEventRef.current === null) {
       const seconds = Math.floor(pendingSecondsRef.current)
       if (seconds <= 0) return
@@ -69,18 +88,18 @@ export function UsageTracker() {
       redirectIfUnauthorized(error)
       // Keep the pending payload for the next flush attempt.
     }
-  }
+  }, [accrueActiveTime])
 
   useEffect(() => {
     void flushPending()
     routeRef.current = pathname
-  }, [pathname])
+  }, [flushPending, pathname])
 
   useEffect(() => {
     function markActivity() {
       const now = Date.now()
       if (now - lastActivityAtRef.current > ROTATE_AFTER_GAP_MS) {
-        void flushPending()
+        void flushPending(now)
         sessionKeyRef.current = newKey()
         sessionStorage.setItem(SESSION_STORAGE_KEY, sessionKeyRef.current)
         pendingEventRef.current = null
@@ -94,7 +113,7 @@ export function UsageTracker() {
       const now = Date.now()
       if (document.visibilityState === 'visible') {
         if (now - lastActivityAtRef.current > ROTATE_AFTER_GAP_MS) {
-          void flushPending()
+          void flushPending(now)
           sessionKeyRef.current = newKey()
           sessionStorage.setItem(SESSION_STORAGE_KEY, sessionKeyRef.current)
           pendingEventRef.current = null
@@ -107,11 +126,11 @@ export function UsageTracker() {
       }
 
       visibleRef.current = false
-      void flushPending()
+      void flushPending(now)
     }
 
     function handlePageHide() {
-      void flushPending()
+      void flushPending(Date.now())
     }
 
     const activityEvents = ['pointerdown', 'keydown', 'touchstart', 'scroll', 'mousemove'] as const
@@ -121,15 +140,10 @@ export function UsageTracker() {
 
     const intervalId = window.setInterval(() => {
       const now = Date.now()
-      if (!visibleRef.current) return
-      if (now - lastActivityAtRef.current > IDLE_TIMEOUT_MS) return
-
-      const elapsedSeconds = Math.max(1, Math.round((now - lastTickAtRef.current) / 1000))
-      pendingSecondsRef.current += elapsedSeconds
-      lastTickAtRef.current = now
+      accrueActiveTime(now)
 
       if (pendingSecondsRef.current >= FLUSH_THRESHOLD_SECONDS) {
-        void flushPending()
+        void flushPending(now)
       }
     }, TICK_INTERVAL_MS)
 
@@ -138,9 +152,9 @@ export function UsageTracker() {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('pagehide', handlePageHide)
       window.clearInterval(intervalId)
-      void flushPending()
+      void flushPending(Date.now())
     }
-  }, [])
+  }, [accrueActiveTime, flushPending])
 
   return null
 }

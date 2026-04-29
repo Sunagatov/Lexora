@@ -63,4 +63,22 @@ describe('UsageTracker auth handling', () => {
     expect(statsApi.recordUsageEvent).toHaveBeenCalled()
     expect(authRedirect.redirectIfUnauthorized).toHaveBeenCalledWith(expect.any(ApiError))
   })
+
+  it('flushes partial active time on pagehide instead of dropping sub-threshold seconds', async () => {
+    vi.mocked(statsApi.recordUsageEvent).mockResolvedValue(undefined)
+
+    render(
+      <MemoryRouter initialEntries={['/smart-review']}>
+        <UsageTracker />
+      </MemoryRouter>,
+    )
+
+    await vi.advanceTimersByTimeAsync(8_000)
+    window.dispatchEvent(new Event('pagehide'))
+    await Promise.resolve()
+
+    expect(statsApi.recordUsageEvent).toHaveBeenCalledWith(
+      expect.objectContaining({active_seconds: 8}),
+    )
+  })
 })

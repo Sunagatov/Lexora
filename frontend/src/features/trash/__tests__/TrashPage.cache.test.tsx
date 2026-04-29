@@ -9,12 +9,12 @@ import {ApiError} from '../../../shared/apiError'
 import * as wordsApi from '../../words/api'
 import * as topicsApi from '../../topics/api'
 import * as trashApi from '../api'
-import * as http from '../../../shared/http'
+import * as publicConfig from '../../../shared/usePublicConfig'
 
 vi.mock('../../words/api')
 vi.mock('../../topics/api')
 vi.mock('../api')
-vi.mock('../../../shared/http')
+vi.mock('../../../shared/usePublicConfig')
 
 function makeWord(id: number, term: string): Word & {deleted_at: string} {
   return {
@@ -69,7 +69,9 @@ function renderTrash(queryClient: QueryClient) {
 describe('TrashPage cache invalidation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(http.request).mockResolvedValue({trash_retention_days: 30} as never)
+    vi.mocked(publicConfig.usePublicConfig).mockReturnValue({
+      data: {trash_retention_days: 30},
+    } as never)
   })
 
   it('invalidates the dependent caches after restoring a word', async () => {
