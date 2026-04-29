@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {DrawerProvider} from './shared/DrawerContext'
@@ -24,15 +24,27 @@ queryClient.getQueryCache().subscribe((event) => {
 })
 
 export function Providers({children}: PropsWithChildren) {
+  const [authReady, setAuthReady] = useState(() => Boolean(localStorage.getItem('csrf_token')))
+
   useEffect(() => {
-    if (!localStorage.getItem('csrf_token')) {
-      void bootstrapSession()
+    if (localStorage.getItem('csrf_token')) {
+      setAuthReady(true)
+      return
+    }
+
+    let cancelled = false
+    void bootstrapSession().finally(() => {
+      if (!cancelled) setAuthReady(true)
+    })
+
+    return () => {
+      cancelled = true
     }
   }, [])
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DrawerProvider>{children}</DrawerProvider>
+      <DrawerProvider>{authReady ? children : null}</DrawerProvider>
     </QueryClientProvider>
   )
 }
