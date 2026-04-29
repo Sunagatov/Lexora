@@ -99,7 +99,7 @@ describe('TopicSidebar cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
   })
 
-  it('invalidates the topic, word, stats, smart review, and trash caches after deleting a topic', async () => {
+  it('invalidates the topic, word, sidebar, stats, smart review, and trash caches after deleting a topic', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
@@ -116,6 +116,7 @@ describe('TopicSidebar cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashWords})

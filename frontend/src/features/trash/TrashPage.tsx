@@ -33,6 +33,7 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
@@ -49,6 +50,7 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setRestoreTopicId(null)
@@ -62,8 +64,13 @@ export function TrashPage() {
   const purgeMutation = useMutation({
     mutationFn: purgeTrash,
     onSuccess: () => {
+      void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.words})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
+      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setConfirmPurge(false)
     },
   })

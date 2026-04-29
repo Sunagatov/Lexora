@@ -7,6 +7,7 @@ import {queryKeys} from '../../../shared/queryKeys'
 import type {Word} from '../../../shared/types'
 
 vi.mock('../api')
+const onMutate = vi.fn()
 
 describe('useWordUpdate rollback', () => {
   let queryClient: QueryClient
@@ -16,6 +17,7 @@ describe('useWordUpdate rollback', () => {
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
     vi.clearAllMocks()
+    onMutate.mockReset()
   })
 
   function wrapper({children}: {children: ReactNode}) {
@@ -55,7 +57,8 @@ describe('useWordUpdate rollback', () => {
 
     vi.mocked(api.updateWordKnowledgeLevel).mockRejectedValueOnce(new Error('Network error'))
 
-    const {result} = renderHook(() => useWordUpdate(() => {}), {wrapper})
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
 
     await waitFor(() => {
       result.current.updateLevel(1, 3)
@@ -64,6 +67,8 @@ describe('useWordUpdate rollback', () => {
     await waitFor(() => {
       expect(queryClient.getQueryData(queryKeys.words)).toEqual(prevData)
     })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
   })
 
   it('restores topic-scoped ["words", topicId] key on failed mutation', async () => {
@@ -74,7 +79,7 @@ describe('useWordUpdate rollback', () => {
 
     vi.mocked(api.updateWordKnowledgeLevel).mockRejectedValueOnce(new Error('Network error'))
 
-    const {result} = renderHook(() => useWordUpdate(() => {}), {wrapper})
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
 
     await waitFor(() => {
       result.current.updateLevel(1, 3)
@@ -96,7 +101,7 @@ describe('useWordUpdate rollback', () => {
 
     vi.mocked(api.updateWordKnowledgeLevel).mockRejectedValueOnce(new Error('Network error'))
 
-    const {result} = renderHook(() => useWordUpdate(() => {}), {wrapper})
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
 
     await waitFor(() => {
       result.current.updateLevel(1, 3)
@@ -107,5 +112,20 @@ describe('useWordUpdate rollback', () => {
       expect(queryClient.getQueryData([...queryKeys.words, 1])).toEqual(topic1Data)
       expect(queryClient.getQueryData([...queryKeys.words, 2])).toEqual(topic2Data)
     })
+  })
+
+  it('invalidates topic sidebar after a successful level update', async () => {
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+    vi.mocked(api.updateWordKnowledgeLevel).mockResolvedValueOnce(makeWord(1, 'run', 3))
+
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+
+    result.current.updateLevel(1, 3)
+
+    await waitFor(() => {
+      expect(api.updateWordKnowledgeLevel).toHaveBeenCalledWith(1, 3, 'study_list')
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
   })
 })

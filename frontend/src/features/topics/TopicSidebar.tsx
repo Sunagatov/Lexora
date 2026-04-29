@@ -92,6 +92,7 @@ export function TopicSidebar({
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: queryKeys.topics})
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
@@ -193,6 +194,7 @@ export function TopicSidebar({
       await Promise.all([
         queryClient.invalidateQueries({queryKey: queryKeys.topics}),
         queryClient.invalidateQueries({queryKey: queryKeys.words}),
+        queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar}),
         queryClient.invalidateQueries({queryKey: queryKeys.stats}),
         queryClient.invalidateQueries({queryKey: queryKeys.smartReview}),
       ])

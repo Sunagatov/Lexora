@@ -7,10 +7,12 @@ import {queryKeys} from '../../../shared/queryKeys'
 import type {Topic, Word} from '../../../shared/types'
 import * as wordsApi from '../../words/api'
 import * as topicsApi from '../../topics/api'
+import * as trashApi from '../api'
 import * as http from '../../../shared/http'
 
 vi.mock('../../words/api')
 vi.mock('../../topics/api')
+vi.mock('../api')
 vi.mock('../../../shared/http')
 
 function makeWord(id: number, term: string): Word & {deleted_at: string} {
@@ -96,6 +98,7 @@ describe('TrashPage cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashWords})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
   })
@@ -127,6 +130,39 @@ describe('TrashPage cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashTopics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashWords})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
+  })
+
+  it('invalidates dependent caches after purging trash', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([makeWord(1, 'run')])
+    vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([makeTopic(2, 'Alpha')])
+    vi.mocked(trashApi.purgeTrash).mockResolvedValue(undefined)
+
+    renderTrash(queryClient)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Empty Trash'})).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: 'Empty Trash'}))
+    fireEvent.click(screen.getAllByRole('button', {name: 'Empty Trash'})[1])
+
+    await waitFor(() => {
+      expect(trashApi.purgeTrash).toHaveBeenCalled()
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashWords})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.trashTopics})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
   })

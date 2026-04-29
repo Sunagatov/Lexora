@@ -23,11 +23,13 @@ export function useWordUpdate(onMutate: () => void, source = 'study_list') {
       for (const [key, data] of ctx?.prevWordQueries ?? []) {
         queryClient.setQueryData(key, data)
       }
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
 
     onSettled: () => {
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
     },
   })

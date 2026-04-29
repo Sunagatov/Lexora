@@ -58,6 +58,7 @@ export function useWordPageState() {
       )
 
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
 
@@ -91,6 +92,7 @@ export function useWordPageState() {
 
       queryClient.removeQueries({queryKey: queryKeys.word(numericWordId)})
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
