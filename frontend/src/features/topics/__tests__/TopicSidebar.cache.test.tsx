@@ -6,6 +6,7 @@ import {TopicSidebar} from '../TopicSidebar'
 import {useTopicSidebarPrefs} from '../useTopicSidebarPrefs'
 import {queryKeys} from '../../../app/queryKeys'
 import type {Topic} from '../../../shared/types'
+import {ApiError} from '../../../shared/apiError'
 import * as topicsApi from '../api'
 
 vi.mock('../useTopicSidebarPrefs')
@@ -138,5 +139,29 @@ describe('TopicSidebar cache invalidation', () => {
     expect(
       screen.getByText(/words that still belong to another active topic will stay available/i),
     ).toBeTruthy()
+  })
+
+  it('shows backend delete constraints when a topic cannot be deleted', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.deleteTopic).mockRejectedValueOnce(
+      new ApiError(409, 'Cannot delete topic while active subtopics exist: Subtopic A'),
+    )
+
+    renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha')])
+
+    fireEvent.click(screen.getByTitle('Delete topic'))
+    fireEvent.click(screen.getByRole('button', {name: 'Delete'}))
+
+    await waitFor(() => {
+      expect(topicsApi.deleteTopic).toHaveBeenCalledWith(1, false)
+    })
+
+    expect(
+      screen.getByText('Cannot delete topic while active subtopics exist: Subtopic A'),
+    ).toBeTruthy()
+    expect(screen.getByRole('button', {name: 'Delete'})).toBeTruthy()
   })
 })

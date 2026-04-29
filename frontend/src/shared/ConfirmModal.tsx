@@ -4,6 +4,7 @@ import {createPortal} from 'react-dom'
 type Props = {
   title: string
   message: string
+  error?: string | null
   confirmLabel?: string
   cancelLabel?: string
   danger?: boolean
@@ -16,6 +17,7 @@ type Props = {
 export function ConfirmModal({
   title,
   message,
+  error = null,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   danger = false,
@@ -39,6 +41,7 @@ export function ConfirmModal({
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">{title}</h2>
         <p className="modal-message">{message}</p>
+        {error && <p className="login-error" style={{textAlign: 'left'}}>{error}</p>}
         <div className="modal-actions">
           <button type="button" className="modal-btn-cancel" onClick={onCancel} disabled={pending}>
             {cancelLabel}

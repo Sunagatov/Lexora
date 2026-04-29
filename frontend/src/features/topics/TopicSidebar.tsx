@@ -54,6 +54,7 @@ export function TopicSidebar({
   const [topicsSortOpen, setTopicsSortOpen] = useState(false)
   const [searchOpen,     setSearchOpen]     = useState(false)
   const [deleteTopicId,  setDeleteTopicId]  = useState<number | null>(null)
+  const [deleteTopicError, setDeleteTopicError] = useState<string | null>(null)
   const [editTopicId,    setEditTopicId]    = useState<number | null>(null)
   const [newTopicName,   setNewTopicName]   = useState('')
   const [newTopicParentId, setNewTopicParentId] = useState<number | ''>('')
@@ -99,7 +100,13 @@ export function TopicSidebar({
       void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
       void queryClient.invalidateQueries({queryKey: queryKeys.trashTopics})
       setDeleteTopicId(null)
+      setDeleteTopicError(null)
     },
+    onError: (err: Error) => setDeleteTopicError(
+      err instanceof ApiError && err.message
+        ? err.message
+        : 'Could not delete topic.',
+    ),
   })
 
   const updateTopicMutation = useMutation({
@@ -352,7 +359,10 @@ export function TopicSidebar({
               forceExpandAll={!!needle}
               onSelect={handleSelect}
               onEdit={handleEditTopic}
-              onDelete={(id: number) => setDeleteTopicId(id)}
+              onDelete={(id: number) => {
+                setDeleteTopicId(id)
+                setDeleteTopicError(null)
+              }}
               onPin={prefs.togglePin}
               onToggleExpanded={prefs.toggleTopicExpanded}
             />
@@ -392,10 +402,14 @@ export function TopicSidebar({
         <ConfirmModal
           title="Delete Topic?"
           message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`}
+          error={deleteTopicError}
           confirmLabel="Delete" danger
           pending={deleteTopicMutation.isPending}
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
-          onCancel={() => setDeleteTopicId(null)}
+          onCancel={() => {
+            setDeleteTopicId(null)
+            setDeleteTopicError(null)
+          }}
         />
       )}
 
