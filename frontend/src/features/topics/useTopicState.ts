@@ -7,6 +7,7 @@ export function useTopicState(
   topics: Topic[],
   topicCounts = new Map<number, number>(),
   topicProgress = new Map<number, number>(),
+  topicsReady = true,
 ) {
   const {topicSlug} = useParams<{topicSlug?: string}>()
   const navigate    = useNavigate()
@@ -16,9 +17,9 @@ export function useTopicState(
   const selectedTopicId = selectedTopic?.id ?? null
 
   useEffect(() => {
-    if (!topics.length || !topicSlug) return
+    if (!topicsReady || !topicSlug) return
     if (!topics.some((t) => t.slug === topicSlug)) navigate(routes.home, {replace: true})
-  }, [topics, topicSlug, navigate])
+  }, [topics, topicSlug, navigate, topicsReady])
 
   function selectTopic(id: number) {
     const topic = topics.find((t) => t.id === id)

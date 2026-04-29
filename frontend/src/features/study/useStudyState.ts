@@ -30,7 +30,7 @@ export function useStudyState() {
     [sidebarStats.topic_progress],
   )
 
-  const topicState  = useTopicState(topics, topicCounts, topicProgress)
+  const topicState  = useTopicState(topics, topicCounts, topicProgress, topicsQuery.status === 'success')
   const smartReview = useSmartReview(isSmartReview)
   const defaultPageSize = useResponsivePageSize(20, 40)
 
