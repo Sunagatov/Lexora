@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 import {MutationCache, QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {DrawerProvider} from '@/app/layout/DrawerContext'
+import {routes} from '@/app/routes'
 import {ApiError} from '@/shared/api/apiError'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {bootstrapSession} from '@/features/auth/api/authApi'
@@ -24,16 +25,23 @@ queryClient.getQueryCache().subscribe((event) => {
 })
 
 export function Providers({children}: PropsWithChildren) {
-  const [authReady, setAuthReady] = useState(() => Boolean(localStorage.getItem('csrf_token')))
+  const [authReady, setAuthReady] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('csrf_token')) {
-      setAuthReady(true)
-      return
-    }
-
     let cancelled = false
-    void bootstrapSession().finally(() => {
+    const bootstrapPromise = bootstrapSession()
+
+    bootstrapPromise.then((authenticated) => {
+      if (cancelled) return
+      const pathname = window.location.pathname
+      if (authenticated && pathname === routes.login) {
+        window.history.replaceState({}, '', routes.home)
+      }
+      if (!authenticated && pathname !== routes.login) {
+        window.history.replaceState({}, '', routes.login)
+      }
+      setAuthReady(true)
+    }).catch(() => {
       if (!cancelled) setAuthReady(true)
     })
 

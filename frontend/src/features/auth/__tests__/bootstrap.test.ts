@@ -1,6 +1,7 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest'
 import {bootstrapSession} from '@/features/auth/api/authApi'
 import * as http from '@/shared/api/http'
+import {ApiError} from '@/shared/api/apiError'
 
 vi.mock('@/shared/api/http')
 
@@ -51,8 +52,27 @@ describe('bootstrapSession', () => {
     expect(localStorage.getItem('csrf_token')).toBe(mockToken)
   })
 
-  it('returns false on error', async () => {
+  it('returns false and clears csrf_token when the backend rejects the session', async () => {
     localStorage.setItem('csrf_token', 'stale-token')
+    vi.mocked(http.request).mockRejectedValueOnce(new ApiError(401, 'Not authenticated'))
+
+    const result = await bootstrapSession()
+
+    expect(result).toBe(false)
+    expect(localStorage.getItem('csrf_token')).toBeNull()
+  })
+
+  it('keeps the existing csrf token on transient bootstrap errors', async () => {
+    localStorage.setItem('csrf_token', 'stale-token')
+    vi.mocked(http.request).mockRejectedValueOnce(new Error('Network error'))
+
+    const result = await bootstrapSession()
+
+    expect(result).toBe(true)
+    expect(localStorage.getItem('csrf_token')).toBe('stale-token')
+  })
+
+  it('returns false on transient bootstrap errors when there is no existing csrf token', async () => {
     vi.mocked(http.request).mockRejectedValueOnce(new Error('Network error'))
 
     const result = await bootstrapSession()

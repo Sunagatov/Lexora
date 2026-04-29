@@ -4,6 +4,7 @@ import {useMutation} from '@tanstack/react-query'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import type {PropsWithChildren} from 'react'
 import {Providers} from '@/app/providers'
+import {routes} from '@/app/routes'
 import * as authApi from '@/features/auth/api/authApi'
 import {ApiError} from '@/shared/api/apiError'
 
@@ -67,6 +68,8 @@ describe('Providers auth bootstrap gating', () => {
   beforeEach(() => {
     vi.stubGlobal('localStorage', makeStorage())
     vi.clearAllMocks()
+    vi.mocked(authApi.bootstrapSession).mockResolvedValue(true)
+    window.history.replaceState({}, '', routes.smartReview)
   })
 
   afterEach(() => {
@@ -95,13 +98,26 @@ describe('Providers auth bootstrap gating', () => {
     })
   })
 
-  it('renders children immediately when csrf token already exists', () => {
+  it('still validates the backend session before rendering when csrf token already exists', async () => {
     localStorage.setItem('csrf_token', 'existing-token')
+    const bootstrapControl: {resolve: ((value: boolean) => void) | null} = {resolve: null}
+    vi.mocked(authApi.bootstrapSession).mockImplementation(
+      () =>
+        new Promise<boolean>((resolve) => {
+          bootstrapControl.resolve = resolve
+        }),
+    )
 
     renderProviders(<Child />)
 
-    expect(screen.getByText('protected app')).toBeTruthy()
-    expect(authApi.bootstrapSession).not.toHaveBeenCalled()
+    expect(screen.queryByText('protected app')).toBeNull()
+    expect(authApi.bootstrapSession).toHaveBeenCalledTimes(1)
+
+    bootstrapControl.resolve?.(true)
+
+    await waitFor(() => {
+      expect(screen.getByText('protected app')).toBeTruthy()
+    })
   })
 
   it('redirects unauthorized mutation failures even when the mutation defines a local onError handler', async () => {
@@ -109,10 +125,25 @@ describe('Providers auth bootstrap gating', () => {
 
     renderProviders(<MutationChild />)
 
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'fail mutation'})).toBeTruthy()
+    })
+
     fireEvent.click(screen.getByRole('button', {name: 'fail mutation'}))
 
     await waitFor(() => {
       expect(redirectIfUnauthorized).toHaveBeenCalledWith(expect.objectContaining({status: 401}))
+    })
+  })
+
+  it('redirects to login when bootstrapSession reports an expired backend session', async () => {
+    localStorage.setItem('csrf_token', 'stale-token')
+    vi.mocked(authApi.bootstrapSession).mockResolvedValue(false)
+
+    renderProviders(<Child />)
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe(routes.login)
     })
   })
 })
