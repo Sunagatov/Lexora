@@ -164,4 +164,33 @@ describe('TopicSidebar cache invalidation', () => {
     ).toBeTruthy()
     expect(screen.getByRole('button', {name: 'Delete'})).toBeTruthy()
   })
+
+  it('invalidates sidebar stats after editing a topic because reparenting changes backend subtree totals', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    vi.mocked(topicsApi.updateTopic).mockResolvedValue({
+      ...makeTopic(1, 'Alpha', 'alpha'),
+      parent_topic_id: 2,
+    } as Topic)
+
+    renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha'), makeTopic(2, 'Parent', 'parent')])
+
+    fireEvent.click(screen.getAllByTitle('Edit topic')[0])
+    fireEvent.change(screen.getByLabelText('Parent topic'), {target: {value: '2'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+
+    await waitFor(() => {
+      expect(topicsApi.updateTopic).toHaveBeenCalledWith(1, {
+        name: 'Alpha',
+        description: null,
+        parent_topic_id: 2,
+      })
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
+    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
 })

@@ -116,6 +116,7 @@ export function TopicSidebar({
         cur.map((topic) => (topic.id === updated.id ? updated : topic)),
       )
       void queryClient.invalidateQueries({queryKey: queryKeys.words})
+      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setEditTopicId(null)
