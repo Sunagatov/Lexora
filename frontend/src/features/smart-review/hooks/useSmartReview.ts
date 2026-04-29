@@ -13,11 +13,17 @@ export function useSmartReview(enabled = true) {
       await queryClient.cancelQueries({queryKey: queryKeys.smartReview})
     },
     onSuccess: (updatedQueue) => queryClient.setQueryData(queryKeys.smartReview, updatedQueue),
+    onError: () => {
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+    },
   })
 
   const refreshMutation = useMutation({
     mutationFn: refreshSmartReview,
     onSuccess: (newQueue) => queryClient.setQueryData(queryKeys.smartReview, newQueue),
+    onError: () => {
+      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+    },
   })
 
   return {
