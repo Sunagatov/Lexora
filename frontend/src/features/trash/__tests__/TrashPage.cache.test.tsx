@@ -104,6 +104,35 @@ describe('TrashPage cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
   })
 
+  it('shows backend restore-word errors inline so the user can follow the topic-restore guidance', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([makeWord(1, 'run')])
+    vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([])
+    vi.mocked(wordsApi.restoreWord).mockRejectedValueOnce(
+      new ApiError(409, 'Cannot restore word: all its topics are deleted. Restore a topic first.'),
+    )
+
+    renderTrash(queryClient)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Restore'})).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: 'Restore'}))
+
+    await waitFor(() => {
+      expect(wordsApi.restoreWord).toHaveBeenCalled()
+      expect(vi.mocked(wordsApi.restoreWord).mock.calls[0]?.[0]).toBe(1)
+    })
+
+    expect(
+      screen.getByText('Cannot restore word: all its topics are deleted. Restore a topic first.'),
+    ).toBeTruthy()
+  })
+
   it('invalidates the dependent caches after restoring a topic', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

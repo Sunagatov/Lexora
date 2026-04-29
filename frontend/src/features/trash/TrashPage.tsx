@@ -16,6 +16,7 @@ export function TrashPage() {
   const [confirmPurge, setConfirmPurge] = useState(false)
   const [restoreTopicId, setRestoreTopicId] = useState<number | null>(null)
   const [restoreTopicError, setRestoreTopicError] = useState<string | null>(null)
+  const [restoreWordError, setRestoreWordError] = useState<{id: number; message: string} | null>(null)
 
   const configQuery = useQuery({
     queryKey: queryKeys.publicConfig,
@@ -37,9 +38,10 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      setRestoreWordError((current) => (current?.id === restored.id ? null : current))
     },
-    onError: (err: Error) => {
-      alert(err.message)
+    onError: (err: Error, wordId) => {
+      setRestoreWordError({id: wordId, message: err.message})
     },
   })
 
@@ -139,8 +141,19 @@ export function TrashPage() {
                   <span className="trash-item-name">{word.term}</span>
                   <span className="trash-item-meta">{word.translations}</span>
                   <span className="trash-item-days">{daysLeft(word.deleted_at)} days left</span>
+                  {restoreWordError?.id === word.id && (
+                    <span className="login-error">{restoreWordError.message}</span>
+                  )}
                 </div>
-                <button type="button" className="trash-restore-btn" onClick={() => restoreWordMutation.mutate(word.id)} disabled={restoreWordMutation.isPending}>
+                <button
+                  type="button"
+                  className="trash-restore-btn"
+                  onClick={() => {
+                    setRestoreWordError((current) => (current?.id === word.id ? null : current))
+                    restoreWordMutation.mutate(word.id)
+                  }}
+                  disabled={restoreWordMutation.isPending}
+                >
                   Restore
                 </button>
               </div>
