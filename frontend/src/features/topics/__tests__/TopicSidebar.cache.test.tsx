@@ -100,6 +100,30 @@ describe('TopicSidebar cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
   })
 
+  it('shows backend topic-create conflict details instead of flattening them to a generic message', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.createTopic).mockRejectedValueOnce(
+      new ApiError(409, "Topic slug 'inbox' is used by a deleted topic — restore or permanently delete it first"),
+    )
+
+    renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha')])
+
+    fireEvent.click(screen.getByText('+ New topic'))
+    fireEvent.change(screen.getByPlaceholderText('Topic name…'), {target: {value: 'Inbox'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Add'}))
+
+    await waitFor(() => {
+      expect(topicsApi.createTopic).toHaveBeenCalledWith('Inbox', null)
+    })
+
+    expect(
+      screen.getByText("Topic slug 'inbox' is used by a deleted topic — restore or permanently delete it first"),
+    ).toBeTruthy()
+  })
+
   it('invalidates the topic, word, sidebar, stats, smart review, and trash caches after deleting a topic', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

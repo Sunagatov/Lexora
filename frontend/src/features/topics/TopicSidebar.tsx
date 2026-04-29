@@ -86,7 +86,11 @@ export function TopicSidebar({
       setNewTopicName(''); setNewTopicParentId(''); setAddingTopic(false); setTopicError(null)
       navigate(routes.topic(created.slug))
     },
-    onError: (err: Error) => setTopicError(err instanceof ApiError && err.status === 409 ? err.message : 'Name already exists or is invalid.'),
+    onError: (err: Error) => setTopicError(
+      err instanceof ApiError && (err.status === 400 || err.status === 409)
+        ? err.message
+        : 'Could not create topic.',
+    ),
   })
 
   const deleteTopicMutation = useMutation({
