@@ -130,6 +130,43 @@ describe('useQuickAdd cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
   })
 
+  it('shows backend topic-create conflict details instead of flattening them in quick add', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    vi.mocked(topicsApi.createTopic).mockRejectedValue(
+      new ApiError(409, "Topic slug 'inbox' is used by a deleted topic — restore or permanently delete it first"),
+    )
+
+    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+
+    await waitFor(() => {
+      expect(result.current.topicsLoading).toBe(false)
+    })
+
+    act(() => {
+      result.current.setNewTopic('Inbox')
+    })
+
+    await waitFor(() => {
+      expect(result.current.newTopic).toBe('Inbox')
+    })
+
+    act(() => {
+      result.current.createTopic()
+    })
+
+    await waitFor(() => {
+      expect(topicsApi.createTopic).toHaveBeenCalledWith('Inbox')
+    })
+
+    expect(result.current.feedback?.msg).toBe(
+      "Topic slug 'inbox' is used by a deleted topic — restore or permanently delete it first",
+    )
+  })
+
   it('does not submit a word twice while the save mutation is pending', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

@@ -67,7 +67,12 @@ export function useQuickAdd(_onClose: () => void) {
       setNewTopic('')
       setAddingTopic(false)
     },
-    onError: () => setFeedback({ok: false, msg: 'Could not create topic — name may already exist.'}),
+    onError: (err: Error) => setFeedback({
+      ok: false,
+      msg: err instanceof ApiError && (err.status === 400 || err.status === 409)
+        ? err.message
+        : 'Could not create topic.',
+    }),
   })
 
   async function translateOnly() {
