@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
 import {updateWordKnowledgeLevel} from './api'
-import {queryKeys} from '../../shared/queryKeys'
+import {queryKeys} from '../../app/queryKeys'
 import {patchWordLevel} from './wordCache'
 
 export function useWordUpdate(onMutate: () => void, source = 'study_list') {

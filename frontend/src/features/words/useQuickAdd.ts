@@ -4,7 +4,7 @@ import {createTopic, fetchTopics} from '../topics/api'
 import {quickAddWord} from './api'
 import {ApiError} from '../../shared/apiError'
 import type {Topic} from '../../shared/types'
-import {queryKeys} from '../../shared/queryKeys'
+import {queryKeys} from '../../app/queryKeys'
 import {translateTerm, suggestTopic, ensureInbox} from './quickAddService'
 
 const INBOX_TOPIC_NAME = 'Inbox'

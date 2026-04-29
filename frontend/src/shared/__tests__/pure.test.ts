@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest'
-import {filterAndSort, buildLevelSummary} from '../wordDomain'
+import {filterAndSort, buildLevelSummary} from '../../features/words/wordDomain'
 import {slugify} from '../slugify'
 import {smartPreview} from '../../features/words/wordPresenter'
 import type {Word} from '../types'

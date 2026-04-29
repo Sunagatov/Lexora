@@ -1,4 +1,4 @@
-import type {Word, WordKnowledgeLevel} from './types'
+import type {Word, WordKnowledgeLevel} from '../../shared/types'
 
 export type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
 

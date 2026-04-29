@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
-import {filterAndSort, buildLevelSummary, type SortOption} from '../../shared/wordDomain'
+import {filterAndSort, buildLevelSummary, type SortOption} from './wordDomain'
 import {PAGE_SIZES, DEFAULT_PAGE_SIZE} from '../../shared/paginationConfig'
 
 

@@ -1,6 +1,6 @@
 import type {QueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel, StudyQueue} from '../../shared/types'
-import {queryKeys} from '../../shared/queryKeys'
+import {queryKeys} from '../../app/queryKeys'
 
 export function patchWordLevel(
   queryClient: QueryClient,

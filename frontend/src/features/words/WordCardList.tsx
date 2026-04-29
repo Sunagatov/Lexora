@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
-import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
+import {routes} from '../../app/routes'
+import {LEVEL_LABELS, levelClass} from './wordDomain'
 import {LevelDropdown, openUpward} from './LevelDropdown'
-import {routes} from '../../shared/routes'
 import {WordSummaryContent} from './WordSummaryContent'
 import {smartPreview} from './wordPresenter'
 

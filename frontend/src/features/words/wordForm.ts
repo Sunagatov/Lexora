@@ -1,5 +1,5 @@
 import type {Word} from '../../shared/types'
-import {levelToStr, strToLevel} from '../../shared/wordDomain'
+import {levelToStr, strToLevel} from './wordDomain'
 import {toStr, toNullStr, toNullStrIf} from '../../shared/utils'
 
 export type EditState = {

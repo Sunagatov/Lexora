@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import type {ReactNode} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
-import {LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
+import {routes} from '../../app/routes'
+import {LEVEL_LABELS, levelClass} from './wordDomain'
 import {ConfirmModal} from '../../shared/ConfirmModal'
-import {routes} from '../../shared/routes'
 import {NotFoundPage} from '../../layout/NotFoundPage'
 import {useWordPageState} from './useWordPageState'
 

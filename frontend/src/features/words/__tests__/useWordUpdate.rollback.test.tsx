@@ -3,7 +3,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {ReactNode} from 'react'
 import {useWordUpdate} from '../useWordUpdate'
 import * as api from '../api'
-import {queryKeys} from '../../../shared/queryKeys'
+import {queryKeys} from '../../../app/queryKeys'
 import type {Word} from '../../../shared/types'
 
 vi.mock('../api')

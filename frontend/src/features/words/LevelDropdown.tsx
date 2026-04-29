@@ -1,5 +1,5 @@
 import type {WordKnowledgeLevel} from '../../shared/types'
-import {LEVELS, LEVEL_LABELS, levelClass} from '../../shared/wordDomain'
+import {LEVELS, LEVEL_LABELS, levelClass} from './wordDomain'
 
 export function LevelDropdown({current, flipUp, onSelect, onClose}: {
   current: WordKnowledgeLevel | null

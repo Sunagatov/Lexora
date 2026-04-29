@@ -1,5 +1,5 @@
 import type {Word, WordKnowledgeLevel} from '../../shared/types'
-import type {SortOption} from '../../shared/wordDomain'
+import type {SortOption} from './wordDomain'
 import {Toolbar} from '../study/Toolbar'
 import {Pagination} from '../study/Pagination'
 import {WordTable} from './WordTable'

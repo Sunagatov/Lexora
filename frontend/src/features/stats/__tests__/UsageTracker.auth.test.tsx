@@ -1,14 +1,14 @@
-import {render, waitFor} from '@testing-library/react'
+import {render} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ApiError} from '../../../shared/apiError'
 import {UsageTracker} from '../UsageTracker'
 import * as statsApi from '../api'
-import * as authRedirect from '../../../shared/authRedirect'
+import * as authRedirect from '../../auth/redirectIfUnauthorized'
 
 vi.mock('../api')
-vi.mock('../../../shared/authRedirect')
+vi.mock('../../auth/redirectIfUnauthorized')
 
 function makeStorage() {
   const store = new Map<string, string>()
@@ -58,10 +58,9 @@ describe('UsageTracker auth handling', () => {
     )
 
     await vi.advanceTimersByTimeAsync(15_000)
+    await Promise.resolve()
 
-    await waitFor(() => {
-      expect(statsApi.recordUsageEvent).toHaveBeenCalled()
-      expect(authRedirect.redirectIfUnauthorized).toHaveBeenCalledWith(expect.any(ApiError))
-    })
+    expect(statsApi.recordUsageEvent).toHaveBeenCalled()
+    expect(authRedirect.redirectIfUnauthorized).toHaveBeenCalledWith(expect.any(ApiError))
   })
 })

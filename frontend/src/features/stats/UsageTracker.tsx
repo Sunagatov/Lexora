@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react'
 import {useLocation} from 'react-router-dom'
 import {recordUsageEvent} from './api'
-import {redirectIfUnauthorized} from '../../shared/authRedirect'
+import {redirectIfUnauthorized} from '../auth/redirectIfUnauthorized'
 
 const SESSION_STORAGE_KEY = 'lexora-usage-session-key'
 const FLUSH_THRESHOLD_SECONDS = 15
