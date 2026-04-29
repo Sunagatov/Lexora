@@ -39,3 +39,8 @@ frontend/*.tsbuildinfo
 frontend/vite.config.js
 frontend/vite.config.d.ts
 /backend/.artifacts/
+/backend/lexora_backend.egg-info/dependency_links.txt
+/backend/lexora_backend.egg-info/PKG-INFO
+/backend/lexora_backend.egg-info/requires.txt
+/backend/lexora_backend.egg-info/SOURCES.txt
+/backend/lexora_backend.egg-info/top_level.txt
