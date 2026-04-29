@@ -15,6 +15,7 @@ export function TrashPage() {
   const queryClient = useQueryClient()
   const [confirmPurge, setConfirmPurge] = useState(false)
   const [restoreTopicId, setRestoreTopicId] = useState<number | null>(null)
+  const [restoreTopicError, setRestoreTopicError] = useState<string | null>(null)
 
   const configQuery = useQuery({
     queryKey: queryKeys.publicConfig,
@@ -54,10 +55,10 @@ export function TrashPage() {
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
       setRestoreTopicId(null)
+      setRestoreTopicError(null)
     },
     onError: (err: Error) => {
-      alert(err.message)
-      setRestoreTopicId(null)
+      setRestoreTopicError(err.message)
     },
   })
 
@@ -113,7 +114,15 @@ export function TrashPage() {
                   <span className="trash-item-name">{topic.name}</span>
                   <span className="trash-item-days">{daysLeft(topic.deleted_at)} days left</span>
                 </div>
-                <button type="button" className="trash-restore-btn" onClick={() => setRestoreTopicId(topic.id)} disabled={restoreTopicMutation.isPending}>
+                <button
+                  type="button"
+                  className="trash-restore-btn"
+                  onClick={() => {
+                    setRestoreTopicId(topic.id)
+                    setRestoreTopicError(null)
+                  }}
+                  disabled={restoreTopicMutation.isPending}
+                >
                   Restore
                 </button>
               </div>
@@ -158,12 +167,16 @@ export function TrashPage() {
         <ConfirmModal
           title={`Restore "${pendingRestoreTopic.name}"?`}
           message="Do you also want to restore all words that were deleted with this topic?"
+          error={restoreTopicError}
           confirmLabel="Restore topic + words"
           cancelLabel="Restore topic only"
           pending={restoreTopicMutation.isPending}
           onConfirm={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: true})}
           onCancel={() => restoreTopicMutation.mutate({id: restoreTopicId, restoreWords: false})}
-          onClose={() => setRestoreTopicId(null)}
+          onClose={() => {
+            setRestoreTopicId(null)
+            setRestoreTopicError(null)
+          }}
         />
       )}
     </div>

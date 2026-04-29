@@ -5,6 +5,7 @@ import {describe, expect, it, vi, beforeEach} from 'vitest'
 import {TrashPage} from '../TrashPage'
 import {queryKeys} from '../../../app/queryKeys'
 import type {Topic, Word} from '../../../shared/types'
+import {ApiError} from '../../../shared/apiError'
 import * as wordsApi from '../../words/api'
 import * as topicsApi from '../../topics/api'
 import * as trashApi from '../api'
@@ -133,6 +134,36 @@ describe('TrashPage cache invalidation', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
+  })
+
+  it('keeps the restore topic modal open and shows backend errors so the fallback action stays available', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
+    vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([])
+    vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([makeTopic(2, 'Alpha')])
+    vi.mocked(topicsApi.restoreTopic).mockRejectedValueOnce(
+      new ApiError(409, 'A word with this term already exists in the selected topic.'),
+    )
+
+    renderTrash(queryClient)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Restore'})).toBeTruthy()
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: 'Restore'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Restore topic + words'}))
+
+    await waitFor(() => {
+      expect(topicsApi.restoreTopic).toHaveBeenCalledWith(2, true)
+    })
+
+    expect(
+      screen.getByText('A word with this term already exists in the selected topic.'),
+    ).toBeTruthy()
+    expect(screen.getByRole('button', {name: 'Restore topic only'})).toBeTruthy()
   })
 
   it('invalidates dependent caches after purging trash', async () => {
