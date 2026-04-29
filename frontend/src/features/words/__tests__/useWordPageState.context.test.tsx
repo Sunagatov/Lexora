@@ -66,7 +66,13 @@ function Probe() {
   if (s.isInvalidWordId) return <div>invalid</div>
   if (s.isLoading) return <div>loading</div>
 
-  return <div data-testid="topic-slug">{s.topic?.slug ?? 'none'}</div>
+  return (
+    <div>
+      <div data-testid="topic-slug">{s.topic?.slug ?? 'none'}</div>
+      <div data-testid="prev-word">{s.prevWord?.term ?? 'none'}</div>
+      <div data-testid="next-word">{s.nextWord?.term ?? 'none'}</div>
+    </div>
+  )
 }
 
 function renderProbe() {
@@ -147,6 +153,48 @@ describe('useWordPageState topic context fallback', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('topic-slug').textContent).toBe('parent')
+    })
+  })
+
+  it('includes descendant-topic words in prev/next navigation when viewing a parent topic subtree', async () => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([
+      makeTopic(1, 'parent', 'Parent'),
+      makeTopic(2, 'child', 'Child', 1),
+    ])
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(makeWord({id: 10, term: 'migrate', topic_ids: [2]}))
+    vi.mocked(wordsApi.fetchWords).mockResolvedValue([
+      makeWord({id: 5, term: 'arrive', topic_ids: [2]}),
+      makeWord({id: 10, term: 'migrate', topic_ids: [2]}),
+      makeWord({id: 15, term: 'zoom', topic_ids: [2]}),
+    ])
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {retry: false},
+        mutations: {retry: false},
+      },
+    })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/words/10',
+              state: {fromTopicSlug: 'parent'},
+            },
+          ]}
+        >
+          <Routes>
+            <Route path="/words/:wordId" element={<Probe />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('prev-word').textContent).toBe('arrive')
+      expect(screen.getByTestId('next-word').textContent).toBe('zoom')
     })
   })
 })

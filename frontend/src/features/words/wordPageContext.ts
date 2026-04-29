@@ -2,7 +2,7 @@ import type {Topic, Word} from '../../shared/types'
 
 type WordTopicRef = Pick<Word, 'topic_ids'>
 
-function topicContainsWordThroughSubtree(
+export function topicContainsWordThroughSubtree(
   candidateTopicId: number,
   wordTopicIds: number[],
   topics: Topic[],

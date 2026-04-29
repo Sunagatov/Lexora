@@ -8,7 +8,7 @@ import {ApiError} from '../../shared/apiError'
 import {queryKeys} from '../../app/queryKeys'
 import {routes} from '../../app/routes'
 import {type EditState, toEditState, buildSavePayload} from './wordForm'
-import {buildWordLocationState, resolveWordContextTopic} from './wordPageContext'
+import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from './wordPageContext'
 
 export function useWordPageState() {
   const {wordId} = useParams<{wordId: string}>()
@@ -44,7 +44,7 @@ export function useWordPageState() {
   })
 
   const word = wordQuery.data
-  const topics = topicsQuery.data ?? []
+  const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
   const topic = word ? resolveWordContextTopic(word, topics, fromTopicSlug) : undefined
   const wordIdForEffect = word?.id
 
@@ -108,9 +108,9 @@ export function useWordPageState() {
     const allWords = allWordsQuery.data ?? []
     if (!word || !topic) return []
     return allWords
-      .filter((w) => w.topic_ids.includes(topic.id))
+      .filter((w) => topicContainsWordThroughSubtree(topic.id, w.topic_ids, topics))
       .sort((a, b) => a.term.localeCompare(b.term))
-  }, [allWordsQuery.data, word, topic])
+  }, [allWordsQuery.data, word, topic, topics])
 
   const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
   const prevWord = currentIdx > 0 ? topicWords[currentIdx - 1] : null
