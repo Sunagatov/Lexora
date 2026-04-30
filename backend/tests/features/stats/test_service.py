@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 from typing import cast
 
 from app.features.stats import service as stats_service
+from app.features.stats import content_metrics as content_metrics
 from app.features.stats import activity_metrics as activity_metrics
 from app.features.stats.model import WordProgressEvent
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
@@ -146,6 +147,20 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
     assert travel.reviewed_count == 2
     assert travel.regressed_count == 1
     assert travel.never_reviewed_count == 0
+
+    statement = db.execute.call_args.args[0]
+    sql = str(statement.compile(compile_kwargs={"literal_binds": True})).lower()
+    assert "where" in sql
+    assert "word_id" in sql
+
+
+def test_load_topic_word_ids_short_circuits_for_empty_word_map() -> None:
+    db = MagicMock()
+
+    result = content_metrics._load_topic_word_ids(db, {})
+
+    assert result == {}
+    db.execute.assert_not_called()
 
 
 def test_build_daily_activity_deduplicates_reviewed_words_per_day() -> None:

@@ -51,12 +51,21 @@ def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
 def compute_stats(db: Session) -> StatsResponse:
     from app.features.topics.model import Topic
     from app.features.words.model import Word
-    from sqlalchemy.orm import selectinload
+    from sqlalchemy.orm import load_only, selectinload
 
     words = cast(list[Word], list(db.scalars(
         select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
     ).all()))
-    topics = cast(list[Topic], list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None))).all()))
+    topics = cast(
+        list[Topic],
+        list(
+            db.scalars(
+                select(Topic)
+                .options(load_only(Topic.id, Topic.name, Topic.slug))
+                .where(Topic.deleted_at.is_(None))
+            ).all()
+        ),
+    )
     usage_summary, usage_daily, usage_started_at = _build_usage_stats(db)
     progress_events = cast(
         list[WordProgressEvent],

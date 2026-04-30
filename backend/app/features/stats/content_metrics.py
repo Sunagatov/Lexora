@@ -91,11 +91,15 @@ def _build_words_added_by_month(words: list[Word]) -> dict[str, int]:
 
 
 def _load_topic_word_ids(db: Session, word_map: dict[int, Word]) -> dict[int, list[int]]:
-    rows = db.execute(select(word_topics.c.topic_id, word_topics.c.word_id)).all()
+    if not word_map:
+        return {}
+
+    rows = db.execute(
+        select(word_topics.c.topic_id, word_topics.c.word_id).where(word_topics.c.word_id.in_(word_map))
+    ).all()
     topic_word_ids: dict[int, list[int]] = defaultdict(list)
     for topic_id, word_id in rows:
-        if word_id in word_map:
-            topic_word_ids[topic_id].append(word_id)
+        topic_word_ids[topic_id].append(word_id)
     return topic_word_ids
 
 
