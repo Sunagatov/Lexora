@@ -166,3 +166,16 @@ def test_hard_delete_topic_soft_deletes_exclusive_words_then_deletes_topic(monke
     exclusive.assert_called_once_with(topic)
     db.delete.assert_called_once_with(topic)
     db.commit.assert_called_once()
+
+
+def test_get_active_subtree_topic_ids_uses_recursive_query_result() -> None:
+    db = MagicMock()
+    db.scalars.return_value.all.return_value = [3, 7, 8]
+
+    result = topic_repository.get_active_subtree_topic_ids(db, 3)
+
+    assert result == [3, 7, 8]
+    statement = db.scalars.call_args.args[0]
+    sql = str(statement.compile(compile_kwargs={"literal_binds": True})).lower()
+    assert "recursive" in sql
+    assert "union all" in sql

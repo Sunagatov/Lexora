@@ -1,5 +1,4 @@
 import asyncio
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
@@ -69,8 +68,8 @@ def test_suggest_topic_for_word_raises_when_no_topics_exist(monkeypatch) -> None
 def test_suggest_topic_for_word_returns_case_insensitive_match(monkeypatch) -> None:
     db = MagicMock()
     db.scalars.return_value.all.return_value = [
-        SimpleNamespace(name="Travel", deleted_at=None),
-        SimpleNamespace(name="Work", deleted_at=None),
+        "Travel",
+        "Work",
     ]
 
     monkeypatch.setattr(suggest_service.settings, "openai_api_key", "token")
@@ -123,7 +122,7 @@ def test_suggest_topic_for_word_raises_malformed_on_empty_choices_response(monke
 
     db = MagicMock()
     db.scalars.return_value.all.return_value = [
-        SimpleNamespace(name="Travel", deleted_at=None),
+        "Travel",
     ]
 
     monkeypatch.setattr(suggest_service.settings, "openai_api_key", "token")
@@ -140,8 +139,8 @@ def test_suggest_topic_for_word_raises_for_unknown_topic(monkeypatch) -> None:
 
     db = MagicMock()
     db.scalars.return_value.all.return_value = [
-        SimpleNamespace(name="Travel", deleted_at=None),
-        SimpleNamespace(name="Work", deleted_at=None),
+        "Travel",
+        "Work",
     ]
 
     monkeypatch.setattr(suggest_service.settings, "openai_api_key", "token")

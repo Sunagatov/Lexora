@@ -57,15 +57,15 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
         )
         raise AiNotConfiguredError
 
-    topics = db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name)).all()
-    if not topics:
+    topic_names = list(db.scalars(select(Topic.name).where(Topic.deleted_at.is_(None)).order_by(Topic.name)).all())
+    if not topic_names:
         logger.warning(
             "word.suggest_topic.no_topics",
             extra={"event": "word.suggest_topic.no_topics"},
         )
         raise NoTopicsError
 
-    topic_list = "\n".join(f"- {topic.name}" for topic in topics)
+    topic_list = "\n".join(f"- {topic_name}" for topic_name in topic_names)
     user_message = f"Word: {term}\nTranslation: {translation}\n\nTopics:\n{topic_list}"
 
     try:
@@ -116,10 +116,10 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
         raise AiMalformedResponseError() from e
 
     suggested = _extract_choice_content(payload)
-    topic_names = {topic.name for topic in topics}
+    exact_topic_names = set(topic_names)
 
-    if suggested not in topic_names:
-        match = next((topic.name for topic in topics if topic.name.lower() == suggested.lower()), None)
+    if suggested not in exact_topic_names:
+        match = next((topic_name for topic_name in topic_names if topic_name.lower() == suggested.lower()), None)
         if match is None:
             logger.warning(
                 "word.suggest_topic.unknown_topic",
