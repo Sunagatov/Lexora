@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections import defaultdict
-
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
@@ -13,24 +11,21 @@ from app.features.topics.refinement_clusters import (
     TOPIC_SPLIT_MIN_WORDS,
     ClusterDefinition,
     WordLike,
-    _active_topics,
-    _tokenize,
-    _topic_name_similarity,
+)
+from app.features.topics.refinement_plan_support import (
+    PlanTarget,
+    build_empty_plan_response,
+    build_plan_response,
+    build_small_topic_response,
+    cluster_score as _cluster_score,
+    find_existing_topic_match as _find_existing_topic_match_impl,
+    init_plan_state,
+    merge_target_key as _merge_target_key_impl,
 )
 from app.features.topics.refinement_schemas import (
-    ProposedSubtopic,
     TopicSplitPlanRequest,
     TopicSplitPlanResponse,
 )
-
-
-def _cluster_score(word: WordLike, cluster: ClusterDefinition, include_existing_co_topics: bool) -> int:
-    tokens = _tokenize(getattr(word, "term", ""))
-    score = len(tokens & cluster.keywords)
-    if include_existing_co_topics:
-        for topic in _active_topics(word):
-            score += len(_tokenize(topic.name) & cluster.keywords)
-    return score
 
 
 def _word_cluster_candidates(word: WordLike, include_existing_co_topics: bool) -> list[tuple[int, ClusterDefinition]]:
@@ -47,16 +42,11 @@ def _find_existing_topic_match(
     cluster: ClusterDefinition,
     existing_topics: list[Topic],
 ) -> tuple[Topic | None, float]:
-    best_topic: Topic | None = None
-    best_score = 0.0
-    for topic in existing_topics:
-        score = _topic_name_similarity(cluster.name, topic.name)
-        if score > best_score or (score == best_score and best_topic is not None and topic.name.casefold() < best_topic.name.casefold()):
-            best_topic = topic
-            best_score = score
-    if best_topic is not None and best_score >= TOPIC_NAME_SIMILARITY_REUSE_THRESHOLD:
-        return best_topic, best_score
-    return None, best_score
+    return _find_existing_topic_match_impl(
+        cluster,
+        existing_topics,
+        reuse_threshold=TOPIC_NAME_SIMILARITY_REUSE_THRESHOLD,
+    )
 
 
 def _merge_target_key(
@@ -65,46 +55,23 @@ def _merge_target_key(
     topic_name: str,
     accepted_targets: dict[str, tuple[int | None, str]],
 ) -> str | None:
-    if topic_id is not None:
-        for key, (existing_topic_id, _) in accepted_targets.items():
-            if existing_topic_id == topic_id:
-                return key
-        return None
-
-    for key, (existing_topic_id, existing_topic_name) in accepted_targets.items():
-        if existing_topic_id is None and _topic_name_similarity(topic_name, existing_topic_name) >= TOPIC_NAME_SIMILARITY_MERGE_THRESHOLD:
-            return key
-    return None
+    return _merge_target_key_impl(
+        topic_id=topic_id,
+        topic_name=topic_name,
+        accepted_targets=accepted_targets,
+        merge_threshold=TOPIC_NAME_SIMILARITY_MERGE_THRESHOLD,
+    )
 
 
 def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest) -> TopicSplitPlanResponse:
     words = [word for word in getattr(topic, "words", []) if getattr(word, "deleted_at", None) is None]
     if not words:
-        return TopicSplitPlanResponse(
-            source_topic_id=topic.id,
-            source_topic_name=topic.name,
-            source_word_count=0,
-            should_split=False,
-            reasons=["topic has no active words"],
-            proposed_subtopics=[],
-            unassigned_word_ids=[],
-        )
+        return build_empty_plan_response(topic, "topic has no active words")
 
     if len(words) <= TOPIC_SPLIT_MIN_WORDS:
-        return TopicSplitPlanResponse(
-            source_topic_id=topic.id,
-            source_topic_name=topic.name,
-            source_word_count=len(words),
-            should_split=False,
-            reasons=[f"topic has {TOPIC_SPLIT_MIN_WORDS} or fewer active words"],
-            proposed_subtopics=[],
-            unassigned_word_ids=[word.id for word in words],
-        )
+        return build_small_topic_response(topic, words)
 
-    assigned_words: set[int] = set()
-    grouped_words: dict[str, list[tuple[int, WordLike]]] = defaultdict(list)
-    target_lookup: dict[str, tuple[int | None, str, str | None, bool, int]] = {}
-
+    state = init_plan_state()
     existing_topics = [existing_topic for existing_topic in get_all_topics(db) if existing_topic.id != topic.id]
 
     for word in words:
@@ -131,68 +98,31 @@ def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest)
         merge_key = _merge_target_key(
             topic_id=topic_id,
             topic_name=topic_name,
-            accepted_targets={key: (value[0], value[1]) for key, value in target_lookup.items()},
+            accepted_targets={
+                key: (target.topic_id, target.topic_name)
+                for key, target in state.target_lookup.items()
+            },
         )
         if merge_key is not None:
             target_key = merge_key
-            topic_id, topic_name, description, is_new_topic, priority = target_lookup[target_key]
+            target = state.target_lookup[target_key]
+            topic_id = target.topic_id
+            topic_name = target.topic_name
+            description = target.description
+            is_new_topic = target.is_new_topic
+            priority = target.priority
 
-        grouped_words[target_key].append((score, word))
-        target_lookup[target_key] = (topic_id, topic_name, description, is_new_topic, priority)
-        assigned_words.add(word.id)
-
-    proposed_subtopics: list[ProposedSubtopic] = []
-    leftover_word_ids: list[int] = []
-
-    ranked_groups = sorted(
-        grouped_words.items(),
-        key=lambda item: (-len(item[1]), -target_lookup[item[0]][4], item[0]),
-    )
-
-    kept_groups = ranked_groups[:payload.max_new_topics]
-    for target_key, items in kept_groups:
-        topic_id, topic_name, description, is_new_topic, _ = target_lookup[target_key]
-        words_in_group = [word for _, word in items]
-        if len(words_in_group) < payload.min_words_per_topic:
-            leftover_word_ids.extend(word.id for word in words_in_group)
-            continue
-        score_total = sum(score for score, _ in items)
-        average_confidence = min(0.95, 0.35 + (0.1 * len(words_in_group)) + (0.05 * score_total))
-        proposed_subtopics.append(
-            ProposedSubtopic(
-                name=topic_name,
-                topic_id=topic_id,
-                is_new_topic=is_new_topic,
-                description=description,
-                word_ids=[word.id for word in words_in_group],
-                sample_terms=[word.term for word in words_in_group[:5]],
-                confidence=round(average_confidence, 2),
-            )
+        state.grouped_words[target_key].append((score, word))
+        state.target_lookup[target_key] = PlanTarget(
+            topic_id=topic_id,
+            topic_name=topic_name,
+            description=description,
+            is_new_topic=is_new_topic,
+            priority=priority,
         )
+        state.assigned_words.add(word.id)
 
-    skipped_groups = ranked_groups[payload.max_new_topics :]
-    for _, items in skipped_groups:
-        leftover_word_ids.extend(word.id for _, word in items)
-
-    unassigned_word_ids = leftover_word_ids + [word.id for word in words if word.id not in assigned_words]
-    unassigned_word_ids = sorted(set(unassigned_word_ids))
-
-    should_split = bool(proposed_subtopics)
-    reasons = [f"topic has more than {TOPIC_SPLIT_MIN_WORDS} active words"]
-    if proposed_subtopics:
-        reasons.append(f"identified {len(proposed_subtopics)} candidate subtopics")
-    else:
-        reasons.append("no stable clusters reached the minimum size")
-
-    return TopicSplitPlanResponse(
-        source_topic_id=topic.id,
-        source_topic_name=topic.name,
-        source_word_count=len(words),
-        should_split=should_split,
-        reasons=reasons,
-        proposed_subtopics=proposed_subtopics,
-        unassigned_word_ids=unassigned_word_ids,
-    )
+    return build_plan_response(topic, words, payload, state)
 
 
 def build_topic_split_plan(db: Session, topic_id: int, payload: TopicSplitPlanRequest) -> TopicSplitPlanResponse:
