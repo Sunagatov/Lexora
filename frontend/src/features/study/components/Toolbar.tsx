@@ -42,6 +42,11 @@ const SORT_LABELS: Record<SortOption, string> = {
 }
 
 const FALLBACK_TERM_SORT = TERM_SORT_OPTIONS[0]
+const LEVEL_SORT_SET = new Set<SortOption>(LEVEL_SORT_OPTIONS)
+
+function isLevelSortOption(value: SortOption): value is (typeof LEVEL_SORT_OPTIONS)[number] {
+  return LEVEL_SORT_SET.has(value)
+}
 
 export function Toolbar({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
@@ -52,13 +57,13 @@ export function Toolbar({
   const mobileSearchRef = useRef<HTMLInputElement>(null)
 
   const levelActive = levelFilter !== 'all'
-  const effectiveSortBy: SortOption = levelActive && LEVEL_SORT_OPTIONS.includes(sortBy)
+  const effectiveSortBy: SortOption = levelActive && isLevelSortOption(sortBy)
     ? FALLBACK_TERM_SORT
     : sortBy
   const searchActive = wordSearch.trim() !== ''
 
   function handleSortChange(v: SortOption) {
-    if (levelActive && LEVEL_SORT_OPTIONS.includes(v)) {
+    if (levelActive && isLevelSortOption(v)) {
       setSortBy(FALLBACK_TERM_SORT)
       return
     }
