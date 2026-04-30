@@ -48,12 +48,15 @@ def test_countability_for_export_uses_canonical_value() -> None:
 
 def test_load_export_words_by_topic_groups_shared_words_for_each_active_topic() -> None:
     db = MagicMock()
-    topic_a = SimpleNamespace(id=1, deleted_at=None)
-    topic_b = SimpleNamespace(id=2, deleted_at=None)
-    deleted_topic = SimpleNamespace(id=3, deleted_at=object())
-    shared_word = SimpleNamespace(id=10, term="alpha", topics=[topic_a, topic_b, deleted_topic])
-    topic_b_only_word = SimpleNamespace(id=11, term="beta", topics=[topic_b])
+    shared_word = SimpleNamespace(id=10, term="alpha")
+    topic_b_only_word = SimpleNamespace(id=11, term="beta")
     db.scalars.return_value.all.return_value = [shared_word, topic_b_only_word]
+    db.execute.return_value.all.return_value = [
+        (1, 10),
+        (2, 10),
+        (2, 11),
+        (3, 10),
+    ]
 
     result = workbook_service._load_export_words_by_topic(db, [1, 2])
 

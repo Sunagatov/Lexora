@@ -5,10 +5,11 @@ from io import BytesIO
 
 from openpyxl import Workbook
 from sqlalchemy import select
-from sqlalchemy.orm import Session, load_only, selectinload
+from sqlalchemy.orm import Session, load_only
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
+from app.features.words.repository_queries import with_word_content_details
 from app.features.words.workbook.cells import _normalize_countability
 from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
@@ -60,28 +61,32 @@ def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, 
 
     words = list(
         db.scalars(
-            select(Word)
-            .options(
-                selectinload(Word.topics),
-                selectinload(Word.translation_items),
-                selectinload(Word.example_items),
+            with_word_content_details(
+                select(Word)
+                .join(word_topics, Word.id == word_topics.c.word_id)
+                .join(Topic, Topic.id == word_topics.c.topic_id)
+                .where(Word.deleted_at.is_(None))
+                .where(Topic.deleted_at.is_(None))
+                .where(Topic.id.in_(topic_ids))
+                .distinct()
+                .order_by(Word.term.asc(), Word.id.asc())
             )
-            .join(word_topics, Word.id == word_topics.c.word_id)
-            .join(Topic, Topic.id == word_topics.c.topic_id)
-            .where(Word.deleted_at.is_(None))
-            .where(Topic.deleted_at.is_(None))
-            .where(Topic.id.in_(topic_ids))
-            .distinct()
-            .order_by(Word.term.asc(), Word.id.asc())
         ).all()
     )
+    word_map = {word.id: word for word in words}
+    topic_rows = db.execute(
+        select(word_topics.c.topic_id, word_topics.c.word_id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Topic.deleted_at.is_(None))
+        .where(word_topics.c.topic_id.in_(topic_ids))
+        .where(word_topics.c.word_id.in_(word_map))
+    ).all()
 
     words_by_topic: dict[int, list[Word]] = {topic_id: [] for topic_id in topic_ids}
-    active_topic_ids = set(topic_ids)
-    for word in words:
-        for topic in word.topics:
-            if topic.deleted_at is None and topic.id in active_topic_ids:
-                words_by_topic[topic.id].append(word)
+    for topic_id, word_id in topic_rows:
+        word = word_map.get(word_id)
+        if word is not None and topic_id in words_by_topic:
+            words_by_topic[topic_id].append(word)
     return words_by_topic
 
 
