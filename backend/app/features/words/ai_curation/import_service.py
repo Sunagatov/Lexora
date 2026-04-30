@@ -2,14 +2,21 @@ from __future__ import annotations
 
 from collections import Counter
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
-from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
+from app.features.words.ai_curation.import_loading import (
+    load_existing_words as _load_existing_words,
+    resolve_topic_ref as _resolve_topic_ref,
+)
+from app.features.words.ai_curation.import_results import (
+    AiCurationImportExecution,
+    build_import_response,
+    finalize_import_transaction,
+)
 from app.features.words.ai_curation.import_support import (
     AiCurationImportOperations,
     _assert_unique_ids,
@@ -23,52 +30,11 @@ from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
     CreatedTopicResult,
-    TopicRef,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.model import Word, word_topics
-from app.features.words.repository import _with_details, create_word, update_word
+from app.features.words.model import Word
+from app.features.words.repository import create_word, update_word
 from app.features.words.schemas import WordCreate, WordUpdate
-
-
-def _load_existing_words(
-    db: Session,
-    source_topic_id: int,
-    word_ids: list[int],
-) -> dict[int, Word]:
-    if not word_ids:
-        return {}
-    subtree_topic_ids = get_active_subtree_topic_ids(db, source_topic_id)
-    words = db.scalars(
-        _with_details(
-            select(Word)
-            .join(word_topics, word_topics.c.word_id == Word.id)
-            .join(Topic, Topic.id == word_topics.c.topic_id)
-            .where(Word.id.in_(word_ids))
-            .where(Word.deleted_at.is_(None))
-            .where(Topic.deleted_at.is_(None))
-            .where(Topic.id.in_(subtree_topic_ids))
-            .distinct()
-        )
-    ).all()
-    return {int(word.id): word for word in words}
-
-
-def _resolve_topic_ref(
-    db: Session,
-    ref: TopicRef,
-    created_topics: dict[str, Topic],
-) -> Topic:
-    if ref.topic_id is not None:
-        topic: Topic | None = db.scalar(select(Topic).where(Topic.id == ref.topic_id, Topic.deleted_at.is_(None)))
-        if topic is None:
-            raise AiCurationImportError(f"Referenced topic {ref.topic_id} not found")
-        return topic
-
-    topic = created_topics.get(ref.client_key or "")
-    if topic is None:
-        raise AiCurationImportError(f"Referenced client_key '{ref.client_key}' was not created in topic_operations")
-    return topic
 
 
 def _process_topic_operations(
@@ -270,36 +236,18 @@ def import_ai_curation(
         )
 
         unchanged = updates_unchanged + reassigns_unchanged
+        finalize_import_transaction(db, payload, created_topic_results, created_word_ids)
 
-        if payload.dry_run:
-            db.rollback()
-            created_topics_for_response = [
-                CreatedTopicResult(
-                    client_key=item.client_key,
-                    id=None,
-                    name=item.name,
-                    slug=item.slug,
-                )
-                for item in created_topic_results
-            ]
-            created_word_ids_for_response: list[int] = []
-        else:
-            db.commit()
-            created_topics_for_response = created_topic_results
-            created_word_ids_for_response = created_word_ids
-
-        return AiCurationImportResponse(
-            source_topic_id=source_topic.id,
-            source_topic_name=source_topic.name,
-            dry_run=payload.dry_run,
-            created_topics=created_topics_for_response,
-            created_words=len(created_word_ids),
-            updated_words=len(updated_word_ids),
-            reassigned_words=len(reassigned_word_ids),
-            unchanged=unchanged,
-            created_word_ids=created_word_ids_for_response,
-            updated_word_ids=updated_word_ids,
-            reassigned_word_ids=reassigned_word_ids,
+        return build_import_response(
+            source_topic,
+            payload,
+            AiCurationImportExecution(
+                created_topic_results=created_topic_results,
+                created_word_ids=created_word_ids,
+                updated_word_ids=updated_word_ids,
+                reassigned_word_ids=reassigned_word_ids,
+                unchanged=unchanged,
+            ),
         )
     except InvalidTopicNameError as e:
         db.rollback()
