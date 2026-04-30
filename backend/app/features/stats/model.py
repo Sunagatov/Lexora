@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.shared.db import Base
 
 
@@ -16,7 +17,7 @@ class WordProgressEvent(Base):
     old_level:  Mapped[int | None] = mapped_column(Integer(), nullable=True)
     new_level:  Mapped[int]        = mapped_column(Integer(), nullable=False)
     # "manual" | "smart_review" | "quick_add" | "bulk_import"
-    source:     Mapped[str]        = mapped_column(String(32), nullable=False, default="manual")
+    source:     Mapped[str]        = mapped_column(String(32), nullable=False, default=PROGRESS_SOURCE_MANUAL)
     created_at: Mapped[datetime]   = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     word = relationship("Word", back_populates="progress_events")

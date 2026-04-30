@@ -7,6 +7,7 @@ from app.features.stats import service as stats_service
 from app.features.stats.model import WordProgressEvent
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
+from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.model import Word
 
 
@@ -30,7 +31,7 @@ def test_record_level_change_adds_progress_event_to_session() -> None:
         word_id=10,
         old_level=1,
         new_level=3,
-        source="manual",
+        source=PROGRESS_SOURCE_MANUAL,
     )
 
     event = db.add.call_args.args[0]
@@ -38,7 +39,7 @@ def test_record_level_change_adds_progress_event_to_session() -> None:
     assert event.word_id == 10
     assert event.old_level == 1
     assert event.new_level == 3
-    assert event.source == "manual"
+    assert event.source == PROGRESS_SOURCE_MANUAL
 
 
 def test_record_usage_event_is_idempotent() -> None:

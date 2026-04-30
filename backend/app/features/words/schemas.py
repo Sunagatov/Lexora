@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.features.words.constants import ProgressSource
 from app.features.words.enrichment import (
     EXAMPLE_TARGET_COUNT,
     example_count as count_examples,
@@ -56,9 +57,7 @@ class WordUpdate(BaseModel):
     example_entries: list[str] | None = None
     notes: str | None = None
     is_active: bool | None = None
-    progress_source: Literal[
-        "manual", "study_list", "smart_review", "quick_add", "bulk_import", "xlsx_import", "json_import"
-    ] | None = None
+    progress_source: ProgressSource | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

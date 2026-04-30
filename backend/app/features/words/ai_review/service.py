@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
+from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.ai_review.schemas import (
     AiReviewAllowedValues,
@@ -158,7 +159,7 @@ def _has_changes(word: Word, item) -> bool:
 
 def _build_update_payload(item) -> WordUpdate:
     data = item.model_dump(exclude_unset=True, exclude={"id", "term"})
-    data["progress_source"] = "json_import"
+    data["progress_source"] = PROGRESS_SOURCE_JSON_IMPORT
     return WordUpdate(**data)
 
 

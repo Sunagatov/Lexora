@@ -3,6 +3,7 @@ from typing import cast
 import pytest
 from pydantic import ValidationError
 
+from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.words.ai_review.schemas import AiReviewImportRequest, AiReviewImportWord
 from app.features.words.schemas import WordUpdate
 
@@ -60,6 +61,6 @@ def test_ai_review_import_rejects_explicit_null_translations() -> None:
 
 
 def test_word_update_accepts_json_import_progress_source() -> None:
-    payload = WordUpdate(knowledge_level=3, progress_source="json_import")
+    payload = WordUpdate(knowledge_level=3, progress_source=PROGRESS_SOURCE_JSON_IMPORT)
 
-    assert payload.progress_source == "json_import"
+    assert payload.progress_source == PROGRESS_SOURCE_JSON_IMPORT

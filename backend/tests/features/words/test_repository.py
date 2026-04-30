@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words import repository as word_repository
+from app.features.words.constants import PROGRESS_SOURCE_SMART_REVIEW
 from app.features.words.schemas import WordCreate, WordUpdate
 
 
@@ -168,7 +169,7 @@ def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> No
         term="walk faster",
         knowledge_level=3,
         topic_ids=[2, 3],
-        progress_source="smart_review",
+        progress_source=PROGRESS_SOURCE_SMART_REVIEW,
     )
 
     result = word_repository.update_word(db, word, payload)
@@ -178,7 +179,7 @@ def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> No
     assert word.knowledge_level == 3
     assert [topic.id for topic in word.topics] == [2, 3]
 
-    record_change.assert_called_once_with(db, 10, 1, 3, "smart_review")
+    record_change.assert_called_once_with(db, 10, 1, 3, PROGRESS_SOURCE_SMART_REVIEW)
     db.add.assert_called_once_with(word)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(word)

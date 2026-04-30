@@ -11,6 +11,7 @@ from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
+from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
@@ -167,7 +168,7 @@ def _process_word_updates(
             unchanged += 1
             continue
         data = op.model_dump(exclude_unset=True, exclude={"id"})
-        data["progress_source"] = "json_import"
+        data["progress_source"] = PROGRESS_SOURCE_JSON_IMPORT
         update_word(db, word, WordUpdate(**data), commit=False)
         updated_word_ids.append(word.id)
 
@@ -260,7 +261,7 @@ def _process_word_reassigns(
         update_word(
             db,
             word,
-            WordUpdate(topic_ids=next_topic_ids, progress_source="json_import"),
+            WordUpdate(topic_ids=next_topic_ids, progress_source=PROGRESS_SOURCE_JSON_IMPORT),
             commit=False,
         )
         reassigned_word_ids.append(word.id)

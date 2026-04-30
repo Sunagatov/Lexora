@@ -1,10 +1,10 @@
-import hashlib
 import logging
 from fastapi import testclient
 
 from app.features.stats import router as stats_router
 from app.features.stats.schemas import StatsResponse
 from app.main import app
+from app.shared.auth import AUTH_TYPE_SESSION, SESSION_COOKIE_NAME, SESSION_SUBJECT_OWNER, build_csrf_token
 from app.shared.config import settings
 from app.shared.logging_utils import CORRELATION_ID_HEADER, REQUEST_ID_HEADER
 
@@ -19,12 +19,12 @@ def test_get_session_returns_csrf_token_when_authenticated():
         # Create a valid session token
         now = int(datetime.now(timezone.utc).timestamp())
         valid_token = jwt.encode(
-            {"sub": "owner", "iat": now, "exp": now + 3600},
+            {"sub": SESSION_SUBJECT_OWNER, "iat": now, "exp": now + 3600},
             settings.secret_key,
             algorithm=ALGORITHM,
         )
 
-        client.cookies.set("session", valid_token)
+        client.cookies.set(SESSION_COOKIE_NAME, valid_token)
         response = client.get("/auth/session")
 
         assert response.status_code == 200
@@ -33,7 +33,7 @@ def test_get_session_returns_csrf_token_when_authenticated():
         assert "csrf_token" in data
 
         # Verify csrf_token matches expected format
-        expected_csrf = hashlib.sha256(f"{settings.secret_key}:{valid_token}".encode()).hexdigest()
+        expected_csrf = build_csrf_token(settings.secret_key, valid_token)
         assert data["csrf_token"] == expected_csrf
 
 
@@ -49,7 +49,7 @@ def test_get_session_returns_401_when_no_session_cookie():
 def test_get_session_returns_401_when_session_invalid():
     """GET /auth/session returns 401 when session cookie is invalid."""
     with testclient.TestClient(app) as client:
-        client.cookies.set("session", "invalid_token_format")
+        client.cookies.set(SESSION_COOKIE_NAME, "invalid_token_format")
         response = client.get("/auth/session")
 
         assert response.status_code == 401
@@ -86,15 +86,15 @@ def test_protected_request_logging_binds_authenticated_subject(caplog, monkeypat
 
     now = int(datetime.now(timezone.utc).timestamp())
     valid_token = jwt.encode(
-        {"sub": "owner", "iat": now, "exp": now + 3600},
+        {"sub": SESSION_SUBJECT_OWNER, "iat": now, "exp": now + 3600},
         settings.secret_key,
         algorithm=ALGORITHM,
     )
-    csrf = hashlib.sha256(f"{settings.secret_key}:{valid_token}".encode()).hexdigest()
+    csrf = build_csrf_token(settings.secret_key, valid_token)
 
     with caplog.at_level(logging.INFO):
         with testclient.TestClient(app) as client:
-            client.cookies.set("session", valid_token)
+            client.cookies.set(SESSION_COOKIE_NAME, valid_token)
             response = client.get(
                 "/api/stats",
                 headers={
@@ -112,6 +112,6 @@ def test_protected_request_logging_binds_authenticated_subject(caplog, monkeypat
     )
     assert access_record.correlation_id == "frontend-456"
     assert access_record.authenticated is True
-    assert access_record.subject == "owner"
-    assert access_record.auth_type == "session"
+    assert access_record.subject == SESSION_SUBJECT_OWNER
+    assert access_record.auth_type == AUTH_TYPE_SESSION
     assert access_record.outcome == "SUCCESS"

@@ -1,4 +1,3 @@
-import hashlib
 from types import SimpleNamespace
 
 import pytest
@@ -6,11 +5,20 @@ from fastapi import HTTPException
 from jose import jwt
 
 from app.shared import deps
+from app.shared.auth import (
+    AUTH_TYPE_SESSION,
+    ERROR_INVALID_CSRF_TOKEN,
+    ERROR_INVALID_SESSION,
+    ERROR_MISSING_CSRF_TOKEN,
+    ERROR_NOT_AUTHENTICATED,
+    SESSION_SUBJECT_OWNER,
+    build_csrf_token,
+)
 from app.shared.config import settings
 from app.shared.logging_utils import get_request_context, reset_request_context
 
 
-def _make_session_token(sub: str = "owner") -> str:
+def _make_session_token(sub: str = SESSION_SUBJECT_OWNER) -> str:
     return jwt.encode({"sub": sub}, settings.secret_key, algorithm=deps.ALGORITHM)
 
 
@@ -23,10 +31,10 @@ def test_verify_session_accepts_valid_owner_token() -> None:
     token = _make_session_token()
     request = _make_request()
     deps.verify_session(request=request, session=token)
-    assert get_request_context()["subject"] == "owner"
-    assert get_request_context()["auth_type"] == "session"
-    assert request.state.subject == "owner"
-    assert request.state.auth_type == "session"
+    assert get_request_context()["subject"] == SESSION_SUBJECT_OWNER
+    assert get_request_context()["auth_type"] == AUTH_TYPE_SESSION
+    assert request.state.subject == SESSION_SUBJECT_OWNER
+    assert request.state.auth_type == AUTH_TYPE_SESSION
     reset_request_context()
 
 
@@ -35,7 +43,7 @@ def test_verify_session_rejects_missing_cookie() -> None:
         deps.verify_session(request=_make_request(), session=None)
 
     assert exc_info.value.status_code == 401
-    assert exc_info.value.detail == "Not authenticated"
+    assert exc_info.value.detail == ERROR_NOT_AUTHENTICATED
 
 
 def test_verify_session_rejects_wrong_subject() -> None:
@@ -45,12 +53,12 @@ def test_verify_session_rejects_wrong_subject() -> None:
         deps.verify_session(request=_make_request(), session=token)
 
     assert exc_info.value.status_code == 401
-    assert exc_info.value.detail == "Invalid session"
+    assert exc_info.value.detail == ERROR_INVALID_SESSION
 
 
 def test_verify_csrf_accepts_matching_token() -> None:
     session = _make_session_token()
-    csrf = hashlib.sha256(f"{settings.secret_key}:{session}".encode()).hexdigest()
+    csrf = build_csrf_token(settings.secret_key, session)
 
     deps.verify_csrf(session=session, x_csrf_token=csrf)
 
@@ -60,7 +68,7 @@ def test_verify_csrf_rejects_missing_values() -> None:
         deps.verify_csrf(session=None, x_csrf_token=None)
 
     assert exc_info.value.status_code == 403
-    assert exc_info.value.detail == "Missing CSRF token"
+    assert exc_info.value.detail == ERROR_MISSING_CSRF_TOKEN
 
 
 def test_verify_csrf_rejects_invalid_token() -> None:
@@ -70,7 +78,7 @@ def test_verify_csrf_rejects_invalid_token() -> None:
         deps.verify_csrf(session=session, x_csrf_token="wrong-token")
 
     assert exc_info.value.status_code == 403
-    assert exc_info.value.detail == "Invalid CSRF token"
+    assert exc_info.value.detail == ERROR_INVALID_CSRF_TOKEN
 
 
 def test_verify_api_key_accepts_matching_value() -> None:

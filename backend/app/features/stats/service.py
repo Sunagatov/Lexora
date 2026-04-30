@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from app.features.words.constants import ProgressSource
 from app.features.stats.aggregates import (
     _build_consistency_stats,
     _build_daily_activity,
@@ -26,7 +27,7 @@ def record_level_change(
     word_id: int,
     old_level: int | None,
     new_level: int,
-    source: str,
+    source: ProgressSource,
 ) -> None:
     """Append a progress event. Does not commit — caller owns the transaction."""
     db.add(WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source))

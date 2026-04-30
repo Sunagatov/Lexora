@@ -5,6 +5,7 @@ from io import BytesIO
 from openpyxl import load_workbook
 from sqlalchemy.orm import Session
 
+from app.features.words.constants import PROGRESS_SOURCE_XLSX_IMPORT
 from app.features.stats.service import record_level_change
 from app.features.topics.model import Topic
 from app.features.words.domain import assert_no_duplicate_word, existing_normalized_terms
@@ -239,7 +240,13 @@ def _import_sheet(
             )
 
             if existing.knowledge_level != old_level and existing.knowledge_level is not None:
-                record_level_change(db, int(existing.id), old_level, existing.knowledge_level, "xlsx_import")
+                record_level_change(
+                    db,
+                    int(existing.id),
+                    old_level,
+                    existing.knowledge_level,
+                    PROGRESS_SOURCE_XLSX_IMPORT,
+                )
 
             db.add(existing)
             db.flush()

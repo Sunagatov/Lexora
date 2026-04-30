@@ -10,6 +10,7 @@ from app.features.words.model import Word, WordExample, WordTranslation, word_to
 from app.features.words.schemas import WordCreate, WordUpdate
 from app.features.words.domain import existing_normalized_terms, assert_no_duplicate_word
 from app.features.stats.service import record_level_change
+from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 
 
 def _with_details(stmt):
@@ -249,7 +250,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         )
 
     if "knowledge_level" in data and data["knowledge_level"] != old_level and data["knowledge_level"] is not None:
-        source = payload.progress_source or "manual"
+        source = payload.progress_source or PROGRESS_SOURCE_MANUAL
         record_level_change(db, int(word.id), old_level, int(data["knowledge_level"]), source)
     db.add(word)
     if commit:

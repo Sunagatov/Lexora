@@ -1,11 +1,10 @@
-import hashlib
-
 import pytest
 from fastapi import HTTPException, Response
 from jose import jwt
 
 from app.features.auth.router import login, logout
 from app.features.auth.schemas import LoginRequest
+from app.shared.auth import SESSION_COOKIE_NAME, SESSION_SUBJECT_OWNER, build_csrf_token
 from app.shared.config import settings
 from app.shared.deps import ALGORITHM
 
@@ -19,15 +18,15 @@ def test_login_returns_csrf_and_sets_session_cookie() -> None:
     assert "set-cookie" in response.headers
 
     set_cookie = response.headers["set-cookie"]
-    assert "session=" in set_cookie
+    assert f"{SESSION_COOKIE_NAME}=" in set_cookie
 
-    token = set_cookie.split("session=")[1].split(";")[0]
+    token = set_cookie.split(f"{SESSION_COOKIE_NAME}=")[1].split(";")[0]
     payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
 
-    assert payload["sub"] == "owner"
+    assert payload["sub"] == SESSION_SUBJECT_OWNER
     assert payload["exp"] > payload["iat"]
 
-    expected_csrf = hashlib.sha256(f"{settings.secret_key}:{token}".encode()).hexdigest()
+    expected_csrf = build_csrf_token(settings.secret_key, token)
     assert result["csrf_token"] == expected_csrf
 
 
@@ -48,4 +47,4 @@ def test_logout_deletes_session_cookie() -> None:
 
     assert result == {"ok": True}
     assert "set-cookie" in response.headers
-    assert "session=" in response.headers["set-cookie"]
+    assert f"{SESSION_COOKIE_NAME}=" in response.headers["set-cookie"]
