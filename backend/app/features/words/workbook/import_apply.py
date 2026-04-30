@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.features.words.constants import PROGRESS_SOURCE_XLSX_IMPORT
-from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.workbook.cells import _split_examples_cell, _split_translation_cell
 from app.features.words.workbook.format import InvalidWorkbookError
 from app.features.words.workbook.import_rows import _row_fingerprint
