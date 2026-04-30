@@ -2,6 +2,8 @@ import hashlib
 import logging
 from fastapi import testclient
 
+from app.features.stats import router as stats_router
+from app.features.stats.schemas import StatsResponse
 from app.main import app
 from app.shared.config import settings
 from app.shared.logging_utils import CORRELATION_ID_HEADER, REQUEST_ID_HEADER
@@ -69,4 +71,47 @@ def test_request_logging_returns_request_headers_and_access_log(caplog):
     assert access_record.path == "/auth/session"
     assert access_record.route == "/auth/session"
     assert access_record.status_code == 401
+    assert access_record.authenticated is False
     assert access_record.outcome == "CLIENT_ERROR"
+
+
+def test_protected_request_logging_binds_authenticated_subject(caplog, monkeypatch):
+    from datetime import datetime, timezone
+
+    from jose import jwt
+
+    from app.shared.deps import ALGORITHM
+
+    monkeypatch.setattr(stats_router, "compute_stats", lambda db: StatsResponse())
+
+    now = int(datetime.now(timezone.utc).timestamp())
+    valid_token = jwt.encode(
+        {"sub": "owner", "iat": now, "exp": now + 3600},
+        settings.secret_key,
+        algorithm=ALGORITHM,
+    )
+    csrf = hashlib.sha256(f"{settings.secret_key}:{valid_token}".encode()).hexdigest()
+
+    with caplog.at_level(logging.INFO):
+        with testclient.TestClient(app) as client:
+            client.cookies.set("session", valid_token)
+            response = client.get(
+                "/api/stats",
+                headers={
+                    "x-csrf-token": csrf,
+                    CORRELATION_ID_HEADER: "frontend-456",
+                },
+            )
+
+    assert response.status_code == 200
+
+    access_record = next(
+        record
+        for record in caplog.records
+        if record.name == "http.access" and getattr(record, "path", None) == "/api/stats"
+    )
+    assert access_record.correlation_id == "frontend-456"
+    assert access_record.authenticated is True
+    assert access_record.subject == "owner"
+    assert access_record.auth_type == "session"
+    assert access_record.outcome == "SUCCESS"

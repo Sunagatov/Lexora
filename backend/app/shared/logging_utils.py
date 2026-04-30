@@ -55,6 +55,10 @@ def get_request_context() -> dict[str, Any]:
     return dict(_request_context.get())
 
 
+def reset_request_context() -> None:
+    _request_context.set({})
+
+
 def sanitize_header_value(value: str | None, *, max_length: int = 128) -> str | None:
     if value is None:
         return None

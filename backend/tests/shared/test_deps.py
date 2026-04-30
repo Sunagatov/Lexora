@@ -1,4 +1,5 @@
 import hashlib
+from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
@@ -6,20 +7,32 @@ from jose import jwt
 
 from app.shared import deps
 from app.shared.config import settings
+from app.shared.logging_utils import get_request_context, reset_request_context
 
 
 def _make_session_token(sub: str = "owner") -> str:
     return jwt.encode({"sub": sub}, settings.secret_key, algorithm=deps.ALGORITHM)
 
 
+def _make_request() -> SimpleNamespace:
+    return SimpleNamespace(state=SimpleNamespace())
+
+
 def test_verify_session_accepts_valid_owner_token() -> None:
+    reset_request_context()
     token = _make_session_token()
-    deps.verify_session(session=token)
+    request = _make_request()
+    deps.verify_session(request=request, session=token)
+    assert get_request_context()["subject"] == "owner"
+    assert get_request_context()["auth_type"] == "session"
+    assert request.state.subject == "owner"
+    assert request.state.auth_type == "session"
+    reset_request_context()
 
 
 def test_verify_session_rejects_missing_cookie() -> None:
     with pytest.raises(HTTPException) as exc_info:
-        deps.verify_session(session=None)
+        deps.verify_session(request=_make_request(), session=None)
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == "Not authenticated"
@@ -29,7 +42,7 @@ def test_verify_session_rejects_wrong_subject() -> None:
     token = _make_session_token(sub="someone-else")
 
     with pytest.raises(HTTPException) as exc_info:
-        deps.verify_session(session=token)
+        deps.verify_session(request=_make_request(), session=token)
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == "Invalid session"

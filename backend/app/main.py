@@ -25,6 +25,7 @@ from app.shared.logging_utils import (
     bind_request_context,
     clear_request_context,
     configure_logging,
+    get_request_context,
     make_request_id,
     sanitize_header_value,
 )
@@ -98,7 +99,10 @@ async def add_request_logging_context(request: Request, call_next):
         route = request.scope.get("route")
         route_path = getattr(route, "path", None) or request.url.path
         status_code = response.status_code if response is not None else 500
-        authenticated = request.cookies.get("session") is not None
+        request_context = get_request_context()
+        subject = getattr(request.state, "subject", request_context.get("subject"))
+        auth_type = getattr(request.state, "auth_type", request_context.get("auth_type"))
+        authenticated = subject is not None
         outcome = (
             "SUCCESS"
             if status_code < 400
@@ -123,6 +127,8 @@ async def add_request_logging_context(request: Request, call_next):
                 "status_code": status_code,
                 "duration_ms": duration_ms,
                 "authenticated": authenticated,
+                "subject": subject,
+                "auth_type": auth_type,
                 "outcome": outcome,
                 "client_ip": request.client.host if request.client else None,
             },

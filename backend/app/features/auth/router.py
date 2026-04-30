@@ -3,11 +3,12 @@ import hmac
 import logging
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Cookie, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, HTTPException, Request, Response, status
 from jose import JWTError, jwt
 
 from app.shared.config import settings
 from app.shared.deps import ALGORITHM
+from app.shared.logging_utils import bind_request_context
 from app.features.auth.schemas import LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -19,7 +20,7 @@ def _build_csrf_token(token: str) -> str:
     return hashlib.sha256(f"{settings.secret_key}:{token}".encode()).hexdigest()
 
 
-def _verify_session_token(session: str | None) -> str:
+def _verify_session_token(session: str | None, request: Request | None = None) -> str:
     if session is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     try:
@@ -28,6 +29,10 @@ def _verify_session_token(session: str | None) -> str:
             raise JWTError("unexpected subject")
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+    bind_request_context(subject="owner", auth_type="session")
+    if request is not None:
+        request.state.subject = "owner"
+        request.state.auth_type = "session"
     return session
 
 
@@ -72,6 +77,6 @@ def logout(response: Response) -> dict:
 
 
 @router.get("/session")
-def get_session(session: str | None = Cookie(default=None)) -> dict:
-    token = _verify_session_token(session)
+def get_session(request: Request, session: str | None = Cookie(default=None)) -> dict:
+    token = _verify_session_token(session, request)
     return {"authenticated": True, "csrf_token": _build_csrf_token(token)}

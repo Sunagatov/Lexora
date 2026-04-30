@@ -2,12 +2,13 @@ import hashlib
 import hmac
 from collections.abc import Generator
 
-from fastapi import Cookie, Header, HTTPException, status
+from fastapi import Cookie, Header, HTTPException, Request, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.shared.config import settings
 from app.shared.db import SessionLocal, ensure_database_schema
+from app.shared.logging_utils import bind_request_context
 
 ALGORITHM = "HS256"
 
@@ -21,7 +22,10 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-def verify_session(session: str | None = Cookie(default=None)) -> None:
+def verify_session(
+    request: Request,
+    session: str | None = Cookie(default=None),
+) -> None:
     if session is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     try:
@@ -30,6 +34,9 @@ def verify_session(session: str | None = Cookie(default=None)) -> None:
             raise JWTError("unexpected subject")
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+    bind_request_context(subject="owner", auth_type="session")
+    request.state.subject = "owner"
+    request.state.auth_type = "session"
 
 
 def verify_csrf(
