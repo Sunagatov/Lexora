@@ -1,15 +1,45 @@
 from __future__ import annotations
 
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import load_only, selectinload
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
 
 
+def _word_base_columns():
+    return (
+        Word.id,
+        Word.term,
+        Word.past_simple,
+        Word.past_participle,
+        Word.translations,
+        Word.part_of_speech,
+        Word.knowledge_level,
+        Word.countability,
+        Word.pattern,
+        Word.example,
+        Word.notes,
+        Word.is_active,
+        Word.created_at,
+        Word.updated_at,
+        Word.deleted_at,
+        Word.deleted_via_topic_id,
+    )
+
+
 def with_word_details(stmt):
     return stmt.options(
-        selectinload(Word.topics),
+        load_only(*_word_base_columns()),
+        selectinload(Word.topics).load_only(Topic.id, Topic.deleted_at),
+        selectinload(Word.translation_items),
+        selectinload(Word.example_items),
+    )
+
+
+def with_word_content_details(stmt):
+    return stmt.options(
+        load_only(*_word_base_columns()),
         selectinload(Word.translation_items),
         selectinload(Word.example_items),
     )

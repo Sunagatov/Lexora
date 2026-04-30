@@ -14,7 +14,7 @@ from app.features.words.ai_review.schemas import (
     AiReviewWord,
 )
 from app.features.words.model import Word, word_topics
-from app.features.words.repository import _with_details
+from app.features.words.repository_queries import with_word_content_details
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
 EXPORT_INSTRUCTIONS = [
@@ -86,7 +86,7 @@ def _load_topic_words(db, subtree_topic_ids: list[int], *, page: int, page_size:
         .offset(offset)
         .limit(page_size)
     )
-    return list(db.scalars(_with_details(stmt)).all())
+    return list(db.scalars(with_word_content_details(stmt)).all())
 
 
 def _word_to_ai_review_word(word: Word) -> AiReviewWord:
