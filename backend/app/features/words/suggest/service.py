@@ -51,12 +51,18 @@ def _extract_choice_content(data: object) -> str:
 async def suggest_topic_for_word(db: Session, term: str, translation: str) -> str:
     """Return the best matching topic name for the given term+translation. Raises domain errors on failure."""
     if not settings.openai_api_key:
-        logger.warning("word.suggest_topic.ai_not_configured")
+        logger.warning(
+            "word.suggest_topic.ai_not_configured",
+            extra={"event": "word.suggest_topic.ai_not_configured"},
+        )
         raise AiNotConfiguredError
 
     topics = db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name)).all()
     if not topics:
-        logger.warning("word.suggest_topic.no_topics")
+        logger.warning(
+            "word.suggest_topic.no_topics",
+            extra={"event": "word.suggest_topic.no_topics"},
+        )
         raise NoTopicsError
 
     topic_list = "\n".join(f"- {topic.name}" for topic in topics)
@@ -82,19 +88,31 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
             )
             response.raise_for_status()
     except httpx.TimeoutException:
-        logger.warning("word.suggest_topic.timeout")
+        logger.warning("word.suggest_topic.timeout", extra={"event": "word.suggest_topic.timeout"})
         raise
     except httpx.HTTPStatusError as e:
-        logger.error("word.suggest_topic.http_error: status=%s", e.response.status_code)
+        logger.error(
+            "word.suggest_topic.http_error",
+            extra={
+                "event": "word.suggest_topic.http_error",
+                "status_code": e.response.status_code,
+            },
+        )
         raise
     except httpx.RequestError as e:
-        logger.error("word.suggest_topic.request_error: type=%s", type(e).__name__)
+        logger.error(
+            "word.suggest_topic.request_error",
+            extra={
+                "event": "word.suggest_topic.request_error",
+                "error_type": type(e).__name__,
+            },
+        )
         raise
 
     try:
         payload = response.json()
     except ValueError as e:
-        logger.error("word.suggest_topic.invalid_json")
+        logger.error("word.suggest_topic.invalid_json", extra={"event": "word.suggest_topic.invalid_json"})
         raise AiMalformedResponseError() from e
 
     suggested = _extract_choice_content(payload)
@@ -103,7 +121,13 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
     if suggested not in topic_names:
         match = next((topic.name for topic in topics if topic.name.lower() == suggested.lower()), None)
         if match is None:
-            logger.warning("word.suggest_topic.unknown_topic")
+            logger.warning(
+                "word.suggest_topic.unknown_topic",
+                extra={
+                    "event": "word.suggest_topic.unknown_topic",
+                    "suggested_topic": suggested,
+                },
+            )
             raise AiUnknownTopicError(suggested)
         suggested = match
 

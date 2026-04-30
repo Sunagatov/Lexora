@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,6 +14,9 @@ class Settings(BaseSettings):
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     app_debug: bool = True
+    log_level: str = "INFO"
+    log_format: Literal["pretty", "json"] = "pretty"
+    log_slow_request_threshold_ms: int = 500
 
     app_password: str = Field(default="")
     secret_key: str = Field(default="")

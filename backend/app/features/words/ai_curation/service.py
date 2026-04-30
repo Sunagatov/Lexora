@@ -45,23 +45,19 @@ def import_ai_curation(db: Session, payload):
     _import_service.TopicSlugConflictError = TopicSlugConflictError
     _import_service.DuplicateWordInTopicError = DuplicateWordInTopicError
     result = _import_service.import_ai_curation(db, payload)
-    parent_logger = logging.getLogger("app")
-    previous_propagate = parent_logger.propagate
-    parent_logger.propagate = True
-    try:
-        logger.info(
-            "ai_curation.import: topic_id=%s dry_run=%s created_topics=%s created_words=%s "
-            "updated_words=%s reassigned_words=%s unchanged=%s",
-            result.source_topic_id,
-            result.dry_run,
-            len(result.created_topics),
-            result.created_words,
-            result.updated_words,
-            result.reassigned_words,
-            result.unchanged,
-        )
-    finally:
-        parent_logger.propagate = previous_propagate
+    logger.info(
+        "ai_curation.import",
+        extra={
+            "event": "ai_curation.import",
+            "topic_id": result.source_topic_id,
+            "dry_run": result.dry_run,
+            "created_topics": len(result.created_topics),
+            "created_words": result.created_words,
+            "updated_words": result.updated_words,
+            "reassigned_words": result.reassigned_words,
+            "unchanged": result.unchanged,
+        },
+    )
     return result
 
 

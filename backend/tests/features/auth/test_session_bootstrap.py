@@ -1,8 +1,10 @@
 import hashlib
+import logging
 from fastapi import testclient
 
 from app.main import app
 from app.shared.config import settings
+from app.shared.logging_utils import CORRELATION_ID_HEADER, REQUEST_ID_HEADER
 
 
 def test_get_session_returns_csrf_token_when_authenticated():
@@ -50,3 +52,21 @@ def test_get_session_returns_401_when_session_invalid():
 
         assert response.status_code == 401
         assert response.json()["detail"] == "Invalid session"
+
+
+def test_request_logging_returns_request_headers_and_access_log(caplog):
+    with caplog.at_level(logging.INFO):
+        with testclient.TestClient(app) as client:
+            response = client.get("/auth/session", headers={CORRELATION_ID_HEADER: "frontend-123"})
+
+    assert response.headers[CORRELATION_ID_HEADER] == "frontend-123"
+    assert response.headers[REQUEST_ID_HEADER]
+
+    access_record = next(record for record in caplog.records if record.name == "http.access")
+    assert access_record.event == "http.request.completed"
+    assert access_record.correlation_id == "frontend-123"
+    assert access_record.request_id == response.headers[REQUEST_ID_HEADER]
+    assert access_record.path == "/auth/session"
+    assert access_record.route == "/auth/session"
+    assert access_record.status_code == 401
+    assert access_record.outcome == "CLIENT_ERROR"

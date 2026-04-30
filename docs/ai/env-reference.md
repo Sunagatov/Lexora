@@ -19,6 +19,9 @@ App runtime:
 - `APP_HOST`
 - `APP_PORT`
 - `APP_DEBUG`
+- `LOG_LEVEL`
+- `LOG_FORMAT`
+- `LOG_SLOW_REQUEST_THRESHOLD_MS`
 
 Auth and security:
 

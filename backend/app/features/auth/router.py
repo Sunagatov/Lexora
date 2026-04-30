@@ -34,7 +34,13 @@ def _verify_session_token(session: str | None) -> str:
 @router.post("/login")
 def login(payload: LoginRequest, response: Response) -> dict:
     if not hmac.compare_digest(payload.password, settings.app_password):
-        logger.warning("auth.login.failed: reason=wrong_password")
+        logger.warning(
+            "auth.login.failed",
+            extra={
+                "event": "auth.login.failed",
+                "reason": "wrong_password",
+            },
+        )
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong password")
 
     now = int(datetime.now(timezone.utc).timestamp())
@@ -54,14 +60,14 @@ def login(payload: LoginRequest, response: Response) -> dict:
         max_age=settings.cookie_max_age,
     )
 
-    logger.info("auth.login.succeeded")
+    logger.info("auth.login.succeeded", extra={"event": "auth.login.succeeded"})
     return {"ok": True, "csrf_token": csrf_token}
 
 
 @router.post("/logout")
 def logout(response: Response) -> dict:
     response.delete_cookie("session")
-    logger.info("auth.logout.completed")
+    logger.info("auth.logout.completed", extra={"event": "auth.logout.completed"})
     return {"ok": True}
 
 

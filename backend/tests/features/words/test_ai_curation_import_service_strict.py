@@ -144,5 +144,6 @@ def test_import_logs_audit_on_commit(monkeypatch, caplog) -> None:
     with caplog.at_level(logging.INFO, logger="app.features.words.ai_curation.service"):
         ai_curation_service.import_ai_curation(db, payload)
 
-    assert any("ai_curation.import" in r.message for r in caplog.records)
-    assert any("created_words=1" in r.message for r in caplog.records)
+    matching = [r for r in caplog.records if r.message == "ai_curation.import"]
+    assert matching
+    assert any(getattr(r, "created_words", None) == 1 for r in matching)

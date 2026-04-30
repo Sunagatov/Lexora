@@ -1,6 +1,6 @@
 import logging
+import time
 from contextlib import asynccontextmanager
-from logging.config import dictConfig
 from typing import Any, cast
 
 from fastapi import Depends, FastAPI, Request
@@ -19,56 +19,37 @@ from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
 from app.features.words.ai_curation.router import router as ai_curation_router
 from app.shared.db import USING_SQLITE_FALLBACK, ensure_database_schema
+from app.shared.logging_utils import (
+    CORRELATION_ID_HEADER,
+    REQUEST_ID_HEADER,
+    bind_request_context,
+    clear_request_context,
+    configure_logging,
+    make_request_id,
+    sanitize_header_value,
+)
 
 
-def configure_logging() -> None:
-    dictConfig(
-        {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "formatters": {
-                "default": {
-                    "format": "%(levelname)s %(message)s",
-                }
-            },
-            "handlers": {
-                "console": {
-                    "class": "logging.StreamHandler",
-                    "formatter": "default",
-                }
-            },
-            "loggers": {
-                "app": {
-                    "handlers": ["console"],
-                    "level": "INFO",
-                    "propagate": False,
-                },
-                "uvicorn.access": {
-                    "handlers": [],
-                    "level": "WARNING",
-                    "propagate": False,
-                },
-            },
-        }
-    )
-
-
-configure_logging()
+configure_logging(level=settings.log_level, log_format=settings.log_format)
 logger = logging.getLogger(__name__)
+access_logger = logging.getLogger("http.access")
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger.info(
-        "app.started: smartReviewEnabled=%s, corsOriginsCount=%s, sqliteFallback=%s",
-        settings.smart_review_enabled,
-        len(settings.cors_allowed_origins),
-        USING_SQLITE_FALLBACK,
+        "app.started",
+        extra={
+            "event": "app.started",
+            "smart_review_enabled": settings.smart_review_enabled,
+            "cors_origins_count": len(settings.cors_allowed_origins),
+            "sqlite_fallback": USING_SQLITE_FALLBACK,
+        },
     )
     ensure_database_schema()
     try:
         yield
     finally:
-        logger.info("app.stopped")
+        logger.info("app.stopped", extra={"event": "app.stopped"})
 
 
 app = FastAPI(
@@ -88,16 +69,65 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def log_unhandled_errors(request: Request, call_next):
+async def add_request_logging_context(request: Request, call_next):
+    request_id = make_request_id()
+    correlation_id = sanitize_header_value(request.headers.get(CORRELATION_ID_HEADER)) or request_id
+    token = bind_request_context(
+        request_id=request_id,
+        correlation_id=correlation_id,
+        method=request.method,
+        path=request.url.path,
+    )
+    start = time.perf_counter()
+    response = None
     try:
-        return await call_next(request)
+        response = await call_next(request)
+        response.headers[REQUEST_ID_HEADER] = request_id
+        response.headers[CORRELATION_ID_HEADER] = correlation_id
+        return response
     except Exception:
         logger.exception(
-            "http.request.failed: method=%s, path=%s",
-            request.method,
-            request.url.path,
+            "http.request.failed",
+            extra={
+                "event": "http.request.failed",
+            },
         )
         raise
+    finally:
+        duration_ms = round((time.perf_counter() - start) * 1000, 2)
+        route = request.scope.get("route")
+        route_path = getattr(route, "path", None) or request.url.path
+        status_code = response.status_code if response is not None else 500
+        authenticated = request.cookies.get("session") is not None
+        outcome = (
+            "SUCCESS"
+            if status_code < 400
+            else "CLIENT_ERROR"
+            if status_code < 500
+            else "SERVER_ERROR"
+        )
+        level = logging.INFO
+        if status_code >= 500:
+            level = logging.ERROR
+        elif status_code >= 400 or duration_ms >= settings.log_slow_request_threshold_ms:
+            level = logging.WARNING
+        elif route_path == "/health":
+            level = logging.DEBUG
+
+        access_logger.log(
+            level,
+            "http.request.completed",
+            extra={
+                "event": "http.request.completed",
+                "route": route_path,
+                "status_code": status_code,
+                "duration_ms": duration_ms,
+                "authenticated": authenticated,
+                "outcome": outcome,
+                "client_ip": request.client.host if request.client else None,
+            },
+        )
+        clear_request_context(token)
 
 
 app.include_router(health_router)
