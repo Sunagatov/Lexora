@@ -69,7 +69,20 @@ def compute_stats(db: Session) -> StatsResponse:
     usage_summary, usage_daily, usage_started_at = _build_usage_stats(db)
     progress_events = cast(
         list[WordProgressEvent],
-        list(db.scalars(select(WordProgressEvent).order_by(WordProgressEvent.created_at.asc())).all()),
+        list(
+            db.scalars(
+                select(WordProgressEvent)
+                .options(
+                    load_only(
+                        WordProgressEvent.word_id,
+                        WordProgressEvent.old_level,
+                        WordProgressEvent.new_level,
+                        WordProgressEvent.created_at,
+                    )
+                )
+                .order_by(WordProgressEvent.created_at.asc())
+            ).all()
+        ),
     )
 
     reviewed_word_ids: set[int] = set()

@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 from openpyxl import Workbook
+from unittest.mock import MagicMock
 
 from app.features.words.workbook import cells as workbook_cells
 from app.features.words.workbook import format as workbook_format
@@ -43,6 +44,21 @@ def test_countability_for_export_uses_canonical_value() -> None:
     word = SimpleNamespace(countability="uncountable")
 
     assert workbook_service._countability_for_export(word) == "Uncountable"
+
+
+def test_load_export_words_by_topic_groups_shared_words_for_each_active_topic() -> None:
+    db = MagicMock()
+    topic_a = SimpleNamespace(id=1, deleted_at=None)
+    topic_b = SimpleNamespace(id=2, deleted_at=None)
+    deleted_topic = SimpleNamespace(id=3, deleted_at=object())
+    shared_word = SimpleNamespace(id=10, term="alpha", topics=[topic_a, topic_b, deleted_topic])
+    topic_b_only_word = SimpleNamespace(id=11, term="beta", topics=[topic_b])
+    db.scalars.return_value.all.return_value = [shared_word, topic_b_only_word]
+
+    result = workbook_service._load_export_words_by_topic(db, [1, 2])
+
+    assert [word.id for word in result[1]] == [10]
+    assert [word.id for word in result[2]] == [10, 11]
 
 
 def test_meta_sheet_preserves_full_topic_name_when_sheet_title_is_truncated() -> None:

@@ -5,7 +5,7 @@ from io import BytesIO
 
 from openpyxl import Workbook
 from sqlalchemy import select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, load_only, selectinload
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
@@ -43,6 +43,48 @@ def _countability_for_export(word: Word) -> str | None:
     return _normalize_countability(word.countability)
 
 
+def _load_export_topics(db: Session) -> list[Topic]:
+    return list(
+        db.scalars(
+            select(Topic)
+            .options(load_only(Topic.id, Topic.name))
+            .where(Topic.deleted_at.is_(None))
+            .order_by(Topic.name.asc())
+        ).all()
+    )
+
+
+def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, list[Word]]:
+    if not topic_ids:
+        return {}
+
+    words = list(
+        db.scalars(
+            select(Word)
+            .options(
+                selectinload(Word.topics),
+                selectinload(Word.translation_items),
+                selectinload(Word.example_items),
+            )
+            .join(word_topics, Word.id == word_topics.c.word_id)
+            .join(Topic, Topic.id == word_topics.c.topic_id)
+            .where(Word.deleted_at.is_(None))
+            .where(Topic.deleted_at.is_(None))
+            .where(Topic.id.in_(topic_ids))
+            .distinct()
+            .order_by(Word.term.asc(), Word.id.asc())
+        ).all()
+    )
+
+    words_by_topic: dict[int, list[Word]] = {topic_id: [] for topic_id in topic_ids}
+    active_topic_ids = set(topic_ids)
+    for word in words:
+        for topic in word.topics:
+            if topic.deleted_at is None and topic.id in active_topic_ids:
+                words_by_topic[topic.id].append(word)
+    return words_by_topic
+
+
 def build_words_workbook(db: Session) -> tuple[str, bytes]:
     workbook = Workbook()
     default_sheet = workbook.active
@@ -51,9 +93,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
 
     _create_lists_sheet(workbook)
 
-    topics: list[Topic] = list(
-        db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all()
-    )
+    topics = _load_export_topics(db)
 
     used_titles: set[str] = set()
     meta_mappings: list[tuple[str, int, str]] = []
@@ -67,23 +107,9 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
         _add_dynamic_row_colors(ws, 2)
         _add_validations(workbook, ws, 2)
     else:
+        words_by_topic = _load_export_words_by_topic(db, [topic.id for topic in topics])
         for topic in topics:
-            words: list[Word] = list(
-                db.scalars(
-                    select(Word)
-                    .options(
-                        selectinload(Word.translation_items),
-                        selectinload(Word.example_items),
-                    )
-                    .join(word_topics, Word.id == word_topics.c.word_id)
-                    .join(Topic, Topic.id == word_topics.c.topic_id)
-                    .where(Word.deleted_at.is_(None))
-                    .where(Topic.id == topic.id)
-                    .where(Topic.deleted_at.is_(None))
-                    .order_by(Word.term.asc())
-                ).all()
-            )
-
+            words = words_by_topic.get(topic.id, [])
             sheet_title = _safe_sheet_title(topic.name, used_titles)
             meta_mappings.append((sheet_title, topic.id, topic.name))
             ws = workbook.create_sheet(sheet_title)
