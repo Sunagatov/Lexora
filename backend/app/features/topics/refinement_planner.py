@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
@@ -63,7 +65,13 @@ def _merge_target_key(
     )
 
 
-def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest) -> TopicSplitPlanResponse:
+def _build_split_plan(
+    db: Session,
+    topic: Topic,
+    payload: TopicSplitPlanRequest,
+    *,
+    get_all_topics_fn: Callable[[Session], list[Topic]],
+) -> TopicSplitPlanResponse:
     words = [word for word in getattr(topic, "words", []) if getattr(word, "deleted_at", None) is None]
     if not words:
         return build_empty_plan_response(topic, "topic has no active words")
@@ -72,7 +80,7 @@ def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest)
         return build_small_topic_response(topic, words)
 
     state = init_plan_state()
-    existing_topics = [existing_topic for existing_topic in get_all_topics(db) if existing_topic.id != topic.id]
+    existing_topics = [existing_topic for existing_topic in get_all_topics_fn(db) if existing_topic.id != topic.id]
 
     for word in words:
         candidates = _word_cluster_candidates(word, payload.include_existing_co_topics)
@@ -125,11 +133,25 @@ def _build_split_plan(db: Session, topic: Topic, payload: TopicSplitPlanRequest)
     return build_plan_response(topic, words, payload, state)
 
 
-def build_topic_split_plan(db: Session, topic_id: int, payload: TopicSplitPlanRequest) -> TopicSplitPlanResponse:
-    topic = get_topic_by_id_with_words(db, topic_id)
+def build_topic_split_plan(
+    db: Session,
+    topic_id: int,
+    payload: TopicSplitPlanRequest,
+    *,
+    get_all_topics_fn: Callable[[Session], list[Topic]] | None = None,
+    get_topic_by_id_with_words_fn: Callable[[Session, int], Topic | None] | None = None,
+) -> TopicSplitPlanResponse:
+    topic_loader = get_topic_by_id_with_words_fn or get_topic_by_id_with_words
+    all_topics_loader = get_all_topics_fn or get_all_topics
+    topic = topic_loader(db, topic_id)
     if topic is None:
         raise ValueError(f"Topic not found: {topic_id}")
-    return _build_split_plan(db, topic, payload)
+    return _build_split_plan(
+        db,
+        topic,
+        payload,
+        get_all_topics_fn=all_topics_loader,
+    )
 
 
 def build_topic_split_prompt(topic_name: str, words: list[str], max_new_topics: int) -> str:

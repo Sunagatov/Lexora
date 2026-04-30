@@ -11,14 +11,20 @@ get_topic_by_id_with_words = _repository.get_topic_by_id_with_words
 
 
 def build_topic_audit(db):
-    _audit.get_all_topics_with_words = get_all_topics_with_words
-    return _audit.build_topic_audit(db)
+    return _audit.build_topic_audit(
+        db,
+        get_all_topics_with_words_fn=get_all_topics_with_words,
+    )
 
 
 def build_topic_split_plan(db, topic_id, payload):
-    _planner.get_all_topics = get_all_topics
-    _planner.get_topic_by_id_with_words = get_topic_by_id_with_words
-    return _planner.build_topic_split_plan(db, topic_id, payload)
+    return _planner.build_topic_split_plan(
+        db,
+        topic_id,
+        payload,
+        get_all_topics_fn=get_all_topics,
+        get_topic_by_id_with_words_fn=get_topic_by_id_with_words,
+    )
 
 
 def build_topic_split_prompt(topic_name, words, max_new_topics):

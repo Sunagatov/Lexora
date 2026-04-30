@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from sqlalchemy.orm import Session
 
 from app.features.topics.repository import get_all_topics_with_words
@@ -97,8 +99,13 @@ def _topic_audit(topic) -> TopicAuditItem:
     )
 
 
-def build_topic_audit(db: Session) -> TopicAuditResponse:
-    topics = get_all_topics_with_words(db)
+def build_topic_audit(
+    db: Session,
+    *,
+    get_all_topics_with_words_fn: Callable[[Session], list] | None = None,
+) -> TopicAuditResponse:
+    topic_loader = get_all_topics_with_words_fn or get_all_topics_with_words
+    topics = topic_loader(db)
     items = [_topic_audit(topic) for topic in topics]
     items.sort(key=lambda item: (-int(item.should_review), -item.broadness_score, -item.word_count, item.topic_name.casefold()))
     return TopicAuditResponse(items=items)
