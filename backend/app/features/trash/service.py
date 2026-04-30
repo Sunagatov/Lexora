@@ -7,6 +7,7 @@ from sqlalchemy import bindparam, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
+from app.shared.logging_utils import log_audit_event
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 
@@ -79,9 +80,9 @@ def purge_trash(db: Session, force: bool = False) -> None:
 
     db.commit()
 
-    logger.info(
-        "trash.purged: force=%s, topicsDeleted=%s, wordsDeleted=%s",
-        force,
-        deleted_topics,
-        deleted_words,
+    log_audit_event(
+        "trash.purged",
+        force=force,
+        deleted_topics=deleted_topics,
+        deleted_words=deleted_words,
     )

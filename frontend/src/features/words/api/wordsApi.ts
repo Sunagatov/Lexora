@@ -2,6 +2,7 @@ import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
 import type {Word, WordKnowledgeLevel, WorkbookImportResponse} from '@/shared/types'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
+import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 export const fetchWords = (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()
@@ -14,7 +15,7 @@ export const fetchWords = (params: {topicId?: number; search?: string} = {}) => 
 export const fetchWord                = (id: number)                                                    => request<Word>(`/api/words/${id}`)
 export const updateWord               = (id: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>>) => request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify(payload)})
 export const deleteWord               = (id: number)                                                    => request<void>(`/api/words/${id}`, {method: 'DELETE'})
-export const updateWordKnowledgeLevel = (id: number, level: WordKnowledgeLevel, source = 'study_list') =>
+export const updateWordKnowledgeLevel = (id: number, level: WordKnowledgeLevel, source = DEFAULT_WORD_PROGRESS_SOURCE) =>
   request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify({knowledge_level: level, progress_source: source})})
 export const quickAddWord = (term: string, translation: string, topicIds: number[]) =>
   request<Word>(

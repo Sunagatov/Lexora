@@ -5,6 +5,7 @@ import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import * as api from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import type {Word} from '@/shared/types'
+import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 vi.mock('@/features/words/api/wordsApi')
 const onMutate = vi.fn()
@@ -124,7 +125,7 @@ describe('useWordUpdate rollback', () => {
     result.current.updateLevel(1, 3)
 
     await waitFor(() => {
-      expect(api.updateWordKnowledgeLevel).toHaveBeenCalledWith(1, 3, 'study_list')
+      expect(api.updateWordKnowledgeLevel).toHaveBeenCalledWith(1, 3, DEFAULT_WORD_PROGRESS_SOURCE)
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})

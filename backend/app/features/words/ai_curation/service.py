@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from app.shared.logging_utils import log_audit_event
 from app.features.topics.model import Topic
 from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count, example_enrichment_status, needs_example_enrichment
@@ -45,18 +46,15 @@ def import_ai_curation(db: Session, payload):
     _import_service.TopicSlugConflictError = TopicSlugConflictError
     _import_service.DuplicateWordInTopicError = DuplicateWordInTopicError
     result = _import_service.import_ai_curation(db, payload)
-    logger.info(
+    log_audit_event(
         "ai_curation.import",
-        extra={
-            "event": "ai_curation.import",
-            "topic_id": result.source_topic_id,
-            "dry_run": result.dry_run,
-            "created_topics": len(result.created_topics),
-            "created_words": result.created_words,
-            "updated_words": result.updated_words,
-            "reassigned_words": result.reassigned_words,
-            "unchanged": result.unchanged,
-        },
+        topic_id=result.source_topic_id,
+        dry_run=result.dry_run,
+        created_topics=len(result.created_topics),
+        created_words=result.created_words,
+        updated_words=result.updated_words,
+        reassigned_words=result.reassigned_words,
+        unchanged=result.unchanged,
     )
     return result
 

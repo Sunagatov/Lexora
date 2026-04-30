@@ -31,7 +31,11 @@ from app.shared.logging_utils import (
 )
 
 
-configure_logging(level=settings.log_level, log_format=settings.log_format)
+configure_logging(
+    level=settings.log_level,
+    audit_level=settings.audit_log_level,
+    log_format=settings.log_format,
+)
 logger = logging.getLogger(__name__)
 access_logger = logging.getLogger("http.access")
 

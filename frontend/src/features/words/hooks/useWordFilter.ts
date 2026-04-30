@@ -1,7 +1,13 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/shared/types'
-import {filterAndSort, buildLevelSummary, type SortOption} from '@/features/words/model/wordDomain'
+import {
+  DEFAULT_WORD_SORT,
+  WORD_SORT_OPTIONS,
+  filterAndSort,
+  buildLevelSummary,
+  type SortOption,
+} from '@/features/words/model/wordDomain'
 import {PAGE_SIZES, DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
 
 
@@ -21,8 +27,7 @@ function parsePage(v: string | null): number {
 }
 
 function parseSort(v: string | null): SortOption {
-  const valid: SortOption[] = ['term-asc', 'term-desc', 'level-asc', 'level-desc']
-  return valid.includes(v as SortOption) ? (v as SortOption) : 'level-asc'
+  return WORD_SORT_OPTIONS.includes(v as SortOption) ? (v as SortOption) : DEFAULT_WORD_SORT
 }
 
 type UseWordFilterOptions = {
@@ -62,7 +67,7 @@ export function useWordFilter(topicWords: Word[], options: UseWordFilterOptions 
 
   const setWordSearch  = (v: string)                     => setParam('search', v || null)
   const setLevelFilter = (v: 'all' | WordKnowledgeLevel) => setParam('level', v === 'all' ? null : String(v))
-  const setSortBy      = (v: SortOption)                 => setParam('sort', v === 'level-asc' ? null : v)
+  const setSortBy      = (v: SortOption)                 => setParam('sort', v === DEFAULT_WORD_SORT ? null : v)
   const setPage        = (p: number)                     => setParam('page', p === 1 ? null : String(p), false)
   const setPageSize    = (n: number)                     => setParam('pageSize', n === defaultPageSize ? null : String(n))
   const resetFilters   = ()                              => { setSearchParams({}, {replace: true}); setFrozenIds(null) }

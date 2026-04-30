@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_debug: bool = True
     log_level: str = "INFO"
+    audit_log_level: str = "INFO"
     log_format: Literal["pretty", "json"] = "pretty"
     log_slow_request_threshold_ms: int = 500
 

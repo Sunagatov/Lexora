@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -9,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
+from app.shared.logging_utils import log_audit_event
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.model import Word
 
@@ -142,6 +142,14 @@ def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
         item.completed_at = now
         queue.completed_count += 1
         db.commit()
+        log_audit_event(
+            "smart_review.item.completed",
+            queue_id=getattr(queue, "id", item.queue_id),
+            item_id=getattr(item, "id", item_id),
+            word_id=word.id,
+            completed_count=queue.completed_count,
+            total_count=getattr(queue, "total_count", None),
+        )
 
     return queue
 
@@ -190,6 +198,13 @@ def generate_queue(db: Session) -> StudyQueue:
 
     db.commit()
     db.refresh(queue)
+    log_audit_event(
+        "smart_review.queue.generated",
+        queue_id=queue.id,
+        total_count=queue.total_count,
+        expires_at=queue.expires_at.isoformat(),
+        cooldown_excluded_count=len(cooldown_ids),
+    )
     return queue
 
 

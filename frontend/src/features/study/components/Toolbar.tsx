@@ -1,6 +1,13 @@
 import {useEffect, useRef, useState} from 'react'
 import type {WordKnowledgeLevel} from '@/shared/types'
-import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, type SortOption} from '@/features/words/model/wordDomain'
+import {
+  ACTIVE_LEVELS,
+  LEVEL_LABELS,
+  LEVEL_SORT_OPTIONS,
+  PARKED_LEVEL,
+  TERM_SORT_OPTIONS,
+  type SortOption,
+} from '@/features/words/model/wordDomain'
 
 type Props = {
   wordSearch: string; setWordSearch: (v: string) => void
@@ -27,6 +34,15 @@ const CloseIcon = () => (
   </svg>
 )
 
+const SORT_LABELS: Record<SortOption, string> = {
+  'level-asc': 'Level ↑',
+  'level-desc': 'Level ↓',
+  'term-asc': 'A → Z',
+  'term-desc': 'Z → A',
+}
+
+const FALLBACK_TERM_SORT = TERM_SORT_OPTIONS[0]
+
 export function Toolbar({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   onReset, totalWordsOverall, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, topicName,
@@ -36,12 +52,17 @@ export function Toolbar({
   const mobileSearchRef = useRef<HTMLInputElement>(null)
 
   const levelActive = levelFilter !== 'all'
-  const effectiveSortBy: SortOption = levelActive && (sortBy === 'level-asc' || sortBy === 'level-desc') ? 'term-asc' : sortBy
+  const effectiveSortBy: SortOption = levelActive && LEVEL_SORT_OPTIONS.includes(sortBy)
+    ? FALLBACK_TERM_SORT
+    : sortBy
   const searchActive = wordSearch.trim() !== ''
 
   function handleSortChange(v: SortOption) {
+    if (levelActive && LEVEL_SORT_OPTIONS.includes(v)) {
+      setSortBy(FALLBACK_TERM_SORT)
+      return
+    }
     setSortBy(v)
-    if (levelActive && (v === 'level-asc' || v === 'level-desc')) setSortBy('term-asc')
   }
 
   function openSearch() { setSearchOpen(true) }
@@ -120,10 +141,12 @@ export function Toolbar({
           onChange={(e) => handleSortChange(e.target.value as SortOption)}
           aria-label="Sort words"
         >
-          {!levelActive && <option value="level-asc">Level ↑</option>}
-          {!levelActive && <option value="level-desc">Level ↓</option>}
-          <option value="term-asc">A → Z</option>
-          <option value="term-desc">Z → A</option>
+          {!levelActive && LEVEL_SORT_OPTIONS.map((option) => (
+            <option key={option} value={option}>{SORT_LABELS[option]}</option>
+          ))}
+          {TERM_SORT_OPTIONS.map((option) => (
+            <option key={option} value={option}>{SORT_LABELS[option]}</option>
+          ))}
         </select>
         <select
           className="toolbar-control toolbar-mobile-select"
@@ -155,10 +178,12 @@ export function Toolbar({
           onChange={(e) => handleSortChange(e.target.value as SortOption)}
           aria-label="Sort words"
         >
-          {!levelActive && <option value="level-asc">Level ↑</option>}
-          {!levelActive && <option value="level-desc">Level ↓</option>}
-          <option value="term-asc">A → Z</option>
-          <option value="term-desc">Z → A</option>
+          {!levelActive && LEVEL_SORT_OPTIONS.map((option) => (
+            <option key={option} value={option}>{SORT_LABELS[option]}</option>
+          ))}
+          {TERM_SORT_OPTIONS.map((option) => (
+            <option key={option} value={option}>{SORT_LABELS[option]}</option>
+          ))}
         </select>
         <select
           className="toolbar-control toolbar-control-level"

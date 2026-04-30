@@ -1,6 +1,11 @@
 import type {Word, WordKnowledgeLevel} from '@/shared/types'
 
 export type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
+export const WORD_SORT_OPTIONS = ['term-asc', 'term-desc', 'level-asc', 'level-desc'] as const
+export const DEFAULT_WORD_SORT: SortOption = 'level-asc'
+export const LEVEL_SORT_OPTIONS = ['level-asc', 'level-desc'] as const
+export const TERM_SORT_OPTIONS = ['term-asc', 'term-desc'] as const
+export const DEFAULT_WORD_PROGRESS_SOURCE = 'study_list'
 
 export const LEVELS: WordKnowledgeLevel[] = [1, 2, 3, 4, 5]
 

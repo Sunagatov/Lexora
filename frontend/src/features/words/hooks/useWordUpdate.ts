@@ -3,8 +3,9 @@ import type {Word, WordKnowledgeLevel} from '@/shared/types'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import {patchWordLevel} from '@/features/words/model/wordCache'
+import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
-export function useWordUpdate(onMutate: () => void, source = 'study_list') {
+export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRESS_SOURCE) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({

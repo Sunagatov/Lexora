@@ -1,6 +1,7 @@
 export {ApiError} from './apiError'
 
 import {ApiError} from './apiError'
+import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 
 function normalizeBaseUrl(raw: string | undefined): string {
   const trimmed = raw?.trim()
@@ -20,7 +21,7 @@ export function buildRequestHeaders(headersInit?: HeadersInit, body?: BodyInit |
   if (body && !(body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
-  const csrfToken = localStorage.getItem('csrf_token')
+  const csrfToken = localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)
   if (csrfToken) headers.set('X-CSRF-Token', csrfToken)
   return headers
 }

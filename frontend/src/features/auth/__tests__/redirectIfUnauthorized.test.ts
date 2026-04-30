@@ -2,6 +2,7 @@ import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest'
 import {routes} from '@/app/routes'
 import {ApiError} from '@/shared/api/apiError'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
+import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 
 function makeStorage() {
   const store = new Map<string, string>()
@@ -47,20 +48,20 @@ describe('redirectIfUnauthorized', () => {
   })
 
   it('clears csrf token and redirects on unauthorized errors', () => {
-    localStorage.setItem('csrf_token', 'stale-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'stale-token')
 
     redirectIfUnauthorized(new ApiError(401, 'Not authenticated'))
 
-    expect(localStorage.getItem('csrf_token')).toBeNull()
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
     expect(window.location.href).toBe(routes.login)
   })
 
   it('ignores non-auth errors', () => {
-    localStorage.setItem('csrf_token', 'keep-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'keep-token')
 
     redirectIfUnauthorized(new ApiError(409, 'Conflict'))
 
-    expect(localStorage.getItem('csrf_token')).toBe('keep-token')
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBe('keep-token')
     expect(window.location.href).toBe('/smart-review')
   })
 })

@@ -1,3 +1,4 @@
+import logging
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -91,3 +92,17 @@ def test_word_loses_all_remaining_topics_false_when_one_topic_survives() -> None
     word = SimpleNamespace(topics=[topic_a, topic_b])
 
     assert trash_service._word_loses_all_remaining_topics(word, purged_topic_ids={1}) is False
+
+
+def test_purge_trash_writes_audit_log(caplog) -> None:
+    db = MagicMock()
+    topic = _make_topic(id=1)
+    topic.words = []
+    db.scalars.return_value.all.return_value = [topic]
+
+    with caplog.at_level(logging.INFO, logger="audit"):
+        trash_service.purge_trash(db, force=True)
+
+    matching = [r for r in caplog.records if r.name == "audit" and r.message == "trash.purged"]
+    assert matching
+    assert matching[0].force is True

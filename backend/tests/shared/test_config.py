@@ -16,3 +16,15 @@ def test_database_url_builds_expected_psycopg_url() -> None:
     assert settings.database_url == (
         "postgresql+psycopg://lexora_user:lexora_pass@db.example.internal:5433/lexora_db"
     )
+
+
+def test_logging_defaults_match_backend_expectations() -> None:
+    settings = Settings(
+        app_password="test-password",
+        secret_key="test-secret",
+        api_key="test-api-key",
+    )
+
+    assert settings.log_level == "INFO"
+    assert settings.audit_log_level == "INFO"
+    assert settings.log_format == "pretty"

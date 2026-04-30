@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
+import {SIDEBAR_PREF_KEYS, useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
 
 function makeStorage() {
   const store = new Map<string, string>()
@@ -52,13 +52,13 @@ describe('useTopicSidebarPrefs DOM regression', () => {
   })
 
   it('does not crash on corrupted localStorage values and falls back safely', () => {
-    localStorage.setItem('sidebar_pinned', '{}')
-    localStorage.setItem('sidebar_recent_topics', '"oops"')
-    localStorage.setItem('sidebar_pos_sort', '"broken"')
-    localStorage.setItem('sidebar_topics_sort', '123')
-    localStorage.setItem('sidebar_pos_collapsed', '"yes"')
-    localStorage.setItem('sidebar_topics_collapsed', 'null')
-    localStorage.setItem('sidebar_expanded_topics', '{"bad":true}')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.pinned, '{}')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.recent, '"oops"')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.posSort, '"broken"')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.topicsSort, '123')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.posCollapsed, '"yes"')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.topicsCollapsed, 'null')
+    localStorage.setItem(SIDEBAR_PREF_KEYS.expandedTopics, '{"bad":true}')
 
     render(<Probe />)
 

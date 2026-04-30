@@ -2,6 +2,7 @@ import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest'
 import {bootstrapSession, logout} from '@/features/auth/api/authApi'
 import * as http from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
+import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 
 vi.mock('@/shared/api/http')
 
@@ -39,7 +40,7 @@ describe('bootstrapSession', () => {
     vi.unstubAllGlobals()
   })
 
-  it('stores csrf_token in localStorage on success', async () => {
+  it('stores csrf token in localStorage on success', async () => {
     const mockToken = 'csrf_token_from_session'
     vi.mocked(http.request).mockResolvedValueOnce({
       authenticated: true,
@@ -49,27 +50,27 @@ describe('bootstrapSession', () => {
     const result = await bootstrapSession()
 
     expect(result).toBe(true)
-    expect(localStorage.getItem('csrf_token')).toBe(mockToken)
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBe(mockToken)
   })
 
-  it('returns false and clears csrf_token when the backend rejects the session', async () => {
-    localStorage.setItem('csrf_token', 'stale-token')
+  it('returns false and clears csrf token when the backend rejects the session', async () => {
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'stale-token')
     vi.mocked(http.request).mockRejectedValueOnce(new ApiError(401, 'Not authenticated'))
 
     const result = await bootstrapSession()
 
     expect(result).toBe(false)
-    expect(localStorage.getItem('csrf_token')).toBeNull()
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
   })
 
   it('clears the existing csrf token on transient bootstrap errors', async () => {
-    localStorage.setItem('csrf_token', 'stale-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'stale-token')
     vi.mocked(http.request).mockRejectedValueOnce(new Error('Network error'))
 
     const result = await bootstrapSession()
 
     expect(result).toBe(false)
-    expect(localStorage.getItem('csrf_token')).toBeNull()
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
   })
 
   it('returns false on transient bootstrap errors when there is no existing csrf token', async () => {
@@ -78,7 +79,7 @@ describe('bootstrapSession', () => {
     const result = await bootstrapSession()
 
     expect(result).toBe(false)
-    expect(localStorage.getItem('csrf_token')).toBeNull()
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
   })
 
   it('calls /auth/session endpoint', async () => {
@@ -92,13 +93,13 @@ describe('bootstrapSession', () => {
     expect(http.request).toHaveBeenCalledWith('/auth/session')
   })
 
-  it('calls /auth/logout and clears csrf_token', async () => {
-    localStorage.setItem('csrf_token', 'token')
+  it('calls /auth/logout and clears csrf token', async () => {
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'token')
     vi.mocked(http.request).mockResolvedValueOnce({ok: true})
 
     await logout()
 
     expect(http.request).toHaveBeenCalledWith('/auth/logout', {method: 'POST'})
-    expect(localStorage.getItem('csrf_token')).toBeNull()
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
   })
 })

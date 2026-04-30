@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import logging
 from types import SimpleNamespace
 from typing import cast
 from unittest.mock import MagicMock
@@ -125,6 +126,42 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
     db.commit.assert_called_once()
 
 
+def test_complete_queue_item_writes_audit_log(caplog) -> None:
+    item = SimpleNamespace(id=10, queue_id=5, word_id=10, is_completed=False, completed_at=None)
+    queue = SimpleNamespace(
+        id=5,
+        is_active=True,
+        completed_count=1,
+        total_count=4,
+        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
+    word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
+
+    db = MagicMock()
+
+    def fake_get(model, object_id):
+        if model is smart_review_service.StudyQueueItem:
+            return item
+        if model is smart_review_service.StudyQueue:
+            return queue
+        if model is smart_review_service.Word:
+            return word
+        return None
+
+    db.get.side_effect = fake_get
+
+    with caplog.at_level(logging.INFO, logger="audit"):
+        smart_review_service.complete_queue_item(db, 10)
+
+    matching = [
+        r for r in caplog.records
+        if r.name == "audit" and r.message == "smart_review.item.completed"
+    ]
+    assert matching
+    assert matching[0].queue_id == 5
+    assert matching[0].word_id == 10
+
+
 def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
     item = SimpleNamespace(queue_id=5, word_id=10, is_completed=True, completed_at="already")
     queue = SimpleNamespace(
@@ -249,6 +286,38 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     assert len(items) == 2
     assert [item.word_id for item in items] == [1, 2]
     assert [item.position for item in items] == [0, 1]
+
+
+def test_generate_queue_writes_audit_log(monkeypatch, caplog) -> None:
+    db = FakeDB()
+    word1 = SimpleNamespace(id=1)
+
+    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: {999, 1000})
+    monkeypatch.setattr(smart_review_service, "deactivate_all_queues", lambda db_arg: None)
+    monkeypatch.setattr(smart_review_service.random, "shuffle", lambda items: None)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_1_count", 1)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_2_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_3_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_4_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_5_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_ttl_hours", 24)
+    monkeypatch.setattr(
+        smart_review_service,
+        "_pick_for_level_retry_excluded",
+        lambda db_arg, level, needed, excluded_ids, topic_counts: [word1] if level == 1 else [],
+    )
+
+    with caplog.at_level(logging.INFO, logger="audit"):
+        queue = smart_review_service.generate_queue(cast(Session, cast(object, db)))
+
+    matching = [
+        r for r in caplog.records
+        if r.name == "audit" and r.message == "smart_review.queue.generated"
+    ]
+    assert matching
+    assert matching[0].queue_id == queue.id
+    assert matching[0].total_count == 1
+    assert matching[0].cooldown_excluded_count == 2
 
 
 def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:

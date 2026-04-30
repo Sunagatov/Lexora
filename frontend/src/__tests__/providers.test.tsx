@@ -7,6 +7,7 @@ import {Providers} from '@/app/providers'
 import {routes} from '@/app/routes'
 import * as authApi from '@/features/auth/api/authApi'
 import {ApiError} from '@/shared/api/apiError'
+import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 
 vi.mock('@/features/auth/api/authApi')
 vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({
@@ -99,7 +100,7 @@ describe('Providers auth bootstrap gating', () => {
   })
 
   it('still validates the backend session before rendering when csrf token already exists', async () => {
-    localStorage.setItem('csrf_token', 'existing-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'existing-token')
     const bootstrapControl: {resolve: ((value: boolean) => void) | null} = {resolve: null}
     vi.mocked(authApi.bootstrapSession).mockImplementation(
       () =>
@@ -121,7 +122,7 @@ describe('Providers auth bootstrap gating', () => {
   })
 
   it('redirects unauthorized mutation failures even when the mutation defines a local onError handler', async () => {
-    localStorage.setItem('csrf_token', 'existing-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'existing-token')
 
     renderProviders(<MutationChild />)
 
@@ -137,7 +138,7 @@ describe('Providers auth bootstrap gating', () => {
   })
 
   it('redirects to login when bootstrapSession reports an expired backend session', async () => {
-    localStorage.setItem('csrf_token', 'stale-token')
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'stale-token')
     vi.mocked(authApi.bootstrapSession).mockResolvedValue(false)
     const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
 

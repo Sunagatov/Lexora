@@ -132,7 +132,17 @@ def _request_context_log_record_factory(*args: Any, **kwargs: Any) -> logging.Lo
     return record
 
 
-def configure_logging(*, level: str, log_format: str) -> None:
+def log_audit_event(event: str, **fields: Any) -> None:
+    logging.getLogger("audit").info(
+        event,
+        extra={
+            "event": event,
+            **{key: value for key, value in fields.items() if value is not None},
+        },
+    )
+
+
+def configure_logging(*, level: str, audit_level: str, log_format: str) -> None:
     logging.setLogRecordFactory(_request_context_log_record_factory)
     formatter_class = (
         "app.shared.logging_utils.JsonFormatter"
@@ -172,6 +182,10 @@ def configure_logging(*, level: str, log_format: str) -> None:
                 },
                 "http.access": {
                     "level": level.upper(),
+                    "propagate": True,
+                },
+                "audit": {
+                    "level": audit_level.upper(),
                     "propagate": True,
                 },
             },
