@@ -46,6 +46,8 @@ from typing import Any, Literal, Protocol, TypedDict, cast
 
 import httpx
 
+from app.shared.auth import CSRF_HEADER_NAME
+
 _SYSTEM = (
     "You are a vocabulary enrichment assistant for an English learning app. "
     "Given a JSON array of words, output ONLY a JSON array — no wrapper object, "
@@ -199,7 +201,7 @@ def _export_page(http: httpx.Client, base_url: str, csrf: str, topic_id: int, pa
     resp = http.get(
         f"{base_url}/api/ai-curation/topics/{topic_id}/export",
         params={"lean": "true", "page": page, "page_size": page_size},
-        headers={"X-CSRF-Token": csrf},
+        headers={CSRF_HEADER_NAME: csrf},
     )
     resp.raise_for_status()
     return resp.json()
@@ -209,7 +211,7 @@ def _import(http: httpx.Client, base_url: str, csrf: str, payload: dict[str, obj
     resp = http.post(
         f"{base_url}/api/ai-curation/import",
         json=payload,
-        headers={"X-CSRF-Token": csrf},
+        headers={CSRF_HEADER_NAME: csrf},
     )
     resp.raise_for_status()
     return resp.json()

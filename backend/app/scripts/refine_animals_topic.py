@@ -10,6 +10,9 @@ from typing import Any, TypeAlias, cast
 
 import httpx
 
+from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
+from app.shared.auth import CSRF_HEADER_NAME
+
 from app.shared.text import normalize_term
 from app.scripts.split_large_topics_io import fetch_json, login, write_json
 
@@ -185,7 +188,7 @@ def _require_password() -> str:
 
 
 def _fetch_bytes(http: httpx.Client, url: str, csrf: str) -> bytes:
-    response = http.get(url, headers={"X-CSRF-Token": csrf})
+    response = http.get(url, headers={CSRF_HEADER_NAME: csrf})
     response.raise_for_status()
     return response.content
 
@@ -370,7 +373,10 @@ def main() -> None:
             target_topic_ids = sorted(non_animals_topic_ids + [target_animals_topic_id])
             if sorted(word.get("topic_ids") or []) != target_topic_ids:
                 word_updates.append(
-                    {"id": int(word["id"]), "payload": {"topic_ids": target_topic_ids, "progress_source": "json_import"}}
+                    {
+                        "id": int(word["id"]),
+                        "payload": {"topic_ids": target_topic_ids, "progress_source": PROGRESS_SOURCE_JSON_IMPORT},
+                    }
                 )
 
         deletes = sorted(disallowed_topics, key=lambda topic: len(_descendants(children, int(topic["id"]))))
@@ -429,7 +435,7 @@ def main() -> None:
                     "PUT",
                     f"{args.prod_url}/api/words/{word['id']}",
                     csrf,
-                    json={"topic_ids": target_topic_ids, "progress_source": "json_import"},
+                    json={"topic_ids": target_topic_ids, "progress_source": PROGRESS_SOURCE_JSON_IMPORT},
                 )
 
         latest_topics = _active_topics(cast(JsonList, fetch_json(http, "GET", f"{args.prod_url}/api/topics", csrf)))
@@ -448,7 +454,7 @@ def main() -> None:
             response = http.delete(
                 f"{args.prod_url}/api/topics/{topic_id}",
                 params={"delete_words": "false"},
-                headers={"X-CSRF-Token": csrf},
+                headers={CSRF_HEADER_NAME: csrf},
             )
             response.raise_for_status()
 

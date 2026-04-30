@@ -7,6 +7,8 @@ from typing import Any
 
 import httpx
 
+from app.shared.auth import CSRF_HEADER_NAME
+
 
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-")
@@ -21,7 +23,7 @@ def login(http: httpx.Client, base_url: str, password: str) -> str:
 
 def fetch_json(http: httpx.Client, method: str, url: str, csrf: str, **kwargs: Any) -> Any:
     headers = dict(kwargs.pop("headers", {}))
-    headers["X-CSRF-Token"] = csrf
+    headers[CSRF_HEADER_NAME] = csrf
     resp = http.request(method, url, headers=headers, **kwargs)
     resp.raise_for_status()
     return resp.json()
