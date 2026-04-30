@@ -59,6 +59,22 @@ def test_meta_sheet_preserves_full_topic_name_when_sheet_title_is_truncated() ->
     assert meta.cell(row=2, column=3).value == full_topic_name
 
 
+def test_safe_sheet_title_deduplicates_titles_with_suffix() -> None:
+    used_titles: set[str] = set()
+
+    first = workbook_format._safe_sheet_title("Travel / Phrases", used_titles)
+    second = workbook_format._safe_sheet_title("Travel / Phrases", used_titles)
+
+    assert first == "Travel Phrases"
+    assert second == "Travel Phrases (2)"
+
+
+def test_safe_sheet_title_falls_back_when_name_becomes_empty() -> None:
+    sheet_title = workbook_format._safe_sheet_title("[]/*?:", set())
+
+    assert sheet_title == "Topic"
+
+
 def test_existing_word_duplicate_check_skips_unchanged_word_id_row() -> None:
     existing = SimpleNamespace(term="Dog")
 
