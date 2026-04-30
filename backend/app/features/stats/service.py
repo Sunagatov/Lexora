@@ -7,15 +7,17 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.features.words.constants import ProgressSource
-from app.features.stats.aggregates import (
+from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,
     _build_efficiency_stats,
-    _build_overview,
     _build_queue_stats,
     _build_retention_stats,
-    _build_topic_stats,
     _build_usage_stats,
+)
+from app.features.stats.content_metrics import (
+    _build_overview,
+    _build_topic_stats,
     _build_words_added_by_month,
 )
 from app.features.stats.model import AppUsageEvent, WordProgressEvent

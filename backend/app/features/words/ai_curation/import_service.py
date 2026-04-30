@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -11,13 +10,20 @@ from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic, InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
+from app.features.words.ai_curation.import_support import (
+    AiCurationImportOperations,
+    _assert_unique_ids,
+    _check_stale,
+    _has_changes,
+    _resolve_topic_id_set,
+    _validate_payload_ids,
+)
 from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
     CreatedTopicResult,
     TopicRef,
-    WordUpdateV2,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.model import Word, word_topics
@@ -48,16 +54,6 @@ def _load_existing_words(
     return {int(word.id): word for word in words}
 
 
-def _assert_unique_ids(ids: list[int], label: str) -> None:
-    duplicates = sorted(word_id for word_id, count in Counter(ids).items() if count > 1)
-    if duplicates:
-        if label == "word_updates":
-            raise AiCurationImportError(f"Duplicate existing word ids in payload: {duplicates}")
-        if label == "word_reassigns":
-            raise AiCurationImportError(f"Duplicate reassign word ids in payload: {duplicates}")
-        raise AiCurationImportError(f"Duplicate {label} word ids in payload: {duplicates}")
-
-
 def _resolve_topic_ref(
     db: Session,
     ref: TopicRef,
@@ -75,48 +71,12 @@ def _resolve_topic_ref(
     return topic
 
 
-def _current_value(word: Word, field: str):
-    if field == "translation_entries":
-        return [item.value for item in getattr(word, "translation_items", [])]
-    if field == "example_entries":
-        return [item.value for item in getattr(word, "example_items", [])]
-    return getattr(word, field)
-
-
-def _has_changes(word: Word, op: WordUpdateV2) -> bool:
-    for field in op.model_fields_set - {"id"}:
-        if getattr(op, field) != _current_value(word, field):
-            return True
-    return False
-
-
-def _check_stale(word: Word, exported_at: datetime, label: str) -> None:
-    if word.updated_at is not None and word.updated_at > exported_at:
-        raise AiCurationImportError(
-            f"{label}: word {word.id} ('{word.term}') was modified after export "
-            f"(word.updated_at={word.updated_at.isoformat()}, "
-            f"exported_at={exported_at.isoformat()}). Re-export and re-run."
-        )
-
-
-def _validate_payload_ids(payload: AiCurationImportRequest, words_by_id: dict[int, Word]) -> None:
-    update_ids = [op.id for op in payload.word_updates]
-    reassign_ids = [op.id for op in payload.word_reassigns]
-    _assert_unique_ids(update_ids, "word_updates")
-    _assert_unique_ids(reassign_ids, "word_reassigns")
-
-    existing_ids = update_ids + reassign_ids
-    missing_ids = sorted(set(existing_ids) - set(words_by_id))
-    if missing_ids:
-        raise AiCurationImportError(
-            f"These word ids do not exist in source topic: {missing_ids}"
-        )
-
-
 def _process_topic_operations(
-    db: Session, payload: AiCurationImportRequest
+    db: Session,
+    payload: AiCurationImportRequest,
+    operations: AiCurationImportOperations,
 ) -> tuple[dict[str, Topic], list[CreatedTopicResult]]:
-    client_keys = [op.client_key for op in payload.topic_operations]
+    client_keys = [operation.client_key for operation in payload.topic_operations]
     duplicate_client_keys = sorted(key for key, count in Counter(client_keys).items() if count > 1)
     if duplicate_client_keys:
         raise AiCurationImportError(f"Duplicate topic client_keys: {duplicate_client_keys}")
@@ -124,21 +84,21 @@ def _process_topic_operations(
     created_topics: dict[str, Topic] = {}
     created_topic_results: list[CreatedTopicResult] = []
 
-    for op in payload.topic_operations:
-        topic = create_topic(
+    for operation in payload.topic_operations:
+        topic = operations.create_topic(
             db,
             TopicCreate(
-                name=op.name,
-                description=op.description,
-                parent_topic_id=op.parent_topic_id,
-                is_active=op.is_active,
+                name=operation.name,
+                description=operation.description,
+                parent_topic_id=operation.parent_topic_id,
+                is_active=operation.is_active,
             ),
             commit=False,
         )
-        created_topics[op.client_key] = topic
+        created_topics[operation.client_key] = topic
         created_topic_results.append(
             CreatedTopicResult(
-                client_key=op.client_key,
+                client_key=operation.client_key,
                 id=topic.id,
                 name=topic.name,
                 slug=topic.slug,
@@ -149,7 +109,10 @@ def _process_topic_operations(
 
 
 def _process_word_updates(
-    db: Session, payload: AiCurationImportRequest, words_by_id: dict[int, Word]
+    db: Session,
+    payload: AiCurationImportRequest,
+    words_by_id: dict[int, Word],
+    operations: AiCurationImportOperations,
 ) -> tuple[list[int], int]:
     updated_word_ids: list[int] = []
     unchanged = 0
@@ -169,26 +132,28 @@ def _process_word_updates(
             continue
         data = op.model_dump(exclude_unset=True, exclude={"id"})
         data["progress_source"] = PROGRESS_SOURCE_JSON_IMPORT
-        update_word(db, word, WordUpdate(**data), commit=False)
+        operations.update_word(db, word, WordUpdate(**data), commit=False)
         updated_word_ids.append(word.id)
 
     return updated_word_ids, unchanged
 
 
 def _process_word_creates(
-    db: Session, payload: AiCurationImportRequest, created_topics: dict[str, Topic]
+    db: Session,
+    payload: AiCurationImportRequest,
+    created_topics: dict[str, Topic],
+    operations: AiCurationImportOperations,
 ) -> list[int]:
     created_word_ids: list[int] = []
 
     for op in payload.word_creates:
-        target_topic_ids = [
-            _resolve_topic_ref(db, ref, created_topics).id
-            for ref in op.target_topic_refs
-        ]
+        target_topic_ids = sorted(
+            _resolve_topic_id_set(operations, db, op.target_topic_refs, created_topics)
+        )
         if not target_topic_ids:
             raise AiCurationImportError(f"New word '{op.term}' has no target topics")
 
-        word = create_word(
+        word = operations.create_word(
             db,
             WordCreate(
                 topic_ids=target_topic_ids,
@@ -213,7 +178,11 @@ def _process_word_creates(
 
 
 def _process_word_reassigns(
-    db: Session, payload: AiCurationImportRequest, words_by_id: dict[int, Word], created_topics: dict[str, Topic]
+    db: Session,
+    payload: AiCurationImportRequest,
+    words_by_id: dict[int, Word],
+    created_topics: dict[str, Topic],
+    operations: AiCurationImportOperations,
 ) -> tuple[list[int], int]:
     reassigned_word_ids: list[int] = []
     unchanged = 0
@@ -247,10 +216,7 @@ def _process_word_reassigns(
                 )
 
         current_topic_ids = {topic.id for topic in word.topics if topic.deleted_at is None}
-        add_topic_ids = {
-            _resolve_topic_ref(db, ref, created_topics).id
-            for ref in op.add_topic_refs
-        }
+        add_topic_ids = _resolve_topic_id_set(operations, db, op.add_topic_refs, created_topics)
         next_topic_ids = sorted((current_topic_ids | add_topic_ids) - set(op.remove_topic_ids))
         if not next_topic_ids:
             raise AiCurationImportError(f"Word {word.id} cannot end up without any topics")
@@ -258,7 +224,7 @@ def _process_word_reassigns(
             unchanged += 1
             continue
 
-        update_word(
+        operations.update_word(
             db,
             word,
             WordUpdate(topic_ids=next_topic_ids, progress_source=PROGRESS_SOURCE_JSON_IMPORT),
@@ -269,7 +235,17 @@ def _process_word_reassigns(
     return reassigned_word_ids, unchanged
 
 
-def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurationImportResponse:
+def import_ai_curation(
+    db: Session,
+    payload: AiCurationImportRequest,
+    operations: AiCurationImportOperations | None = None,
+) -> AiCurationImportResponse:
+    operations = operations or AiCurationImportOperations(
+        create_topic=create_topic,
+        create_word=create_word,
+        update_word=update_word,
+        resolve_topic_ref=_resolve_topic_ref,
+    )
     source_topic = _get_topic(db, payload.source_topic_id)
 
     update_ids = [op.id for op in payload.word_updates]
@@ -282,10 +258,16 @@ def import_ai_curation(db: Session, payload: AiCurationImportRequest) -> AiCurat
     _validate_payload_ids(payload, words_by_id)
 
     try:
-        created_topics, created_topic_results = _process_topic_operations(db, payload)
-        updated_word_ids, updates_unchanged = _process_word_updates(db, payload, words_by_id)
-        created_word_ids = _process_word_creates(db, payload, created_topics)
-        reassigned_word_ids, reassigns_unchanged = _process_word_reassigns(db, payload, words_by_id, created_topics)
+        created_topics, created_topic_results = _process_topic_operations(db, payload, operations)
+        updated_word_ids, updates_unchanged = _process_word_updates(db, payload, words_by_id, operations)
+        created_word_ids = _process_word_creates(db, payload, created_topics, operations)
+        reassigned_word_ids, reassigns_unchanged = _process_word_reassigns(
+            db,
+            payload,
+            words_by_id,
+            created_topics,
+            operations,
+        )
 
         unchanged = updates_unchanged + reassigns_unchanged
 

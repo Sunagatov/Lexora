@@ -11,6 +11,7 @@ from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count, example_enrichment_status, needs_example_enrichment
 from app.features.words.ai_curation import import_service as _import_service
 from app.features.words.ai_curation.common import AiCurationImportError as _AiCurationImportError, _get_topic
+from app.features.words.ai_curation.import_support import AiCurationImportOperations
 from app.features.words.model import Word, WordExample, word_topics
 from app.features.words.repository import _with_details
 from app.features.words.ai_curation.schemas import (
@@ -38,14 +39,16 @@ _resolve_topic_ref = _import_service._resolve_topic_ref
 
 
 def import_ai_curation(db: Session, payload):
-    _import_service.create_topic = create_topic
-    _import_service.create_word = create_word
-    _import_service.update_word = update_word
-    _import_service._resolve_topic_ref = _resolve_topic_ref
-    _import_service.InvalidTopicNameError = InvalidTopicNameError
-    _import_service.TopicSlugConflictError = TopicSlugConflictError
-    _import_service.DuplicateWordInTopicError = DuplicateWordInTopicError
-    result = _import_service.import_ai_curation(db, payload)
+    result = _import_service.import_ai_curation(
+        db,
+        payload,
+        operations=AiCurationImportOperations(
+            create_topic=create_topic,
+            create_word=create_word,
+            update_word=update_word,
+            resolve_topic_ref=_resolve_topic_ref,
+        ),
+    )
     log_audit_event(
         "ai_curation.import",
         topic_id=result.source_topic_id,
