@@ -1,37 +1,31 @@
 from __future__ import annotations
 
-import math
-from collections import Counter
-from datetime import datetime, timezone
 from typing import cast
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
-from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.topics.repository import get_active_subtree_topic_ids
+from app.features.words.ai_review.export_support import (
+    EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
+    build_topic_ai_review_export as _build_topic_ai_review_export,
+)
+from app.features.words.ai_review.import_support import (
+    assert_import_words_present,
+    assert_not_stale,
+    assert_term_matches,
+    assert_unique_word_ids as _assert_unique_word_ids,
+    build_update_payload as _build_update_payload,
+    has_changes as _has_changes,
+    load_import_words as _load_import_words,
+)
 from app.features.words.ai_review.schemas import (
-    AiReviewAllowedValues,
     AiReviewExportResponse,
     AiReviewImportRequest,
     AiReviewImportResponse,
-    AiReviewPagination,
-    AiReviewTopic,
-    AiReviewWord,
 )
-from app.features.words.model import Word, word_topics
-from app.features.words.repository import _with_details, update_word
-from app.features.words.schemas import WordUpdate
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
-
-EXPORT_INSTRUCTIONS = [
-    "Return the same JSON shape and schema_version.",
-    "Only enrich existing words from this topic; do not add, remove, rename, or duplicate words.",
-    "Keep every word id and term unchanged.",
-    "Use example_entries for examples; keep each example as one string.",
-    "Use only allowed countability and part_of_speech values already present in the JSON.",
-]
+from app.features.words.repository import update_word
 
 
 class AiReviewImportError(Exception):
@@ -45,23 +39,6 @@ def _get_topic(db: Session, topic_id: int) -> Topic:
     return cast(Topic, topic)
 
 
-def _word_to_ai_review_word(word: Word) -> AiReviewWord:
-    return AiReviewWord(
-        id=word.id,
-        term=word.term,
-        translations=word.translations,
-        translation_entries=[item.value for item in getattr(word, "translation_items", [])],
-        pattern=word.pattern,
-        example_entries=[item.value for item in getattr(word, "example_items", [])],
-        countability=word.countability,
-        part_of_speech=word.part_of_speech,
-        past_simple=word.past_simple,
-        past_participle=word.past_participle,
-        notes=word.notes,
-        knowledge_level=word.knowledge_level,
-    )
-
-
 def build_topic_ai_review_export(
     db: Session,
     topic_id: int,
@@ -70,133 +47,28 @@ def build_topic_ai_review_export(
 ) -> AiReviewExportResponse:
     topic = _get_topic(db, topic_id)
     subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
-    total_words = db.scalar(
-        select(func.count(func.distinct(Word.id)))
-        .select_from(Word)
-        .join(word_topics, word_topics.c.word_id == Word.id)
-        .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None))
-        .where(Topic.deleted_at.is_(None))
-        .where(Topic.id.in_(subtree_topic_ids))
-    ) or 0
-    total_pages = max(1, math.ceil(total_words / page_size))
-    offset = (page - 1) * page_size
-
-    words = list(
-        db.scalars(
-            _with_details(
-                select(Word)
-                .join(word_topics, word_topics.c.word_id == Word.id)
-                .join(Topic, Topic.id == word_topics.c.topic_id)
-                .where(Word.deleted_at.is_(None))
-                .where(Topic.deleted_at.is_(None))
-                .where(Topic.id.in_(subtree_topic_ids))
-                .distinct()
-                .order_by(Word.term.asc(), Word.id.asc())
-                .offset(offset)
-                .limit(page_size)
-            )
-        )
-        .all()
+    return _build_topic_ai_review_export(
+        db,
+        topic,
+        subtree_topic_ids,
+        page=page,
+        page_size=page_size,
     )
-
-    return AiReviewExportResponse(
-        exported_at=datetime.now(timezone.utc),
-        topic_id=topic.id,
-        topic=AiReviewTopic(id=topic.id, name=topic.name),
-        pagination=AiReviewPagination(
-            page=page,
-            page_size=page_size,
-            total_words=total_words,
-            total_pages=total_pages,
-        ),
-        allowed_values=AiReviewAllowedValues(
-            countability=COUNTABILITY_VALUES,
-            part_of_speech=PART_OF_SPEECH_VALUES,
-        ),
-        instructions=EXPORT_INSTRUCTIONS,
-        words=[_word_to_ai_review_word(word) for word in words],
-    )
-
-
-def _load_import_words(db: Session, topic_id: int, word_ids: list[int]) -> dict[int, Word]:
-    subtree_topic_ids = get_active_subtree_topic_ids(db, topic_id)
-    words = db.scalars(
-        _with_details(
-            select(Word)
-            .join(word_topics, word_topics.c.word_id == Word.id)
-            .join(Topic, Topic.id == word_topics.c.topic_id)
-            .where(Word.id.in_(word_ids))
-            .where(Word.deleted_at.is_(None))
-            .where(Topic.deleted_at.is_(None))
-            .where(Topic.id.in_(subtree_topic_ids))
-            .distinct()
-        )
-    ).all()
-    return {word.id: word for word in words}
-
-
-def _assert_unique_word_ids(word_ids: list[int]) -> None:
-    duplicates = sorted(word_id for word_id, count in Counter(word_ids).items() if count > 1)
-    if duplicates:
-        raise AiReviewImportError(f"Duplicate word ids in payload: {duplicates}")
-
-
-def _current_value(word: Word, field: str):
-    if field == "translation_entries":
-        return [item.value for item in getattr(word, "translation_items", [])]
-    if field == "example_entries":
-        return [item.value for item in getattr(word, "example_items", [])]
-    return getattr(word, field)
-
-
-def _has_changes(word: Word, item) -> bool:
-    for field in item.model_fields_set - {"id", "term"}:
-        if getattr(item, field) != _current_value(word, field):
-            return True
-    return False
-
-
-def _build_update_payload(item) -> WordUpdate:
-    data = item.model_dump(exclude_unset=True, exclude={"id", "term"})
-    data["progress_source"] = PROGRESS_SOURCE_JSON_IMPORT
-    return WordUpdate(**data)
-
-
-def _check_stale(word: Word, exported_at: datetime) -> None:
-    if word.updated_at is not None and word.updated_at > exported_at:
-        raise AiReviewImportError(
-            f"Word {word.id} ('{word.term}') was modified after export "
-            f"(word.updated_at={word.updated_at.isoformat()}, "
-            f"exported_at={exported_at.isoformat()}). Re-export and re-run."
-        )
-
 
 def import_topic_ai_review(db: Session, payload: AiReviewImportRequest) -> AiReviewImportResponse:
     topic = _get_topic(db, payload.topic_id)
     word_ids = [word.id for word in payload.words]
-    _assert_unique_word_ids(word_ids)
+    _assert_unique_word_ids(word_ids, AiReviewImportError)
 
-    words_by_id = _load_import_words(db, topic.id, word_ids)
-    missing_ids = sorted(set(word_ids) - set(words_by_id))
-    if missing_ids:
-        raise AiReviewImportError(
-            f"These word ids do not exist in topic '{topic.name}': {missing_ids}"
-        )
+    subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
+    words_by_id = _load_import_words(db, topic.id, word_ids, subtree_topic_ids)
+    assert_import_words_present(payload, words_by_id, topic.name, AiReviewImportError)
 
     updated_ids: list[int] = []
     unchanged = 0
     try:
-        for item in payload.words:
-            word = words_by_id[item.id]
-            if item.term != word.term:
-                raise AiReviewImportError(
-                    f"Word {item.id} term mismatch: expected '{word.term}', got '{item.term}'"
-                )
-
-        if payload.exported_at is not None:
-            for item in payload.words:
-                _check_stale(words_by_id[item.id], payload.exported_at)
+        assert_term_matches(payload, words_by_id, AiReviewImportError)
+        assert_not_stale(payload, words_by_id, AiReviewImportError)
 
         for item in payload.words:
             word = words_by_id[item.id]

@@ -9,6 +9,34 @@ import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
+import type {QueryClient} from '@tanstack/react-query'
+
+const WORD_DEPENDENT_QUERY_KEYS = [
+  queryKeys.words,
+  queryKeys.topicSidebar,
+  queryKeys.stats,
+  queryKeys.smartReview,
+] as const
+
+function replaceWordInWordLists(queryClient: QueryClient, updated: Word) {
+  queryClient.setQueryData(queryKeys.word(updated.id), updated)
+  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (current = []) =>
+    current.map((word) => (word.id === updated.id ? updated : word)),
+  )
+}
+
+function removeWordFromWordLists(queryClient: QueryClient, wordId: number) {
+  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (current = []) =>
+    current.filter((word) => word.id !== wordId),
+  )
+  queryClient.removeQueries({queryKey: queryKeys.word(wordId)})
+}
+
+function invalidateWordDependencies(queryClient: QueryClient, extras: readonly (readonly unknown[])[] = []) {
+  for (const queryKey of [...WORD_DEPENDENT_QUERY_KEYS, ...extras]) {
+    void queryClient.invalidateQueries({queryKey})
+  }
+}
 
 export function useWordPageState() {
   const {wordId} = useParams<{wordId: string}>()
@@ -51,16 +79,8 @@ export function useWordPageState() {
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(numericWordId, payload),
     onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.word(updated.id), updated)
-
-      queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
-        cur.map((w) => (w.id === updated.id ? updated : w)),
-      )
-
-      void queryClient.invalidateQueries({queryKey: queryKeys.words})
-      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
-      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      replaceWordInWordLists(queryClient, updated)
+      invalidateWordDependencies(queryClient)
 
       navigate(routes.word(updated.id), {
         replace: true,
@@ -86,16 +106,8 @@ export function useWordPageState() {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
     onSuccess: () => {
-      queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
-        cur.filter((w) => w.id !== numericWordId),
-      )
-
-      queryClient.removeQueries({queryKey: queryKeys.word(numericWordId)})
-      void queryClient.invalidateQueries({queryKey: queryKeys.words})
-      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
-      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
-      void queryClient.invalidateQueries({queryKey: queryKeys.trashWords})
+      removeWordFromWordLists(queryClient, numericWordId)
+      invalidateWordDependencies(queryClient, [queryKeys.trashWords])
 
       navigate(
         capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home,
