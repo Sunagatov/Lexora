@@ -1,8 +1,82 @@
-import type {ReactNode} from 'react'
+import {useEffect, useState, type ReactNode} from 'react'
 
 // Shared chart components for the Stats page
 
 export type DonutSlice = {value: number; color: string; label: string}
+
+type Trend = {
+  value: string
+  direction: 'up' | 'down' | 'flat'
+  tone?: 'good' | 'bad' | 'neutral'
+}
+
+const STAT_META: Record<string, {icon: string; tone: string}> = {
+  'Total words': {icon: '📚', tone: 'indigo'},
+  Topics: {icon: '🗂️', tone: 'sky'},
+  'Strong (lvl 4)': {icon: '💪', tone: 'emerald'},
+  'Okay or better': {icon: '✨', tone: 'violet'},
+  'Active time': {icon: '⏱️', tone: 'sky'},
+  Today: {icon: '📍', tone: 'indigo'},
+  'This week': {icon: '📅', tone: 'sky'},
+  Sessions: {icon: '🪑', tone: 'violet'},
+  'Avg session': {icon: '🕒', tone: 'sky'},
+  'Longest session': {icon: '🏁', tone: 'indigo'},
+  'Reviewed words': {icon: '🔁', tone: 'sky'},
+  'Never reviewed': {icon: '🆕', tone: 'amber'},
+  'Improved words': {icon: '📈', tone: 'emerald'},
+  'Regressed words': {icon: '📉', tone: 'rose'},
+  'Strong now': {icon: '🏆', tone: 'emerald'},
+  Parked: {icon: '🧊', tone: 'slate'},
+  'Active streak': {icon: '🔥', tone: 'amber'},
+  'Study streak': {icon: '⚡', tone: 'indigo'},
+  'Longest active': {icon: '🌤️', tone: 'amber'},
+  'Longest study': {icon: '🎯', tone: 'violet'},
+  'Active days': {icon: '📆', tone: 'sky'},
+  'Study days': {icon: '✅', tone: 'emerald'},
+  'App consistency': {icon: '🧭', tone: 'sky'},
+  'Study consistency': {icon: '🧠', tone: 'violet'},
+  'Reviews / minute': {icon: '🚀', tone: 'indigo'},
+  'Improved / minute': {icon: '🌱', tone: 'emerald'},
+  'Net / minute': {icon: '📊', tone: 'violet'},
+  'Reviewed / session': {icon: '📝', tone: 'sky'},
+  'Improved / session': {icon: '🌟', tone: 'emerald'},
+  'Active minutes': {icon: '⌛', tone: 'amber'},
+  Queues: {icon: '🧺', tone: 'sky'},
+  Completed: {icon: '✔️', tone: 'emerald'},
+  'Completion rate': {icon: '🎉', tone: 'emerald'},
+  'Avg queue size': {icon: '📦', tone: 'violet'},
+  'Avg completion': {icon: '🔄', tone: 'sky'},
+  'Avg completion time': {icon: '⏳', tone: 'amber'},
+  'Level changes': {icon: '🪄', tone: 'violet'},
+  Improved: {icon: '⬆️', tone: 'emerald'},
+  Downgraded: {icon: '⬇️', tone: 'rose'},
+  'Net progress': {icon: '📌', tone: 'indigo'},
+  '3+ examples': {icon: '🧪', tone: 'amber'},
+  'Need 3+ examples': {icon: '✏️', tone: 'amber'},
+  'Missing POS': {icon: '🏷️', tone: 'rose'},
+  'No level set': {icon: '⚪', tone: 'slate'},
+}
+
+function CountUpValue({value, duration = 850}: {value: number; duration?: number}) {
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    let frame = 0
+    const start = performance.now()
+
+    function tick(now: number) {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayValue(Math.round(value * eased))
+      if (progress < 1) frame = window.requestAnimationFrame(tick)
+    }
+
+    frame = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(frame)
+  }, [value, duration])
+
+  return <>{displayValue.toLocaleString()}</>
+}
 
 export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
   slices: DonutSlice[]
@@ -72,18 +146,60 @@ export function BarChart({
   )
 }
 
-export function StatCard({value, label, sub}: {value: string | number; label: string; sub?: string}) {
+export function StatCard({
+  value,
+  label,
+  sub,
+  trend,
+  icon,
+  tone,
+}: {
+  value: string | number
+  label: string
+  sub?: string
+  trend?: Trend
+  icon?: string
+  tone?: string
+}) {
+  const meta = STAT_META[label]
+  const cardIcon = icon ?? meta?.icon ?? '•'
+  const cardTone = tone ?? meta?.tone ?? 'slate'
+
   return (
-    <div className="stats-card">
-      <span className="stats-card-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+    <div className={`stats-card stats-card-tone-${cardTone}`}>
+      <div className="stats-card-topline">
+        <span className="stats-card-icon" aria-hidden="true">{cardIcon}</span>
+        {trend && (
+          <span className={`stats-trend stats-trend-${trend.tone ?? 'neutral'} stats-trend-${trend.direction}`}>
+            {trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'} {trend.value}
+          </span>
+        )}
+      </div>
+      <span className="stats-card-value">{typeof value === 'number' ? <CountUpValue value={value} /> : value}</span>
       <span className="stats-card-label">{label}</span>
       {sub && <span className="stats-card-sub">{sub}</span>}
     </div>
   )
 }
 
-export function SectionTitle({children}: {children: ReactNode}) {
-  return <h2 className="stats-section-title">{children}</h2>
+export function SectionTitle({
+  children,
+  icon,
+  subtitle,
+}: {
+  children: ReactNode
+  icon?: string
+  subtitle?: string
+}) {
+  return (
+    <div className="stats-section-title-wrap">
+      {icon && <span className="stats-section-icon" aria-hidden="true">{icon}</span>}
+      <div className="stats-section-copy">
+        <h2 className="stats-section-title">{children}</h2>
+        {subtitle && <p className="stats-section-subtitle">{subtitle}</p>}
+      </div>
+    </div>
+  )
 }
 
 export function PeriodTabs<T extends string>({options, value, onChange}: {

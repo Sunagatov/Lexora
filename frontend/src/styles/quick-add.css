@@ -35,9 +35,18 @@
   animation: qa-fade-in 0.18s ease;
 }
 
+.quick-add-overlay.is-closing {
+  animation: qa-fade-out 0.18s ease forwards;
+}
+
 @keyframes qa-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+@keyframes qa-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
 /* ── Quick-add sheet ────────────────────────────────────────── */
@@ -52,8 +61,12 @@
   display: flex;
   flex-direction: column;
   max-height: 92vh;
-  animation: qa-slide-up 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  animation: qa-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.18);
+}
+
+.quick-add-sheet.is-closing {
+  animation: qa-slide-down 0.22s ease forwards;
 }
 
 @keyframes qa-slide-up {
@@ -61,13 +74,42 @@
   to   { transform: translateY(0); }
 }
 
+@keyframes qa-slide-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+.quick-add-handle-hitbox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 2px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.quick-add-handle-hitbox:focus-visible {
+  outline: none;
+}
+
 .quick-add-handle {
   width: 36px;
   height: 4px;
   background: var(--border);
   border-radius: 999px;
-  margin: 10px auto 0;
-  flex-shrink: 0;
+  display: block;
+  transition: width 0.16s ease, height 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.quick-add-handle-hitbox.is-active .quick-add-handle,
+.quick-add-handle-hitbox:hover .quick-add-handle,
+.quick-add-handle-hitbox:focus-visible .quick-add-handle {
+  width: 56px;
+  height: 5px;
+  background: #a5b4fc;
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.08);
 }
 
 .quick-add-header {
@@ -121,6 +163,25 @@
   color: var(--text-2);
 }
 
+.quick-add-field-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+.quick-add-field-status-ok {
+  color: #047857;
+  background: #ecfdf5;
+}
+
 .quick-add-input {
   width: 100%;
   padding: 10px 14px;
@@ -134,6 +195,13 @@
 }
 
 .quick-add-input:focus { border-color: var(--accent); }
+
+.quick-add-input.is-ai-complete,
+.quick-add-select.is-ai-complete {
+  border-color: rgba(16, 185, 129, 0.38);
+  background: linear-gradient(180deg, #f8fffb 0%, #f0fdf4 100%);
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.08);
+}
 
 .quick-add-term-row {
   display: flex;
@@ -178,10 +246,31 @@
   color: var(--accent-dark);
   border-color: rgba(99, 102, 241, 0.25);
   flex: 1.2;
+  position: relative;
+  overflow: hidden;
 }
 
 .quick-add-action-btn-primary:hover:not(:disabled) {
   background: #e0e7ff;
+}
+
+.quick-add-action-btn-primary.is-loading {
+  color: #312e81;
+  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(90deg, #e0e7ff 0%, #c7d2fe 35%, #eef2ff 65%, #e0e7ff 100%);
+  background-size: 220% 100%;
+  animation: qa-button-pulse 1.2s ease-in-out infinite;
+}
+
+.quick-add-action-btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes qa-button-pulse {
+  0% { background-position: 0 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }
 
 /* quick-add-translate-btn is still used for the inline 'Create' topic button */

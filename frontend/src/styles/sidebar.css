@@ -81,9 +81,8 @@
 .sidebar-smart-review-btn:hover { background: rgba(255, 255, 255, 0.06); color: var(--sidebar-text); }
 .sidebar-smart-review-btn.active {
   background: rgba(99, 102, 241, 0.12);
-  border-left: 2px solid var(--accent);
+  box-shadow: inset 3px 0 12px rgba(99, 102, 241, 0.25);
   color: var(--sidebar-text);
-  padding-left: 10px;
 }
 
 .sidebar-smart-review-title {
@@ -423,20 +422,25 @@
 .topic-item[data-pinned] .topic-item-actions { display: flex; }
 
 /* ── Topic rows ──────────────────────────────────────────────────────────── */
+@keyframes sidebar-item-in {
+  from { opacity: 0; transform: translateX(-5px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 .topic-item {
   --topic-indent: 0px;
   width: 100%;
   text-align: left;
   background: transparent;
-  border-left: 2px solid transparent;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: 0;
-  transition: background 0.12s;
+  transition: background 0.12s, box-shadow 0.15s;
   color: var(--sidebar-text);
   margin-bottom: 1px;
   position: relative;
+  animation: sidebar-item-in 0.18s ease both;
 }
 
 .topic-item-expander,
@@ -495,7 +499,7 @@
 
 .topic-item-active {
   background: rgba(99, 102, 241, 0.18);
-  border-left-color: var(--accent);
+  box-shadow: inset 3px 0 12px rgba(99, 102, 241, 0.25);
 }
 
 .topic-item-name {
@@ -569,7 +573,7 @@
   bottom: 0;
   left: var(--topic-indent, 0px);
   right: 0;
-  height: 2px;
+  height: 3px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   overflow: hidden;
@@ -579,12 +583,14 @@
 .topic-progress-fill {
   display: block;
   height: 100%;
-  background: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.5) 0%, rgba(165, 180, 252, 0.7) 100%);
   border-radius: 999px;
   transition: width 0.4s ease;
 }
 
-.topic-item-active .topic-progress-fill { background: var(--accent); }
+.topic-item-active .topic-progress-fill {
+  background: linear-gradient(90deg, var(--accent) 0%, #a5b4fc 100%);
+}
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 .sidebar-footer {

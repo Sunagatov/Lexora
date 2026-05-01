@@ -13,6 +13,13 @@
   flex-shrink: 0;
 }
 
+.app-header-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .app-header-brand {
   background: transparent;
   border: none;
@@ -25,6 +32,39 @@
   transition: opacity 0.12s;
 }
 .app-header-brand:hover { opacity: 0.75; }
+
+.app-header-breadcrumb {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.77rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.app-header-crumb {
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.12s;
+}
+
+.app-header-crumb:hover {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.app-header-crumb-current {
+  color: #fff;
+  font-weight: 600;
+}
+
+.app-header-crumb-sep {
+  flex-shrink: 0;
+  opacity: 0.4;
+}
 
 .app-header-actions {
   display: flex;
@@ -168,6 +208,14 @@
 
 /* ── Word page footer mobile ────────────────────────────── */
 @media (max-width: 860px) {
+  .app-header-left {
+    gap: 10px;
+  }
+
+  .app-header-breadcrumb {
+    display: none;
+  }
+
   .word-page-footer {
     padding: 12px 14px;
   }

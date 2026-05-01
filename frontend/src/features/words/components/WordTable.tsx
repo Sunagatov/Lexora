@@ -2,7 +2,7 @@ import {Fragment, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/shared/types'
 import {routes} from '@/app/routes'
-import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
+import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {smartPreview} from '@/features/words/model/wordPresenter'
@@ -23,7 +23,8 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
     <div className="word-table-wrap">
       <table className="word-table" aria-label="Topic words table">
         <tbody>
-          {words.map((word) => {
+          {words.map((word, idx) => {
+            const isLast     = idx === words.length - 1
             const lc         = levelClass(word.knowledge_level)
             const isOpen     = openId === word.id
             const isExpanded = expandedId === word.id
@@ -46,15 +47,18 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
                   </td>
                   <td className="word-cell-knowledge">
                     <div className="word-level-wrap">
-                      <button type="button" className={`level-badge level-badge-btn ${lc}`}
-                        disabled={pendingWordId === word.id}
-                        onClick={(e) => { if (isOpen) { setOpenId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenId(word.id) }}
-                      >
-                        {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                          <polyline points="2,3.5 5,6.5 8,3.5" />
-                        </svg>
-                      </button>
+                      <div className="level-badge-wrap">
+                        <button type="button" className={`level-badge level-badge-btn ${lc}`}
+                          disabled={pendingWordId === word.id}
+                          onClick={(e) => { if (isOpen) { setOpenId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenId(word.id) }}
+                        >
+                          {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                            <polyline points="2,3.5 5,6.5 8,3.5" />
+                          </svg>
+                        </button>
+                        <span className="level-badge-tip">{LEVEL_TIPS[word.knowledge_level ?? 0]}</span>
+                      </div>
                       {isOpen && (
                         <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} flipUp={flipUp}
                           onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
@@ -76,23 +80,30 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
                     </div>
                   </td>
                 </tr>
-                {isExpanded && (
+                {hasExpanded && (
                   <tr className={`word-row-detail ${lc}`}>
-                    <td colSpan={3} className="word-cell-detail">
-                      {showExample && (
-                        <div className="word-extra">
-                          <strong>Example:</strong>
-                          {word.example_entries && word.example_entries.length > 1 ? (
-                            <ol className="word-extra-examples">
-                              {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
-                            </ol>
-                          ) : (
-                            <span> {word.example_entries?.[0] ?? word.example}</span>
+                    <td colSpan={3} style={{
+                      padding: 0,
+                      borderBottom: isExpanded && !isLast ? '1px solid var(--border)' : 'none',
+                    }}>
+                      <div className={`word-row-expand-body${isExpanded ? ' is-open' : ''}`}>
+                        <div className="word-row-expand-content">
+                          {showExample && (
+                            <div className="word-extra">
+                              <strong>Example:</strong>
+                              {word.example_entries && word.example_entries.length > 1 ? (
+                                <ol className="word-extra-examples">
+                                  {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
+                                </ol>
+                              ) : (
+                                <span> {word.example_entries?.[0] ?? word.example}</span>
+                              )}
+                            </div>
                           )}
+                          {showNotes   && <div className="word-extra"><strong>Notes:</strong> {word.notes}</div>}
+                          {showPattern && <div className="word-extra"><strong>Pattern:</strong> {word.pattern}</div>}
                         </div>
-                      )}
-                      {showNotes   && <div className="word-extra"><strong>Notes:</strong> {word.notes}</div>}
-                      {showPattern && <div className="word-extra"><strong>Pattern:</strong> {word.pattern}</div>}
+                      </div>
                     </td>
                   </tr>
                 )}

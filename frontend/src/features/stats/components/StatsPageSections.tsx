@@ -22,7 +22,9 @@ export function AppTimeSection({
   return (
     <section className="stats-section">
       <div className="stats-section-header">
-        <SectionTitle>App time</SectionTitle>
+        <SectionTitle icon="⏱️" subtitle="Tracked active usage with idle time removed">
+          App time
+        </SectionTitle>
         <PeriodTabs options={ACTIVITY_PERIODS} value={usagePeriod} onChange={onUsagePeriodChange} />
       </div>
       <div className="stats-cards stats-cards-4">
@@ -56,7 +58,9 @@ export function RetentionSection({stats, totalWords}: {stats: StatsResponse; tot
   ]
   return (
     <section className="stats-section">
-      <SectionTitle>Retention quality</SectionTitle>
+      <SectionTitle icon="🛡️" subtitle="How many words are reviewed, strong, regressed, or untouched">
+        Retention quality
+      </SectionTitle>
       <div className="stats-cards stats-cards-6">
         <StatCard value={retention.reviewed_words} label="Reviewed words" sub={`${retention.reviewed_word_share_pct}% of library`} />
         <StatCard value={retention.never_reviewed_words} label="Never reviewed" />
@@ -74,7 +78,9 @@ export function ConsistencySection({stats}: {stats: StatsResponse}) {
   const consistency = stats.consistency_summary
   return (
     <section className="stats-section">
-      <SectionTitle>Consistency</SectionTitle>
+      <SectionTitle icon="🔥" subtitle="Streaks and steady usage windows over time">
+        Consistency
+      </SectionTitle>
       <div className="stats-cards stats-cards-6">
         <StatCard value={consistency.active_streak_days} label="Active streak" sub="days" />
         <StatCard value={consistency.study_streak_days} label="Study streak" sub="days" />
@@ -95,7 +101,9 @@ export function EfficiencySection({stats, activeMinutes}: {stats: StatsResponse;
   const efficiency = stats.efficiency_summary
   return (
     <section className="stats-section">
-      <SectionTitle>Study efficiency</SectionTitle>
+      <SectionTitle icon="🚀" subtitle="Progress relative to active foreground study time">
+        Study efficiency
+      </SectionTitle>
       <div className="stats-cards stats-cards-6">
         <StatCard value={formatRate(efficiency.reviews_per_active_minute)} label="Reviews / minute" sub={`${efficiency.total_review_events.toLocaleString()} review events`} />
         <StatCard value={formatRate(efficiency.improved_events_per_active_minute)} label="Improved / minute" />
@@ -120,7 +128,9 @@ export function QueueQualitySection({stats}: {stats: StatsResponse}) {
   ]
   return (
     <section className="stats-section">
-      <SectionTitle>Queue quality</SectionTitle>
+      <SectionTitle icon="🧺" subtitle="Completion rate, size, and speed for smart-review queues">
+        Queue quality
+      </SectionTitle>
       <div className="stats-cards stats-cards-6">
         <StatCard value={queue.total_queues} label="Queues" />
         <StatCard value={queue.completed_queues} label="Completed" />

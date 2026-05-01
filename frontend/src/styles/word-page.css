@@ -82,19 +82,130 @@
 
 /* Hero */
 .word-page-hero {
-  background: var(--surface);
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 68%);
   border: 1px solid var(--border);
-  border-left-width: 4px;
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  padding: 22px 22px 20px;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .word-page-term {
-  font-size: 2.2rem;
+  font-size: clamp(2.5rem, 5vw, 3rem);
   font-weight: 800;
   color: var(--text);
-  line-height: 1.15;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.word-page-hero.level-unset {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 68%);
+}
+
+.word-page-hero.level-1 {
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 62%);
+  border-color: #fecaca;
+}
+
+.word-page-hero.level-2 {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 62%);
+  border-color: #bfdbfe;
+}
+
+.word-page-hero.level-3 {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 62%);
+  border-color: #ddd6fe;
+}
+
+.word-page-hero.level-4 {
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 62%);
+  border-color: #a7f3d0;
+}
+
+.word-page-hero.level-5 {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 62%);
+  border-color: #cbd5e1;
+}
+
+.word-page-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.word-page-level-chip,
+.word-page-topic-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.word-page-level-chip {
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text-2);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.word-page-topic-chip {
+  background: rgba(15, 23, 42, 0.05);
+  color: var(--text-3);
+}
+
+.word-page-pronunciation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.word-page-pronunciation {
+  margin: 0;
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.word-page-pronunciation.is-muted {
+  color: #94a3b8;
+}
+
+.word-page-pronounce-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s, background 0.12s, color 0.12s;
+}
+
+.word-page-pronounce-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.34);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--accent);
+}
+
+.word-page-pronounce-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* View mode */
@@ -393,7 +504,22 @@
     font-size: 0.78rem;
   }
 
-  .word-page-term { font-size: 1.6rem; }
+  .word-page-term { font-size: 2.1rem; }
+
+  .word-page-hero {
+    padding: 16px 16px 15px;
+    gap: 8px;
+  }
+
+  .word-page-pronunciation-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .word-page-pronunciation {
+    font-size: 0.92rem;
+  }
 
   .word-page-view-row {
     grid-template-columns: 1fr;

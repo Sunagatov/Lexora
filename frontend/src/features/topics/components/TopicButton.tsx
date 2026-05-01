@@ -2,7 +2,7 @@ import type {CSSProperties} from 'react'
 
 import type {Topic} from '@/shared/types'
 
-export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0, hasChildren = false, expanded = false, onToggleExpanded}: {
+export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0, hasChildren = false, expanded = false, onToggleExpanded, staggerIdx = 0}: {
   topic: Topic
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
@@ -17,6 +17,7 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   hasChildren?: boolean
   expanded?: boolean
   onToggleExpanded?: (id: number) => void
+  staggerIdx?: number
 }) {
   const progress = topicProgress.get(topic.id)
   const isPinned = pinnedIds.includes(topic.id)
@@ -24,6 +25,7 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   const style = {
     paddingLeft: `${level * 14}px`,
     '--topic-indent': `${level * 14}px`,
+    animationDelay: `${Math.min(staggerIdx, 9) * 30}ms`,
   } as CSSProperties
 
   return (

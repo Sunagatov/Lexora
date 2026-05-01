@@ -17,6 +17,15 @@ export const LEVEL_LABELS: Record<number, string> = {
   1: 'Weak', 2: 'Basic', 3: 'Okay', 4: 'Strong', 5: 'Parked',
 }
 
+export const LEVEL_TIPS: Record<number, string> = {
+  0: 'Unset — not yet rated',
+  1: 'Level 1 — Weak: needs a lot of practice',
+  2: 'Level 2 — Familiar: you recognize it but need more practice',
+  3: 'Level 3 — Okay: you know it, review still helps',
+  4: 'Level 4 — Strong: confident, rarely needs review',
+  5: 'Parked — set aside for later',
+}
+
 export function levelClass(level: number | null): string {
   return level ? `level-${level}` : 'level-unset'
 }

@@ -140,6 +140,29 @@ export function sumActivity(days: DailyActivity[]) {
   return {reviewed, improved, downgraded, net}
 }
 
+export function sumUsageSeconds(days: UsageDay[]) {
+  return days.reduce((total, day) => total + day.active_seconds, 0)
+}
+
+export function filterPreviousDays<T extends {date: string}>(days: T[], windowSize: number): T[] {
+  const end = new Date()
+  end.setHours(0, 0, 0, 0)
+  end.setDate(end.getDate() - windowSize)
+
+  const start = new Date(end)
+  start.setDate(start.getDate() - (windowSize - 1))
+
+  const startKey = toLocalDateKey(start)
+  const endKey = toLocalDateKey(end)
+  return days.filter((day) => day.date >= startKey && day.date <= endKey)
+}
+
+export function percentDelta(current: number, previous: number): number | null {
+  if (previous === 0 && current === 0) return 0
+  if (previous === 0) return null
+  return ((current - previous) / previous) * 100
+}
+
 export function buildActivityChartData(days: DailyActivity[]) {
   return [...days].reverse().slice(-60).map((day) => ({
     label: dayLabel(day.date),

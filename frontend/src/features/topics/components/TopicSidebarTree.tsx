@@ -28,6 +28,7 @@ function renderNodes(
   expandedTopicIds: Set<number>,
   forceExpandAll: boolean,
   level: number,
+  counter: {idx: number},
   onSelect: (id: number) => void,
   onEdit: (id: number) => void,
   onDelete: (id: number) => void,
@@ -35,6 +36,7 @@ function renderNodes(
   onToggleExpanded: (id: number) => void,
 ): ReactElement[] {
   return nodes.flatMap((node) => {
+    const staggerIdx  = counter.idx++
     const hasChildren = node.children.length > 0
     const expanded = hasChildren && (forceExpandAll || expandedTopicIds.has(node.topic.id))
     const children = expanded
@@ -48,6 +50,7 @@ function renderNodes(
         expandedTopicIds,
         forceExpandAll,
         level + 1,
+        counter,
         onSelect,
         onEdit,
         onDelete,
@@ -78,6 +81,7 @@ function renderNodes(
         topicCounts={topicCounts}
         topicProgress={topicProgress}
         pinnedIds={pinnedIds}
+        staggerIdx={staggerIdx}
         onSelect={onSelect}
         onEdit={onEdit}
         onDelete={onDelete}
@@ -116,6 +120,7 @@ export function TopicSidebarTree({
         expandedTopicIds,
         forceExpandAll,
         0,
+        {idx: 0},
         onSelect,
         onEdit,
         onDelete,

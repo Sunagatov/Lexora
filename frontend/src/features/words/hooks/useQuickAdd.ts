@@ -23,6 +23,9 @@ export function useQuickAdd(_onClose: () => void) {
   const [suggesting,  setSuggesting]  = useState(false)
   const [aiSuggested, setAiSuggested] = useState(false)
   const [feedback,    setFeedback]    = useState<{ok: boolean; msg: string} | null>(null)
+  const [autoFillPending, setAutoFillPending] = useState(false)
+  const [translationAiDone, setTranslationAiDone] = useState(false)
+  const [topicAiDone, setTopicAiDone] = useState(false)
 
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
   const topics: Topic[] = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
@@ -97,6 +100,7 @@ export function useQuickAdd(_onClose: () => void) {
     setTranslating(false)
     if (result) {
       setTranslation(result)
+      setTranslationAiDone(true)
     } else {
       setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
     }
@@ -127,6 +131,7 @@ export function useQuickAdd(_onClose: () => void) {
     if (match) {
       setTopicId(match.id)
       setAiSuggested(true)
+      setTopicAiDone(true)
     } else {
       setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`})
     }
@@ -140,15 +145,20 @@ export function useQuickAdd(_onClose: () => void) {
       focusTermInput()
       return
     }
+    setAutoFillPending(true)
     setFeedback(null)
+    setTranslationAiDone(false)
+    setTopicAiDone(false)
     setTranslating(true)
     const result = await translateTerm(trimmedTerm)
     setTranslating(false)
     if (!result) {
+      setAutoFillPending(false)
       setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
       return
     }
     setTranslation(result)
+    setTranslationAiDone(true)
     setSuggesting(true)
     const suggested = await suggestTopic(trimmedTerm, result)
     setSuggesting(false)
@@ -157,8 +167,10 @@ export function useQuickAdd(_onClose: () => void) {
       if (match) {
         setTopicId(match.id)
         setAiSuggested(true)
+        setTopicAiDone(true)
       }
     }
+    setAutoFillPending(false)
   }
 
   async function save() {
@@ -200,11 +212,11 @@ export function useQuickAdd(_onClose: () => void) {
   return {
     termRef,
     term, setTerm,
-    translation, setTranslation: (v: string) => { setTranslation(v); setAiSuggested(false) },
-    topicId, setTopicId: (id: number) => { setTopicId(id); setAiSuggested(false) },
+    translation, setTranslation: (v: string) => { setTranslation(v); setAiSuggested(false); setTranslationAiDone(false) },
+    topicId, setTopicId: (id: number) => { setTopicId(id); setAiSuggested(false); setTopicAiDone(false) },
     newTopic, setNewTopic,
     addingTopic, setAddingTopic,
-    translating, suggesting, aiSuggested,
+    translating, suggesting, aiSuggested, autoFillPending, translationAiDone, topicAiDone,
     feedback,
     topicsLoading: topicsQuery.isLoading,
     sortedTopics,

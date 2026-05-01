@@ -25,23 +25,41 @@ export function KnowledgeDistributionSection({stats, totalWords}: {stats: StatsR
     .filter((slice) => slice.value > 0)
   return (
     <section className="stats-section">
-      <SectionTitle>Knowledge distribution</SectionTitle>
+      <SectionTitle icon="🧱" subtitle="How your library is distributed across knowledge levels">
+        Knowledge distribution
+      </SectionTitle>
       {totalWords > 0 ? (
         <div className="stats-donut-row">
           <DonutChart slices={slices} centerLabel={totalWords.toLocaleString()} centerSub="words" size={150} />
-          <div className="stats-dist-legend">
-            {LEVEL_KEYS.map((key) => {
-              const count = key === 'unset' ? stats.level_counts.unset : stats.level_counts[key]
-              if (count === 0) return null
-              return (
-                <div key={key} className="stats-legend-item">
-                  <span className="stats-legend-dot" style={{background: LEVEL_COLORS[key]}} />
-                  <span className="stats-legend-label">{LEVEL_LABELS[key]}</span>
-                  <span className="stats-legend-count">{count.toLocaleString()}</span>
-                  <span className="stats-legend-pct">({Math.round((count / totalWords) * 100)}%)</span>
-                </div>
-              )
-            })}
+          <div className="stats-dist-detail">
+            <div className="stats-dist-bar" aria-label="Knowledge level distribution">
+              {LEVEL_KEYS.map((key) => {
+                const count = key === 'unset' ? stats.level_counts.unset : stats.level_counts[key]
+                if (count === 0) return null
+                return (
+                  <div
+                    key={key}
+                    className="stats-dist-segment"
+                    style={{width: `${(count / totalWords) * 100}%`, background: LEVEL_COLORS[key]}}
+                    title={`${LEVEL_LABELS[key]}: ${count}`}
+                  />
+                )
+              })}
+            </div>
+            <div className="stats-dist-legend">
+              {LEVEL_KEYS.map((key) => {
+                const count = key === 'unset' ? stats.level_counts.unset : stats.level_counts[key]
+                if (count === 0) return null
+                return (
+                  <div key={key} className="stats-legend-item">
+                    <span className="stats-legend-dot" style={{background: LEVEL_COLORS[key]}} />
+                    <span className="stats-legend-label">{LEVEL_LABELS[key]}</span>
+                    <span className="stats-legend-count">{count.toLocaleString()}</span>
+                    <span className="stats-legend-pct">({Math.round((count / totalWords) * 100)}%)</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       ) : <div className="stats-empty">No words yet.</div>}
@@ -71,7 +89,9 @@ export function DailyProgressSection({
   return (
     <section className="stats-section">
       <div className="stats-section-header">
-        <SectionTitle>Daily progress</SectionTitle>
+        <SectionTitle icon="📈" subtitle="Recent improvement, setbacks, and net movement">
+          Daily progress
+        </SectionTitle>
         <PeriodTabs options={ACTIVITY_PERIODS} value={activityPeriod} onChange={onActivityPeriodChange} />
       </div>
       <div className="stats-cards stats-cards-4">
@@ -111,7 +131,9 @@ export function WordsAddedSection({
   return (
     <section className="stats-section">
       <div className="stats-section-header">
-        <SectionTitle>Words added by month</SectionTitle>
+        <SectionTitle icon="🗓️" subtitle="How quickly your vocabulary library is growing">
+          Words added by month
+        </SectionTitle>
         <PeriodTabs options={MONTH_PERIODS} value={monthPeriod} onChange={onMonthPeriodChange} />
       </div>
       {monthChartData.length > 0 ? <BarChart data={monthChartData} /> : <div className="stats-empty">No data for this period.</div>}
@@ -136,7 +158,9 @@ export function TopicsSection({
   return (
     <section className="stats-section">
       <div className="stats-section-header">
-        <SectionTitle>Topics</SectionTitle>
+        <SectionTitle icon="🧭" subtitle="Which topics are strongest, weakest, and most neglected">
+          Topics
+        </SectionTitle>
         <PeriodTabs options={TOPIC_SORT_OPTIONS} value={topicSort} onChange={onTopicSortChange} />
       </div>
       {topics.length === 0 ? <div className="stats-empty">No topics with words yet.</div> : (
@@ -187,7 +211,9 @@ export function DataQualitySection({stats, totalWords}: {stats: StatsResponse; t
   ]
   return (
     <section className="stats-section">
-      <SectionTitle>Data quality</SectionTitle>
+      <SectionTitle icon="🧪" subtitle="Coverage of examples, parts of speech, and missing fields">
+        Data quality
+      </SectionTitle>
       <div className="stats-donut-row">
         <DonutChart slices={enrichSlices} centerLabel={`${Math.round((enrichComplete / Math.max(1, totalWords)) * 100)}%`} centerSub="complete" size={130} />
         <div className="stats-quality-detail">

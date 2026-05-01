@@ -1,12 +1,29 @@
+import {useEffect, useState} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {routes} from '@/app/routes'
-import {levelClass} from '@/features/words/model/wordDomain'
+import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {NotFoundPage} from '@/app/layout/NotFoundPage'
 import {usePublicConfig} from '@/shared/config/usePublicConfig'
 import {useWordPageState} from '@/features/words/hooks/useWordPageState'
 import {WordPageEditForm} from '@/features/words/components/WordPageEditForm'
 import {WordPageView} from '@/features/words/components/WordPageView'
+import type {Word} from '@/shared/types'
+
+type WordWithPronunciation = Word & {
+  ipa?: string | null
+  pronunciation?: string | null
+  phonetic?: string | null
+  ipa_pronunciation?: string | null
+}
+
+function resolvePronunciation(word: Word): string | null {
+  const candidate = word as WordWithPronunciation
+  for (const value of [candidate.ipa, candidate.ipa_pronunciation, candidate.pronunciation, candidate.phonetic]) {
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  return null
+}
 
 function WordPageSkeleton() {
   const rows = [75, 55, 90, 60, 40]
@@ -17,7 +34,7 @@ function WordPageSkeleton() {
           <div className="sk" style={{width: 48, height: 14}} />
           <div className="sk" style={{width: 38, height: 14}} />
         </div>
-        <div className="sk" style={{height: 74, borderRadius: 'var(--radius-lg)'}} />
+        <div className="sk" style={{height: 122, borderRadius: 'var(--radius-lg)'}} />
       </div>
       <div className="word-page-inner">
         <div className="sk-rows">
@@ -38,6 +55,15 @@ export function WordPage() {
   const publicConfigQuery = usePublicConfig()
   const navigate = useNavigate()
   const location = useLocation()
+  const [isSpeaking, setIsSpeaking] = useState(false)
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
 
   if (s.isInvalidWordId) return <NotFoundPage />
   if (s.isLoading) return <WordPageSkeleton />
@@ -45,12 +71,29 @@ export function WordPage() {
 
   const {word, topics, topic, draft, set, editing} = s
   const lc = levelClass(word.knowledge_level)
+  const pronunciation = resolvePronunciation(word)
+  const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window
   const backRoute = topic?.slug
     ? routes.topic(topic.slug)
     : s.fromTopicSlug
       ? routes.topic(s.fromTopicSlug)
       : routes.home
   const trashRetentionDays = publicConfigQuery.data?.trash_retention_days ?? 30
+
+  function handleSpeak() {
+    if (!hasSpeechSynthesis || !word.term.trim()) return
+
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(word.term)
+    utterance.lang = 'en-GB'
+    utterance.rate = 0.92
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    window.speechSynthesis.speak(utterance)
+  }
 
   return (
     <div className="word-page">
@@ -79,7 +122,31 @@ export function WordPage() {
           )}
         </div>
         <div className={`word-page-hero ${lc}`}>
+          <div className="word-page-hero-meta">
+            <span className="word-page-level-chip">
+              {word.knowledge_level ? `Level ${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : 'Unrated word'}
+            </span>
+            {topic && <span className="word-page-topic-chip">{topic.name}</span>}
+          </div>
           <h1 className="word-page-term">{word.term}</h1>
+          <div className="word-page-pronunciation-row">
+            <p className={`word-page-pronunciation${pronunciation ? '' : ' is-muted'}`}>
+              {pronunciation ?? 'Pronunciation unavailable'}
+            </p>
+            <button
+              type="button"
+              className="word-page-pronounce-btn"
+              onClick={handleSpeak}
+              disabled={!hasSpeechSynthesis}
+              aria-label={`Play pronunciation for ${word.term}`}
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 6h3l4-3v10l-4-3H3z" />
+                <path d="M12.2 5.2a4 4 0 0 1 0 5.6" />
+              </svg>
+              {isSpeaking ? 'Playing…' : 'Pronounce'}
+            </button>
+          </div>
         </div>
       </div>
 

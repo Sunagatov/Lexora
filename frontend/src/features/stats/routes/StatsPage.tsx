@@ -23,10 +23,13 @@ import {
   buildMonthChartData,
   buildUsageChartData,
   filterByDays,
+  filterPreviousDays,
   findBestDay,
+  percentDelta,
   findWorstDay,
   sortTopics,
   sumActivity,
+  sumUsageSeconds,
   type ActivityPeriod,
   type MonthPeriod,
   type TopicSort,
@@ -34,6 +37,21 @@ import {
 import {queryKeys} from '@/app/queryKeys'
 
 export {filterByDays, toLocalDateKey} from '@/features/stats/model/statsPageModel'
+
+function monthKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+function buildTrendLabel(current: number, previous: number, suffix: string) {
+  const delta = percentDelta(current, previous)
+  if (delta === null) return {value: `${current.toLocaleString()} ${suffix}`, direction: 'up' as const, tone: 'good' as const}
+  if (delta === 0) return {value: `0% ${suffix}`, direction: 'flat' as const, tone: 'neutral' as const}
+  return {
+    value: `${delta > 0 ? '+' : ''}${Math.round(delta)}% ${suffix}`,
+    direction: delta > 0 ? 'up' as const : 'down' as const,
+    tone: delta > 0 ? 'good' as const : 'bad' as const,
+  }
+}
 
 function StatsPageSkeleton() {
   return (
@@ -92,6 +110,10 @@ export function StatsPage() {
   const sortedTopics = useMemo(() => (stats ? sortTopics(stats.topics, topicSort) : []), [stats, topicSort])
   const bestDay = useMemo(() => findBestDay(filteredActivity), [filteredActivity])
   const worstDay = useMemo(() => findWorstDay(filteredActivity), [filteredActivity])
+  const weeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterByDays(stats.daily_activity, '7')) : null), [stats])
+  const previousWeeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterPreviousDays(stats.daily_activity, 7)) : null), [stats])
+  const currentWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterByDays(stats.usage_daily, '7')) : 0), [stats])
+  const previousWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7)) : 0), [stats])
 
   if (isLoading) return <StatsPageSkeleton />
   if (!stats) return <div className="stats-loading">Failed to load statistics.</div>
@@ -99,6 +121,10 @@ export function StatsPage() {
   const overview = stats.overview
   const totalWords = overview.total_words
   const activeMinutes = Math.round(stats.usage_summary.total_active_seconds / 60)
+  const now = new Date()
+  const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
+  const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const previousMonthAdds = stats.words_added_by_month[monthKey(previousMonthDate)] ?? 0
 
   return (
     <div className="stats-page">
@@ -116,12 +142,34 @@ export function StatsPage() {
         <InsightsStrip s={stats} />
 
         <section className="stats-section">
-          <SectionTitle>Vocabulary overview</SectionTitle>
+          <SectionTitle icon="🏆" subtitle="Headline metrics with recent movement">
+            Vocabulary overview
+          </SectionTitle>
           <div className="stats-cards stats-cards-4">
-            <StatCard value={overview.total_words} label="Total words" />
-            <StatCard value={overview.total_topics} label="Topics" />
-            <StatCard value={stats.level_counts.level_4} label="Strong (lvl 4)" />
-            <StatCard value={`${stats.okay_or_better_pct}%`} label="Okay or better" />
+            <StatCard
+              value={overview.total_words}
+              label="Total words"
+              sub={`${currentMonthAdds.toLocaleString()} added this month`}
+              trend={buildTrendLabel(currentMonthAdds, previousMonthAdds, 'vs last month')}
+            />
+            <StatCard
+              value={currentWeeklyUsage}
+              label="This week"
+              sub="active seconds"
+              trend={buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d')}
+            />
+            <StatCard
+              value={weeklyActivityTotals?.reviewed ?? 0}
+              label="Level changes"
+              sub="last 7 days"
+              trend={buildTrendLabel(weeklyActivityTotals?.reviewed ?? 0, previousWeeklyActivityTotals?.reviewed ?? 0, 'vs previous 7d')}
+            />
+            <StatCard
+              value={stats.okay_or_better_pct}
+              label="Okay or better"
+              sub={`${stats.level_counts.level_4.toLocaleString()} strong words`}
+              trend={buildTrendLabel(weeklyActivityTotals?.net ?? 0, previousWeeklyActivityTotals?.net ?? 0, 'net this week')}
+            />
           </div>
         </section>
 

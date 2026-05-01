@@ -41,8 +41,15 @@
 
 .word-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
+
+/* Round the four corner cells so hover backgrounds don't poke out of the wrapper's border-radius */
+.word-table tbody tr:first-child td:first-child { border-top-left-radius: var(--radius-lg); }
+.word-table tbody tr:first-child td:last-child  { border-top-right-radius: var(--radius-lg); }
+.word-table tbody tr:last-child  td:first-child { border-bottom-left-radius: var(--radius-lg); }
+.word-table tbody tr:last-child  td:last-child  { border-bottom-right-radius: var(--radius-lg); }
 
 .word-table td {
   padding: 12px 16px;
@@ -55,11 +62,14 @@
 }
 
 .word-row {
-  transition: background 0.12s;
+  position: relative;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
 .word-row:hover {
-  background: #fafbff;
+  background: #f2f4ff;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.1);
+  z-index: 1;
 }
 
 .word-row.level-1 td:first-child { box-shadow: inset 3px 0 0 #dc2626; }
@@ -109,12 +119,22 @@
 }
 
 .word-row-detail td {
-  border-bottom: 1px solid var(--border);
-  padding: 0 16px 12px 16px;
+  padding: 0;
 }
 
-.word-cell-detail {
-  padding-top: 0 !important;
+/* Slide-down animation for the expand body */
+.word-row-expand-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.26s ease-out;
+}
+
+.word-row-expand-body.is-open {
+  max-height: 400px;
+}
+
+.word-row-expand-content {
+  padding: 0 16px 12px;
 }
 
 .word-term {
@@ -261,6 +281,47 @@
 
 .level-badge-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .level-badge-btn:not(:disabled):hover { opacity: 0.8; }
+
+/* Tooltip wrapper around the level badge button */
+.level-badge-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.level-badge-tip {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 5px 9px;
+  border-radius: 7px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.level-badge-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #1e293b;
+}
+
+.level-badge-wrap:hover .level-badge-tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
 .word-card-level-wrap {
   position: relative;
