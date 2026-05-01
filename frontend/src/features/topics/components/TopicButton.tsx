@@ -2,7 +2,14 @@ import type {CSSProperties} from 'react'
 
 import type {Topic} from '@/features/topics/types/topicTypes'
 
-export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0, hasChildren = false, expanded = false, onToggleExpanded, staggerIdx = 0}: {
+export type TopicButtonActionProps = {
+  onSelect: (id: number) => void
+  onEdit: (id: number) => void
+  onDelete: (id: number) => void
+  onPin: (id: number) => void
+}
+
+export type TopicButtonProps = TopicButtonActionProps & {
   topic: Topic
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
@@ -18,7 +25,25 @@ export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId,
   expanded?: boolean
   onToggleExpanded?: (id: number) => void
   staggerIdx?: number
-}) {
+}
+
+export function TopicButton({
+  topic,
+  topicCounts,
+  topicProgress,
+  selectedTopicId,
+  isSmartReview,
+  pinnedIds,
+  onSelect,
+  onEdit,
+  onDelete,
+  onPin,
+  level = 0,
+  hasChildren = false,
+  expanded = false,
+  onToggleExpanded,
+  staggerIdx = 0,
+}: TopicButtonProps) {
   const progress = topicProgress.get(topic.id)
   const isPinned = pinnedIds.includes(topic.id)
   const count    = topicCounts.get(topic.id) ?? 0

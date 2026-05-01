@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.model import Word
+from app.features.words.api import get_word_for_queue_validation
 
 
 def queue_needs_regeneration(queue: StudyQueue) -> bool:
@@ -32,7 +32,7 @@ def complete_queue_item(db, item_id: int, *, log_audit_event_fn) -> StudyQueue:
     if queue is None or not queue.is_active or queue.expires_at <= now:
         raise QueueNotActiveError
 
-    word: Word | None = cast(Word | None, db.get(Word, item.word_id))
+    word = get_word_for_queue_validation(db, item.word_id)
     if word is None or word.deleted_at is not None or not word.is_active:
         raise QueueNotActiveError
 

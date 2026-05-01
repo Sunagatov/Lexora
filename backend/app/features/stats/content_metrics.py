@@ -6,11 +6,15 @@ from sqlalchemy.orm import Session
 
 from app.features.stats.schemas import TopicStat, VocabularyOverview
 from app.features.topics.model import Topic
-from app.features.words.api import EXAMPLE_TARGET_COUNT, example_count, load_topic_word_ids
-from app.features.words.model import Word
+from app.features.words.api import (
+    EXAMPLE_TARGET_COUNT,
+    WordStatsSnapshot,
+    example_count,
+    load_topic_word_ids,
+)
 
 
-def _build_overview(words: list[Word]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
+def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
     total = len(words)
     example_counts = [example_count(word) for word in words]
     with_example = sum(1 for count in example_counts if count > 0)
@@ -41,7 +45,7 @@ def _build_overview(words: list[Word]) -> tuple[VocabularyOverview, dict[int | N
 def _build_topic_stats(
     db: Session,
     topics: list[Topic],
-    word_map: dict[int, Word],
+    word_map: dict[int, WordStatsSnapshot],
     reviewed_word_ids: set[int],
     regressed_word_ids: set[int],
 ) -> list[TopicStat]:
@@ -81,7 +85,7 @@ def _build_topic_stats(
     return result
 
 
-def _build_words_added_by_month(words: list[Word]) -> dict[str, int]:
+def _build_words_added_by_month(words: list[WordStatsSnapshot]) -> dict[str, int]:
     counts: dict[str, int] = defaultdict(int)
     for word in words:
         key = f"{word.created_at.year}-{word.created_at.month:02d}"
@@ -89,13 +93,13 @@ def _build_words_added_by_month(words: list[Word]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
-def _load_topic_word_ids(db: Session, word_map: dict[int, Word]) -> dict[int, list[int]]:
+def _load_topic_word_ids(db: Session, word_map: dict[int, WordStatsSnapshot]) -> dict[int, list[int]]:
     if not word_map:
         return {}
     return load_topic_word_ids(db, set(word_map))
 
 
-def _summarize_topic_progress(words: list[Word]) -> tuple[int, int, int]:
+def _summarize_topic_progress(words: list[WordStatsSnapshot]) -> tuple[int, int, int]:
     score_sum = 0.0
     active_count = 0
     weak_count = 0

@@ -39,6 +39,11 @@ Active backend feature areas:
 - `backend/app/features/trash/`
 - `backend/app/features/stats/`
 
+Backend feature note:
+
+- Some features expose a small `api.py` module for stable cross-feature access.
+- Prefer those feature APIs over importing another feature's repository or domain internals directly.
+
 Backend scripts live in `backend/app/scripts/`. Treat scripts that call live services as operational tools; do not run them unless explicitly requested.
 
 ## Frontend

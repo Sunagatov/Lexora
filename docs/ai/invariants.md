@@ -26,6 +26,10 @@ These rules should not be violated without explicit user instruction.
 
 - Preserve existing architecture unless the task explicitly asks for a refactor.
 - Keep backend work aligned with router/service/repository/schema boundaries where those boundaries exist.
+- Treat each backend feature package as the owner of its business logic, exceptions, schemas, and feature-specific helpers.
+- Use feature-level API modules such as `backend/app/features/topics/api.py` or `backend/app/features/words/api.py` for cross-feature access when a stable boundary is needed.
+- Do not reach into another feature's repositories, domain helpers, or query internals from outside that feature when an existing feature API can provide the same capability.
+- Keep `backend/app/shared/` limited to cross-cutting technical concerns, not feature-owned business logic.
 - Keep frontend work feature-local when possible and use shared HTTP behavior for API calls.
 - Do not change public API contracts without corresponding tests and docs.
 - Do not add unnecessary dependencies.

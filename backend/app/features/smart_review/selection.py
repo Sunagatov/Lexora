@@ -3,13 +3,11 @@ from __future__ import annotations
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
-from typing import cast
 
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.model import Word
+from app.features.words.api import has_smart_review_candidate, list_smart_review_candidates
 
 
 def cooldown_word_ids(db, *, cooldown_days: int) -> set[int]:
@@ -34,24 +32,13 @@ def pick_for_level(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
     max_per_topic: int,
-) -> list[Word]:
+) -> list:
     if needed <= 0:
         return []
-    stmt = (
-        select(Word)
-        .options(selectinload(Word.topics))
-        .where(Word.is_active.is_(True))
-        .where(Word.deleted_at.is_(None))
-        .where(Word.knowledge_level == level)
-        .order_by(Word.updated_at.asc())
-    )
-    if excluded_ids:
-        stmt = stmt.where(Word.id.not_in(excluded_ids))
-
-    candidates: list[Word] = cast(list[Word], list(db.scalars(stmt).all()))
+    candidates = list_smart_review_candidates(db, level=level, excluded_ids=excluded_ids)
     random.shuffle(candidates)
 
-    picked: list[Word] = []
+    picked: list = []
     for word in candidates:
         if len(picked) >= needed:
             break
@@ -71,7 +58,7 @@ def pick_for_level_retry_excluded(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
     max_per_topic: int,
-) -> list[Word]:
+) -> list:
     picked = pick_for_level(
         db,
         level=level,
@@ -97,16 +84,7 @@ def has_any_candidates(db, *, level_buckets: dict[int, int], excluded_ids: set[i
     for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        stmt = (
-            select(Word.id)
-            .where(Word.is_active.is_(True))
-            .where(Word.deleted_at.is_(None))
-            .where(Word.knowledge_level == level)
-            .limit(1)
-        )
-        if excluded_ids:
-            stmt = stmt.where(Word.id.not_in(excluded_ids))
-        if db.scalar(stmt) is not None:
+        if has_smart_review_candidate(db, level=level, excluded_ids=excluded_ids):
             return True
     return False
 

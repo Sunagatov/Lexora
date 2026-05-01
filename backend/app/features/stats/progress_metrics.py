@@ -12,7 +12,7 @@ from app.features.stats.schemas import (
     UsageDay,
     UsageSummary,
 )
-from app.features.words.model import Word
+from app.features.words.api import WordStatsSnapshot
 
 
 def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyActivity], str | None]:
@@ -44,7 +44,7 @@ def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyAc
 
 
 def _build_retention_stats(
-    words: list[Word],
+    words: list[WordStatsSnapshot],
     level_counts: dict[int | None, int],
     reviewed_word_ids: set[int],
     improved_word_ids: set[int],

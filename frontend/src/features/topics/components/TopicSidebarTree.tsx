@@ -1,8 +1,8 @@
 import type {ReactElement} from 'react'
-import {TopicButton} from '@/features/topics/components/TopicButton'
+import {TopicButton, type TopicButtonActionProps} from '@/features/topics/components/TopicButton'
 import type {TopicTreeNode} from '@/features/topics/model/topicSidebarModel'
 
-type Props = {
+type Props = TopicButtonActionProps & {
   nodes: TopicTreeNode[]
   selectedTopicId: number | null
   isSmartReview: boolean
@@ -11,10 +11,6 @@ type Props = {
   pinnedIds: number[]
   expandedTopicIds: Set<number>
   forceExpandAll?: boolean
-  onSelect: (id: number) => void
-  onEdit: (id: number) => void
-  onDelete: (id: number) => void
-  onPin: (id: number) => void
   onToggleExpanded: (id: number) => void
 }
 

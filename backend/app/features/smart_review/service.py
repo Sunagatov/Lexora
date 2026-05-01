@@ -26,8 +26,7 @@ from app.features.smart_review.selection import (
     pick_for_level as _pick_for_level_impl,
     pick_for_level_retry_excluded as _pick_for_level_retry_excluded_impl,
 )
-from app.features.words.model import Word
-
+from app.features.words.model import Word as Word
 
 def _cooldown_word_ids(db: Session) -> set[int]:
     return _cooldown_word_ids_impl(db, cooldown_days=settings.smart_review_cooldown_days)
@@ -39,7 +38,7 @@ def _pick_for_level(
     needed: int,
     excluded_ids: set[int],
     topic_counts: dict[int, int],
-) -> list[Word]:
+) -> list:
     return _pick_for_level_impl(
         db,
         level=level,
@@ -56,7 +55,7 @@ def _pick_for_level_retry_excluded(
     needed: int,
     excluded_ids: set[int],
     topic_counts: dict[int, int],
-) -> list[Word]:
+) -> list:
     return _pick_for_level_retry_excluded_impl(
         db,
         level=level,
@@ -88,11 +87,11 @@ def generate_queue(db: Session) -> StudyQueue:
     topic_counts = empty_topic_counts()
     level_buckets = _level_buckets()
 
-    selected: list[Word] = []
+    selected: list = []
     for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        words: list[Word] = _pick_for_level_retry_excluded(
+        words = _pick_for_level_retry_excluded(
             db,
             level,
             needed,

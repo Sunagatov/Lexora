@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import cast
-
-from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.features.words.constants import ProgressSource
+from app.features.words.api import list_active_word_stats
 from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,
@@ -22,6 +20,8 @@ from app.features.stats.content_metrics import (
 )
 from app.features.stats.model import AppUsageEvent, WordProgressEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
+from sqlalchemy import select
+from typing import cast
 
 
 def record_level_change(
@@ -50,12 +50,9 @@ def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
 
 def compute_stats(db: Session) -> StatsResponse:
     from app.features.topics.model import Topic
-    from app.features.words.model import Word
-    from sqlalchemy.orm import load_only, selectinload
+    from sqlalchemy.orm import load_only
 
-    words = cast(list[Word], list(db.scalars(
-        select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
-    ).all()))
+    words = list_active_word_stats(db)
     topics = cast(
         list[Topic],
         list(

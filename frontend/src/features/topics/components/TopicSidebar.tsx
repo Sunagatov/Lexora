@@ -1,20 +1,15 @@
-import {useEffect, useRef, useMemo, useState} from 'react'
+import {useEffect, useRef, useMemo} from 'react'
 import {useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import {ConfirmModal} from '@/shared/ui/ConfirmModal'
-import {SORT_LABELS} from '@/features/topics/model/topicSort'
-import {TopicButton} from '@/features/topics/components/TopicButton'
 import {routes} from '@/app/routes'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
-import {buildSidebarGroups, isPosGroup, weakCount} from '@/features/topics/model/topicSidebarModel'
-import {TopicSidebarGroup} from '@/features/topics/components/TopicSidebarGroup'
-import {TopicSidebarListSection} from '@/features/topics/components/TopicSidebarListSection'
-import {TopicSidebarTree} from '@/features/topics/components/TopicSidebarTree'
+import {buildSidebarGroups, isPosGroup} from '@/features/topics/model/topicSidebarModel'
 import {TopicSidebarFooter} from '@/features/topics/components/TopicSidebarFooter'
 import {TopicSidebarHeader} from '@/features/topics/components/TopicSidebarHeader'
-import {TopicEditModal} from '@/features/topics/components/TopicEditModal'
 import {useTopicSidebarActions} from '@/features/topics/hooks/useTopicSidebarActions'
+import {buildTopicGroupMeta, TopicSidebarSections} from '@/features/topics/components/TopicSidebarSections'
+import {TopicSidebarModals} from '@/features/topics/components/TopicSidebarModals'
 
 type Props = {
   topics: Topic[]
@@ -46,10 +41,6 @@ export function TopicSidebar({
     setEditTopicId(id)
     setEditTopicError(null)
   }
-  const [posSortOpen,    setPosSortOpen]    = useState(false)
-  const [topicsSortOpen, setTopicsSortOpen] = useState(false)
-  const posSortRef     = useRef<HTMLButtonElement>(null)
-  const topicsSortRef  = useRef<HTMLButtonElement>(null)
   const lastAutoExpandedTopicIdRef = useRef<number | null>(null)
   const navigate    = useNavigate()
   const selectedTopic = useMemo(
@@ -134,6 +125,14 @@ export function TopicSidebar({
     [topics, needle, prefs.pinnedIds, prefs.posSort, prefs.topicsSort,
      prefs.posCollapsed, prefs.topicsCollapsed, prefs.recentIds, topicProgress, topicCounts],
   )
+  const posMeta = useMemo(
+    () => buildTopicGroupMeta(prefs.posSort, posTopics, topicProgress, topicCounts, 'weak'),
+    [prefs.posSort, posTopics, topicProgress, topicCounts],
+  )
+  const topicsMeta = useMemo(
+    () => buildTopicGroupMeta(prefs.topicsSort, themeTopics, topicProgress, topicCounts, 'below 30%'),
+    [prefs.topicsSort, themeTopics, topicProgress, topicCounts],
+  )
   return (
     <>
       <TopicSidebarHeader
@@ -147,107 +146,38 @@ export function TopicSidebar({
         smartQueue={smartQueue}
       />
 
-      <div className="sidebar-topic-list">
-        {pinnedTopics.length > 0 && (
-          <TopicSidebarListSection label="📌 Pinned">
-            {pinnedTopics.map((t) => (
-              <TopicButton
-                key={t.id}
-                topic={t}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onEdit={handleEditTopic}
-                onDelete={(id: number) => setDeleteTopicId(id)}
-                onPin={prefs.togglePin}
-              />
-            ))}
-          </TopicSidebarListSection>
-        )}
-        {posTopics.length > 0 && (
-          <TopicSidebarGroup
-            title="Parts of Speech"
-            count={posTopics.length}
-            collapsed={prefs.posCollapsed}
-            onToggleCollapsed={() => prefs.setPosCollapsed(!prefs.posCollapsed)}
-            sortMode={prefs.posSort}
-            sortButtonRef={posSortRef}
-            sortOpen={posSortOpen}
-            onToggleSort={() => setPosSortOpen((v) => !v)}
-            onCloseSort={() => setPosSortOpen(false)}
-            onSelectSort={(m) => { prefs.setPosSort(m); setPosSortOpen(false) }}
-            meta={prefs.posSort !== 'weakest' && prefs.posSort !== 'default' ? (
-              <>
-                {SORT_LABELS[prefs.posSort]}
-                {weakCount(posTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(posTopics, topicProgress, topicCounts)} weak</span></>}
-              </>
-            ) : null}
-          >
-            {posTopics.map((t) => (
-              <TopicButton
-                key={t.id}
-                topic={t}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onEdit={handleEditTopic}
-                onDelete={(id: number) => setDeleteTopicId(id)}
-                onPin={prefs.togglePin}
-              />
-            ))}
-          </TopicSidebarGroup>
-        )}
-
-        {themeTopics.length > 0 && (
-          <TopicSidebarGroup
-            title="Topics"
-            count={themeTopics.length}
-            collapsed={prefs.topicsCollapsed}
-            onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
-            sortMode={prefs.topicsSort}
-            sortButtonRef={topicsSortRef}
-            sortOpen={topicsSortOpen}
-            onToggleSort={() => setTopicsSortOpen((v) => !v)}
-            onCloseSort={() => setTopicsSortOpen(false)}
-            onSelectSort={(m) => { prefs.setTopicsSort(m); setTopicsSortOpen(false) }}
-            meta={prefs.topicsSort !== 'weakest' && prefs.topicsSort !== 'default' ? (
-              <>
-                {SORT_LABELS[prefs.topicsSort]}
-                {weakCount(themeTopics, topicProgress, topicCounts) > 0 && <> · <span className="sidebar-group-meta-weak">{weakCount(themeTopics, topicProgress, topicCounts)} below 30%</span></>}
-              </>
-            ) : null}
-          >
-            <TopicSidebarTree
-              nodes={themeTree}
-              selectedTopicId={selectedTopicId}
-              isSmartReview={isSmartReview}
-              topicCounts={topicCounts}
-              topicProgress={topicProgress}
-              pinnedIds={prefs.pinnedIds}
-              expandedTopicIds={expandedTopicIds}
-              forceExpandAll={!!needle}
-              onSelect={handleSelect}
-              onEdit={handleEditTopic}
-              onDelete={(id: number) => {
-                setDeleteTopicId(id)
-                setDeleteTopicError(null)
-              }}
-              onPin={prefs.togglePin}
-              onToggleExpanded={prefs.toggleTopicExpanded}
-            />
-          </TopicSidebarGroup>
-        )}
-
-        {posTopics.length === 0 && themeTopics.length === 0 && (
-          <div className="sidebar-empty">No topics found.</div>
-        )}
-      </div>
+      <TopicSidebarSections
+        pinnedTopics={pinnedTopics}
+        posTopics={posTopics}
+        themeTopics={themeTopics}
+        themeTree={themeTree}
+        selectedTopicId={selectedTopicId}
+        isSmartReview={isSmartReview}
+        topicCounts={topicCounts}
+        topicProgress={topicProgress}
+        pinnedIds={prefs.pinnedIds}
+        expandedTopicIds={expandedTopicIds}
+        forceExpandAll={!!needle}
+        posCollapsed={prefs.posCollapsed}
+        topicsCollapsed={prefs.topicsCollapsed}
+        posSort={prefs.posSort}
+        topicsSort={prefs.topicsSort}
+        onSelect={handleSelect}
+        onEdit={handleEditTopic}
+        onDelete={setDeleteTopicId}
+        onDeleteFromTree={(id) => {
+          setDeleteTopicId(id)
+          setDeleteTopicError(null)
+        }}
+        onPin={prefs.togglePin}
+        onToggleExpanded={prefs.toggleTopicExpanded}
+        onTogglePosCollapsed={() => prefs.setPosCollapsed(!prefs.posCollapsed)}
+        onToggleTopicsCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
+        onSelectPosSort={prefs.setPosSort}
+        onSelectTopicsSort={prefs.setTopicsSort}
+        posMeta={posMeta}
+        topicsMeta={topicsMeta}
+      />
 
       <TopicSidebarFooter
         addingTopic={addingTopic}
@@ -270,31 +200,26 @@ export function TopicSidebar({
         onImportChange={handleImportWorkbookChange}
       />
 
-      {deleteTopicId !== null && (
-        <ConfirmModal
-          title="Delete Topic?"
-          message={`Are you sure you want to delete "${topics.find(t => t.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`}
-          error={deleteTopicError}
-          confirmLabel="Delete" danger
-          pending={deleteTopicMutation.isPending}
-          onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
-          onCancel={() => {
-            setDeleteTopicId(null)
-            setDeleteTopicError(null)
-          }}
-        />
-      )}
-
-      {editTopicId !== null && editingTopic && (
-        <TopicEditModal
-          topic={editingTopic}
-          topics={topics}
-          saving={updateTopicMutation.isPending}
-          error={editTopicError}
-          onCancel={() => { setEditTopicId(null); setEditTopicError(null) }}
-          onSave={(payload) => updateTopicMutation.mutate({id: editingTopic.id, payload})}
-        />
-      )}
+      <TopicSidebarModals
+        topics={topics}
+        deleteTopicId={deleteTopicId}
+        deleteTopicError={deleteTopicError}
+        deletePending={deleteTopicMutation.isPending}
+        onConfirmDelete={(id) => deleteTopicMutation.mutate(id)}
+        onCancelDelete={() => {
+          setDeleteTopicId(null)
+          setDeleteTopicError(null)
+        }}
+        editTopicId={editTopicId}
+        editingTopic={editingTopic}
+        editTopicError={editTopicError}
+        editPending={updateTopicMutation.isPending}
+        onCancelEdit={() => {
+          setEditTopicId(null)
+          setEditTopicError(null)
+        }}
+        onSaveEdit={(payload, topicId) => updateTopicMutation.mutate({id: topicId, payload})}
+      />
     </>
   )
 }

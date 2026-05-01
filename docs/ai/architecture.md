@@ -36,6 +36,15 @@ Protected functional routers are guarded by:
 - session cookie verification
 - CSRF header verification
 
+Backend features are organized as modular packages under `backend/app/features/`.
+
+Current boundary rule:
+
+- feature-owned business logic stays inside the owning feature package
+- `app/shared/` is for technical cross-cutting concerns only
+- cross-feature access should prefer small feature API modules such as `topics/api.py` and `words/api.py`
+- other features should avoid importing another feature's repository or domain internals when a feature API can expose the needed operation
+
 ### Frontend
 
 Frontend bootstraps React and uses a browser router.
@@ -96,6 +105,8 @@ This design is simple but will become more expensive as topic count grows.
 
 - keep auth contract stable
 - preserve small, focused feature boundaries
+- prefer feature-local ownership over moving business logic into shared modules
+- add cross-feature facades only when a second feature genuinely needs stable access
 - prefer deterministic or cached logic before LLM calls
 - keep network payloads and model prompts compact
 - avoid cross-cutting refactors unless a bug or repeated pain justifies them
