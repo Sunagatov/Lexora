@@ -1,6 +1,6 @@
 import type {CSSProperties} from 'react'
 
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 export function TopicButton({topic, topicCounts, topicProgress, selectedTopicId, isSmartReview, pinnedIds, onSelect, onEdit, onDelete, onPin, level = 0, hasChildren = false, expanded = false, onToggleExpanded, staggerIdx = 0}: {
   topic: Topic

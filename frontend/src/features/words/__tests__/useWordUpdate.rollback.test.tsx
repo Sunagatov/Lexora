@@ -4,7 +4,7 @@ import type {ReactNode} from 'react'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import * as api from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
-import type {Word} from '@/shared/types'
+import type {Word} from '@/features/words/types/wordTypes'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 vi.mock('@/features/words/api/wordsApi')

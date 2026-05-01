@@ -1,4 +1,4 @@
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import type {SortMode} from '@/features/topics/model/topicSort'
 
 export const POS_NAMES = new Set([

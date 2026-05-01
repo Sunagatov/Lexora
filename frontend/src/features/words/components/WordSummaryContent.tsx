@@ -1,4 +1,4 @@
-import type {Word} from '@/shared/types'
+import type {Word} from '@/features/words/types/wordTypes'
 import {lexicalChips, smartPreview} from '@/features/words/model/wordPresenter'
 
 type Props = {word: Word}

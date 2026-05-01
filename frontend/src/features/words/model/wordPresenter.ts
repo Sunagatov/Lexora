@@ -1,4 +1,4 @@
-import type {Word} from '@/shared/types'
+import type {Word} from '@/features/words/types/wordTypes'
 
 export function lexicalChips(word: Word): string[] {
   const chips: string[] = []

@@ -4,8 +4,7 @@ from typing import cast
 
 from sqlalchemy.orm import Session
 
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
-from app.shared.text import slugify as slugify
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.exceptions import (
     InvalidTopicNameError as InvalidTopicNameError,
     InvalidTopicParentError as InvalidTopicParentError,
@@ -25,6 +24,7 @@ from app.features.topics.rules import (
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.sidebar_stats import compute_topic_sidebar_stats as compute_topic_sidebar_stats
 from app.features.topics.repository import update_topic as persist_topic_update
+from app.shared.text import slugify as slugify
 
 
 def _build_topic_slug(name: str) -> str:

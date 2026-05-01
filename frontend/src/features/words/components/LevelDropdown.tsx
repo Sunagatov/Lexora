@@ -1,4 +1,4 @@
-import type {WordKnowledgeLevel} from '@/shared/types'
+import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {LEVELS, LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 
 export function LevelDropdown({current, flipUp, onSelect, onClose}: {

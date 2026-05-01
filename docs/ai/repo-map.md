@@ -49,7 +49,7 @@ Frontend source lives in `frontend/src/`.
 - `frontend/src/app/providers.tsx` wires providers.
 - `frontend/src/app/router.tsx` owns the route table.
 - `frontend/src/app/layout/` contains application layout.
-- `frontend/src/shared/` contains shared HTTP helpers, config, types, UI primitives, and utilities.
+- `frontend/src/shared/` contains shared HTTP helpers, config, hooks, UI primitives, and utilities.
 - `frontend/src/styles/` contains CSS split by UI area.
 - `frontend/src/test/` contains test setup.
 - `frontend/package.json` defines frontend scripts and dependencies.

@@ -1,6 +1,7 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {describe, expect, it, vi, beforeEach} from 'vitest'
-import type {StudyQueue, Word} from '@/shared/types'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {Word} from '@/features/words/types/wordTypes'
 import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'

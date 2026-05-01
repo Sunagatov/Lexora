@@ -1,5 +1,5 @@
 import type {ChangeEvent, RefObject} from 'react'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 type Props = {
   addingTopic: boolean

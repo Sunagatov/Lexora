@@ -11,8 +11,8 @@ from app.features.topics.exceptions import (
     TopicNameConflictError,
     TopicSlugConflictError,
 )
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 from app.shared.text import slugify
 
 

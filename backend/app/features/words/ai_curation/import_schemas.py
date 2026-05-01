@@ -15,10 +15,10 @@ from app.features.words.ai_curation.schema_support import (
     _json_entry_field,
     _normalize_optional_choice,
 )
-from app.shared.constraints import (
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN
+from app.features.words.constants import (
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
-    TOPIC_NAME_MAX_LEN,
     WORD_COUNT_MAX_LEN,
     WORD_POS_MAX_LEN,
     WORD_TERM_MAX_LEN,

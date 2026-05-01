@@ -1,6 +1,7 @@
 import {useEffect, useRef, useMemo, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import type {StudyQueue, Topic} from '@/shared/types'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {SORT_LABELS} from '@/features/topics/model/topicSort'
 import {TopicButton} from '@/features/topics/components/TopicButton'

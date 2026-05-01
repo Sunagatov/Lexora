@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import type {StudyQueue} from '@/shared/types'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 type Props = {
   topicCount: number

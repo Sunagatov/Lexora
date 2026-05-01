@@ -1,5 +1,6 @@
 import type {QueryClient} from '@tanstack/react-query'
-import type {Word, WordKnowledgeLevel, StudyQueue} from '@/shared/types'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {queryKeys} from '@/app/queryKeys'
 
 export function patchWordLevel(

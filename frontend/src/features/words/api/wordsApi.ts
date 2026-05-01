@@ -1,6 +1,6 @@
 import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
-import type {Word, WordKnowledgeLevel, WorkbookImportResponse} from '@/shared/types'
+import type {Word, WordKnowledgeLevel, WorkbookImportResponse} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 

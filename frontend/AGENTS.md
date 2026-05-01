@@ -23,7 +23,7 @@ For frontend work, start with the target feature folder and nearby tests. Only a
 - HTTP behavior: `frontend/src/shared/api/http.ts`
 - route constants: `frontend/src/app/routes.ts`
 - query keys/cache: `frontend/src/app/queryKeys.ts`
-- shared domain types: `frontend/src/shared/types/index.ts`
+- cross-feature primitives only when required: `frontend/src/shared/`
 
 ## Source Shape
 
@@ -44,6 +44,7 @@ For frontend work, start with the target feature folder and nearby tests. Only a
 - Prefer `@/…` imports over deep relative paths.
 - Keep route changes aligned with `frontend/src/app/router.tsx`.
 - Keep feature changes scoped when possible.
+- Prefer feature-owned types; only place types in `shared/` when multiple independent features truly need the same contract.
 - Preserve many-to-many topic behavior and topic hierarchy when editing word/topic UI.
 - Keep `shared/` free of feature dependencies.
 - Keep feature `api/`, `hooks/`, `model/`, and `services/` free of route/component imports.

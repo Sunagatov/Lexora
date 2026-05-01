@@ -5,8 +5,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
-from app.shared.constraints import (
+from app.features.words.constants import (
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     WORD_COUNT_MAX_LEN,
@@ -14,6 +13,7 @@ from app.shared.constraints import (
     WORD_TERM_MAX_LEN,
     WORD_VERB_FORM_MAX_LEN,
 )
+from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
 SCHEMA_VERSION = "lexora.ai-review.v1"
 JsonEntry = Annotated[str, Field(min_length=1, max_length=1000)]

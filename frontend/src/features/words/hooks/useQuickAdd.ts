@@ -3,7 +3,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {createTopic, fetchTopics} from '@/features/topics/api/topicsApi'
 import {quickAddWord} from '@/features/words/api/wordsApi'
 import {ApiError} from '@/shared/api/apiError'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {queryKeys} from '@/app/queryKeys'
 import {translateTerm, suggestTopic, ensureInbox, findTopicByName} from '@/features/words/services/quickAddService'
 

@@ -34,12 +34,13 @@ function SmartReviewSkeleton() {
 }
 
 import {useMemo} from 'react'
-import type {StudyQueue, WordKnowledgeLevel} from '@/shared/types'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
-import {useResponsivePageSize} from '@/features/study/hooks/useResponsivePageSize'
+import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 

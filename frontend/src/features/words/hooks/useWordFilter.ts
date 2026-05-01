@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router-dom'
-import type {Word, WordKnowledgeLevel} from '@/shared/types'
+import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   DEFAULT_WORD_SORT,
   WORD_SORT_OPTIONS,

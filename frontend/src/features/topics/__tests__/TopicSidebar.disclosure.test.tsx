@@ -4,7 +4,7 @@ import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 function makeStorage() {
   const store = new Map<string, string>()

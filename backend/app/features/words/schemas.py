@@ -12,15 +12,19 @@ from app.features.words.enrichment import (
     example_enrichment_status,
     needs_example_enrichment,
 )
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN
+from app.features.words.constants import (
+    BULK_WORDS_MAX,
+    KNOWLEDGE_LEVEL_MAX,
+    KNOWLEDGE_LEVEL_MIN,
+    WORD_COUNT_MAX_LEN,
+    WORD_POS_MAX_LEN,
+    WORD_TERM_MAX_LEN,
+    WORD_VERB_FORM_MAX_LEN,
+)
 
 if TYPE_CHECKING:
     from app.features.words.model import Word
-
-from app.shared.constraints import (
-    BULK_WORDS_MAX, KNOWLEDGE_LEVEL_MAX, KNOWLEDGE_LEVEL_MIN,
-    TOPIC_NAME_MAX_LEN, WORD_COUNT_MAX_LEN, WORD_POS_MAX_LEN,
-    WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN,
-)
 
 
 class WordCreate(BaseModel):

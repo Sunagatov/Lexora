@@ -1,6 +1,6 @@
 import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest'
-import type {DailyActivity} from '@/features/stats/api/statsApi'
-import {filterByDays, toLocalDateKey} from '@/features/stats/routes/StatsPage'
+import type {DailyActivity} from '@/features/stats/types/statsTypes'
+import {filterByDays, toLocalDateKey} from '@/features/stats/model/statsPageModel'
 
 function makeDays(startIsoDate: string, count: number): DailyActivity[] {
   const start = new Date(`${startIsoDate}T00:00:00Z`)

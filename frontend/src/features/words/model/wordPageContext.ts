@@ -1,4 +1,5 @@
-import type {Topic, Word} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
+import type {Word} from '@/features/words/types/wordTypes'
 
 type WordTopicRef = Pick<Word, 'topic_ids'>
 

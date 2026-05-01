@@ -10,7 +10,7 @@ import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
-import {useResponsivePageSize} from '@/features/study/hooks/useResponsivePageSize'
+import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
 
 export function useStudyState() {
   const location      = useLocation()

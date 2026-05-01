@@ -2,7 +2,7 @@ import {PAGE_SIZES} from '@/shared/config/pagination'
 
 type Props = {page: number; totalPages: number; onPage: (p: number) => void; pageSize: number; onPageSize: (n: number) => void}
 
-export function Pagination({page, totalPages, onPage, pageSize, onPageSize}: Props) {
+export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}: Props) {
   const safeTotalPages = Math.max(totalPages, 1)
   const safePage = Math.min(Math.max(page, 1), safeTotalPages)
   const isStaticPagination = safeTotalPages <= 1

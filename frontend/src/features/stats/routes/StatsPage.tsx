@@ -1,7 +1,4 @@
-import {useMemo, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {useQuery} from '@tanstack/react-query'
-import {fetchStats} from '@/features/stats/api/statsApi'
 import {InsightsStrip} from '@/features/stats/components/StatsInsights'
 import {
   AppTimeSection,
@@ -18,44 +15,7 @@ import {
   WordsAddedSection,
 } from '@/features/stats/components/StatsDetailSections'
 import {SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
-import {
-  buildActivityChartData,
-  buildMonthChartData,
-  buildUsageChartData,
-  filterByDays,
-  filterPreviousDays,
-  findBestDay,
-  percentDelta,
-  findWorstDay,
-  sortTopics,
-  sumActivity,
-  sumUsageSeconds,
-  type ActivityPeriod,
-  type MonthPeriod,
-  type TopicSort,
-} from '@/features/stats/model/statsPageModel'
-import {queryKeys} from '@/app/queryKeys'
-
-export {filterByDays, toLocalDateKey} from '@/features/stats/model/statsPageModel'
-
-function monthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-}
-
-function buildTrendLabel(current: number, previous: number, suffix: string) {
-  const delta = percentDelta(current, previous)
-  if (delta === null) return {value: `${current.toLocaleString()} ${suffix}`, direction: 'up' as const, tone: 'good' as const}
-  if (delta === 0) return {value: `0% ${suffix}`, direction: 'flat' as const, tone: 'neutral' as const}
-  return {
-    value: `${delta > 0 ? '+' : ''}${Math.round(delta)}% ${suffix}`,
-    direction: delta > 0 ? 'up' as const : 'down' as const,
-    tone: delta > 0 ? 'good' as const : 'bad' as const,
-  }
-}
-
-function sparklineValues(values: number[], count = 10) {
-  return values.slice(-count)
-}
+import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
 
 function StatsPageSkeleton() {
   return (
@@ -91,60 +51,15 @@ function StatsPageSkeleton() {
 
 export function StatsPage() {
   const navigate = useNavigate()
-  const {data: stats, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
+  const s = useStatsPageState()
 
-  const [activityPeriod, setActivityPeriod] = useState<ActivityPeriod>('30')
-  const [usagePeriod, setUsagePeriod] = useState<ActivityPeriod>('30')
-  const [monthPeriod, setMonthPeriod] = useState<MonthPeriod>('all')
-  const [topicSort, setTopicSort] = useState<TopicSort>('worst')
-  const [topicExpanded, setTopicExpanded] = useState(false)
+  if (s.isLoading) return <StatsPageSkeleton />
+  if (!s.stats) return <div className="stats-loading">Failed to load statistics.</div>
 
-  const filteredActivity = useMemo(
-    () => (stats ? filterByDays(stats.daily_activity, activityPeriod) : []),
-    [stats, activityPeriod],
-  )
-  const filteredUsage = useMemo(
-    () => (stats ? filterByDays(stats.usage_daily, usagePeriod) : []),
-    [stats, usagePeriod],
-  )
-  const activityTotals = useMemo(() => sumActivity(filteredActivity), [filteredActivity])
-  const activityChartData = useMemo(() => buildActivityChartData(filteredActivity), [filteredActivity])
-  const usageChartData = useMemo(() => buildUsageChartData(filteredUsage), [filteredUsage])
-  const monthChartData = useMemo(() => (stats ? buildMonthChartData(stats, monthPeriod) : []), [stats, monthPeriod])
-  const sortedTopics = useMemo(() => (stats ? sortTopics(stats.topics, topicSort) : []), [stats, topicSort])
-  const bestDay = useMemo(() => findBestDay(filteredActivity), [filteredActivity])
-  const worstDay = useMemo(() => findWorstDay(filteredActivity), [filteredActivity])
-  const weeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterByDays(stats.daily_activity, '7')) : null), [stats])
-  const previousWeeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterPreviousDays(stats.daily_activity, 7)) : null), [stats])
-  const currentWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterByDays(stats.usage_daily, '7')) : 0), [stats])
-  const previousWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7)) : 0), [stats])
-
-  if (isLoading) return <StatsPageSkeleton />
-  if (!stats) return <div className="stats-loading">Failed to load statistics.</div>
-
+  const {stats} = s
   const overview = stats.overview
   const totalWords = overview.total_words
   const activeMinutes = Math.round(stats.usage_summary.total_active_seconds / 60)
-  const now = new Date()
-  const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
-  const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const previousMonthAdds = stats.words_added_by_month[monthKey(previousMonthDate)] ?? 0
-  const monthAddSparkline = sparklineValues(
-    Object.entries(stats.words_added_by_month)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([, value]) => value),
-    8,
-  )
-  const usageSparkline = sparklineValues(filteredUsage.map((day) => day.active_seconds), 12)
-  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.net), 12)
-  const levelDistributionSparkline = [
-    stats.level_counts.level_1,
-    stats.level_counts.level_2,
-    stats.level_counts.level_3,
-    stats.level_counts.level_4,
-    stats.level_counts.level_5,
-    stats.level_counts.unset,
-  ]
 
   return (
     <div className="stats-page">
@@ -166,42 +81,15 @@ export function StatsPage() {
             Vocabulary overview
           </SectionTitle>
           <div className="stats-cards stats-cards-4">
-            <StatCard
-              value={overview.total_words}
-              label="Total words"
-              sub={`${currentMonthAdds.toLocaleString()} added this month`}
-              trend={buildTrendLabel(currentMonthAdds, previousMonthAdds, 'vs last month')}
-              sparkline={monthAddSparkline}
-            />
-            <StatCard
-              value={currentWeeklyUsage}
-              label="This week"
-              sub="active seconds"
-              trend={buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d')}
-              sparkline={usageSparkline}
-            />
-            <StatCard
-              value={weeklyActivityTotals?.reviewed ?? 0}
-              label="Level changes"
-              sub="last 7 days"
-              trend={buildTrendLabel(weeklyActivityTotals?.reviewed ?? 0, previousWeeklyActivityTotals?.reviewed ?? 0, 'vs previous 7d')}
-              sparkline={activitySparkline}
-            />
-            <StatCard
-              value={stats.okay_or_better_pct}
-              label="Okay or better"
-              sub={`${stats.level_counts.level_4.toLocaleString()} strong words`}
-              trend={buildTrendLabel(weeklyActivityTotals?.net ?? 0, previousWeeklyActivityTotals?.net ?? 0, 'net this week')}
-              sparkline={levelDistributionSparkline}
-            />
+            {s.overviewCards.map((card) => <StatCard key={card.label} {...card} />)}
           </div>
         </section>
 
         <AppTimeSection
           stats={stats}
-          usagePeriod={usagePeriod}
-          onUsagePeriodChange={setUsagePeriod}
-          usageChartData={usageChartData}
+          usagePeriod={s.usagePeriod}
+          onUsagePeriodChange={s.setUsagePeriod}
+          usageChartData={s.usageChartData}
         />
         <RetentionSection stats={stats} totalWords={totalWords} />
         <ConsistencySection stats={stats} />
@@ -212,25 +100,25 @@ export function StatsPage() {
         <KnowledgeDistributionSection stats={stats} totalWords={totalWords} />
         <DailyProgressSection
           stats={stats}
-          activityPeriod={activityPeriod}
-          onActivityPeriodChange={setActivityPeriod}
-          activityTotals={activityTotals}
-          filteredActivity={filteredActivity}
-          activityChartData={activityChartData}
-          bestDay={bestDay}
-          worstDay={worstDay}
+          activityPeriod={s.activityPeriod}
+          onActivityPeriodChange={s.setActivityPeriod}
+          activityTotals={s.activityTotals}
+          filteredActivity={s.filteredActivity}
+          activityChartData={s.activityChartData}
+          bestDay={s.bestDay}
+          worstDay={s.worstDay}
         />
         <WordsAddedSection
-          monthPeriod={monthPeriod}
-          onMonthPeriodChange={setMonthPeriod}
-          monthChartData={monthChartData}
+          monthPeriod={s.monthPeriod}
+          onMonthPeriodChange={s.setMonthPeriod}
+          monthChartData={s.monthChartData}
         />
         <TopicsSection
-          topics={sortedTopics}
-          topicSort={topicSort}
-          onTopicSortChange={setTopicSort}
-          topicExpanded={topicExpanded}
-          onTopicExpandedChange={setTopicExpanded}
+          topics={s.sortedTopics}
+          topicSort={s.topicSort}
+          onTopicSortChange={s.setTopicSort}
+          topicExpanded={s.topicExpanded}
+          onTopicExpandedChange={s.setTopicExpanded}
         />
         <DataQualitySection stats={stats} totalWords={totalWords} />
       </div>

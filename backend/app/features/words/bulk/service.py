@@ -5,6 +5,7 @@ from typing import cast
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import (
@@ -14,11 +15,10 @@ from app.features.topics.service import (
     TopicSlugConflictError,
 )
 from app.features.words.model import Word
+from app.features.words.domain import existing_normalized_terms
 from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
-from app.features.words.domain import existing_normalized_terms
 from app.shared.text import normalize_term, slugify
-from app.shared.constraints import TOPIC_SLUG_MAX_LEN
 
 
 class BulkTopicInTrashError(Exception):

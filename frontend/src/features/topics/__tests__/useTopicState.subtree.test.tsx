@@ -2,7 +2,7 @@ import {renderHook} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 import {useNavigate, useParams} from 'react-router-dom'
 
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {useTopicState} from '@/features/topics/hooks/useTopicState'
 
 vi.mock('react-router-dom')

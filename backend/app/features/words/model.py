@@ -17,10 +17,13 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.shared.db import Base
-from app.shared.constraints import (
-    WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN, WORD_POS_MAX_LEN, WORD_COUNT_MAX_LEN,
+from app.features.words.constants import (
+    WORD_COUNT_MAX_LEN,
+    WORD_POS_MAX_LEN,
+    WORD_TERM_MAX_LEN,
+    WORD_VERB_FORM_MAX_LEN,
 )
+from app.shared.db import Base
 
 from typing import TYPE_CHECKING
 

@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
+
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.repository import get_word_by_id_including_deleted
 from app.features.words.workbook.format import PART_OF_SPEECH_VALUES, InvalidWorkbookError
-from app.shared.constraints import TOPIC_NAME_MAX_LEN
 from app.shared.text import normalize_term
 
 

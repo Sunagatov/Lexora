@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
-import type {DailyActivity, StatsResponse, TopicStat} from '@/features/stats/api/statsApi'
+import type {DailyActivity, StatsResponse, TopicStat} from '@/features/stats/types/statsTypes'
 import {BarChart, DonutChart, PeriodTabs, SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
 import {
   ACTIVITY_PERIODS,

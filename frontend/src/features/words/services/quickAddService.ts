@@ -1,6 +1,6 @@
 import {request} from '@/shared/api/http'
 import {createTopic} from '@/features/topics/api/topicsApi'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 function normalizeTopicName(name: string): string {

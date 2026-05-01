@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.shared.db import Base
-from app.shared.constraints import TOPIC_NAME_MAX_LEN, TOPIC_SLUG_MAX_LEN
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN, TOPIC_SLUG_MAX_LEN
 from app.features.words.model import word_topics
+from app.shared.db import Base
 
 if TYPE_CHECKING:
     from app.features.words.model import Word

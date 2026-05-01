@@ -12,10 +12,10 @@ function WordTableSkeleton() {
   )
 }
 
-import type {Word, WordKnowledgeLevel} from '@/shared/types'
+import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {SortOption} from '@/features/words/model/wordDomain'
-import {Toolbar} from '@/features/study/components/Toolbar'
-import {Pagination} from '@/features/study/components/Pagination'
+import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
+import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
 
@@ -61,7 +61,7 @@ export function WordCollectionView({
   return (
     <>
       <div className="sticky-controls">
-        <Toolbar
+        <WordCollectionToolbar
           wordSearch={wordSearch} setWordSearch={setWordSearch}
           sortBy={sortBy} setSortBy={setSortBy}
           levelFilter={levelFilter} setLevelFilter={setLevelFilter}
@@ -91,7 +91,7 @@ export function WordCollectionView({
           </>
         )}
         <div className="pagination-bar">
-          <Pagination
+          <WordPagination
             page={page} totalPages={totalPages}
             pageSize={pageSize} onPageSize={setPageSize}
             onPage={handlePage}

@@ -1,7 +1,7 @@
 import {createBrowserRouter, Navigate} from 'react-router-dom'
 import {AppLayout} from '@/app/layout/AppLayout'
 import {NotFoundPage} from '@/app/layout/NotFoundPage'
-import {LoginPage} from '@/features/auth/components/LoginPage'
+import {LoginPage} from '@/features/auth/routes/LoginPage'
 import {StudyPage} from '@/features/study/routes/StudyPage'
 import {WordPage} from '@/features/words/routes/WordPage'
 import {TrashPage} from '@/features/trash/routes/TrashPage'

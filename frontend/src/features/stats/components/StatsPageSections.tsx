@@ -1,4 +1,4 @@
-import type {StatsResponse} from '@/features/stats/api/statsApi'
+import type {StatsResponse} from '@/features/stats/types/statsTypes'
 import {BarChart, PeriodTabs, SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
 import {
   ACTIVITY_PERIODS,

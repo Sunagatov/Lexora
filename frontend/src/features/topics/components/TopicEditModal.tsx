@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {isPosGroup} from '@/features/topics/model/topicSidebarModel'
 
 type Props = {

@@ -1,5 +1,5 @@
 import {request} from '@/shared/api/http'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 export const fetchTopics = () => request<Topic[]>('/api/topics')
 

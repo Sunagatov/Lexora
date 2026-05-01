@@ -8,8 +8,8 @@ from app.features.words.workbook.cells import (
     _validate_countability,
     _validate_max_length,
 )
+from app.features.words.constants import WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN
 from app.features.words.workbook.format import InvalidWorkbookError
-from app.shared.constraints import WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN
 
 
 @dataclass(frozen=True)

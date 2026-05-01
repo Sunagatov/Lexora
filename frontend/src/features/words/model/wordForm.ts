@@ -1,4 +1,4 @@
-import type {Word} from '@/shared/types'
+import type {Word} from '@/features/words/types/wordTypes'
 import {levelToStr, strToLevel} from '@/features/words/model/wordDomain'
 import {toStr, toNullStr, toNullStrIf} from '@/shared/lib/utils'
 

@@ -1,4 +1,4 @@
-import type {Word, WordKnowledgeLevel} from '@/shared/types'
+import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 
 export type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc'
 export const WORD_SORT_OPTIONS = ['term-asc', 'term-desc', 'level-asc', 'level-desc'] as const

@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react'
-import type {StatsResponse} from '@/features/stats/api/statsApi'
+import type {StatsResponse} from '@/features/stats/types/statsTypes'
 import {SectionTitle} from '@/features/stats/components/StatsComponents'
 
 export function InsightsStrip({s}: {s: StatsResponse}) {

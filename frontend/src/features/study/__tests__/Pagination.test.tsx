@@ -1,11 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
-import {Pagination} from '@/features/study/components/Pagination'
+import {WordPagination} from '@/features/words/components/WordPagination'
 
 describe('Pagination', () => {
   it('keeps desktop and mobile navigation visible but disabled when only one page is available', () => {
     render(
-      <Pagination
+      <WordPagination
         page={1}
         totalPages={1}
         pageSize={20}

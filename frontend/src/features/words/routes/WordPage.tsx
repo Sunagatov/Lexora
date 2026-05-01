@@ -8,7 +8,7 @@ import {usePublicConfig} from '@/shared/config/usePublicConfig'
 import {useWordPageState} from '@/features/words/hooks/useWordPageState'
 import {WordPageEditForm} from '@/features/words/components/WordPageEditForm'
 import {WordPageView} from '@/features/words/components/WordPageView'
-import type {Word} from '@/shared/types'
+import type {Word} from '@/features/words/types/wordTypes'
 
 type WordWithPronunciation = Word & {
   ipa?: string | null

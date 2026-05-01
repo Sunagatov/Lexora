@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import type {WordKnowledgeLevel} from '@/shared/types'
+import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
   LEVEL_LABELS,
@@ -48,7 +48,7 @@ function isLevelSortOption(value: SortOption): value is (typeof LEVEL_SORT_OPTIO
   return LEVEL_SORT_SET.has(value)
 }
 
-export function Toolbar({
+export function WordCollectionToolbar({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   onReset, totalWordsOverall, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, topicName,
 }: Props) {

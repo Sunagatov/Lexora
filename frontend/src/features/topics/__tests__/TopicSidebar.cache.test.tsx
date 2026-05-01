@@ -5,7 +5,7 @@ import {MemoryRouter} from 'react-router-dom'
 import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
 import {queryKeys} from '@/app/queryKeys'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {ApiError} from '@/shared/api/apiError'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 

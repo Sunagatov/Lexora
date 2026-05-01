@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query'
-import type {Word, WordKnowledgeLevel} from '@/shared/types'
+import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import {patchWordLevel} from '@/features/words/model/wordCache'

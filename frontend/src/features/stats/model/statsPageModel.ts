@@ -1,4 +1,4 @@
-import type {DailyActivity, StatsResponse, TopicStat, UsageDay} from '@/features/stats/api/statsApi'
+import type {DailyActivity, StatsResponse, TopicStat, UsageDay} from '@/features/stats/types/statsTypes'
 
 export const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak',

@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import type {ReactNode} from 'react'
 import type {EditState} from '@/features/words/model/wordForm'
-import type {Topic} from '@/shared/types'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 type Props = {
   draft: EditState
