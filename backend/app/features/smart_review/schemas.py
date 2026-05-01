@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.schemas import WordResponse
+from app.features.words.api import WordResponse
 
 
 class StudyQueueItemResponse(BaseModel):

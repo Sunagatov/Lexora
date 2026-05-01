@@ -26,7 +26,6 @@ from app.features.smart_review.selection import (
     pick_for_level as _pick_for_level_impl,
     pick_for_level_retry_excluded as _pick_for_level_retry_excluded_impl,
 )
-from app.features.words.model import Word as Word
 
 def _cooldown_word_ids(db: Session) -> set[int]:
     return _cooldown_word_ids_impl(db, cooldown_days=settings.smart_review_cooldown_days)

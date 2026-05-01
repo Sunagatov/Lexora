@@ -207,7 +207,7 @@ def test_ai_review_export_for_parent_topic_includes_child_topic_words(monkeypatc
     assert [item.id for item in result.words] == [10]
     assert any("select distinct" in sql.lower() for sql in captured_sql)
     assert any("count(distinct" in sql.lower() for sql in captured_sql)
-    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)
+    assert any("word_topics.topic_id in (1, 2)" in sql.lower() for sql in captured_sql)
 
 
 def test_ai_review_import_accepts_child_topic_word_when_topic_id_is_parent(monkeypatch) -> None:
@@ -236,4 +236,4 @@ def test_ai_review_import_accepts_child_topic_word_when_topic_id_is_parent(monke
 
     assert result.updated == 1
     assert any("select distinct" in sql.lower() for sql in captured_sql)
-    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)
+    assert any("word_topics.topic_id in (1, 2)" in sql.lower() for sql in captured_sql)

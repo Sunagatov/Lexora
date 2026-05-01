@@ -4,7 +4,6 @@ from collections import Counter
 
 from sqlalchemy import select
 
-from app.features.topics.model import Topic
 from app.features.words.ai_review.schemas import AiReviewImportRequest
 from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.words.model import Word, word_topics
@@ -17,11 +16,9 @@ def load_import_words(db, topic_id: int, word_ids: list[int], subtree_topic_ids:
         _with_details(
             select(Word)
             .join(word_topics, word_topics.c.word_id == Word.id)
-            .join(Topic, Topic.id == word_topics.c.topic_id)
             .where(Word.id.in_(word_ids))
             .where(Word.deleted_at.is_(None))
-            .where(Topic.deleted_at.is_(None))
-            .where(Topic.id.in_(subtree_topic_ids))
+            .where(word_topics.c.topic_id.in_(subtree_topic_ids))
             .distinct()
         )
     ).all()

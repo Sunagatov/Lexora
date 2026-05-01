@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import InvalidTopicNameError, TopicSlugConflictError, create_topic
+from app.features.topics.api import (
+    InvalidTopicNameError,
+    TopicSlugConflictError,
+    create_topic_from_values as _create_topic_from_values,
+)
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
 from app.features.words.ai_curation.import_loading import (
     load_existing_words as _load_existing_words,
@@ -30,6 +34,17 @@ from app.features.words.ai_curation.schemas import (
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.repository import create_word, update_word
+
+
+def create_topic(db: Session, payload, commit: bool = True):
+    return _create_topic_from_values(
+        db,
+        name=payload.name,
+        description=payload.description,
+        parent_topic_id=payload.parent_topic_id,
+        is_active=payload.is_active,
+        commit=commit,
+    )
 
 
 def import_ai_curation(

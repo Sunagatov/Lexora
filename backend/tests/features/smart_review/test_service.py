@@ -16,6 +16,7 @@ import pytest
 
 from app.shared.db import Base
 from app.features.smart_review import service as smart_review_service
+from app.features.words.model import Word
 
 
 class FakeDB:
@@ -111,7 +112,7 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
             return item
         if model is smart_review_service.StudyQueue:
             return queue
-        if model is smart_review_service.Word:
+        if model is Word:
             return word
         return None
 
@@ -142,7 +143,7 @@ def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
             return item
         if model is smart_review_service.StudyQueue:
             return queue
-        if model is smart_review_service.Word:
+        if model is Word:
             return word
         return None
 
@@ -290,8 +291,8 @@ def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:
     db = _make_sqlite_session()
     now = datetime.now(timezone.utc)
 
-    word_completed = smart_review_service.Word(term="done", translations="done")
-    word_pending = smart_review_service.Word(term="pending", translations="pending")
+    word_completed = Word(term="done", translations="done")
+    word_pending = Word(term="pending", translations="pending")
     db.add_all([word_completed, word_pending])
     db.flush()
 
@@ -353,7 +354,7 @@ def test_complete_queue_item_raises_when_linked_word_is_deleted() -> None:
             return item
         if model is smart_review_service.StudyQueue:
             return queue
-        if model is smart_review_service.Word:
+        if model is Word:
             return deleted_word
         return None
 

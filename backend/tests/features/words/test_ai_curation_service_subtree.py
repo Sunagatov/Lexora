@@ -84,7 +84,7 @@ def test_ai_curation_export_for_parent_topic_includes_child_topic_words(monkeypa
     assert [item.id for item in result.words] == [10]
     assert any("select distinct" in sql.lower() for sql in captured_sql)
     assert any("count(distinct" in sql.lower() for sql in captured_sql)
-    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)
+    assert any("word_topics.topic_id in (1, 2)" in sql.lower() for sql in captured_sql)
 
 
 def test_ai_curation_lean_export_for_parent_topic_includes_child_topic_words(monkeypatch) -> None:
@@ -120,7 +120,7 @@ def test_ai_curation_lean_export_for_parent_topic_includes_child_topic_words(mon
     assert [item.id for item in result.words] == [10]
     assert any("select distinct" in sql.lower() for sql in captured_sql)
     assert any("count(distinct" in sql.lower() for sql in captured_sql)
-    assert any("topics.id in (1, 2)" in sql.lower() for sql in captured_sql)
+    assert any("word_topics.topic_id in (1, 2)" in sql.lower() for sql in captured_sql)
 
 
 def test_ai_curation_export_deduplicates_word_present_in_multiple_topics_of_same_subtree(monkeypatch) -> None:

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from sqlalchemy import bindparam
+
 from app.features.words.domain import assert_word_restore_allowed
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
 from app.features.words.exceptions import DuplicateWordInTopicError
@@ -33,6 +35,30 @@ def restore_word(db, word):
     from app.features.words.repository import restore_word as _restore_word
 
     return _restore_word(db, word)
+
+
+def hard_delete_deleted_words(db, *, deleted_before: datetime | None = None) -> int:
+    from app.features.words.model import Word
+
+    stmt = Word.__table__.delete().where(Word.deleted_at.isnot(None))
+    if deleted_before is not None:
+        stmt = stmt.where(Word.deleted_at < deleted_before)
+    result = db.execute(stmt)
+    return result.rowcount or 0
+
+
+def hard_delete_words_by_ids(db, word_ids: list[int]) -> int:
+    from app.features.words.model import Word
+
+    if not word_ids:
+        return 0
+    result = db.execute(
+        Word.__table__.delete().where(
+            Word.id.in_(bindparam("orphan_word_ids", expanding=True))
+        ),
+        {"orphan_word_ids": sorted(word_ids)},
+    )
+    return result.rowcount or 0
 
 
 def count_active_words(db) -> int:
@@ -164,6 +190,8 @@ __all__ = [
     "get_deleted_words",
     "get_word_for_queue_validation",
     "get_word_by_id_including_deleted",
+    "hard_delete_deleted_words",
+    "hard_delete_words_by_ids",
     "has_smart_review_candidate",
     "list_active_word_topic_levels",
     "list_active_word_stats",

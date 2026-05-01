@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import func, select
-
-from app.features.topics.model import Topic
+from app.features.topics.api import count_active_topics, list_active_topics_page_rows
 from app.features.words.ai_curation.schemas import (
     AiCurationAllowedValues,
     AiCurationTopicListResponse,
@@ -20,9 +18,9 @@ from app.features.words.ai_curation.export_mapping import (
 )
 from app.features.words.ai_curation.export_queries import (
     _load_topic_words,
-    _topic_list_stmt,
     _topic_words_count_stmt,
 )
+from app.features.words.model import Word, word_topics
 from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
 EXPORT_INSTRUCTIONS = [
@@ -38,9 +36,15 @@ EXPORT_INSTRUCTIONS = [
 
 
 def list_topics_page(db, page: int, page_size: int) -> AiCurationTopicListResponse:
-    total = db.scalar(select(func.count()).select_from(Topic).where(Topic.deleted_at.is_(None))) or 0
+    total = count_active_topics(db)
     offset = (page - 1) * page_size
-    rows = db.execute(_topic_list_stmt(offset=offset, page_size=page_size)).all()
+    rows = list_active_topics_page_rows(
+        db,
+        offset=offset,
+        page_size=page_size,
+        word_cls=Word,
+        word_topics_table=word_topics,
+    )
     return AiCurationTopicListResponse(
         items=[_topic_summary_from_row(row) for row in rows],
         pagination=PaginationMeta.build(page=page, page_size=page_size, total_items=total),

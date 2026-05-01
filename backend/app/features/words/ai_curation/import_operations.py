@@ -4,8 +4,6 @@ from collections import Counter
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.model import Topic
-from app.features.topics.schemas import TopicCreate
 from app.features.words.ai_curation.common import AiCurationImportError
 from app.features.words.ai_curation.import_support import (
     AiCurationImportOperations,
@@ -26,23 +24,18 @@ def _process_topic_operations(
     db: Session,
     payload: AiCurationImportRequest,
     operations: AiCurationImportOperations,
-) -> tuple[dict[str, Topic], list[CreatedTopicResult]]:
+) -> tuple[dict[str, object], list[CreatedTopicResult]]:
     client_keys = [operation.client_key for operation in payload.topic_operations]
     duplicate_client_keys = sorted(key for key, count in Counter(client_keys).items() if count > 1)
     if duplicate_client_keys:
         raise AiCurationImportError(f"Duplicate topic client_keys: {duplicate_client_keys}")
 
-    created_topics: dict[str, Topic] = {}
+    created_topics: dict[str, object] = {}
     created_topic_results: list[CreatedTopicResult] = []
     for operation in payload.topic_operations:
         topic = operations.create_topic(
             db,
-            TopicCreate(
-                name=operation.name,
-                description=operation.description,
-                parent_topic_id=operation.parent_topic_id,
-                is_active=operation.is_active,
-            ),
+            operation,
             commit=False,
         )
         created_topics[operation.client_key] = topic
@@ -90,7 +83,7 @@ def _process_word_updates(
 def _process_word_creates(
     db: Session,
     payload: AiCurationImportRequest,
-    created_topics: dict[str, Topic],
+    created_topics: dict[str, object],
     operations: AiCurationImportOperations,
 ) -> list[int]:
     created_word_ids: list[int] = []
@@ -128,7 +121,7 @@ def _process_word_reassigns(
     db: Session,
     payload: AiCurationImportRequest,
     words_by_id: dict[int, Word],
-    created_topics: dict[str, Topic],
+    created_topics: dict[str, object],
     operations: AiCurationImportOperations,
 ) -> tuple[list[int], int]:
     reassigned_word_ids: list[int] = []
@@ -173,7 +166,7 @@ def _validate_strict_reassign(
     word_id: int,
     add_topic_refs,
     remove_topic_ids: list[int],
-    created_topics: dict[str, Topic],
+    created_topics: dict[str, object],
 ) -> None:
     created_topic_ids = {topic.id for topic in created_topics.values()}
     bad_adds = [

@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy import func, select
 
-from app.features.topics.model import Topic
 from app.features.words.ai_review.schemas import (
     AiReviewAllowedValues,
     AiReviewExportResponse,
@@ -65,10 +64,8 @@ def _topic_words_count_stmt(subtree_topic_ids: list[int]):
         select(func.count(func.distinct(Word.id)))
         .select_from(Word)
         .join(word_topics, word_topics.c.word_id == Word.id)
-        .join(Topic, Topic.id == word_topics.c.topic_id)
         .where(Word.deleted_at.is_(None))
-        .where(Topic.deleted_at.is_(None))
-        .where(Topic.id.in_(subtree_topic_ids))
+        .where(word_topics.c.topic_id.in_(subtree_topic_ids))
     )
 
 
@@ -77,10 +74,8 @@ def _load_topic_words(db, subtree_topic_ids: list[int], *, page: int, page_size:
     stmt = (
         select(Word)
         .join(word_topics, word_topics.c.word_id == Word.id)
-        .join(Topic, Topic.id == word_topics.c.topic_id)
         .where(Word.deleted_at.is_(None))
-        .where(Topic.deleted_at.is_(None))
-        .where(Topic.id.in_(subtree_topic_ids))
+        .where(word_topics.c.topic_id.in_(subtree_topic_ids))
         .distinct()
         .order_by(Word.term.asc(), Word.id.asc())
         .offset(offset)
