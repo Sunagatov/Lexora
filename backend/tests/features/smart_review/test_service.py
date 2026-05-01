@@ -215,7 +215,11 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     word2 = SimpleNamespace(id=2)
 
     deactivate = MagicMock()
-    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: {999})
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "cooldown_word_ids",
+        lambda db_arg, *, cooldown_days: {999},
+    )
     monkeypatch.setattr(smart_review_service, "deactivate_all_queues", deactivate)
     monkeypatch.setattr(smart_review_service.random, "shuffle", lambda items: None)
 
@@ -226,14 +230,14 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     monkeypatch.setattr(smart_review_service.settings, "smart_review_level_5_count", 0)
     monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_ttl_hours", 24)
 
-    def fake_pick(db_arg, level, needed, excluded_ids, topic_counts):
+    def fake_pick(db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic):
         if level == 1:
             return [word1]
         if level == 2:
             return [word2]
         return []
 
-    monkeypatch.setattr(smart_review_service, "_pick_for_level_retry_excluded", fake_pick)
+    monkeypatch.setattr(smart_review_service.selection, "pick_for_level_retry_excluded", fake_pick)
 
     queue = smart_review_service.generate_queue(cast(Session, cast(object, db)))
 
@@ -257,7 +261,11 @@ def test_generate_queue_writes_audit_log(monkeypatch, caplog) -> None:
     db = FakeDB()
     word1 = SimpleNamespace(id=1)
 
-    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: {999, 1000})
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "cooldown_word_ids",
+        lambda db_arg, *, cooldown_days: {999, 1000},
+    )
     monkeypatch.setattr(smart_review_service, "deactivate_all_queues", lambda db_arg: None)
     monkeypatch.setattr(smart_review_service.random, "shuffle", lambda items: None)
     monkeypatch.setattr(smart_review_service.settings, "smart_review_level_1_count", 1)
@@ -267,9 +275,9 @@ def test_generate_queue_writes_audit_log(monkeypatch, caplog) -> None:
     monkeypatch.setattr(smart_review_service.settings, "smart_review_level_5_count", 0)
     monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_ttl_hours", 24)
     monkeypatch.setattr(
-        smart_review_service,
-        "_pick_for_level_retry_excluded",
-        lambda db_arg, level, needed, excluded_ids, topic_counts: [word1] if level == 1 else [],
+        smart_review_service.selection,
+        "pick_for_level_retry_excluded",
+        lambda db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic: [word1] if level == 1 else [],
     )
 
     with caplog.at_level(logging.INFO, logger="audit"):
@@ -333,7 +341,10 @@ def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:
     )
     db.flush()
 
-    result = smart_review_service._cooldown_word_ids(cast(Session, db))
+    result = smart_review_service.selection.cooldown_word_ids(
+        cast(Session, db),
+        cooldown_days=smart_review_service.settings.smart_review_cooldown_days,
+    )
 
     assert result == {word_completed.id}
 
@@ -412,8 +423,16 @@ def test_get_or_create_active_queue_regenerates_stale_empty_queue_when_candidate
     db.scalar.return_value = empty_queue
 
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
-    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: set())
-    monkeypatch.setattr(smart_review_service, "_has_any_candidates", lambda db_arg, excluded: True)
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "cooldown_word_ids",
+        lambda db_arg, *, cooldown_days: set(),
+    )
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "has_any_candidates",
+        lambda db_arg, *, level_buckets, excluded_ids: True,
+    )
     monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
 
     result = smart_review_service.get_or_create_active_queue(db)
@@ -429,8 +448,16 @@ def test_get_or_create_active_queue_keeps_empty_queue_when_no_candidates_exist(m
 
     generate = MagicMock()
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
-    monkeypatch.setattr(smart_review_service, "_cooldown_word_ids", lambda db_arg: set())
-    monkeypatch.setattr(smart_review_service, "_has_any_candidates", lambda db_arg, excluded: False)
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "cooldown_word_ids",
+        lambda db_arg, *, cooldown_days: set(),
+    )
+    monkeypatch.setattr(
+        smart_review_service.selection,
+        "has_any_candidates",
+        lambda db_arg, *, level_buckets, excluded_ids: False,
+    )
     monkeypatch.setattr(smart_review_service, "generate_queue", generate)
 
     result = smart_review_service.get_or_create_active_queue(db)

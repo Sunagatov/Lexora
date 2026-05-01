@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import bindparam, func, select
 from sqlalchemy.orm import Session, selectinload
@@ -11,14 +11,8 @@ from app.features.words.domain import (
     existing_normalized_terms as existing_normalized_terms,
 )
 from app.features.words.model import Word, word_topics
+from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.progress import record_level_change
-from app.features.words.repository_mutations import (
-    create_word_record,
-    hard_delete_word_record,
-    restore_word_record,
-    soft_delete_word_record,
-    update_word_record,
-)
 from app.features.words.repository_queries import (
     active_words_stmt,
     apply_word_search,
@@ -182,35 +176,148 @@ def has_smart_review_candidate(db: Session, *, level: int, excluded_ids: set[int
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
-    return create_word_record(
-        db,
-        payload,
-        commit=commit,
-        word_cls=Word,
-        assert_no_duplicate_word_fn=assert_no_duplicate_word,
-        existing_normalized_terms_fn=existing_normalized_terms,
+    assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
+    topics = _load_topics(db, payload.topic_ids)
+    data = payload.model_dump(exclude={"topic_ids", "translation_entries", "example_entries"})
+    word = Word(**data, topics=list(topics))
+    sync_word_multivalue_fields(
+        word,
+        payload.translations,
+        payload.translation_entries,
+        payload.example,
+        payload.example_entries,
     )
+    db.add(word)
+    _finalize_write(db, word, commit=commit)
+    return word
 
 
 def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = True) -> Word:
-    return update_word_record(
-        db,
-        word,
-        payload,
-        commit=commit,
-        record_level_change_fn=record_level_change,
-        assert_no_duplicate_word_fn=assert_no_duplicate_word,
-        existing_normalized_terms_fn=existing_normalized_terms,
-    )
+    effective_term = _effective_term(word, payload)
+    target_topic_ids = _target_topic_ids(word, payload)
+    if _requires_duplicate_check(word, payload, effective_term):
+        assert_no_duplicate_word(
+            effective_term,
+            existing_normalized_terms(db, target_topic_ids, exclude_word_id=word.id),
+        )
+
+    old_level = word.knowledge_level
+    for field, value in _word_attribute_updates(payload).items():
+        setattr(word, field, value)
+
+    if _multivalue_update_requested(payload):
+        _apply_multivalue_update(db, word, payload)
+
+    if payload.topic_ids is not None:
+        word.topics = _load_topics(db, payload.topic_ids)
+
+    if "knowledge_level" in payload.model_fields_set:
+        if payload.knowledge_level != old_level and payload.knowledge_level is not None:
+            source = payload.progress_source or PROGRESS_SOURCE_MANUAL
+            record_level_change(db, int(word.id), old_level, int(payload.knowledge_level), source)
+
+    db.add(word)
+    _finalize_write(db, word, commit=commit)
+    return word
 
 
 def soft_delete_word(db: Session, word: Word) -> Word:
-    return soft_delete_word_record(db, word)
+    word.deleted_at = datetime.now(timezone.utc)
+    word.deleted_via_topic_id = None
+    db.add(word)
+    _finalize_write(db, word, commit=True)
+    return word
 
 
 def restore_word(db: Session, word: Word) -> Word:
-    return restore_word_record(db, word)
+    word.deleted_at = None
+    word.deleted_via_topic_id = None
+    db.add(word)
+    _finalize_write(db, word, commit=True)
+    return word
 
 
 def hard_delete_word(db: Session, word: Word) -> None:
-    hard_delete_word_record(db, word)
+    db.delete(word)
+    db.commit()
+
+
+def _load_topics(db: Session, topic_ids: list[int]) -> list[Topic]:
+    return list(db.scalars(select(Topic).where(Topic.id.in_(topic_ids))).all())
+
+
+def _finalize_write(db: Session, word: Word, *, commit: bool) -> None:
+    if commit:
+        db.commit()
+        db.refresh(word)
+    else:
+        db.flush()
+
+
+def _effective_term(word: Word, payload: WordUpdate) -> str:
+    data = payload.model_dump(exclude_unset=True, exclude={"topic_ids", "progress_source"})
+    return data.get("term", word.term)
+
+
+def _target_topic_ids(word: Word, payload: WordUpdate) -> list[int]:
+    return payload.topic_ids if payload.topic_ids is not None else [int(topic.id) for topic in word.topics]
+
+
+def _requires_duplicate_check(word: Word, payload: WordUpdate, effective_term: str) -> bool:
+    data = payload.model_dump(exclude_unset=True, exclude={"topic_ids", "progress_source"})
+    term_changed = "term" in data and effective_term != word.term
+    topics_changed = payload.topic_ids is not None and set(payload.topic_ids) != {int(topic.id) for topic in word.topics}
+    return term_changed or topics_changed
+
+
+def _word_attribute_updates(payload: WordUpdate) -> dict[str, object]:
+    return payload.model_dump(
+        exclude_unset=True,
+        exclude={
+            "topic_ids",
+            "progress_source",
+            "translations",
+            "translation_entries",
+            "example",
+            "example_entries",
+        },
+    )
+
+def _multivalue_update_requested(payload: WordUpdate) -> bool:
+    fields = payload.model_fields_set
+    return "translations" in fields or "translation_entries" in fields or "example" in fields or "example_entries" in fields
+
+
+def _apply_multivalue_update(db: Session, word: Word, payload: WordUpdate) -> None:
+    current_translations_text = word.translations
+    current_example_text = getattr(word, "example", None)
+    current_translation_entries = [item.value for item in getattr(word, "translation_items", [])]
+    current_example_entries = [item.value for item in getattr(word, "example_items", [])]
+
+    word.translation_items = []
+    word.example_items = []
+    db.flush()
+
+    sync_word_multivalue_fields(
+        word,
+        payload.translations if "translations" in payload.model_fields_set else current_translations_text,
+        _resolved_translation_entries(payload, current_translation_entries),
+        payload.example if "example" in payload.model_fields_set else current_example_text,
+        _resolved_example_entries(payload, current_example_entries),
+    )
+
+
+def _resolved_translation_entries(payload: WordUpdate, current_translation_entries: list[str]) -> list[str] | None:
+    if "translation_entries" in payload.model_fields_set:
+        return payload.translation_entries
+    if "translations" in payload.model_fields_set:
+        return None
+    return current_translation_entries
+
+
+def _resolved_example_entries(payload: WordUpdate, current_example_entries: list[str]) -> list[str] | None:
+    if "example_entries" in payload.model_fields_set:
+        return payload.example_entries
+    if "example" in payload.model_fields_set:
+        return None
+    return current_example_entries

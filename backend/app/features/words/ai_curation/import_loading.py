@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.features.topics.api import get_active_subtree_topic_ids, get_active_topic_or_none
 from app.features.words.ai_curation.common import AiCurationImportError
 from app.features.words.model import Word, word_topics
-from app.features.words.repository import _with_details
+from app.features.words.repository_queries import with_word_details
 
 
 def load_existing_words(
@@ -17,7 +17,7 @@ def load_existing_words(
         return {}
     subtree_topic_ids = get_active_subtree_topic_ids(db, source_topic_id)
     words = db.scalars(
-        _with_details(
+        with_word_details(
             select(Word)
             .join(word_topics, word_topics.c.word_id == Word.id)
             .where(Word.id.in_(word_ids))

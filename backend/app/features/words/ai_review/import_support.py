@@ -7,13 +7,13 @@ from sqlalchemy import select
 from app.features.words.ai_review.schemas import AiReviewImportRequest
 from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
 from app.features.words.model import Word, word_topics
-from app.features.words.repository import _with_details
+from app.features.words.repository_queries import with_word_details
 from app.features.words.schemas import WordUpdate
 
 
 def load_import_words(db, topic_id: int, word_ids: list[int], subtree_topic_ids: list[int]) -> dict[int, Word]:
     words = db.scalars(
-        _with_details(
+        with_word_details(
             select(Word)
             .join(word_topics, word_topics.c.word_id == Word.id)
             .where(Word.id.in_(word_ids))

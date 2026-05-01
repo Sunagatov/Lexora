@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import Word, WordExample, word_topics
-from app.features.words.repository import _with_details
+from app.features.words.repository_queries import with_word_details
 
 
 def _topic_words_count_stmt(subtree_topic_ids: list[int], *, needs_examples_only: bool = False):
@@ -48,7 +48,7 @@ def _load_topic_words(
         .offset(offset)
         .limit(page_size)
     )
-    return list(db.scalars(_with_details(stmt)).all())
+    return list(db.scalars(with_word_details(stmt)).all())
 
 
 def _needs_examples_filter():
