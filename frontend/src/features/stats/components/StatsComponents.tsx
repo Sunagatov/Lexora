@@ -10,6 +10,31 @@ type Trend = {
   tone?: 'good' | 'bad' | 'neutral'
 }
 
+function StatSparkline({values}: {values: number[]}) {
+  if (values.length < 2) return null
+
+  const width = 120
+  const height = 32
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = Math.max(1, max - min)
+
+  const points = values.map((value, index) => {
+    const x = (index / Math.max(1, values.length - 1)) * width
+    const y = height - ((value - min) / range) * (height - 4) - 2
+    return `${x},${y}`
+  }).join(' ')
+
+  const area = `${points} ${width},${height} 0,${height}`
+
+  return (
+    <svg className="stats-card-sparkline" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+      <polygon className="stats-card-sparkline-area" points={area} />
+      <polyline className="stats-card-sparkline-line" points={points} />
+    </svg>
+  )
+}
+
 const STAT_META: Record<string, {icon: string; tone: string}> = {
   'Total words': {icon: '📚', tone: 'indigo'},
   Topics: {icon: '🗂️', tone: 'sky'},
@@ -153,6 +178,7 @@ export function StatCard({
   trend,
   icon,
   tone,
+  sparkline,
 }: {
   value: string | number
   label: string
@@ -160,6 +186,7 @@ export function StatCard({
   trend?: Trend
   icon?: string
   tone?: string
+  sparkline?: number[]
 }) {
   const meta = STAT_META[label]
   const cardIcon = icon ?? meta?.icon ?? '•'
@@ -178,6 +205,7 @@ export function StatCard({
       <span className="stats-card-value">{typeof value === 'number' ? <CountUpValue value={value} /> : value}</span>
       <span className="stats-card-label">{label}</span>
       {sub && <span className="stats-card-sub">{sub}</span>}
+      {sparkline && sparkline.length > 1 && <StatSparkline values={sparkline} />}
     </div>
   )
 }

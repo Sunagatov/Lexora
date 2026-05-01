@@ -53,6 +53,10 @@ function buildTrendLabel(current: number, previous: number, suffix: string) {
   }
 }
 
+function sparklineValues(values: number[], count = 10) {
+  return values.slice(-count)
+}
+
 function StatsPageSkeleton() {
   return (
     <div className="stats-page">
@@ -125,6 +129,22 @@ export function StatsPage() {
   const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
   const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const previousMonthAdds = stats.words_added_by_month[monthKey(previousMonthDate)] ?? 0
+  const monthAddSparkline = sparklineValues(
+    Object.entries(stats.words_added_by_month)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, value]) => value),
+    8,
+  )
+  const usageSparkline = sparklineValues(filteredUsage.map((day) => day.active_seconds), 12)
+  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.net), 12)
+  const levelDistributionSparkline = [
+    stats.level_counts.level_1,
+    stats.level_counts.level_2,
+    stats.level_counts.level_3,
+    stats.level_counts.level_4,
+    stats.level_counts.level_5,
+    stats.level_counts.unset,
+  ]
 
   return (
     <div className="stats-page">
@@ -151,24 +171,28 @@ export function StatsPage() {
               label="Total words"
               sub={`${currentMonthAdds.toLocaleString()} added this month`}
               trend={buildTrendLabel(currentMonthAdds, previousMonthAdds, 'vs last month')}
+              sparkline={monthAddSparkline}
             />
             <StatCard
               value={currentWeeklyUsage}
               label="This week"
               sub="active seconds"
               trend={buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d')}
+              sparkline={usageSparkline}
             />
             <StatCard
               value={weeklyActivityTotals?.reviewed ?? 0}
               label="Level changes"
               sub="last 7 days"
               trend={buildTrendLabel(weeklyActivityTotals?.reviewed ?? 0, previousWeeklyActivityTotals?.reviewed ?? 0, 'vs previous 7d')}
+              sparkline={activitySparkline}
             />
             <StatCard
               value={stats.okay_or_better_pct}
               label="Okay or better"
               sub={`${stats.level_counts.level_4.toLocaleString()} strong words`}
               trend={buildTrendLabel(weeklyActivityTotals?.net ?? 0, previousWeeklyActivityTotals?.net ?? 0, 'net this week')}
+              sparkline={levelDistributionSparkline}
             />
           </div>
         </section>

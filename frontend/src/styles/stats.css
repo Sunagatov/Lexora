@@ -196,6 +196,25 @@
   margin-top: 1px;
 }
 
+.stats-card-sparkline {
+  width: 100%;
+  height: 34px;
+  margin-top: 2px;
+  overflow: visible;
+}
+
+.stats-card-sparkline-area {
+  fill: rgba(99, 102, 241, 0.12);
+}
+
+.stats-card-sparkline-line {
+  fill: none;
+  stroke: rgba(99, 102, 241, 0.95);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* ── Period tabs ─────────────────────────────────────────────────────────── */
 .stats-period-tabs {
   display: flex;
