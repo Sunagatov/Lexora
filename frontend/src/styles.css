@@ -1,5 +1,6 @@
 @import './app/styles.css';
 @import './features/study/styles.css';
 @import './features/words/styles.css';
+@import './shared/styles.css';
 @import './features/trash/styles.css';
 @import './features/stats/styles.css';
