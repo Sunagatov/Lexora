@@ -5,7 +5,12 @@ import {quickAddWord} from '@/features/words/api/wordsApi'
 import {ApiError} from '@/shared/api/apiError'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {queryKeys} from '@/app/queryKeys'
-import {translateTerm, suggestTopic, ensureInbox, findTopicByName} from '@/features/words/services/quickAddService'
+import {
+  ensureInboxTopic,
+  findTopicByName,
+  suggestTopic,
+  translateTerm,
+} from '@/features/words/api/quickAddAssistApi'
 
 const INBOX_TOPIC_NAME = 'Inbox'
 const isInboxTopic = (topic: Topic) => findTopicByName([topic], INBOX_TOPIC_NAME) !== undefined
@@ -190,7 +195,7 @@ export function useQuickAdd(_onClose: () => void) {
     setFeedback(null)
     let resolvedTopicId = topicId
     if (!resolvedTopicId) {
-      const inboxId = await ensureInbox(topics, (id) => {
+      const inboxId = await ensureInboxTopic(topics, (id) => {
         void queryClient.invalidateQueries({queryKey: queryKeys.topics})
         void queryClient.invalidateQueries({queryKey: queryKeys.stats})
         setTopicId(id)

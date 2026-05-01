@@ -6,9 +6,13 @@ from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db
 from app.features.words.suggest.schemas import SuggestTopicRequest, SuggestTopicResponse
-from app.features.words.suggest.service import (
-    AiMalformedResponseError, AiNotConfiguredError, AiUnknownTopicError, NoTopicsError, suggest_topic_for_word,
+from app.features.words.suggest.exceptions import (
+    AiMalformedResponseError,
+    AiNotConfiguredError,
+    AiUnknownTopicError,
+    NoTopicsError,
 )
+from app.features.words.suggest.service import suggest_topic_for_word
 
 router = APIRouter(prefix="/api/words", tags=["words"])
 

@@ -1,0 +1,2 @@
+class AiReviewImportError(Exception):
+    pass

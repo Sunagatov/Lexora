@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from starlette.datastructures import UploadFile
 
 from app.shared.deps import get_db
-from app.features.topics.service import assert_topics_exist, MissingTopicsError
+from app.features.topics.api import MissingTopicsError, assert_topics_exist
 from app.features.words.repository import (
     get_all_words, get_word_by_id, create_word, update_word, soft_delete_word,
 )

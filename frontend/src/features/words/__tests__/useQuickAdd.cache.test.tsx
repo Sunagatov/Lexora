@@ -9,7 +9,7 @@ import type {Word} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 import * as wordsApi from '@/features/words/api/wordsApi'
-import * as quickAddService from '@/features/words/services/quickAddService'
+import * as quickAddAssistApi from '@/features/words/api/quickAddAssistApi'
 
 vi.mock('@/features/topics/api/topicsApi')
 vi.mock('@/features/words/api/wordsApi')
@@ -285,7 +285,7 @@ describe('useQuickAdd cache invalidation', () => {
     })
 
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Phrasal Verbs', 'phrasal-verbs')])
-    vi.spyOn(quickAddService, 'suggestTopic').mockResolvedValue('phrasal verbs')
+    vi.spyOn(quickAddAssistApi, 'suggestTopic').mockResolvedValue('phrasal verbs')
 
     const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
 

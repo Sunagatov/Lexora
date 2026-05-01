@@ -1,72 +1,13 @@
-import {useState} from 'react'
-import {useNavigate, useMatch, Link, useLocation} from 'react-router-dom'
-import {useQuery, useQueryClient} from '@tanstack/react-query'
+import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {useDrawer} from '@/app/layout/DrawerContext'
-import {logout} from '@/features/auth/api/authApi'
-import {fetchWord} from '@/features/words/api/wordsApi'
-import {fetchTopics} from '@/features/topics/api/topicsApi'
-import {queryKeys} from '@/app/queryKeys'
-import {resolveWordContextTopic} from '@/features/words/model/wordPageContext'
-
-function HeaderBreadcrumb() {
-  const location = useLocation()
-  const wordMatch = useMatch('/words/:wordId')
-  const editWordMatch = useMatch('/words/:wordId/edit')
-  const activeMatch = editWordMatch ?? wordMatch
-  const wordId = Number(activeMatch?.params.wordId)
-  const fromTopicSlug = (location.state as {fromTopicSlug?: string} | null)?.fromTopicSlug
-  const isWordRoute = Number.isInteger(wordId) && wordId > 0
-
-  const {data: word} = useQuery({
-    queryKey: isWordRoute ? queryKeys.word(wordId) : ['app-header', 'word', 'inactive'],
-    queryFn: () => fetchWord(wordId),
-    enabled: isWordRoute,
-  })
-
-  const {data: topics = []} = useQuery({
-    queryKey: queryKeys.topics,
-    queryFn: fetchTopics,
-    enabled: isWordRoute,
-  })
-
-  if (!isWordRoute || !word) return null
-
-  const topic = resolveWordContextTopic(word, topics, fromTopicSlug)
-
-  return (
-    <nav className="app-header-breadcrumb" aria-label="Breadcrumb">
-      <span className="app-header-crumb">Topics</span>
-      {topic && (
-        <>
-          <span className="app-header-crumb-sep" aria-hidden="true">›</span>
-          <Link className="app-header-crumb" to={routes.topic(topic.slug)}>{topic.name}</Link>
-        </>
-      )}
-      <span className="app-header-crumb-sep" aria-hidden="true">›</span>
-      <span className="app-header-crumb app-header-crumb-current">{word.term}</span>
-    </nav>
-  )
-}
+import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
+import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 
 export function AppHeader() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const {hasDrawer, setDrawerOpen} = useDrawer()
-  const [logoutPending, setLogoutPending] = useState(false)
-
-  async function handleLogout() {
-    if (logoutPending) return
-
-    setLogoutPending(true)
-    try {
-      await logout()
-      queryClient.clear()
-      navigate(routes.login, {replace: true})
-    } finally {
-      setLogoutPending(false)
-    }
-  }
+  const {logoutPending, handleLogout} = useLogoutAction()
 
   return (
     <header className="app-header">
@@ -74,7 +15,7 @@ export function AppHeader() {
         <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
           Lexora
         </button>
-        <HeaderBreadcrumb />
+        <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
         <button type="button" className="app-header-logout" onClick={handleLogout} disabled={logoutPending}>

@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.stats.schemas import TopicStat, VocabularyOverview
 from app.features.topics.model import Topic
-from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
-from app.features.words.model import Word, word_topics
+from app.features.words.api import EXAMPLE_TARGET_COUNT, example_count, load_topic_word_ids
+from app.features.words.model import Word
 
 
 def _build_overview(words: list[Word]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
@@ -93,14 +92,7 @@ def _build_words_added_by_month(words: list[Word]) -> dict[str, int]:
 def _load_topic_word_ids(db: Session, word_map: dict[int, Word]) -> dict[int, list[int]]:
     if not word_map:
         return {}
-
-    rows = db.execute(
-        select(word_topics.c.topic_id, word_topics.c.word_id).where(word_topics.c.word_id.in_(word_map))
-    ).all()
-    topic_word_ids: dict[int, list[int]] = defaultdict(list)
-    for topic_id, word_id in rows:
-        topic_word_ids[topic_id].append(word_id)
-    return topic_word_ids
+    return load_topic_word_ids(db, set(word_map))
 
 
 def _summarize_topic_progress(words: list[Word]) -> tuple[int, int, int]:

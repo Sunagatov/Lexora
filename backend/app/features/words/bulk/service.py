@@ -5,35 +5,25 @@ from typing import cast
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
-from app.features.topics.model import Topic
-from app.features.topics.schemas import TopicCreate
-from app.features.topics.service import (
-    create_topic,
+from app.features.topics.api import (
     InvalidTopicNameError,
     TopicNameConflictError,
     TopicSlugConflictError,
+    create_topic,
 )
+from app.features.words.bulk.exceptions import (
+    BulkInvalidTopicNameError,
+    BulkSlugConflictError,
+    BulkTopicInTrashError,
+)
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
+from app.features.topics.model import Topic
+from app.features.topics.schemas import TopicCreate
 from app.features.words.model import Word
 from app.features.words.domain import existing_normalized_terms
 from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.shared.text import normalize_term, slugify
-
-
-class BulkTopicInTrashError(Exception):
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-
-class BulkSlugConflictError(Exception):
-    def __init__(self, detail: str) -> None:
-        self.detail = detail
-
-
-class BulkInvalidTopicNameError(Exception):
-    def __init__(self, name: str) -> None:
-        self.name = name
 
 
 def _get_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:

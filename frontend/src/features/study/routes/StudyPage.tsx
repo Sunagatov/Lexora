@@ -1,12 +1,12 @@
-import {useEffect, useState, type CSSProperties} from 'react'
+import {useEffect, useState} from 'react'
 import {useStudyState} from '@/features/study/hooks/useStudyState'
-import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
-import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
 import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
 import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
 import {useDrawer} from '@/app/layout/DrawerContext'
 import {useResizableSidebarWidth} from '@/features/study/hooks/useResizableSidebarWidth'
+import {StudySidebarShell} from '@/features/study/components/StudySidebarShell'
+import {StudyTopicSummary} from '@/features/study/components/StudyTopicSummary'
 
 export function StudyPage() {
   const s = useStudyState()
@@ -32,62 +32,30 @@ export function StudyPage() {
     onSelectSmartReview: () => { setDrawerOpen(false); s.selectSmartReview() },
     smartQueue: s.smartQueue,
   }
-  const desktopSidebarStyle = {'--sidebar-w': `${sidebarWidth}px`} as CSSProperties
 
   return (
     <>
-      <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
-      <div className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}>
-        <TopicSidebar {...sidebarProps} isMobile />
-      </div>
-
-      <aside className={`desktop-sidebar ${isResizing ? 'is-resizing' : ''}`} style={desktopSidebarStyle}>
-        <TopicSidebar {...sidebarProps} />
-        <div
-          className="desktop-sidebar-resizer"
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize sidebar"
-          onPointerDown={handleSidebarResizeDown}
-        />
-      </aside>
+      <StudySidebarShell
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        sidebarWidth={sidebarWidth}
+        isResizing={isResizing}
+        handleSidebarResizeDown={handleSidebarResizeDown}
+        sidebarProps={sidebarProps}
+      />
 
       <div className="main-content">
         {s.isSmartReview ? (
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} />
         ) : (
           <>
-            <div className="sticky-controls">
-              <div className="card topic-header-card topic-header-card-desktop">
-                <div className="topic-header-main">
-                  <div className="topic-header-title-row">
-                    <div className="topic-header-title">{s.selectedTopic?.name ?? 'No topic selected'}</div>
-                    {s.selectedTopicId !== null && (
-                      <div className="topic-header-count">{s.filteredWordCount} of {s.topicWordCount} words</div>
-                    )}
-                  </div>
-                  <div className="topic-header-subtitle topic-header-subtitle-desktop">
-                    {s.selectedTopicId !== null
-                      ? (s.filteredWordCount === s.topicWordCount ? 'Reviewing the full topic.' : '')
-                      : 'Select a topic to start reviewing words.'}
-                  </div>
-                </div>
-                <div className="level-summary">
-                  {ACTIVE_LEVELS.map((l) => (
-                    <div key={l} className={`level-chip ${levelClass(l)}`}>
-                      <span className="level-chip-label">{LEVEL_LABELS[l]}</span>
-                      <span className="level-chip-value">{s.levelSummary[l]}</span>
-                    </div>
-                  ))}
-                  {s.levelSummary[PARKED_LEVEL] > 0 && (
-                    <div className={`level-chip ${levelClass(PARKED_LEVEL)} level-chip-parked`}>
-                      <span className="level-chip-label">{LEVEL_LABELS[PARKED_LEVEL]}</span>
-                      <span className="level-chip-value">{s.levelSummary[PARKED_LEVEL]}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <StudyTopicSummary
+              selectedTopicId={s.selectedTopicId}
+              selectedTopicName={s.selectedTopic?.name}
+              filteredWordCount={s.filteredWordCount}
+              topicWordCount={s.topicWordCount}
+              levelSummary={s.levelSummary}
+            />
 
             {s.selectedTopicId === null ? (
               <div className="main-inner">

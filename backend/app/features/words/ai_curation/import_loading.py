@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select
 
 from app.features.topics.model import Topic
-from app.features.topics.repository import get_active_subtree_topic_ids
+from app.features.topics.api import get_active_subtree_topic_ids
 from app.features.words.ai_curation.common import AiCurationImportError
 from app.features.words.model import Word, word_topics
 from app.features.words.repository import _with_details

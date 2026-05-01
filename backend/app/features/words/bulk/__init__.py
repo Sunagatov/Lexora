@@ -1,7 +1,9 @@
-from app.features.words.bulk.service import (
+from app.features.words.bulk.exceptions import (
     BulkInvalidTopicNameError,
     BulkSlugConflictError,
     BulkTopicInTrashError,
+)
+from app.features.words.bulk.service import (
     bulk_import,
 )
 

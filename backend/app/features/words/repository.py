@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.stats.service import record_level_change
+from app.features.topics.api import get_active_subtree_topic_ids
 from app.features.words.domain import (
     assert_no_duplicate_word as assert_no_duplicate_word,
     existing_normalized_terms as existing_normalized_terms,

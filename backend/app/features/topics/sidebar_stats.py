@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicSidebarStatsResponse
-from app.features.words.model import Word, word_topics
+from app.features.words.api import count_active_words, list_active_word_topic_levels
 
 
 def compute_topic_sidebar_stats(db: Session) -> TopicSidebarStatsResponse:
     topics = list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.id.asc())).all())
-    total_words = int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None))) or 0)
+    total_words = count_active_words(db)
     if not topics:
         return TopicSidebarStatsResponse(total_words=total_words, topic_counts={}, topic_progress={})
 
@@ -26,14 +26,7 @@ def compute_topic_sidebar_stats(db: Session) -> TopicSidebarStatsResponse:
     level_delta_sum: dict[int, int] = defaultdict(int)
     level_count: dict[int, int] = defaultdict(int)
 
-    rows = db.execute(
-        select(Word.id, Word.knowledge_level, word_topics.c.topic_id)
-        .join(word_topics, word_topics.c.word_id == Word.id)
-        .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Word.deleted_at.is_(None))
-        .where(Topic.deleted_at.is_(None))
-        .order_by(Word.id.asc(), word_topics.c.topic_id.asc())
-    )
+    rows = list_active_word_topic_levels(db)
 
     current_word_id: int | None = None
     current_level: int | None = None

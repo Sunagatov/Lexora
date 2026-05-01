@@ -6,16 +6,9 @@ from typing import cast
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.model import Word
-
-
-class QueueItemNotFoundError(Exception):
-    pass
-
-
-class QueueNotActiveError(Exception):
-    pass
 
 
 def queue_needs_regeneration(queue: StudyQueue) -> bool:

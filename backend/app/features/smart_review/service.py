@@ -6,9 +6,11 @@ from sqlalchemy.orm import Session
 
 from app.shared.config import settings
 from app.shared.logging_utils import log_audit_event
-from app.features.smart_review.lifecycle import (
+from app.features.smart_review.exceptions import (
     QueueItemNotFoundError as QueueItemNotFoundError,
     QueueNotActiveError as QueueNotActiveError,
+)
+from app.features.smart_review.lifecycle import (
     build_queue as _build_queue,
     complete_queue_item as _complete_queue_item,
     deactivate_all_queues as _deactivate_all_queues,

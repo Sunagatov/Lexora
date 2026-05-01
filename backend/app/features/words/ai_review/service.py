@@ -5,8 +5,9 @@ from typing import cast
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.features.topics.api import get_active_subtree_topic_ids
 from app.features.topics.model import Topic
-from app.features.topics.repository import get_active_subtree_topic_ids
+from app.features.words.ai_review.exceptions import AiReviewImportError
 from app.features.words.ai_review.export_support import (
     EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
     build_topic_ai_review_export as _build_topic_ai_review_export,
@@ -26,10 +27,6 @@ from app.features.words.ai_review.schemas import (
     AiReviewImportResponse,
 )
 from app.features.words.repository import update_word
-
-
-class AiReviewImportError(Exception):
-    pass
 
 
 def _get_topic(db: Session, topic_id: int) -> Topic:

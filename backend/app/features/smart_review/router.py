@@ -4,12 +4,10 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.shared.config import settings
 from app.shared.deps import get_db
+from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.smart_review.schemas import StudyQueueResponse
-from app.features.smart_review.service import (
-    get_or_create_active_queue, generate_queue,
-    complete_queue_item, QueueItemNotFoundError, QueueNotActiveError,
-)
+from app.features.smart_review.service import complete_queue_item, generate_queue, get_or_create_active_queue
 from app.features.words.model import Word
 
 router = APIRouter(prefix="/api/smart-review", tags=["smart-review"])

@@ -9,6 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.shared.config import settings
 from app.features.topics.model import Topic
+from app.features.words.suggest.exceptions import (
+    AiMalformedResponseError,
+    AiNotConfiguredError,
+    AiUnknownTopicError,
+    NoTopicsError,
+)
 
 logger = logging.getLogger(__name__)
 AI_PROVIDER = "openai_compatible"
@@ -21,24 +27,6 @@ Given an English word or phrase and its translation, pick the single best matchi
 from the provided list.
 Reply with ONLY the exact topic name from the list — nothing else, no explanation, no punctuation.\
 """
-
-
-class AiNotConfiguredError(Exception):
-    pass
-
-
-class NoTopicsError(Exception):
-    pass
-
-
-class AiUnknownTopicError(Exception):
-    pass
-
-
-class AiMalformedResponseError(Exception):
-    pass
-
-
 def _extract_choice_content(data: object) -> str:
     if not isinstance(data, dict):
         raise AiMalformedResponseError()
