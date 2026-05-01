@@ -10,7 +10,7 @@ from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.model import Word
-from app.features.words.progress import WordProgressEvent
+from app.features.words.progress import WordProgressEvent, record_level_change
 
 
 def _topic_stub(**kwargs) -> Topic:
@@ -28,7 +28,7 @@ def _progress_event_stub(**kwargs) -> WordProgressEvent:
 def test_record_level_change_adds_progress_event_to_session() -> None:
     db = MagicMock()
 
-    stats_service.record_level_change(
+    record_level_change(
         db,
         word_id=10,
         old_level=1,
@@ -37,7 +37,7 @@ def test_record_level_change_adds_progress_event_to_session() -> None:
     )
 
     event = db.add.call_args.args[0]
-    assert isinstance(event, stats_service.WordProgressEvent)
+    assert isinstance(event, WordProgressEvent)
     assert event.word_id == 10
     assert event.old_level == 1
     assert event.new_level == 3

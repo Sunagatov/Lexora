@@ -9,14 +9,10 @@ from app.features.topics.api import (
     restore_topic,
 )
 from app.features.trash.service import purge_trash
-from app.features.words.api import (
-    DuplicateWordInTopicError,
-    WordResponse,
-    assert_word_restore_allowed,
-    get_deleted_words,
-    get_word_by_id_including_deleted,
-    restore_word,
-)
+from app.features.words.domain import assert_word_restore_allowed
+from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.repository import get_deleted_words, get_word_by_id_including_deleted, restore_word
+from app.features.words.schemas import WordResponse
 from app.shared.deps import get_db
 
 router = APIRouter(prefix="/api/trash", tags=["trash"])

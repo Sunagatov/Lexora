@@ -7,7 +7,7 @@ from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
 from app.features.topics.domain import soft_delete_exclusive_words, soft_delete_all_words
 from app.features.words.progress import WordProgressEvent  # noqa: F401
-from app.features.words.api import assert_word_restore_allowed
+from app.features.words.domain import assert_word_restore_allowed
 from app.features.words.model import Word
 
 

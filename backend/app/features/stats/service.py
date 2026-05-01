@@ -3,9 +3,8 @@ from __future__ import annotations
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from app.features.words.constants import ProgressSource
-from app.features.words.api import list_active_word_stats
-from app.features.words.progress import WordProgressEvent, record_level_change
+from app.features.words.repository import list_active_word_stats
+from app.features.words.progress import WordProgressEvent
 from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,

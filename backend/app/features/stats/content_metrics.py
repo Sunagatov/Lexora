@@ -6,12 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.features.stats.schemas import TopicStat, VocabularyOverview
 from app.features.topics.model import Topic
-from app.features.words.api import (
-    EXAMPLE_TARGET_COUNT,
-    WordStatsSnapshot,
-    example_count,
-    load_topic_word_ids,
-)
+from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
+from app.features.words.repository import WordStatsSnapshot, load_topic_word_ids
 
 
 def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:

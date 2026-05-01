@@ -8,7 +8,7 @@ from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNo
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.smart_review.schemas import StudyQueueResponse
 from app.features.smart_review.service import complete_queue_item, generate_queue, get_or_create_active_queue
-from app.features.words.api import apply_word_response_loaders
+from app.features.words.model import Word
 
 router = APIRouter(prefix="/api/smart-review", tags=["smart-review"])
 
@@ -18,7 +18,11 @@ def _load_queue(db: Session, queue_id: int) -> StudyQueue | None:
     return db.scalar(
         select(StudyQueue)
         .where(StudyQueue.id == queue_id)
-        .options(*apply_word_response_loaders(word_loader))
+        .options(
+            word_loader.selectinload(Word.topics),
+            word_loader.selectinload(Word.translation_items),
+            word_loader.selectinload(Word.example_items),
+        )
     )
 
 

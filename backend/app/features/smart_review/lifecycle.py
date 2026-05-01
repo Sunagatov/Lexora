@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.api import get_word_for_queue_validation
+from app.features.words.repository import get_word_for_queue_validation
 
 
 def queue_needs_regeneration(queue: StudyQueue) -> bool:

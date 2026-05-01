@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.api import has_smart_review_candidate, list_smart_review_candidates
+from app.features.words.repository import has_smart_review_candidate, list_smart_review_candidates
 
 
 def cooldown_word_ids(db, *, cooldown_days: int) -> set[int]:

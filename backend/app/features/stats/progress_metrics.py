@@ -11,7 +11,7 @@ from app.features.stats.schemas import (
     UsageDay,
     UsageSummary,
 )
-from app.features.words.api import WordStatsSnapshot
+from app.features.words.repository import WordStatsSnapshot
 from app.features.words.progress import WordProgressEvent
 
 

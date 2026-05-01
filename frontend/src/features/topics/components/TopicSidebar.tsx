@@ -1,15 +1,19 @@
-import {useEffect, useRef, useMemo} from 'react'
+import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react'
 import {useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {routes} from '@/app/routes'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
-import {buildSidebarGroups, isPosGroup} from '@/features/topics/model/topicSidebarModel'
+import {buildSidebarGroups, isPosGroup, type TopicTreeNode} from '@/features/topics/model/topicSidebarModel'
 import {TopicSidebarFooter} from '@/features/topics/components/TopicSidebarFooter'
 import {TopicSidebarHeader} from '@/features/topics/components/TopicSidebarHeader'
 import {useTopicSidebarActions} from '@/features/topics/hooks/useTopicSidebarActions'
-import {buildTopicGroupMeta, TopicSidebarSections} from '@/features/topics/components/TopicSidebarSections'
-import {TopicSidebarModals} from '@/features/topics/components/TopicSidebarModals'
+import {TopicSidebarGroup} from '@/features/topics/components/TopicSidebarGroup'
+import {TopicButton} from '@/features/topics/components/TopicButton'
+import {SORT_LABELS, type SortMode} from '@/features/topics/model/topicSort'
+import {ConfirmModal} from '@/shared/ui/ConfirmModal'
+import {TopicEditModal} from '@/features/topics/components/TopicEditModal'
+import type {TopicUpdatePayload} from '@/features/topics/api/topicsApi'
 
 type Props = {
   topics: Topic[]
@@ -26,12 +30,103 @@ type Props = {
   smartQueue: StudyQueue | null
 }
 
+type TopicButtonSharedProps = {
+  selectedTopicId: number | null
+  isSmartReview: boolean
+  topicCounts: Map<number, number>
+  topicProgress: Map<number, number>
+  pinnedIds: number[]
+  onSelect: (id: number) => void
+  onEdit: (id: number) => void
+  onDelete: (id: number) => void
+  onPin: (id: number) => void
+  onToggleExpanded: (id: number) => void
+}
+
+function buildTopicGroupMeta(
+  sortMode: SortMode,
+  topics: Topic[],
+  topicProgress: Map<number, number>,
+  topicCounts: Map<number, number>,
+  weakLabel: string,
+) {
+  if (sortMode === 'weakest' || sortMode === 'default') return null
+
+  const weakTotal = topics.reduce((count, topic) => {
+    const progress = topicProgress.get(topic.id)
+    const total = topicCounts.get(topic.id) ?? 0
+    if (progress === undefined || total === 0 || progress >= 30) return count
+    return count + 1
+  }, 0)
+
+  return (
+    <>
+      {SORT_LABELS[sortMode]}
+      {weakTotal > 0 && <> · <span className="sidebar-group-meta-weak">{weakTotal} {weakLabel}</span></>}
+    </>
+  )
+}
+
+function renderTopicTree(
+  nodes: TopicTreeNode[],
+  shared: TopicButtonSharedProps,
+  expandedTopicIds: Set<number>,
+  forceExpandAll: boolean,
+  level = 0,
+  counter = {idx: 0},
+): ReactElement[] {
+  return nodes.flatMap((node) => {
+    const staggerIdx = counter.idx++
+    const hasChildren = node.children.length > 0
+    const expanded = hasChildren && (forceExpandAll || expandedTopicIds.has(node.topic.id))
+    const children = expanded
+      ? renderTopicTree(node.children, shared, expandedTopicIds, forceExpandAll, level + 1, counter)
+      : []
+
+    return [
+      <TopicButton
+        key={node.topic.id}
+        topic={node.topic}
+        selectedTopicId={shared.selectedTopicId}
+        isSmartReview={shared.isSmartReview}
+        topicCounts={shared.topicCounts}
+        topicProgress={shared.topicProgress}
+        pinnedIds={shared.pinnedIds}
+        onSelect={shared.onSelect}
+        onEdit={shared.onEdit}
+        onDelete={shared.onDelete}
+        onPin={shared.onPin}
+        level={level}
+        hasChildren={hasChildren}
+        expanded={expanded}
+        onToggleExpanded={shared.onToggleExpanded}
+        staggerIdx={staggerIdx}
+      />,
+      ...(expanded
+        ? [
+          <div
+            key={`${node.topic.id}-children`}
+            className="topic-subtopics-scroll"
+            data-level={level + 1}
+          >
+            {children}
+          </div>,
+        ]
+        : []),
+    ]
+  })
+}
+
 export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
+  const [posSortOpen, setPosSortOpen] = useState(false)
+  const [topicsSortOpen, setTopicsSortOpen] = useState(false)
+  const posSortRef = useRef<HTMLButtonElement>(null)
+  const topicsSortRef = useRef<HTMLButtonElement>(null)
 
   function handleSelect(id: number) {
     prefs.addRecentId(id)
@@ -133,6 +228,19 @@ export function TopicSidebar({
     () => buildTopicGroupMeta(prefs.topicsSort, themeTopics, topicProgress, topicCounts, 'below 30%'),
     [prefs.topicsSort, themeTopics, topicProgress, topicCounts],
   )
+  const topicButtonSharedProps: TopicButtonSharedProps = {
+    selectedTopicId,
+    isSmartReview,
+    topicCounts,
+    topicProgress,
+    pinnedIds: prefs.pinnedIds,
+    onSelect: handleSelect,
+    onEdit: handleEditTopic,
+    onDelete: setDeleteTopicId,
+    onPin: prefs.togglePin,
+    onToggleExpanded: prefs.toggleTopicExpanded,
+  }
+
   return (
     <>
       <TopicSidebarHeader
@@ -146,38 +254,101 @@ export function TopicSidebar({
         smartQueue={smartQueue}
       />
 
-      <TopicSidebarSections
-        pinnedTopics={pinnedTopics}
-        posTopics={posTopics}
-        themeTopics={themeTopics}
-        themeTree={themeTree}
-        selectedTopicId={selectedTopicId}
-        isSmartReview={isSmartReview}
-        topicCounts={topicCounts}
-        topicProgress={topicProgress}
-        pinnedIds={prefs.pinnedIds}
-        expandedTopicIds={expandedTopicIds}
-        forceExpandAll={!!needle}
-        posCollapsed={prefs.posCollapsed}
-        topicsCollapsed={prefs.topicsCollapsed}
-        posSort={prefs.posSort}
-        topicsSort={prefs.topicsSort}
-        onSelect={handleSelect}
-        onEdit={handleEditTopic}
-        onDelete={setDeleteTopicId}
-        onDeleteFromTree={(id) => {
-          setDeleteTopicId(id)
-          setDeleteTopicError(null)
-        }}
-        onPin={prefs.togglePin}
-        onToggleExpanded={prefs.toggleTopicExpanded}
-        onTogglePosCollapsed={() => prefs.setPosCollapsed(!prefs.posCollapsed)}
-        onToggleTopicsCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
-        onSelectPosSort={prefs.setPosSort}
-        onSelectTopicsSort={prefs.setTopicsSort}
-        posMeta={posMeta}
-        topicsMeta={topicsMeta}
-      />
+      <div className="sidebar-topic-list">
+        {pinnedTopics.length > 0 && (
+          <div className="sidebar-group">
+            <div className="sidebar-group-header">
+              <span className="sidebar-group-label">📌 Pinned</span>
+            </div>
+            {pinnedTopics.map((topic) => (
+              <TopicButton
+                key={topic.id}
+                topic={topic}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onEdit={handleEditTopic}
+                onDelete={setDeleteTopicId}
+                onPin={prefs.togglePin}
+              />
+            ))}
+          </div>
+        )}
+
+        {posTopics.length > 0 && (
+          <TopicSidebarGroup
+            title="Parts of Speech"
+            count={posTopics.length}
+            collapsed={prefs.posCollapsed}
+            onToggleCollapsed={() => prefs.setPosCollapsed(!prefs.posCollapsed)}
+            sortMode={prefs.posSort}
+            sortButtonRef={posSortRef}
+            sortOpen={posSortOpen}
+            onToggleSort={() => setPosSortOpen((value) => !value)}
+            onCloseSort={() => setPosSortOpen(false)}
+            onSelectSort={(mode) => {
+              prefs.setPosSort(mode)
+              setPosSortOpen(false)
+            }}
+            meta={posMeta}
+          >
+            {posTopics.map((topic) => (
+              <TopicButton
+                key={topic.id}
+                topic={topic}
+                selectedTopicId={selectedTopicId}
+                isSmartReview={isSmartReview}
+                topicCounts={topicCounts}
+                topicProgress={topicProgress}
+                pinnedIds={prefs.pinnedIds}
+                onSelect={handleSelect}
+                onEdit={handleEditTopic}
+                onDelete={setDeleteTopicId}
+                onPin={prefs.togglePin}
+              />
+            ))}
+          </TopicSidebarGroup>
+        )}
+
+        {themeTopics.length > 0 && (
+          <TopicSidebarGroup
+            title="Topics"
+            count={themeTopics.length}
+            collapsed={prefs.topicsCollapsed}
+            onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
+            sortMode={prefs.topicsSort}
+            sortButtonRef={topicsSortRef}
+            sortOpen={topicsSortOpen}
+            onToggleSort={() => setTopicsSortOpen((value) => !value)}
+            onCloseSort={() => setTopicsSortOpen(false)}
+            onSelectSort={(mode) => {
+              prefs.setTopicsSort(mode)
+              setTopicsSortOpen(false)
+            }}
+            meta={topicsMeta}
+          >
+            {renderTopicTree(
+              themeTree,
+              {
+                ...topicButtonSharedProps,
+                onDelete: (id) => {
+                  setDeleteTopicId(id)
+                  setDeleteTopicError(null)
+                },
+              },
+              expandedTopicIds,
+              !!needle,
+            )}
+          </TopicSidebarGroup>
+        )}
+
+        {posTopics.length === 0 && themeTopics.length === 0 && (
+          <div className="sidebar-empty">No topics found.</div>
+        )}
+      </div>
 
       <TopicSidebarFooter
         addingTopic={addingTopic}
@@ -200,26 +371,35 @@ export function TopicSidebar({
         onImportChange={handleImportWorkbookChange}
       />
 
-      <TopicSidebarModals
-        topics={topics}
-        deleteTopicId={deleteTopicId}
-        deleteTopicError={deleteTopicError}
-        deletePending={deleteTopicMutation.isPending}
-        onConfirmDelete={(id) => deleteTopicMutation.mutate(id)}
-        onCancelDelete={() => {
-          setDeleteTopicId(null)
-          setDeleteTopicError(null)
-        }}
-        editTopicId={editTopicId}
-        editingTopic={editingTopic}
-        editTopicError={editTopicError}
-        editPending={updateTopicMutation.isPending}
-        onCancelEdit={() => {
-          setEditTopicId(null)
-          setEditTopicError(null)
-        }}
-        onSaveEdit={(payload, topicId) => updateTopicMutation.mutate({id: topicId, payload})}
-      />
+      {deleteTopicId !== null && (
+        <ConfirmModal
+          title="Delete Topic?"
+          message={`Are you sure you want to delete "${topics.find((topic) => topic.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`}
+          error={deleteTopicError}
+          confirmLabel="Delete"
+          danger
+          pending={deleteTopicMutation.isPending}
+          onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
+          onCancel={() => {
+            setDeleteTopicId(null)
+            setDeleteTopicError(null)
+          }}
+        />
+      )}
+
+      {editTopicId !== null && editingTopic && (
+        <TopicEditModal
+          topic={editingTopic}
+          topics={topics}
+          saving={updateTopicMutation.isPending}
+          error={editTopicError}
+          onCancel={() => {
+            setEditTopicId(null)
+            setEditTopicError(null)
+          }}
+          onSave={(payload: TopicUpdatePayload) => updateTopicMutation.mutate({id: editingTopic.id, payload})}
+        />
+      )}
     </>
   )
 }
