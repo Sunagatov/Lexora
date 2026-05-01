@@ -1,24 +1,16 @@
-import {useEffect, useRef, useState, type KeyboardEvent} from 'react'
+import {useEffect, useRef, type KeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 
 type Props = {onClose: () => void}
-const CLOSE_MS = 220
 
 export function QuickAddSheet({onClose}: Props) {
-  const q = useQuickAdd(onClose)
+  const q = useQuickAdd()
   const sheetRef = useRef<HTMLDivElement>(null)
-  const previousFocusRef = useRef<HTMLElement | null>(null)
-  const [closing, setClosing] = useState(false)
-  const [handleActive, setHandleActive] = useState(false)
 
   useEffect(() => {
-    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const id = window.requestAnimationFrame(() => q.termRef.current?.focus())
-    return () => {
-      window.cancelAnimationFrame(id)
-      previousFocusRef.current?.focus?.()
-    }
+    return () => window.cancelAnimationFrame(id)
   }, [q.termRef])
 
   useEffect(() => {
@@ -29,60 +21,35 @@ export function QuickAddSheet({onClose}: Props) {
     }
   }, [])
 
-  function requestClose() {
-    if (closing) return
-    setClosing(true)
-    window.setTimeout(onClose, CLOSE_MS)
-  }
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
 
-  function focusableElements() {
-    return Array.from(
-      sheetRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      ) ?? [],
-    ).filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null)
-  }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   function handleSheetKeyDown(e: KeyboardEvent<HTMLDivElement>) {
-    if (e.key === 'Escape') requestClose()
-    if (e.key !== 'Tab') return
-
-    const focusables = focusableElements()
-    if (focusables.length === 0) return
-
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-    const current = document.activeElement
-
-    if (e.shiftKey && current === first) {
-      e.preventDefault()
-      last.focus()
-    } else if (!e.shiftKey && current === last) {
-      e.preventDefault()
-      first.focus()
-    }
+    if (e.key === 'Escape') onClose()
   }
 
   return createPortal(
     <>
-      <div className={`quick-add-overlay${closing ? ' is-closing' : ''}`} onClick={requestClose} />
-      <div className={`quick-add-sheet${closing ? ' is-closing' : ''}`} ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown}>
+      <div className="quick-add-overlay" onClick={onClose} />
+      <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown}>
         <button
           type="button"
-          className={`quick-add-handle-hitbox${handleActive ? ' is-active' : ''}`}
+          className="quick-add-handle-hitbox"
           aria-label="Close quick add sheet"
-          onClick={requestClose}
-          onPointerDown={() => setHandleActive(true)}
-          onPointerUp={() => setHandleActive(false)}
-          onPointerCancel={() => setHandleActive(false)}
-          onBlur={() => setHandleActive(false)}
+          onClick={onClose}
         >
           <span className="quick-add-handle" />
         </button>
 
         <div className="quick-add-header">
           <span className="quick-add-title" id="quick-add-title">Add word</span>
-          <button type="button" className="quick-add-close" onClick={requestClose} aria-label="Close">
+          <button type="button" className="quick-add-close" onClick={onClose} aria-label="Close">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
             </svg>
@@ -198,7 +165,7 @@ export function QuickAddSheet({onClose}: Props) {
         </div>
 
         <div className="quick-add-footer">
-          <button type="button" className="quick-add-cancel" onClick={requestClose}>Cancel</button>
+          <button type="button" className="quick-add-cancel" onClick={onClose}>Cancel</button>
           <button type="button" className="quick-add-save" disabled={!q.canSave} onClick={q.save}>
             {q.savePending ? 'Saving…' : 'Save word'}
           </button>

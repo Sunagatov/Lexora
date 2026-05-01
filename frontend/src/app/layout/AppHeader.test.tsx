@@ -3,7 +3,6 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {AppHeader} from '@/app/layout/AppHeader'
-import {DrawerProvider} from '@/app/layout/DrawerContext'
 import {routes} from '@/app/routes'
 import * as authApi from '@/features/auth/api/authApi'
 
@@ -23,9 +22,7 @@ function renderHeader(queryClient: QueryClient) {
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <DrawerProvider>
-          <AppHeader />
-        </DrawerProvider>
+        <AppHeader />
       </MemoryRouter>
     </QueryClientProvider>,
   )

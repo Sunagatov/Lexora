@@ -26,7 +26,7 @@ def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview,
 
     overview = VocabularyOverview(
         total_words=total,
-        total_topics=0,  # filled by caller
+        total_topics=0,
         with_example=with_example,
         with_examples_3plus=with_examples_3plus,
         with_pos=with_pos,
@@ -67,9 +67,7 @@ def _build_topic_stats(
                 weak_count=weak_count,
                 strong_count=strong_count,
                 missing_example=sum(1 for word in words if not word.example),
-                needs_example_enrichment=sum(
-                    1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT
-                ),
+                needs_example_enrichment=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
                 missing_pos=sum(1 for word in words if not word.part_of_speech),
                 reviewed_count=reviewed_count,
                 regressed_count=regressed_count,

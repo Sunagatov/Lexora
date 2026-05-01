@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
+from typing import cast
 
-from app.features.words.repository import list_active_word_stats
-from app.features.words.progress import WordProgressEvent
+from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session, load_only
+
 from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,
@@ -20,8 +21,9 @@ from app.features.stats.content_metrics import (
 )
 from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
-from sqlalchemy import select
-from typing import cast
+from app.features.topics.model import Topic
+from app.features.words.progress import WordProgressEvent
+from app.features.words.repository import list_active_word_stats
 
 
 def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
@@ -38,9 +40,6 @@ def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
 
 
 def compute_stats(db: Session) -> StatsResponse:
-    from app.features.topics.model import Topic
-    from sqlalchemy.orm import load_only
-
     words = list_active_word_stats(db)
     topics = cast(
         list[Topic],
@@ -128,3 +127,9 @@ def compute_stats(db: Session) -> StatsResponse:
         tracking_started_at=tracking_started_at,
         usage_started_at=usage_started_at,
     )
+
+
+def _load_topic_word_ids(db: Session, word_map):
+    from app.features.stats.content_metrics import _load_topic_word_ids as _content_load_topic_word_ids
+
+    return _content_load_topic_word_ids(db, word_map)

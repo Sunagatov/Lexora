@@ -18,6 +18,7 @@ from app.features.topics.rules import (
     assert_active_topic_name_available as assert_active_topic_name_available,
     assert_slug_available as assert_slug_available,
     assert_topic_has_no_active_children as assert_topic_has_no_active_children,
+    build_topic_slug as build_topic_slug,
     assert_topic_parent_valid as assert_topic_parent_valid,
     assert_topics_exist as assert_topics_exist,
 )
@@ -53,6 +54,47 @@ def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> T
     else:
         db.flush()
     return topic
+
+
+def create_topic_draft(
+    db: Session,
+    *,
+    name: str,
+    description: str | None = None,
+    parent_topic_id: int | None = None,
+    is_active: bool = True,
+) -> Topic:
+    return create_topic(
+        db,
+        TopicCreate(
+            name=name,
+            description=description,
+            parent_topic_id=parent_topic_id,
+            is_active=is_active,
+        ),
+        commit=False,
+    )
+
+
+def create_topic_from_values(
+    db: Session,
+    *,
+    name: str,
+    description: str | None = None,
+    parent_topic_id: int | None = None,
+    is_active: bool = True,
+    commit: bool = True,
+) -> Topic:
+    return create_topic(
+        db,
+        TopicCreate(
+            name=name,
+            description=description,
+            parent_topic_id=parent_topic_id,
+            is_active=is_active,
+        ),
+        commit=commit,
+    )
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:

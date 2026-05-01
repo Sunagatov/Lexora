@@ -1,27 +1,19 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
+import {useOutletContext} from 'react-router-dom'
+import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {useStudyState} from '@/features/study/hooks/useStudyState'
 import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
 import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
-import {useDrawer} from '@/app/layout/DrawerContext'
 import {useResizableSidebarWidth} from '@/features/study/hooks/useResizableSidebarWidth'
 import {StudySidebarShell} from '@/features/study/components/StudySidebarShell'
 import {StudyTopicSummary} from '@/features/study/components/StudyTopicSummary'
 
 export function StudyPage() {
   const s = useStudyState()
-  const {drawerOpen, setDrawerOpen, setHasDrawer} = useDrawer()
+  const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
-
-  useEffect(() => {
-    setHasDrawer(true)
-    setDrawerOpen(false)
-    return () => {
-      setHasDrawer(false)
-      setDrawerOpen(false)
-    }
-  }, [setHasDrawer, setDrawerOpen])
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,

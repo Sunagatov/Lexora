@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
@@ -29,6 +29,10 @@ def get_topic_by_id(db: Session, topic_id: int) -> Topic | None:
     return db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None)))
 
 
+def get_active_topic_or_none(db: Session, topic_id: int) -> Topic | None:
+    return get_topic_by_id(db, topic_id)
+
+
 def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
     stmt = (
         select(Topic)
@@ -45,6 +49,36 @@ def get_topic_by_id_including_deleted(db: Session, topic_id: int) -> Topic | Non
 
 def get_topic_by_slug(db: Session, slug: str) -> Topic | None:
     return db.scalar(select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None)))
+
+
+def find_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
+    normalized = topic_name.strip().casefold()
+    return db.scalar(
+        select(Topic)
+        .where(func.lower(Topic.name) == normalized)
+        .where(Topic.deleted_at.is_(None))
+    )
+
+
+def find_deleted_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
+    normalized = topic_name.strip().casefold()
+    return db.scalar(
+        select(Topic)
+        .where(func.lower(Topic.name) == normalized)
+        .where(Topic.deleted_at.isnot(None))
+    )
+
+
+def find_active_topic_by_slug(db: Session, slug: str) -> Topic | None:
+    return get_topic_by_slug(db, slug)
+
+
+def find_deleted_topic_by_slug(db: Session, slug: str) -> Topic | None:
+    return db.scalar(
+        select(Topic)
+        .where(Topic.slug == slug)
+        .where(Topic.deleted_at.isnot(None))
+    )
 
 
 def get_deleted_topics(db: Session) -> list[Topic]:
@@ -71,6 +105,57 @@ def _coerce_topic_id(value) -> int:
     if hasattr(value, "id"):
         return int(value.id)
     return int(value)
+
+
+def count_active_topics(db: Session) -> int:
+    return int(
+        db.scalar(
+            select(func.count())
+            .select_from(Topic)
+            .where(Topic.deleted_at.is_(None))
+        )
+        or 0
+    )
+
+
+def list_active_topics_page_rows(db, *, offset: int, page_size: int, word_cls, word_topics_table):
+    stmt = (
+        select(
+            Topic.id,
+            Topic.name,
+            Topic.slug,
+            Topic.description,
+            Topic.is_active,
+            func.count(word_cls.id).label("word_count"),
+        )
+        .select_from(Topic)
+        .outerjoin(word_topics_table, word_topics_table.c.topic_id == Topic.id)
+        .outerjoin(word_cls, (word_cls.id == word_topics_table.c.word_id) & word_cls.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None))
+        .group_by(Topic.id)
+        .order_by(Topic.name.asc(), Topic.id.asc())
+        .offset(offset)
+        .limit(page_size)
+    )
+    return db.execute(stmt).all()
+
+
+def list_deleted_topics_for_purge(db, *, deleted_before: datetime | None = None):
+    stmt = (
+        select(Topic)
+        .where(Topic.deleted_at.isnot(None))
+        .options(selectinload(Topic.words).selectinload(Word.topics))
+    )
+    if deleted_before is not None:
+        stmt = stmt.where(Topic.deleted_at < deleted_before)
+    return list(db.scalars(stmt).all())
+
+
+def hard_delete_topics_by_ids(db, topic_ids: list[int]) -> int:
+    if not topic_ids:
+        return 0
+    result = db.execute(Topic.__table__.delete().where(Topic.id.in_(topic_ids)))
+    return result.rowcount or 0
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:

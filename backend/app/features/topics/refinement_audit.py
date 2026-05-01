@@ -1,10 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-
-from sqlalchemy.orm import Session
-
-from app.features.topics.repository import get_all_topics_with_words
 from app.features.topics.refinement_clusters import (
     GENERIC_NAME_TOKENS,
     TOPIC_SPLIT_MIN_WORDS,
@@ -13,6 +8,13 @@ from app.features.topics.refinement_clusters import (
     _tokenize,
 )
 from app.features.topics.refinement_schemas import TopicAuditItem, TopicAuditResponse
+
+
+def build_topic_audit(db, *, get_all_topics_with_words_fn) -> TopicAuditResponse:
+    topics = get_all_topics_with_words_fn(db)
+    items = [_topic_audit(topic) for topic in topics]
+    items.sort(key=lambda item: (-int(item.should_review), -item.broadness_score, -item.word_count, item.topic_name.casefold()))
+    return TopicAuditResponse(items=items)
 
 
 def _topic_audit(topic) -> TopicAuditItem:
@@ -37,10 +39,7 @@ def _topic_audit(topic) -> TopicAuditItem:
             word_count=word_count,
             shared_word_count=sum(1 for word in words if len(_active_topics(word)) > 1),
             exclusive_word_count=sum(1 for word in words if len(_active_topics(word)) == 1),
-            average_topics_per_word=round(
-                sum(len(_active_topics(word)) for word in words) / word_count,
-                2,
-            ),
+            average_topics_per_word=round(sum(len(_active_topics(word)) for word in words) / word_count, 2),
             broadness_score=0.0,
             reasons=["part-of-speech umbrella topic"],
             should_review=False,
@@ -84,8 +83,6 @@ def _topic_audit(topic) -> TopicAuditItem:
         reasons.append(f"meets the >{TOPIC_SPLIT_MIN_WORDS} word split threshold")
 
     score = min(score, 1.0)
-    should_review = word_count > TOPIC_SPLIT_MIN_WORDS
-
     return TopicAuditItem(
         topic_id=topic.id,
         topic_name=topic.name,
@@ -95,17 +92,5 @@ def _topic_audit(topic) -> TopicAuditItem:
         average_topics_per_word=round(average_topics_per_word, 2),
         broadness_score=round(score, 2),
         reasons=reasons or ["topic looks focused"],
-        should_review=should_review,
+        should_review=word_count > TOPIC_SPLIT_MIN_WORDS,
     )
-
-
-def build_topic_audit(
-    db: Session,
-    *,
-    get_all_topics_with_words_fn: Callable[[Session], list] | None = None,
-) -> TopicAuditResponse:
-    topic_loader = get_all_topics_with_words_fn or get_all_topics_with_words
-    topics = topic_loader(db)
-    items = [_topic_audit(topic) for topic in topics]
-    items.sort(key=lambda item: (-int(item.should_review), -item.broadness_score, -item.word_count, item.topic_name.casefold()))
-    return TopicAuditResponse(items=items)

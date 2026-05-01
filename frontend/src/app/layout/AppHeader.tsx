@@ -1,12 +1,15 @@
 import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
-import {useDrawer} from '@/app/layout/DrawerContext'
 import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 
-export function AppHeader() {
+type Props = {
+  hasDrawer?: boolean
+  onOpenDrawer?: () => void
+}
+
+export function AppHeader({hasDrawer = false, onOpenDrawer}: Props) {
   const navigate = useNavigate()
-  const {hasDrawer, setDrawerOpen} = useDrawer()
   const {logoutPending, handleLogout} = useLogoutAction()
 
   return (
@@ -22,7 +25,7 @@ export function AppHeader() {
           {logoutPending ? 'Signing out…' : 'Sign out'}
         </button>
         {hasDrawer && (
-          <button type="button" className="app-header-burger" onClick={() => setDrawerOpen(true)}>
+          <button type="button" className="app-header-burger" onClick={onOpenDrawer} aria-label="Open sidebar">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="2" y1="4" x2="16" y2="4" />
               <line x1="2" y1="9" x2="16" y2="9" />

@@ -1,7 +1,8 @@
 import {render, screen, fireEvent, waitFor} from '@testing-library/react'
-import {MemoryRouter, Route, Routes, useNavigate} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {MemoryRouter, Route, Routes} from 'react-router-dom'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {DrawerProvider, useDrawer} from '@/app/layout/DrawerContext'
+import {AppLayout} from '@/app/layout/AppLayout'
 import {StudyPage} from '@/features/study/routes/StudyPage'
 
 vi.mock('@/features/study/hooks/useStudyState', () => ({
@@ -85,66 +86,64 @@ beforeEach(() => {
 })
 
 function Shell() {
-  const navigate = useNavigate()
-  const {drawerOpen, setDrawerOpen} = useDrawer()
-
   return (
     <>
-      <div data-testid="drawer-state">{drawerOpen ? 'open' : 'closed'}</div>
-      <button type="button" onClick={() => setDrawerOpen(true)}>open drawer</button>
-      <button type="button" onClick={() => navigate('/other')}>other</button>
-      <button type="button" onClick={() => navigate('/study')}>study</button>
+      <div>other</div>
     </>
   )
 }
 
 describe('StudyPage drawer lifecycle', () => {
   it('closes the drawer when leaving and re-entering the study page', async () => {
-    render(
-      <DrawerProvider>
-        <MemoryRouter initialEntries={['/study']}>
-          <Shell />
-          <Routes>
-            <Route path="/study" element={<StudyPage />} />
-            <Route path="/other" element={<div>other</div>} />
-          </Routes>
-        </MemoryRouter>
-      </DrawerProvider>,
-    )
-
-    fireEvent.click(screen.getByText('open drawer'))
-    expect(screen.getByTestId('drawer-state').textContent).toBe('open')
-
-    fireEvent.click(screen.getByText('other'))
-    await waitFor(() => {
-      expect(screen.getByTestId('drawer-state').textContent).toBe('closed')
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
 
-    fireEvent.click(screen.getByText('study'))
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/smart-review']}>
+          <Routes>
+            <Route path="/" element={<AppLayout />}>
+              <Route path="smart-review" element={<StudyPage />} />
+              <Route path="other" element={<Shell />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    fireEvent.click(screen.getByRole('button', {name: 'Open sidebar'}))
+    expect(document.querySelector('.mobile-drawer.open')).not.toBeNull()
+
+    fireEvent.click(screen.getAllByText('Lexora')[0]!)
     await waitFor(() => {
-      expect(screen.getByTestId('drawer-state').textContent).toBe('closed')
       expect(document.querySelector('.mobile-drawer.open')).toBeNull()
     })
   })
 
   it('closes the drawer when selecting a topic', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    })
+
     render(
-      <DrawerProvider>
-        <MemoryRouter initialEntries={['/study']}>
-          <Shell />
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/smart-review']}>
           <Routes>
-            <Route path="/study" element={<StudyPage />} />
+            <Route path="/" element={<AppLayout />}>
+              <Route path="smart-review" element={<StudyPage />} />
+            </Route>
           </Routes>
         </MemoryRouter>
-      </DrawerProvider>,
+      </QueryClientProvider>,
     )
 
-    fireEvent.click(screen.getByText('open drawer'))
-    expect(screen.getByTestId('drawer-state').textContent).toBe('open')
+    fireEvent.click(screen.getByRole('button', {name: 'Open sidebar'}))
+    expect(document.querySelector('.mobile-drawer.open')).not.toBeNull()
 
     fireEvent.click(screen.getAllByText('select topic')[0])
     await waitFor(() => {
-      expect(screen.getByTestId('drawer-state').textContent).toBe('closed')
+      expect(document.querySelector('.mobile-drawer.open')).toBeNull()
     })
   })
 })

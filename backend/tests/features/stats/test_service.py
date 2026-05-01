@@ -4,8 +4,6 @@ from unittest.mock import MagicMock
 from typing import cast
 
 from app.features.stats import service as stats_service
-from app.features.stats import content_metrics as content_metrics
-from app.features.stats import activity_metrics as activity_metrics
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
@@ -60,15 +58,6 @@ def test_record_usage_event_is_idempotent() -> None:
     assert "app_usage_events" in str(statement)
     assert "ON CONFLICT" in str(statement).upper()
     assert db.add.call_count == 0
-
-
-def test_activity_metrics_facade_re_exports_public_builders() -> None:
-    assert activity_metrics._build_usage_stats is stats_service._build_usage_stats
-    assert activity_metrics._build_daily_activity is stats_service._build_daily_activity
-    assert activity_metrics._build_retention_stats is stats_service._build_retention_stats
-    assert activity_metrics._build_efficiency_stats is stats_service._build_efficiency_stats
-    assert activity_metrics._build_consistency_stats is stats_service._build_consistency_stats
-    assert activity_metrics._build_queue_stats is stats_service._build_queue_stats
 
 
 def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> None:
@@ -157,7 +146,7 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
 def test_load_topic_word_ids_short_circuits_for_empty_word_map() -> None:
     db = MagicMock()
 
-    result = content_metrics._load_topic_word_ids(db, {})
+    result = stats_service._load_topic_word_ids(db, {})
 
     assert result == {}
     db.execute.assert_not_called()
