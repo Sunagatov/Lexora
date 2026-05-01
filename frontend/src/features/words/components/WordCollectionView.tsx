@@ -1,3 +1,17 @@
+function WordTableSkeleton() {
+  return (
+    <div className="sk-rows">
+      {Array.from({length: 8}, (_, i) => (
+        <div key={i} className="sk-row">
+          <div className="sk" style={{height: 14}} />
+          <div className="sk" style={{height: 13, width: '65%'}} />
+          <div className="sk" style={{height: 24, borderRadius: 20}} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 import type {Word, WordKnowledgeLevel} from '@/shared/types'
 import type {SortOption} from '@/features/words/model/wordDomain'
 import {Toolbar} from '@/features/study/components/Toolbar'
@@ -67,7 +81,7 @@ export function WordCollectionView({
 
       <div className="main-inner">
         {isLoading && pageWords.length === 0 ? (
-          <div className="empty-state">Loading topic words…</div>
+          <WordTableSkeleton />
         ) : pageWords.length === 0 ? (
           <div className="empty-state">{emptyMessage}</div>
         ) : (

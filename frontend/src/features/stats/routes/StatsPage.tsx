@@ -35,6 +35,38 @@ import {queryKeys} from '@/app/queryKeys'
 
 export {filterByDays, toLocalDateKey} from '@/features/stats/model/statsPageModel'
 
+function StatsPageSkeleton() {
+  return (
+    <div className="stats-page">
+      <div className="stats-inner">
+        <div className="stats-topbar">
+          <div className="sk" style={{width: 48, height: 14}} />
+          <div className="sk" style={{width: 100, height: 22}} />
+        </div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10}}>
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="sk" style={{height: 64, borderRadius: 14}} />
+          ))}
+        </div>
+        <div className="stats-section">
+          <div className="sk" style={{height: 12, width: 150}} />
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10}}>
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="sk" style={{height: 72, borderRadius: 10}} />
+            ))}
+          </div>
+        </div>
+        {[140, 100, 90].map((h, i) => (
+          <div key={i} className="stats-section">
+            <div className="sk" style={{height: 12, width: 120}} />
+            <div className="sk" style={{height: h, borderRadius: 8}} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function StatsPage() {
   const navigate = useNavigate()
   const {data: stats, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
@@ -61,7 +93,7 @@ export function StatsPage() {
   const bestDay = useMemo(() => findBestDay(filteredActivity), [filteredActivity])
   const worstDay = useMemo(() => findWorstDay(filteredActivity), [filteredActivity])
 
-  if (isLoading) return <div className="stats-loading">Loading…</div>
+  if (isLoading) return <StatsPageSkeleton />
   if (!stats) return <div className="stats-loading">Failed to load statistics.</div>
 
   const overview = stats.overview

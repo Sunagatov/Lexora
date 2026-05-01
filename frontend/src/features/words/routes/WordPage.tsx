@@ -8,6 +8,31 @@ import {useWordPageState} from '@/features/words/hooks/useWordPageState'
 import {WordPageEditForm} from '@/features/words/components/WordPageEditForm'
 import {WordPageView} from '@/features/words/components/WordPageView'
 
+function WordPageSkeleton() {
+  const rows = [75, 55, 90, 60, 40]
+  return (
+    <div className="word-page">
+      <div className="word-page-hero-wrap">
+        <div className="word-page-topbar">
+          <div className="sk" style={{width: 48, height: 14}} />
+          <div className="sk" style={{width: 38, height: 14}} />
+        </div>
+        <div className="sk" style={{height: 74, borderRadius: 'var(--radius-lg)'}} />
+      </div>
+      <div className="word-page-inner">
+        <div className="sk-rows">
+          {rows.map((w, i) => (
+            <div key={i} style={{display: 'grid', gridTemplateColumns: '120px 1fr', gap: 12, padding: '14px 20px', borderBottom: i < rows.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center'}}>
+              <div className="sk" style={{height: 11, width: 70}} />
+              <div className="sk" style={{height: 14, width: `${w}%`}} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function WordPage() {
   const s = useWordPageState()
   const publicConfigQuery = usePublicConfig()
@@ -15,7 +40,7 @@ export function WordPage() {
   const location = useLocation()
 
   if (s.isInvalidWordId) return <NotFoundPage />
-  if (s.isLoading) return <div className="word-page-loading">Loading…</div>
+  if (s.isLoading) return <WordPageSkeleton />
   if (!s.word) return <div className="word-page-loading">Word not found.</div>
 
   const {word, topics, topic, draft, set, editing} = s

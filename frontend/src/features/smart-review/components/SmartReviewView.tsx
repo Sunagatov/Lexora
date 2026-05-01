@@ -1,3 +1,38 @@
+function SmartReviewSkeleton() {
+  return (
+    <>
+      <div className="sticky-controls">
+        <div className="card topic-header-card topic-header-card-desktop">
+          <div className="topic-header-main">
+            <div className="sk" style={{height: 18, width: 160, marginBottom: 6}} />
+            <div className="sk" style={{height: 13, width: '75%'}} />
+          </div>
+          <div className="smart-review-progress">
+            <div className="smart-review-progress-bar">
+              <div className="sk" style={{height: '100%', width: '100%', borderRadius: 999}} />
+            </div>
+            <div className="smart-review-progress-footer">
+              <div className="sk" style={{height: 12, width: 100}} />
+              <div className="sk" style={{height: 28, width: 76, borderRadius: 8}} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="main-inner">
+        <div className="sk-rows">
+          {Array.from({length: 8}, (_, i) => (
+            <div key={i} className="sk-row">
+              <div className="sk" style={{height: 14}} />
+              <div className="sk" style={{height: 13, width: '65%'}} />
+              <div className="sk" style={{height: 24, borderRadius: 20}} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
 import {useMemo} from 'react'
 import type {StudyQueue, WordKnowledgeLevel} from '@/shared/types'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
@@ -31,7 +66,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
     }
   }
 
-  if (isLoading) return null
+  if (isLoading) return <SmartReviewSkeleton />
   if (!queue) return <div className="empty-state">Daily Word Mix is unavailable.</div>
 
   const remaining  = queue.total_count - queue.completed_count
