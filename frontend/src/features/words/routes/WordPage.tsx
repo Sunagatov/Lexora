@@ -10,10 +10,20 @@ import {WordPageView} from '@/features/words/components/WordPageView'
 import {WordPageFooterNav, WordPageHero, WordPageSkeleton} from '@/features/words/components/WordPageChrome'
 
 export function WordPage() {
-  const s = useWordPageState()
-  const publicConfigQuery = usePublicConfig()
   const navigate = useNavigate()
   const location = useLocation()
+  const s = useWordPageState({
+    onSaveSuccess: (updated, locationState) => {
+      navigate(routes.word(updated.id), {
+        replace: true,
+        state: locationState,
+      })
+    },
+    onDeleteSuccess: (destinationTopicSlug) => {
+      navigate(destinationTopicSlug ? routes.topic(destinationTopicSlug) : routes.home, {replace: true})
+    },
+  })
+  const publicConfigQuery = usePublicConfig()
   const [isSpeaking, setIsSpeaking] = useState(false)
 
   useEffect(() => {

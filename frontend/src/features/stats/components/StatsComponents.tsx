@@ -246,3 +246,25 @@ export function PeriodTabs<T extends string>({options, value, onChange}: {
     </div>
   )
 }
+
+export function QualityBars({
+  rows,
+  total,
+}: {
+  rows: {label: string; val: number; color: string}[]
+  total: number
+}) {
+  return (
+    <div className="stats-quality-row">
+      {rows.map(({label, val, color}) => (
+        <div key={label} className="stats-quality-item">
+          <span className="stats-quality-label">{label}</span>
+          <div className="stats-quality-bar-wrap">
+            <div className="stats-quality-bar" style={{width: `${Math.round((val / Math.max(1, total)) * 100)}%`, background: color}} />
+          </div>
+          <span className="stats-quality-pct">{Math.round((val / Math.max(1, total)) * 100)}%</span>
+        </div>
+      ))}
+    </div>
+  )
+}

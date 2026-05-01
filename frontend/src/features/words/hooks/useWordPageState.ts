@@ -1,12 +1,11 @@
 import {useState, useMemo, useEffect, useRef} from 'react'
-import {useParams, useNavigate, useLocation} from 'react-router-dom'
+import {useParams, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {fetchWord, fetchWords, updateWord, deleteWord} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
 import type {Word} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import {queryKeys} from '@/app/queryKeys'
-import {routes} from '@/app/routes'
 import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
 import type {QueryClient} from '@tanstack/react-query'
@@ -38,9 +37,13 @@ function invalidateWordDependencies(queryClient: QueryClient, extras: readonly (
   }
 }
 
-export function useWordPageState() {
+type UseWordPageStateOptions = {
+  onSaveSuccess?: (updated: Word, locationState?: {fromTopicSlug: string}) => void
+  onDeleteSuccess?: (destinationTopicSlug: string | null) => void
+}
+
+export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const {wordId} = useParams<{wordId: string}>()
-  const navigate = useNavigate()
   const location = useLocation()
   const queryClient = useQueryClient()
   const editing = location.pathname.endsWith('/edit')
@@ -65,15 +68,16 @@ export function useWordPageState() {
     enabled: isValidWordId,
   })
 
-  const allWordsQuery = useQuery({
-    queryKey: queryKeys.words,
-    queryFn: () => fetchWords(),
-    enabled: isValidWordId,
+  const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
+  const word = wordQuery.data
+  const topic = word ? resolveWordContextTopic(word, topics, fromTopicSlug) : undefined
+
+  const topicWordsQuery = useQuery({
+    queryKey: topic ? queryKeys.topicWords(topic.id) : ['words', 'topic', 'missing'],
+    queryFn: () => fetchWords({topicId: topic!.id}),
+    enabled: isValidWordId && !!topic,
   })
 
-  const word = wordQuery.data
-  const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
-  const topic = word ? resolveWordContextTopic(word, topics, fromTopicSlug) : undefined
   const wordIdForEffect = word?.id
 
   const saveMutation = useMutation({
@@ -81,11 +85,7 @@ export function useWordPageState() {
     onSuccess: (updated) => {
       replaceWordInWordLists(queryClient, updated)
       invalidateWordDependencies(queryClient)
-
-      navigate(routes.word(updated.id), {
-        replace: true,
-        state: buildWordLocationState(updated, topics, fromTopicSlug),
-      })
+      options.onSaveSuccess?.(updated, buildWordLocationState(updated, topics, fromTopicSlug))
 
       setDraft(null)
       setSaveError(null)
@@ -100,7 +100,6 @@ export function useWordPageState() {
     },
   })
 
-  const capturedTopicSlug = useRef<string | null>(null)
   const draftWordIdRef = useRef<number | null>(null)
 
   const deleteMutation = useMutation({
@@ -108,21 +107,20 @@ export function useWordPageState() {
     onSuccess: () => {
       removeWordFromWordLists(queryClient, numericWordId)
       invalidateWordDependencies(queryClient, [queryKeys.trashWords])
-
-      navigate(
-        capturedTopicSlug.current ? routes.topic(capturedTopicSlug.current) : routes.home,
-        {replace: true},
-      )
+      const destinationTopicSlug = word
+        ? (buildWordLocationState(word, topics, fromTopicSlug)?.fromTopicSlug ?? null)
+        : null
+      options.onDeleteSuccess?.(destinationTopicSlug)
     },
   })
 
   const topicWords = useMemo(() => {
-    const allWords = allWordsQuery.data ?? []
+    const allWords = topicWordsQuery.data ?? []
     if (!word || !topic) return []
     return allWords
       .filter((w) => topicContainsWordThroughSubtree(topic.id, w.topic_ids, topics))
       .sort((a, b) => a.term.localeCompare(b.term))
-  }, [allWordsQuery.data, word, topic, topics])
+  }, [topicWordsQuery.data, word, topic, topics])
 
   const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
   const prevWord = currentIdx > 0 ? topicWords[currentIdx - 1] : null
@@ -177,10 +175,6 @@ export function useWordPageState() {
   }
 
   function handleDelete() {
-    capturedTopicSlug.current = word
-      ? (buildWordLocationState(word, topics, fromTopicSlug)?.fromTopicSlug ?? null)
-      : null
-
     setConfirming(false)
     deleteMutation.mutate()
   }
@@ -189,7 +183,6 @@ export function useWordPageState() {
     wordId: numericWordId,
     isInvalidWordId: !isValidWordId,
     editing,
-    location,
     word,
     topics,
     topic,
@@ -208,6 +201,6 @@ export function useWordPageState() {
     setConfirming,
     handleDelete,
     fromTopicSlug,
-    isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || allWordsQuery.isLoading),
+    isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || (!!topic && topicWordsQuery.isLoading)),
   }
 }

@@ -3,17 +3,15 @@ import {InsightsStrip} from '@/features/stats/components/StatsInsights'
 import {
   AppTimeSection,
   ConsistencySection,
-  EfficiencySection,
-  QueueQualitySection,
-  RetentionSection,
-} from '@/features/stats/components/StatsPageSections'
-import {
   DailyProgressSection,
   DataQualitySection,
+  EfficiencySection,
   KnowledgeDistributionSection,
+  QueueQualitySection,
+  RetentionSection,
   TopicsSection,
   WordsAddedSection,
-} from '@/features/stats/components/StatsDetailSections'
+} from '@/features/stats/components/StatsSections'
 import {SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
 import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
 

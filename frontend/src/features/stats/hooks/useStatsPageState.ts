@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {queryKeys} from '@/app/queryKeys'
 import {fetchStats} from '@/features/stats/api/statsApi'
@@ -47,29 +47,29 @@ export function useStatsPageState() {
   const [topicSort, setTopicSort] = useState<TopicSort>('worst')
   const [topicExpanded, setTopicExpanded] = useState(false)
 
-  const filteredActivity = useMemo(
-    () => (stats ? filterByDays(stats.daily_activity, activityPeriod) : []),
-    [stats, activityPeriod],
-  )
-  const filteredUsage = useMemo(
-    () => (stats ? filterByDays(stats.usage_daily, usagePeriod) : []),
-    [stats, usagePeriod],
-  )
-  const activityTotals = useMemo(() => sumActivity(filteredActivity), [filteredActivity])
-  const activityChartData = useMemo(() => buildActivityChartData(filteredActivity), [filteredActivity])
-  const usageChartData = useMemo(() => buildUsageChartData(filteredUsage), [filteredUsage])
-  const monthChartData = useMemo(() => (stats ? buildMonthChartData(stats, monthPeriod) : []), [stats, monthPeriod])
-  const sortedTopics = useMemo(() => (stats ? sortTopics(stats.topics, topicSort) : []), [stats, topicSort])
-  const bestDay = useMemo(() => findBestDay(filteredActivity), [filteredActivity])
-  const worstDay = useMemo(() => findWorstDay(filteredActivity), [filteredActivity])
-  const weeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterByDays(stats.daily_activity, '7')) : null), [stats])
-  const previousWeeklyActivityTotals = useMemo(() => (stats ? sumActivity(filterPreviousDays(stats.daily_activity, 7)) : null), [stats])
-  const currentWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterByDays(stats.usage_daily, '7')) : 0), [stats])
-  const previousWeeklyUsage = useMemo(() => (stats ? sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7)) : 0), [stats])
+  const filteredActivity = stats ? filterByDays(stats.daily_activity, activityPeriod) : []
+  const filteredUsage = stats ? filterByDays(stats.usage_daily, usagePeriod) : []
+  const activityTotals = sumActivity(filteredActivity)
+  const activityChartData = buildActivityChartData(filteredActivity)
+  const usageChartData = buildUsageChartData(filteredUsage)
+  const monthChartData = stats ? buildMonthChartData(stats, monthPeriod) : []
+  const sortedTopics = stats ? sortTopics(stats.topics, topicSort) : []
+  const bestDay = findBestDay(filteredActivity)
+  const worstDay = findWorstDay(filteredActivity)
+  const weeklyActivityTotals = stats ? sumActivity(filterByDays(stats.daily_activity, '7')) : null
+  const previousWeeklyActivityTotals = stats ? sumActivity(filterPreviousDays(stats.daily_activity, 7)) : null
+  const currentWeeklyUsage = stats ? sumUsageSeconds(filterByDays(stats.usage_daily, '7')) : 0
+  const previousWeeklyUsage = stats ? sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7)) : 0
 
-  const overviewCards = useMemo(() => {
-    if (!stats) return []
+  let overviewCards: Array<{
+    value: string | number
+    label: string
+    sub: string
+    trend: ReturnType<typeof buildTrendLabel>
+    sparkline: number[]
+  }> = []
 
+  if (stats) {
     const now = new Date()
     const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
     const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
@@ -91,7 +91,7 @@ export function useStatsPageState() {
       stats.level_counts.unset,
     ]
 
-    return [
+    overviewCards = [
       {
         value: stats.overview.total_words,
         label: 'Total words',
@@ -121,15 +121,7 @@ export function useStatsPageState() {
         sparkline: levelDistributionSparkline,
       },
     ]
-  }, [
-    currentWeeklyUsage,
-    filteredActivity,
-    filteredUsage,
-    previousWeeklyActivityTotals,
-    previousWeeklyUsage,
-    stats,
-    weeklyActivityTotals,
-  ])
+  }
 
   return {
     stats,
