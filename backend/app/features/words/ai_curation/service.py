@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.orm import Session
 
 from app.shared.logging_utils import log_audit_event
-from app.features.topics.api import get_active_subtree_topic_ids
+from app.features.topics.repository import get_active_subtree_topic_ids
 from app.features.words.ai_curation import import_service as _import_service
 from app.features.words.ai_curation.common import AiCurationImportError as _AiCurationImportError, _get_topic
 from app.features.words.ai_curation.export_support import (

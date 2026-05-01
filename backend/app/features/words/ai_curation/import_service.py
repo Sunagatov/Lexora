@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import (
-    InvalidTopicNameError,
-    TopicSlugConflictError,
-    create_topic_from_values as _create_topic_from_values,
-)
+from app.features.topics.exceptions import InvalidTopicNameError, TopicSlugConflictError
+from app.features.topics.service import create_topic_from_values as _create_topic_from_values
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
 from app.features.words.ai_curation.import_loading import (
     load_existing_words as _load_existing_words,

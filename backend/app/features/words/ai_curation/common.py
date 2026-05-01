@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import get_active_topic_or_none
+from app.features.topics.repository import get_active_topic_or_none
 
 
 class AiCurationImportError(Exception):

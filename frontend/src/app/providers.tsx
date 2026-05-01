@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react'
 import {MutationCache, QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
-import {DrawerProvider} from '@/app/layout/DrawerContext'
 import {routes} from '@/app/routes'
 import {ApiError} from '@/shared/api/apiError'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
@@ -57,7 +56,7 @@ export function Providers({children}: PropsWithChildren) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DrawerProvider>{authReady ? children : null}</DrawerProvider>
+      {authReady ? children : null}
     </QueryClientProvider>
   )
 }

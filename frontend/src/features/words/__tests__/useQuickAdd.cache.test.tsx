@@ -72,7 +72,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
     vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -106,7 +106,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
     vi.mocked(topicsApi.createTopic).mockResolvedValue(makeTopic(2, 'Astronomy', 'astronomy'))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -142,7 +142,7 @@ describe('useQuickAdd cache invalidation', () => {
       new ApiError(409, "Topic slug 'inbox' is used by a deleted topic — restore or permanently delete it first"),
     )
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -177,7 +177,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
     vi.mocked(wordsApi.quickAddWord).mockImplementation(() => new Promise<Word>(() => {}))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -217,7 +217,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
     vi.mocked(topicsApi.createTopic).mockImplementation(() => new Promise<Topic>(() => {}))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -256,7 +256,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.createTopic).mockResolvedValue(makeTopic(1, 'Inbox'))
     vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -287,7 +287,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Phrasal Verbs', 'phrasal-verbs')])
     vi.spyOn(quickAddAssistApi, 'suggestTopic').mockResolvedValue('phrasal verbs')
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)
@@ -315,7 +315,7 @@ describe('useQuickAdd cache invalidation', () => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox'), makeTopic(2, 'Verbs')])
     vi.mocked(wordsApi.quickAddWord).mockRejectedValue(new ApiError(409, "Word 'run' already exists in the database"))
 
-    const {result} = renderHook(() => useQuickAdd(vi.fn()), {wrapper: wrapper(queryClient)})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
 
     await waitFor(() => {
       expect(result.current.topicsLoading).toBe(false)

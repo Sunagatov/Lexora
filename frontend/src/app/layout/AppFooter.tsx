@@ -1,10 +1,24 @@
 import {useNavigate} from 'react-router-dom'
+import {useQuery} from '@tanstack/react-query'
 import {routes} from '@/app/routes'
-import {useLibrarySummary} from '@/app/layout/useLibrarySummary'
+import {queryKeys} from '@/app/queryKeys'
+import {fetchTopics} from '@/features/topics/api/topicsApi'
+import {fetchWords} from '@/features/words/api/wordsApi'
 
 export function AppFooter() {
   const navigate = useNavigate()
-  const {wordCount, topicCount} = useLibrarySummary()
+  const {data: cachedWords} = useQuery({
+    queryKey: queryKeys.words,
+    queryFn: () => fetchWords(),
+    enabled: false,
+  })
+  const {data: cachedTopics} = useQuery({
+    queryKey: queryKeys.topics,
+    queryFn: fetchTopics,
+    enabled: false,
+  })
+  const wordCount = cachedWords?.length ?? null
+  const topicCount = cachedTopics?.length ?? null
 
   return (
     <footer className="app-footer">

@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {createTopic, fetchTopics} from '@/features/topics/api/topicsApi'
 import {quickAddWord} from '@/features/words/api/wordsApi'
@@ -15,7 +15,11 @@ import {
 const INBOX_TOPIC_NAME = 'Inbox'
 const isInboxTopic = (topic: Topic) => findTopicByName([topic], INBOX_TOPIC_NAME) !== undefined
 
-export function useQuickAdd(_onClose: () => void) {
+type AssistMode = 'idle' | 'translate' | 'suggest' | 'autofill'
+type AssistStage = 'idle' | 'translating' | 'suggesting'
+const EMPTY_TOPICS: Topic[] = []
+
+export function useQuickAdd() {
   const queryClient = useQueryClient()
   const termRef     = useRef<HTMLInputElement>(null)
 
@@ -24,16 +28,15 @@ export function useQuickAdd(_onClose: () => void) {
   const [topicId,     setTopicId]     = useState<number | null>(null)
   const [newTopic,    setNewTopic]    = useState('')
   const [addingTopic, setAddingTopic] = useState(false)
-  const [translating, setTranslating] = useState(false)
-  const [suggesting,  setSuggesting]  = useState(false)
-  const [aiSuggested, setAiSuggested] = useState(false)
   const [feedback,    setFeedback]    = useState<{ok: boolean; msg: string} | null>(null)
-  const [autoFillPending, setAutoFillPending] = useState(false)
+  const [assistMode, setAssistMode] = useState<AssistMode>('idle')
+  const [assistStage, setAssistStage] = useState<AssistStage>('idle')
   const [translationAiDone, setTranslationAiDone] = useState(false)
   const [topicAiDone, setTopicAiDone] = useState(false)
+  const [aiSuggested, setAiSuggested] = useState(false)
 
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
-  const topics: Topic[] = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
+  const topics: Topic[] = topicsQuery.data ?? EMPTY_TOPICS
 
   useEffect(() => {
     if (topicId !== null || topics.length === 0) return
@@ -41,16 +44,57 @@ export function useQuickAdd(_onClose: () => void) {
     if (inbox) setTopicId(inbox.id)
   }, [topics, topicId])
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => termRef.current?.focus(), 80)
-    return () => clearTimeout(timeoutId)
-  }, [])
-
   function focusTermInput() {
     const input = termRef.current
     if (input !== null) {
       input.focus()
     }
+  }
+
+  function resetAssistMarkers() {
+    setAiSuggested(false)
+    setTranslationAiDone(false)
+    setTopicAiDone(false)
+  }
+
+  function setAssist(mode: AssistMode, stage: AssistStage) {
+    setAssistMode(mode)
+    setAssistStage(stage)
+  }
+
+  function clearAssist() {
+    setAssist('idle', 'idle')
+  }
+
+  function validateTerm(trimmedTerm: string): boolean {
+    if (trimmedTerm.length > 0) return true
+    setFeedback({ok: false, msg: 'Enter a word first.'})
+    focusTermInput()
+    return false
+  }
+
+  function validateTranslation(trimmedTranslation: string): boolean {
+    if (trimmedTranslation.length > 0) return true
+    setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'})
+    return false
+  }
+
+  function applySuggestedTopic(suggested: string | null): boolean {
+    if (!suggested) {
+      setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'})
+      return false
+    }
+
+    const match = findTopicByName(topics, suggested)
+    if (!match) {
+      setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`})
+      return false
+    }
+
+    setTopicId(match.id)
+    setAiSuggested(true)
+    setTopicAiDone(true)
+    return true
   }
 
   const addWordMutation = useMutation({
@@ -63,7 +107,7 @@ export function useQuickAdd(_onClose: () => void) {
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
       setTerm('')
       setTranslation('')
-      setAiSuggested(false)
+      resetAssistMarkers()
       setTimeout(() => { setFeedback(null); termRef.current?.focus() }, 1800)
     },
     onError: (err: Error) => {
@@ -91,91 +135,58 @@ export function useQuickAdd(_onClose: () => void) {
     }),
   })
 
-  async function translateOnly() {
-    const trimmedTerm = term.trim()
-
-    if (trimmedTerm.length === 0) {
-      setFeedback({ok: false, msg: 'Enter a word first.'})
-      focusTermInput()
-      return
-    }
-    setTranslating(true)
+  async function requestTranslation(trimmedTerm: string) {
     setFeedback(null)
     const result = await translateTerm(trimmedTerm)
-    setTranslating(false)
-    if (result) {
-      setTranslation(result)
-      setTranslationAiDone(true)
-    } else {
+    if (!result) {
       setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
+      return null
     }
+    setTranslation(result)
+    setTranslationAiDone(true)
+    return result
+  }
+
+  async function requestTopicSuggestion(trimmedTerm: string, trimmedTranslation: string) {
+    setFeedback(null)
+    const suggested = await suggestTopic(trimmedTerm, trimmedTranslation)
+    applySuggestedTopic(suggested)
+    return suggested
+  }
+
+  async function translateOnly() {
+    const trimmedTerm = term.trim()
+    if (!validateTerm(trimmedTerm)) return
+    setAssist('translate', 'translating')
+    await requestTranslation(trimmedTerm)
+    clearAssist()
   }
 
   async function suggestOnly() {
     const trimmedTerm = term.trim()
     const trimmedTranslation = translation.trim()
 
-    if (trimmedTerm.length === 0) {
-      setFeedback({ok: false, msg: 'Enter a word first.'})
-      focusTermInput()
-      return
-    }
-    if (trimmedTranslation.length === 0) {
-      setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'})
-      return
-    }
-    setSuggesting(true)
-    setFeedback(null)
-    const suggested = await suggestTopic(trimmedTerm, trimmedTranslation)
-    setSuggesting(false)
-    if (!suggested) {
-      setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'})
-      return
-    }
-    const match = findTopicByName(topics, suggested)
-    if (match) {
-      setTopicId(match.id)
-      setAiSuggested(true)
-      setTopicAiDone(true)
-    } else {
-      setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`})
-    }
+    if (!validateTerm(trimmedTerm) || !validateTranslation(trimmedTranslation)) return
+    setAssist('suggest', 'suggesting')
+    await requestTopicSuggestion(trimmedTerm, trimmedTranslation)
+    clearAssist()
   }
 
   async function autoFill() {
     const trimmedTerm = term.trim()
+    if (!validateTerm(trimmedTerm)) return
 
-    if (trimmedTerm.length === 0) {
-      setFeedback({ok: false, msg: 'Enter a word first.'})
-      focusTermInput()
+    resetAssistMarkers()
+    setAssist('autofill', 'translating')
+    const translated = await requestTranslation(trimmedTerm)
+    if (!translated) {
+      clearAssist()
       return
     }
-    setAutoFillPending(true)
-    setFeedback(null)
-    setTranslationAiDone(false)
-    setTopicAiDone(false)
-    setTranslating(true)
-    const result = await translateTerm(trimmedTerm)
-    setTranslating(false)
-    if (!result) {
-      setAutoFillPending(false)
-      setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
-      return
-    }
-    setTranslation(result)
-    setTranslationAiDone(true)
-    setSuggesting(true)
-    const suggested = await suggestTopic(trimmedTerm, result)
-    setSuggesting(false)
-    if (suggested) {
-      const match = findTopicByName(topics, suggested)
-      if (match) {
-        setTopicId(match.id)
-        setAiSuggested(true)
-        setTopicAiDone(true)
-      }
-    }
-    setAutoFillPending(false)
+
+    setAssist('autofill', 'suggesting')
+    await requestTopicSuggestion(trimmedTerm, translated)
+    clearAssist()
   }
 
   async function save() {
@@ -221,7 +232,12 @@ export function useQuickAdd(_onClose: () => void) {
     topicId, setTopicId: (id: number) => { setTopicId(id); setAiSuggested(false); setTopicAiDone(false) },
     newTopic, setNewTopic,
     addingTopic, setAddingTopic,
-    translating, suggesting, aiSuggested, autoFillPending, translationAiDone, topicAiDone,
+    translating: assistStage === 'translating',
+    suggesting: assistStage === 'suggesting',
+    aiSuggested,
+    autoFillPending: assistMode === 'autofill' && assistStage !== 'idle',
+    translationAiDone,
+    topicAiDone,
     feedback,
     topicsLoading: topicsQuery.isLoading,
     sortedTopics,

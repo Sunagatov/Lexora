@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import hard_delete_topics_by_ids, list_deleted_topics_for_purge
+from app.features.topics.repository import hard_delete_topics_by_ids, list_deleted_topics_for_purge
 from app.features.words.repository import hard_delete_deleted_words, hard_delete_words_by_ids
 from app.shared.logging_utils import log_audit_event
 from app.shared.config import settings

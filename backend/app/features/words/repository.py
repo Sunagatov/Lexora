@@ -5,13 +5,18 @@ from sqlalchemy import bindparam, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.topics.model import Topic
+from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.domain import (
     assert_no_duplicate_word as assert_no_duplicate_word,
     assert_word_restore_allowed as assert_word_restore_allowed,
     existing_normalized_terms as existing_normalized_terms,
 )
 from app.features.words.model import Word, word_topics
-from app.features.words.constants import PROGRESS_SOURCE_MANUAL
+from app.features.words.multivalue import (
+    apply_word_multivalue_update,
+    multivalue_update_requested,
+    sync_word_multivalue_fields,
+)
 from app.features.words.progress import record_level_change
 from app.features.words.repository_queries import (
     active_words_stmt,
@@ -31,25 +36,6 @@ class WordStatsSnapshot:
     example: str | None
     example_items: tuple[object, ...]
     created_at: datetime
-
-
-def sync_word_multivalue_fields(
-    word: Word,
-    translations_text: str | None,
-    translation_entries: list[str] | None,
-    example_text: str | None,
-    example_entries: list[str] | None,
-) -> None:
-    from app.features.words.multivalue import sync_word_multivalue_fields as _sync_word_multivalue_fields
-
-    _sync_word_multivalue_fields(
-        word,
-        translations_text,
-        translation_entries,
-        example_text,
-        example_entries,
-    )
-
 
 def get_all_words(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
     stmt = active_words_stmt()
@@ -205,8 +191,8 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     for field, value in _word_attribute_updates(payload).items():
         setattr(word, field, value)
 
-    if _multivalue_update_requested(payload):
-        _apply_multivalue_update(db, word, payload)
+    if multivalue_update_requested(payload):
+        apply_word_multivalue_update(db, word, payload)
 
     if payload.topic_ids is not None:
         word.topics = _load_topics(db, payload.topic_ids)
@@ -282,42 +268,3 @@ def _word_attribute_updates(payload: WordUpdate) -> dict[str, object]:
             "example_entries",
         },
     )
-
-def _multivalue_update_requested(payload: WordUpdate) -> bool:
-    fields = payload.model_fields_set
-    return "translations" in fields or "translation_entries" in fields or "example" in fields or "example_entries" in fields
-
-
-def _apply_multivalue_update(db: Session, word: Word, payload: WordUpdate) -> None:
-    current_translations_text = word.translations
-    current_example_text = getattr(word, "example", None)
-    current_translation_entries = [item.value for item in getattr(word, "translation_items", [])]
-    current_example_entries = [item.value for item in getattr(word, "example_items", [])]
-
-    word.translation_items = []
-    word.example_items = []
-    db.flush()
-
-    sync_word_multivalue_fields(
-        word,
-        payload.translations if "translations" in payload.model_fields_set else current_translations_text,
-        _resolved_translation_entries(payload, current_translation_entries),
-        payload.example if "example" in payload.model_fields_set else current_example_text,
-        _resolved_example_entries(payload, current_example_entries),
-    )
-
-
-def _resolved_translation_entries(payload: WordUpdate, current_translation_entries: list[str]) -> list[str] | None:
-    if "translation_entries" in payload.model_fields_set:
-        return payload.translation_entries
-    if "translations" in payload.model_fields_set:
-        return None
-    return current_translation_entries
-
-
-def _resolved_example_entries(payload: WordUpdate, current_example_entries: list[str]) -> list[str] | None:
-    if "example_entries" in payload.model_fields_set:
-        return payload.example_entries
-    if "example" in payload.model_fields_set:
-        return None
-    return current_example_entries

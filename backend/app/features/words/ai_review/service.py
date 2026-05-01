@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import get_active_subtree_topic_ids, get_active_topic_or_none
+from app.features.topics.repository import get_active_subtree_topic_ids, get_active_topic_or_none
 from app.features.words.ai_review.exceptions import AiReviewImportError
 from app.features.words.ai_review.export_support import (
     EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
