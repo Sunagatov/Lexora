@@ -1,5 +1,6 @@
 import pytest
 from fastapi import HTTPException, Response
+from starlette.requests import Request
 from jose import jwt
 
 from app.features.auth.router import login, logout
@@ -9,10 +10,14 @@ from app.shared.config import settings
 from app.shared.deps import ALGORITHM
 
 
+def _make_request() -> Request:
+    return Request({"type": "http", "headers": [], "state": {}})
+
+
 def test_login_returns_csrf_and_sets_session_cookie() -> None:
     response = Response()
 
-    result = login(LoginRequest(password=settings.app_password), response)
+    result = login(LoginRequest(password=settings.app_password), _make_request(), response)
 
     assert result["ok"] is True
     assert "set-cookie" in response.headers
@@ -34,7 +39,7 @@ def test_login_rejects_wrong_password() -> None:
     response = Response()
 
     with pytest.raises(HTTPException) as exc_info:
-        login(LoginRequest(password="wrong-password"), response)
+        login(LoginRequest(password="wrong-password"), _make_request(), response)
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == "Wrong password"

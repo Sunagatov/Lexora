@@ -42,9 +42,9 @@ access_logger = logging.getLogger("http.access")
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger.info(
-        "app.started",
+        "application_started",
         extra={
-            "event": "app.started",
+            "event": "application_started",
             "smart_review_enabled": settings.smart_review_enabled,
             "cors_origins_count": len(settings.cors_allowed_origins),
             "sqlite_fallback": USING_SQLITE_FALLBACK,
@@ -54,7 +54,7 @@ async def lifespan(_: FastAPI):
     try:
         yield
     finally:
-        logger.info("app.stopped", extra={"event": "app.stopped"})
+        logger.info("application_stopped", extra={"event": "application_stopped"})
 
 
 app = FastAPI(
@@ -75,7 +75,7 @@ app.add_middleware(
 
 @app.middleware("http")
 async def add_request_logging_context(request: Request, call_next):
-    request_id = make_request_id()
+    request_id = sanitize_header_value(request.headers.get(REQUEST_ID_HEADER)) or make_request_id()
     correlation_id = sanitize_header_value(request.headers.get(CORRELATION_ID_HEADER)) or request_id
     token = bind_request_context(
         request_id=request_id,
@@ -92,9 +92,9 @@ async def add_request_logging_context(request: Request, call_next):
         return response
     except Exception:
         logger.exception(
-            "http.request.failed",
+            "http_request_failed",
             extra={
-                "event": "http.request.failed",
+                "event": "http_request_failed",
             },
         )
         raise
@@ -105,7 +105,6 @@ async def add_request_logging_context(request: Request, call_next):
         status_code = response.status_code if response is not None else 500
         request_context = get_request_context()
         subject = getattr(request.state, "subject", request_context.get("subject"))
-        auth_type = getattr(request.state, "auth_type", request_context.get("auth_type"))
         authenticated = subject is not None
         outcome = (
             "SUCCESS"
@@ -114,27 +113,20 @@ async def add_request_logging_context(request: Request, call_next):
             if status_code < 500
             else "SERVER_ERROR"
         )
-        level = logging.INFO
-        if status_code >= 500:
-            level = logging.ERROR
-        elif status_code >= 400 or duration_ms >= settings.log_slow_request_threshold_ms:
+        level = logging.DEBUG
+        if duration_ms >= settings.log_slow_request_threshold_ms:
             level = logging.WARNING
-        elif route_path == "/health":
-            level = logging.DEBUG
 
         access_logger.log(
             level,
-            "http.request.completed",
+            "http_request_completed",
             extra={
-                "event": "http.request.completed",
+                "event": "http_request_completed",
                 "route": route_path,
                 "status_code": status_code,
                 "duration_ms": duration_ms,
                 "authenticated": authenticated,
-                "subject": subject,
-                "auth_type": auth_type,
                 "outcome": outcome,
-                "client_ip": request.client.host if request.client else None,
             },
         )
         clear_request_context(token)

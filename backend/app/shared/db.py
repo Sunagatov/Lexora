@@ -55,13 +55,13 @@ def build_engine() -> Engine:
         return postgres_engine
     except OperationalError as exc:
         logger.warning(
-            "db.unavailable",
+            "database_fallback_activated",
             extra={
-                "event": "db.unavailable",
+                "event": "database_fallback_activated",
+                "database_backend": "postgresql",
                 "fallback": "sqlite",
                 "reason": type(exc).__name__,
             },
-            exc_info=exc,
         )
         return _build_sqlite_engine()
 

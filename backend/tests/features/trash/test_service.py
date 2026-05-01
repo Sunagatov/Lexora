@@ -103,6 +103,6 @@ def test_purge_trash_writes_audit_log(caplog) -> None:
     with caplog.at_level(logging.INFO, logger="audit"):
         trash_service.purge_trash(db, force=True)
 
-    matching = [r for r in caplog.records if r.name == "audit" and r.message == "trash.purged"]
+    matching = [r for r in caplog.records if r.name == "audit" and r.message == "trash_purged"]
     assert matching
     assert matching[0].force is True

@@ -15,7 +15,7 @@ from app.shared.auth import (
     build_csrf_token,
 )
 from app.shared.config import settings
-from app.shared.logging_utils import bind_request_context
+from app.shared.logging_utils import bind_request_context, clear_request_context, get_request_context
 from app.features.auth.schemas import LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -39,12 +39,12 @@ def _verify_session_token(session: str | None, request: Request | None = None) -
 
 
 @router.post("/login")
-def login(payload: LoginRequest, response: Response) -> dict:
+def login(payload: LoginRequest, request: Request, response: Response) -> dict:
     if not hmac.compare_digest(payload.password, settings.app_password):
         logger.warning(
-            "auth.login.failed",
+            "login_failed",
             extra={
-                "event": "auth.login.failed",
+                "event": "login_failed",
                 "reason": "wrong_password",
             },
         )
@@ -67,14 +67,22 @@ def login(payload: LoginRequest, response: Response) -> dict:
         max_age=settings.cookie_max_age,
     )
 
-    logger.info("auth.login.succeeded", extra={"event": "auth.login.succeeded"})
+    clear_context_after_log = "request_id" not in get_request_context()
+    token_handle = bind_request_context(subject=SESSION_SUBJECT_OWNER, auth_type=AUTH_TYPE_SESSION)
+    request.state.subject = SESSION_SUBJECT_OWNER
+    request.state.auth_type = AUTH_TYPE_SESSION
+    try:
+        logger.info("login_succeeded", extra={"event": "login_succeeded"})
+    finally:
+        if clear_context_after_log:
+            clear_request_context(token_handle)
     return {"ok": True, "csrf_token": csrf_token}
 
 
 @router.post("/logout")
 def logout(response: Response) -> dict:
     response.delete_cookie(SESSION_COOKIE_NAME)
-    logger.info("auth.logout.completed", extra={"event": "auth.logout.completed"})
+    logger.debug("logout_completed", extra={"event": "logout_completed"})
     return {"ok": True}
 
 

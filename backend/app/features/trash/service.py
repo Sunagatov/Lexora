@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import bindparam, select
@@ -29,6 +30,7 @@ def purge_trash(db: Session, force: bool = False) -> None:
     With force=True deletes everything in trash.
     Otherwise deletes only items older than the configured retention period.
     """
+    started_at = time.perf_counter()
     now = datetime.now(timezone.utc)
 
     topic_stmt = (
@@ -81,8 +83,10 @@ def purge_trash(db: Session, force: bool = False) -> None:
     db.commit()
 
     log_audit_event(
-        "trash.purged",
+        "trash_purged",
         force=force,
-        deleted_topics=deleted_topics,
-        deleted_words=deleted_words,
+        deleted_topic_count=deleted_topics,
+        deleted_word_count=deleted_words,
+        retention_days=None if force else settings.trash_retention_days,
+        duration_ms=round((time.perf_counter() - started_at) * 1000, 2),
     )

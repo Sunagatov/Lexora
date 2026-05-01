@@ -45,9 +45,10 @@ def import_ai_curation(db: Session, payload):
         ),
     )
     log_audit_event(
-        "ai_curation.import",
-        topic_id=result.source_topic_id,
+        "ai_curation_import_completed",
+        source_topic_id=result.source_topic_id,
         dry_run=result.dry_run,
+        result="dry_run" if result.dry_run else "applied",
         created_topics=len(result.created_topics),
         created_words=result.created_words,
         updated_words=result.updated_words,

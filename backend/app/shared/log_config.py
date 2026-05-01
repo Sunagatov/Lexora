@@ -64,6 +64,18 @@ def configure_logging(*, level: str, audit_level: str, log_format: str) -> None:
                     "level": "WARNING",
                     "propagate": False,
                 },
+                "uvicorn.error": {
+                    "level": "WARNING",
+                    "propagate": True,
+                },
+                "httpx": {
+                    "level": "WARNING",
+                    "propagate": True,
+                },
+                "httpcore": {
+                    "level": "WARNING",
+                    "propagate": True,
+                },
                 "http.access": {
                     "level": level.upper(),
                     "propagate": True,

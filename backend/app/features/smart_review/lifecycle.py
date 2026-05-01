@@ -48,14 +48,6 @@ def complete_queue_item(db, item_id: int, *, log_audit_event_fn) -> StudyQueue:
         item.completed_at = now
         queue.completed_count += 1
         db.commit()
-        log_audit_event_fn(
-            "smart_review.item.completed",
-            queue_id=getattr(queue, "id", item.queue_id),
-            item_id=getattr(item, "id", item_id),
-            word_id=word.id,
-            completed_count=queue.completed_count,
-            total_count=getattr(queue, "total_count", None),
-        )
 
     return queue
 
@@ -94,7 +86,7 @@ def persist_queue(db, queue: StudyQueue, selected_words: list, *, log_audit_even
     db.commit()
     db.refresh(queue)
     log_audit_event_fn(
-        "smart_review.queue.generated",
+        "smart_review_queue_generated",
         queue_id=queue.id,
         total_count=queue.total_count,
         expires_at=queue.expires_at.isoformat(),

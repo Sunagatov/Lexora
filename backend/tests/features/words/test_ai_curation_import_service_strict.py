@@ -144,6 +144,10 @@ def test_import_logs_audit_on_commit(monkeypatch, caplog) -> None:
     with caplog.at_level(logging.INFO, logger="audit"):
         ai_curation_service.import_ai_curation(db, payload)
 
-    matching = [r for r in caplog.records if r.name == "audit" and r.message == "ai_curation.import"]
+    matching = [
+        r
+        for r in caplog.records
+        if r.name == "audit" and r.message == "ai_curation_import_completed"
+    ]
     assert matching
     assert any(getattr(r, "created_words", None) == 1 for r in matching)
