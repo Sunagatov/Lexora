@@ -9,8 +9,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import app.features.topics.model  # noqa: F401 — registers Topic in SQLAlchemy's class registry
-import app.features.stats.model  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
 import app.features.words.model  # noqa: F401 — registers Word in SQLAlchemy's class registry
+import app.features.words.progress  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
 
 import pytest
 

@@ -6,11 +6,11 @@ from typing import cast
 from app.features.stats import service as stats_service
 from app.features.stats import content_metrics as content_metrics
 from app.features.stats import activity_metrics as activity_metrics
-from app.features.stats.model import WordProgressEvent
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.model import Word
+from app.features.words.progress import WordProgressEvent
 
 
 def _topic_stub(**kwargs) -> Topic:

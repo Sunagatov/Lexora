@@ -2,14 +2,17 @@ from __future__ import annotations
 
 from typing import cast
 
-from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.features.topics.api import (
     InvalidTopicNameError,
     TopicNameConflictError,
     TopicSlugConflictError,
-    create_topic,
+    create_topic_draft,
+    find_active_topic_by_exact_name,
+    find_active_topic_by_slug,
+    find_deleted_topic_by_exact_name,
+    find_deleted_topic_by_slug,
 )
 from app.features.words.bulk.exceptions import (
     BulkInvalidTopicNameError,
@@ -17,31 +20,11 @@ from app.features.words.bulk.exceptions import (
     BulkTopicInTrashError,
 )
 from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
-from app.features.topics.model import Topic
-from app.features.topics.schemas import TopicCreate
 from app.features.words.model import Word
 from app.features.words.domain import existing_normalized_terms
 from app.features.words.repository import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.shared.text import normalize_term, slugify
-
-
-def _get_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
-    normalized = topic_name.strip().casefold()
-    return db.scalar(
-        select(Topic)
-        .where(func.lower(Topic.name) == normalized)
-        .where(Topic.deleted_at.is_(None))
-    )
-
-
-def _get_deleted_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
-    normalized = topic_name.strip().casefold()
-    return db.scalar(
-        select(Topic)
-        .where(func.lower(Topic.name) == normalized)
-        .where(Topic.deleted_at.isnot(None))
-    )
 
 
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
@@ -50,26 +33,18 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
         raise BulkInvalidTopicNameError(payload.topic_name)
 
     try:
-        topic = _get_active_topic_by_exact_name(db, payload.topic_name)
+        topic = find_active_topic_by_exact_name(db, payload.topic_name)
         if topic is None:
-            topic = db.scalar(
-                select(Topic)
-                .where(Topic.slug == topic_slug)
-                .where(Topic.deleted_at.is_(None))
-            )
+            topic = find_active_topic_by_slug(db, topic_slug)
 
         if topic is None:
-            deleted = _get_deleted_topic_by_exact_name(db, payload.topic_name)
+            deleted = find_deleted_topic_by_exact_name(db, payload.topic_name)
             if deleted is None:
-                deleted = db.scalar(
-                    select(Topic)
-                    .where(Topic.slug == topic_slug)
-                    .where(Topic.deleted_at.isnot(None))
-                )
+                deleted = find_deleted_topic_by_slug(db, topic_slug)
             if deleted is not None:
                 raise BulkTopicInTrashError(str(deleted.name))
             try:
-                topic = create_topic(db, TopicCreate(name=payload.topic_name), commit=False)
+                topic = create_topic_draft(db, name=payload.topic_name)
             except InvalidTopicNameError:
                 raise BulkInvalidTopicNameError(payload.topic_name)
             except (TopicSlugConflictError, TopicNameConflictError) as e:

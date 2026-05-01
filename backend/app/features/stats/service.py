@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.features.words.constants import ProgressSource
 from app.features.words.api import list_active_word_stats
+from app.features.words.progress import WordProgressEvent, record_level_change
 from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,
@@ -18,21 +19,10 @@ from app.features.stats.content_metrics import (
     _build_topic_stats,
     _build_words_added_by_month,
 )
-from app.features.stats.model import AppUsageEvent, WordProgressEvent
+from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
 from sqlalchemy import select
 from typing import cast
-
-
-def record_level_change(
-    db: Session,
-    word_id: int,
-    old_level: int | None,
-    new_level: int,
-    source: ProgressSource,
-) -> None:
-    """Append a progress event. Does not commit — caller owns the transaction."""
-    db.add(WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source))
 
 
 def record_usage_event(db: Session, payload: UsageEventCreate) -> None:

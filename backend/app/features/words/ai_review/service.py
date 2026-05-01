@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-from typing import cast
-
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.features.topics.api import get_active_subtree_topic_ids
-from app.features.topics.model import Topic
+from app.features.topics.api import get_active_subtree_topic_ids, get_active_topic_or_none
 from app.features.words.ai_review.exceptions import AiReviewImportError
 from app.features.words.ai_review.export_support import (
     EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
@@ -29,11 +25,11 @@ from app.features.words.ai_review.schemas import (
 from app.features.words.repository import update_word
 
 
-def _get_topic(db: Session, topic_id: int) -> Topic:
-    topic = db.scalar(select(Topic).where(Topic.id == topic_id, Topic.deleted_at.is_(None)))
+def _get_topic(db: Session, topic_id: int):
+    topic = get_active_topic_or_none(db, topic_id)
     if topic is None:
         raise AiReviewImportError(f"Topic {topic_id} not found")
-    return cast(Topic, topic)
+    return topic
 
 
 def build_topic_ai_review_export(

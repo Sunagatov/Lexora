@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
-from app.features.stats.model import WordProgressEvent
 from app.features.stats.schemas import (
     ConsistencySummary,
     DailyActivity,
@@ -13,6 +12,7 @@ from app.features.stats.schemas import (
     UsageSummary,
 )
 from app.features.words.api import WordStatsSnapshot
+from app.features.words.progress import WordProgressEvent
 
 
 def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyActivity], str | None]:
