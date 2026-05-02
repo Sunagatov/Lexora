@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {createTopic, fetchTopics} from '@/features/topics/api/topicsApi'
 import {quickAddWord} from '@/features/words/api/wordsApi'
@@ -11,13 +11,30 @@ import {
   suggestTopic,
   translateTerm,
 } from '@/features/words/api/quickAddAssistApi'
+import {invalidateWordDependencies} from '@/features/words/model/wordCache'
 
 const INBOX_TOPIC_NAME = 'Inbox'
-const isInboxTopic = (topic: Topic) => findTopicByName([topic], INBOX_TOPIC_NAME) !== undefined
+const isInboxTopic = (topic: Topic) => topic.name.trim().toLowerCase() === INBOX_TOPIC_NAME.toLowerCase()
 
 type AssistMode = 'idle' | 'translate' | 'suggest' | 'autofill'
 type AssistStage = 'idle' | 'translating' | 'suggesting'
 const EMPTY_TOPICS: Topic[] = []
+
+function sortQuickAddTopics(topics: Topic[]): Topic[] {
+  const inboxTopics: Topic[] = []
+  const otherTopics: Topic[] = []
+
+  for (const topic of topics) {
+    if (isInboxTopic(topic)) {
+      inboxTopics.push(topic)
+      continue
+    }
+    otherTopics.push(topic)
+  }
+
+  otherTopics.sort((a, b) => a.name.localeCompare(b.name))
+  return [...inboxTopics, ...otherTopics]
+}
 
 export function useQuickAdd() {
   const queryClient = useQueryClient()
@@ -100,10 +117,7 @@ export function useQuickAdd() {
   const addWordMutation = useMutation({
     mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
     onSuccess: () => {
-      void queryClient.invalidateQueries({queryKey: queryKeys.words})
-      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
-      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      invalidateWordDependencies(queryClient)
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
       setTerm('')
       setTranslation('')
@@ -220,10 +234,7 @@ export function useQuickAdd() {
     addWordMutation.mutate(resolvedTopicId)
   }
 
-  const sortedTopics = [
-    ...topics.filter(isInboxTopic),
-    ...topics.filter((t) => !isInboxTopic(t)).sort((a, b) => a.name.localeCompare(b.name)),
-  ]
+  const sortedTopics = useMemo(() => sortQuickAddTopics(topics), [topics])
 
   return {
     termRef,

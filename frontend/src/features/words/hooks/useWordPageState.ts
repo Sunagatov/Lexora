@@ -8,34 +8,7 @@ import {ApiError} from '@/shared/api/apiError'
 import {queryKeys} from '@/app/queryKeys'
 import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
-import type {QueryClient} from '@tanstack/react-query'
-
-const WORD_DEPENDENT_QUERY_KEYS = [
-  queryKeys.words,
-  queryKeys.topicSidebar,
-  queryKeys.stats,
-  queryKeys.smartReview,
-] as const
-
-function replaceWordInWordLists(queryClient: QueryClient, updated: Word) {
-  queryClient.setQueryData(queryKeys.word(updated.id), updated)
-  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (current = []) =>
-    current.map((word) => (word.id === updated.id ? updated : word)),
-  )
-}
-
-function removeWordFromWordLists(queryClient: QueryClient, wordId: number) {
-  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (current = []) =>
-    current.filter((word) => word.id !== wordId),
-  )
-  queryClient.removeQueries({queryKey: queryKeys.word(wordId)})
-}
-
-function invalidateWordDependencies(queryClient: QueryClient, extras: readonly (readonly unknown[])[] = []) {
-  for (const queryKey of [...WORD_DEPENDENT_QUERY_KEYS, ...extras]) {
-    void queryClient.invalidateQueries({queryKey})
-  }
-}
+import {invalidateWordDependencies, removeWordFromLists, replaceWordInLists} from '@/features/words/model/wordCache'
 
 type UseWordPageStateOptions = {
   onSaveSuccess?: (updated: Word, locationState?: {fromTopicSlug: string}) => void
@@ -83,7 +56,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(numericWordId, payload),
     onSuccess: (updated) => {
-      replaceWordInWordLists(queryClient, updated)
+      replaceWordInLists(queryClient, updated)
       invalidateWordDependencies(queryClient)
       options.onSaveSuccess?.(updated, buildWordLocationState(updated, topics, fromTopicSlug))
 
@@ -105,7 +78,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
     onSuccess: () => {
-      removeWordFromWordLists(queryClient, numericWordId)
+      removeWordFromLists(queryClient, numericWordId)
       invalidateWordDependencies(queryClient, [queryKeys.trashWords])
       const destinationTopicSlug = word
         ? (buildWordLocationState(word, topics, fromTopicSlug)?.fromTopicSlug ?? null)

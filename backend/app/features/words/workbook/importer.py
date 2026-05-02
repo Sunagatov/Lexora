@@ -19,7 +19,9 @@ from app.features.words.workbook.format import (
     InvalidWorkbookError,
 )
 from app.features.words.workbook.import_apply import (
+    WorkbookImportOps,
     WorkbookImportFlags,
+    WorkbookSheetContext,
     create_new_word_from_row,
     update_existing_word_from_row,
 )
@@ -41,24 +43,37 @@ def _import_sheet(
     if seen_existing_words is None:
         seen_existing_words = {}
 
+    enabled_header_map = _enabled_header_map(header_map)
+    context = WorkbookSheetContext(
+        flags=WorkbookImportFlags(
+            has_knowledge="knowledge_level" in header_map,
+            has_pattern="pattern" in header_map,
+            has_examples="examples" in header_map,
+            has_countability="countability" in header_map,
+            has_part_of_speech="part_of_speech" in header_map,
+            has_past_simple="past_simple" in header_map,
+            has_past_participle="past_participle" in header_map,
+            has_notes="notes" in header_map,
+        ),
+        sheet_name=ws.title,
+        seen_existing_words=seen_existing_words,
+        ops=WorkbookImportOps(
+            should_validate_existing_word_duplicate=_should_validate_existing_word_duplicate,
+            assert_no_duplicate_word=assert_no_duplicate_word,
+            existing_normalized_terms=existing_normalized_terms,
+            record_level_change=record_level_change,
+            sync_word_multivalue_fields=sync_word_multivalue_fields,
+            word_cls=Word,
+        ),
+    )
+
     created = 0
     updated = 0
     skipped = 0
     seen_word_ids: set[int] = set()
 
-    flags = WorkbookImportFlags(
-        has_knowledge="knowledge_level" in header_map,
-        has_pattern="pattern" in header_map,
-        has_examples="examples" in header_map,
-        has_countability="countability" in header_map,
-        has_part_of_speech="part_of_speech" in header_map,
-        has_past_simple="past_simple" in header_map,
-        has_past_participle="past_participle" in header_map,
-        has_notes="notes" in header_map,
-    )
-
     for row_idx in range(2, ws.max_row + 1):
-        row = _read_row_data(ws, row_idx, _enabled_header_map(header_map))
+        row = _read_row_data(ws, row_idx, enabled_header_map)
         if row is None:
             continue
 
@@ -72,14 +87,7 @@ def _import_sheet(
                 row=row,
                 topic=topic,
                 row_idx=row_idx,
-                sheet_name=ws.title,
-                flags=flags,
-                seen_existing_words=seen_existing_words,
-                should_validate_existing_word_duplicate_fn=_should_validate_existing_word_duplicate,
-                assert_no_duplicate_word_fn=assert_no_duplicate_word,
-                existing_normalized_terms_fn=existing_normalized_terms,
-                record_level_change_fn=record_level_change,
-                sync_word_multivalue_fields_fn=sync_word_multivalue_fields,
+                context=context,
             )
             updated += 1
             continue
@@ -89,12 +97,7 @@ def _import_sheet(
             row=row,
             topic=topic,
             row_idx=row_idx,
-            sheet_name=ws.title,
-            flags=flags,
-            word_cls=Word,
-            assert_no_duplicate_word_fn=assert_no_duplicate_word,
-            existing_normalized_terms_fn=existing_normalized_terms,
-            sync_word_multivalue_fields_fn=sync_word_multivalue_fields,
+            context=context,
         )
         created += 1
 

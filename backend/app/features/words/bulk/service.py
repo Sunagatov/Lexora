@@ -25,33 +25,51 @@ from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.shared.text import normalize_term, slugify
 
 
-def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
-    topic_slug = slugify(payload.topic_name, max_len=TOPIC_SLUG_MAX_LEN)
+def _resolve_topic_for_bulk_import(db: Session, topic_name: str):
+    topic_slug = slugify(topic_name, max_len=TOPIC_SLUG_MAX_LEN)
     if not topic_slug:
-        raise BulkInvalidTopicNameError(payload.topic_name)
+        raise BulkInvalidTopicNameError(topic_name)
+
+    topic = find_active_topic_by_exact_name(db, topic_name)
+    if topic is None:
+        topic = find_active_topic_by_slug(db, topic_slug)
+    if topic is not None:
+        return topic
+
+    deleted = find_deleted_topic_by_exact_name(db, topic_name)
+    if deleted is None:
+        deleted = find_deleted_topic_by_slug(db, topic_slug)
+    if deleted is not None:
+        raise BulkTopicInTrashError(str(deleted.name))
 
     try:
-        topic = find_active_topic_by_exact_name(db, payload.topic_name)
-        if topic is None:
-            topic = find_active_topic_by_slug(db, topic_slug)
+        return create_topic_draft(db, name=topic_name)
+    except InvalidTopicNameError:
+        raise BulkInvalidTopicNameError(topic_name)
+    except (TopicSlugConflictError, TopicNameConflictError) as e:
+        raise BulkSlugConflictError(e.detail)
 
-        if topic is None:
-            deleted = find_deleted_topic_by_exact_name(db, payload.topic_name)
-            if deleted is None:
-                deleted = find_deleted_topic_by_slug(db, topic_slug)
-            if deleted is not None:
-                raise BulkTopicInTrashError(str(deleted.name))
-            try:
-                topic = create_topic_draft(db, name=payload.topic_name)
-            except InvalidTopicNameError:
-                raise BulkInvalidTopicNameError(payload.topic_name)
-            except (TopicSlugConflictError, TopicNameConflictError) as e:
-                raise BulkSlugConflictError(e.detail)
 
+def _build_bulk_word(topic, payload_word) -> Word:
+    word = Word(
+        **payload_word.model_dump(exclude={"translation_entries", "example_entries"}),
+        topics=[topic],
+    )
+    sync_word_multivalue_fields(
+        word,
+        payload_word.translations,
+        payload_word.translation_entries,
+        payload_word.example,
+        payload_word.example_entries,
+    )
+    return word
+
+
+def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
+    try:
+        topic = _resolve_topic_for_bulk_import(db, payload.topic_name)
         topic_id = cast(int, cast(object, topic.id))
         topic_name = cast(str, cast(object, topic.name))
-
-        # Use the shared domain helper for duplicate detection — same rule as create/update
         existing = existing_normalized_terms(db, [topic_id])
 
         added_terms: list[str] = []
@@ -61,17 +79,7 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
             if norm in existing:
                 skipped_terms.append(w.term)
                 continue
-            word = Word(
-                **w.model_dump(exclude={"translation_entries", "example_entries"}),
-                topics=[topic],
-            )
-            sync_word_multivalue_fields(
-                word,
-                w.translations,
-                w.translation_entries,
-                w.example,
-                w.example_entries,
-            )
+            word = _build_bulk_word(topic, w)
             db.add(word)
             existing.add(norm)
             added_terms.append(w.term)

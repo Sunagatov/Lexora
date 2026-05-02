@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
-import {patchWordLevel} from '@/features/words/model/wordCache'
+import {invalidateWordDependencies, patchWordLevel} from '@/features/words/model/wordCache'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRESS_SOURCE) {
@@ -24,16 +24,11 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
       for (const [key, data] of ctx?.prevWordQueries ?? []) {
         queryClient.setQueryData(key, data)
       }
-      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
-      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      invalidateWordDependencies(queryClient)
     },
 
     onSettled: () => {
-      void queryClient.invalidateQueries({queryKey: queryKeys.words})
-      void queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar})
-      void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-      void queryClient.invalidateQueries({queryKey: queryKeys.smartReview})
+      invalidateWordDependencies(queryClient)
     },
   })
 
