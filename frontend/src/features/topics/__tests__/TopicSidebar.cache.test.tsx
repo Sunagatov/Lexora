@@ -89,7 +89,7 @@ describe('TopicSidebar cache invalidation', () => {
 
     renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha')])
 
-    fireEvent.click(screen.getByText('+ New topic'))
+    fireEvent.click(screen.getByRole('button', {name: /new topic/i}))
     fireEvent.change(screen.getByPlaceholderText('Topic name…'), {target: {value: 'New topic'}})
     fireEvent.click(screen.getByRole('button', {name: 'Add'}))
 
@@ -111,7 +111,7 @@ describe('TopicSidebar cache invalidation', () => {
 
     renderSidebar(queryClient, [makeTopic(1, 'Alpha', 'alpha')])
 
-    fireEvent.click(screen.getByText('+ New topic'))
+    fireEvent.click(screen.getByRole('button', {name: /new topic/i}))
     fireEvent.change(screen.getByPlaceholderText('Topic name…'), {target: {value: 'Inbox'}})
     fireEvent.click(screen.getByRole('button', {name: 'Add'}))
 

@@ -22,18 +22,19 @@ from app.features.words.ai_curation.import_results import (
 )
 from app.features.words.ai_curation.import_support import (
     AiCurationImportOperations,
-    _assert_unique_ids,
+    _collect_existing_word_ids,
     _validate_payload_ids,
 )
 from app.features.words.ai_curation.schemas import (
     AiCurationImportRequest,
     AiCurationImportResponse,
+    CreateTopicOperation,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.repository import create_word, update_word
 
 
-def create_topic(db: Session, payload, commit: bool = True):
+def create_topic(db: Session, payload: CreateTopicOperation, commit: bool = True):
     return _create_topic_from_values(
         db,
         name=payload.name,
@@ -44,25 +45,35 @@ def create_topic(db: Session, payload, commit: bool = True):
     )
 
 
-def import_ai_curation(
-    db: Session,
-    payload: AiCurationImportRequest,
-    operations: AiCurationImportOperations | None = None,
-) -> AiCurationImportResponse:
-    operations = operations or AiCurationImportOperations(
+def _default_operations() -> AiCurationImportOperations:
+    return AiCurationImportOperations(
         create_topic=create_topic,
         create_word=create_word,
         update_word=update_word,
         resolve_topic_ref=_resolve_topic_ref,
     )
+
+
+def _map_import_error(db: Session, error: Exception) -> None:
+    db.rollback()
+    if isinstance(error, InvalidTopicNameError):
+        raise AiCurationImportError(f"Cannot generate a valid slug from topic name '{error.name}'") from error
+    if isinstance(error, TopicSlugConflictError):
+        raise AiCurationImportError(error.detail) from error
+    if isinstance(error, DuplicateWordInTopicError):
+        raise AiCurationImportError(str(error)) from error
+    raise error
+
+
+def import_ai_curation(
+    db: Session,
+    payload: AiCurationImportRequest,
+    operations: AiCurationImportOperations | None = None,
+) -> AiCurationImportResponse:
+    operations = operations or _default_operations()
     source_topic = _get_topic(db, payload.source_topic_id)
 
-    update_ids = [op.id for op in payload.word_updates]
-    reassign_ids = [op.id for op in payload.word_reassigns]
-    _assert_unique_ids(update_ids, "word_updates")
-    _assert_unique_ids(reassign_ids, "word_reassigns")
-
-    existing_ids = update_ids + reassign_ids
+    existing_ids = _collect_existing_word_ids(payload)
     words_by_id = _load_existing_words(db, source_topic.id, existing_ids)
     _validate_payload_ids(payload, words_by_id)
 
@@ -92,15 +103,5 @@ def import_ai_curation(
                 unchanged=unchanged,
             ),
         )
-    except InvalidTopicNameError as e:
-        db.rollback()
-        raise AiCurationImportError(f"Cannot generate a valid slug from topic name '{e.name}'") from e
-    except TopicSlugConflictError as e:
-        db.rollback()
-        raise AiCurationImportError(e.detail) from e
-    except DuplicateWordInTopicError as e:
-        db.rollback()
-        raise AiCurationImportError(str(e)) from e
-    except Exception:
-        db.rollback()
-        raise
+    except Exception as error:
+        _map_import_error(db, error)

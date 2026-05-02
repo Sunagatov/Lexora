@@ -135,10 +135,6 @@ export function TopicSidebar({
     prefs.addRecentId(id)
     onSelect(id)
   }
-  function handleEditTopic(id: number) {
-    setEditTopicId(id)
-    setEditTopicError(null)
-  }
   const lastAutoExpandedTopicIdRef = useRef<number | null>(null)
   const navigate    = useNavigate()
   const selectedTopic = useMemo(
@@ -149,20 +145,19 @@ export function TopicSidebar({
     importInputRef,
     addingTopic,
     newTopicName,
-    setNewTopicName,
+    changeNewTopicName,
     newTopicParentId,
     setNewTopicParentId,
     topicError,
-    setTopicError,
     workbookBusy,
     deleteTopicId,
-    setDeleteTopicId,
+    openDeleteTopic,
+    closeDeleteTopic,
     deleteTopicError,
-    setDeleteTopicError,
     editTopicId,
-    setEditTopicId,
+    openEditTopic,
+    closeEditTopic,
     editTopicError,
-    setEditTopicError,
     editingTopic,
     createTopicMutation,
     deleteTopicMutation,
@@ -238,8 +233,8 @@ export function TopicSidebar({
     topicProgress,
     pinnedIds: prefs.pinnedIds,
     onSelect: handleSelect,
-    onEdit: handleEditTopic,
-    onDelete: setDeleteTopicId,
+    onEdit: openEditTopic,
+    onDelete: openDeleteTopic,
     onPin: prefs.togglePin,
     onToggleExpanded: prefs.toggleTopicExpanded,
   }
@@ -351,10 +346,7 @@ export function TopicSidebar({
               themeTree,
               {
                 ...topicButtonSharedProps,
-                onDelete: (id) => {
-                  setDeleteTopicId(id)
-                  setDeleteTopicError(null)
-                },
+                onDelete: openDeleteTopic,
               },
               expandedTopicIds,
               !!needle,
@@ -376,7 +368,7 @@ export function TopicSidebar({
         createPending={createTopicMutation.isPending}
         workbookBusy={workbookBusy}
         importInputRef={importInputRef}
-        onNewTopicNameChange={(value) => { setNewTopicName(value); setTopicError(null) }}
+        onNewTopicNameChange={changeNewTopicName}
         onNewTopicParentIdChange={setNewTopicParentId}
         onCreate={() => createTopicMutation.mutate()}
         onCancel={cancelAddTopic}
@@ -397,10 +389,7 @@ export function TopicSidebar({
           danger
           pending={deleteTopicMutation.isPending}
           onConfirm={() => deleteTopicMutation.mutate(deleteTopicId)}
-          onCancel={() => {
-            setDeleteTopicId(null)
-            setDeleteTopicError(null)
-          }}
+          onCancel={closeDeleteTopic}
         />
       )}
 
@@ -410,10 +399,7 @@ export function TopicSidebar({
           topics={topics}
           saving={updateTopicMutation.isPending}
           error={editTopicError}
-          onCancel={() => {
-            setEditTopicId(null)
-            setEditTopicError(null)
-          }}
+          onCancel={closeEditTopic}
           onSave={(payload: TopicUpdatePayload) => updateTopicMutation.mutate({id: editingTopic.id, payload})}
         />
       )}

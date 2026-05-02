@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import cast
 
 from sqlalchemy import select
@@ -26,6 +27,15 @@ from app.features.words.progress import WordProgressEvent
 from app.features.words.repository import list_active_word_stats
 
 
+@dataclass(frozen=True)
+class ProgressEventSummary:
+    reviewed_word_ids: set[int]
+    improved_word_ids: set[int]
+    regressed_word_ids: set[int]
+    improved_event_count: int
+    regressed_event_count: int
+
+
 def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
     db.execute(
         insert(AppUsageEvent)
@@ -39,9 +49,8 @@ def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
     )
 
 
-def compute_stats(db: Session) -> StatsResponse:
-    words = list_active_word_stats(db)
-    topics = cast(
+def _load_active_topics(db: Session) -> list[Topic]:
+    return cast(
         list[Topic],
         list(
             db.scalars(
@@ -51,8 +60,10 @@ def compute_stats(db: Session) -> StatsResponse:
             ).all()
         ),
     )
-    usage_summary, usage_daily, usage_started_at = _build_usage_stats(db)
-    progress_events = cast(
+
+
+def _load_progress_events(db: Session) -> list[WordProgressEvent]:
+    return cast(
         list[WordProgressEvent],
         list(
             db.scalars(
@@ -70,11 +81,14 @@ def compute_stats(db: Session) -> StatsResponse:
         ),
     )
 
+
+def _summarize_progress_events(progress_events: list[WordProgressEvent]) -> ProgressEventSummary:
     reviewed_word_ids: set[int] = set()
     improved_word_ids: set[int] = set()
     regressed_word_ids: set[int] = set()
     improved_event_count = 0
     regressed_event_count = 0
+
     for event in progress_events:
         reviewed_word_ids.add(event.word_id)
         old_level = event.old_level or 0
@@ -85,20 +99,48 @@ def compute_stats(db: Session) -> StatsResponse:
             regressed_word_ids.add(event.word_id)
             regressed_event_count += 1
 
+    return ProgressEventSummary(
+        reviewed_word_ids=reviewed_word_ids,
+        improved_word_ids=improved_word_ids,
+        regressed_word_ids=regressed_word_ids,
+        improved_event_count=improved_event_count,
+        regressed_event_count=regressed_event_count,
+    )
+
+
+def compute_stats(db: Session) -> StatsResponse:
+    words = list_active_word_stats(db)
+    topics = _load_active_topics(db)
+    usage_summary, usage_daily, usage_started_at = _build_usage_stats(db)
+    progress_events = _load_progress_events(db)
+    progress_summary = _summarize_progress_events(progress_events)
+
     overview, level_counts, okay_pct = _build_overview(words)
     overview = overview.model_copy(update={"total_topics": len(topics)})
-    retention_summary = _build_retention_stats(words, level_counts, reviewed_word_ids, improved_word_ids, regressed_word_ids)
+    retention_summary = _build_retention_stats(
+        words,
+        level_counts,
+        progress_summary.reviewed_word_ids,
+        progress_summary.improved_word_ids,
+        progress_summary.regressed_word_ids,
+    )
     efficiency_summary = _build_efficiency_stats(
         usage_summary,
-        reviewed_word_ids,
-        improved_event_count,
-        regressed_event_count,
+        progress_summary.reviewed_word_ids,
+        progress_summary.improved_event_count,
+        progress_summary.regressed_event_count,
         len(progress_events),
-        improved_word_ids,
+        progress_summary.improved_word_ids,
     )
 
     word_map = {w.id: w for w in words}
-    topic_stats = _build_topic_stats(db, topics, word_map, reviewed_word_ids, regressed_word_ids)
+    topic_stats = _build_topic_stats(
+        db,
+        topics,
+        word_map,
+        progress_summary.reviewed_word_ids,
+        progress_summary.regressed_word_ids,
+    )
     words_by_month = _build_words_added_by_month(words)
     daily_activity, tracking_started_at = _build_daily_activity(progress_events)
     consistency_summary = _build_consistency_stats(usage_daily, daily_activity)

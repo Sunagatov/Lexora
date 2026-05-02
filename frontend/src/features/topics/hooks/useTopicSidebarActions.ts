@@ -7,6 +7,16 @@ import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {createTopic, deleteTopic, updateTopic, type TopicUpdatePayload} from '@/features/topics/api/topicsApi'
+import {
+  appendTopicToLists,
+  invalidateTopicDependencies,
+  invalidateTopicTrashDependencies,
+  replaceTopicInLists,
+} from '@/features/topics/model/topicCache'
+import {
+  formatWorkbookImportSuccessMessage,
+  getWorkbookActionErrorMessage,
+} from '@/features/topics/model/workbookFeedback'
 import {exportWordsWorkbook, importWordsWorkbook} from '@/features/words/api/wordsApi'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
@@ -33,20 +43,10 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
 
   const editingTopic = topics.find((topic) => topic.id === editTopicId) ?? null
 
-  async function invalidateSidebarData() {
-    await Promise.all([
-      queryClient.invalidateQueries({queryKey: queryKeys.topics}),
-      queryClient.invalidateQueries({queryKey: queryKeys.words}),
-      queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar}),
-      queryClient.invalidateQueries({queryKey: queryKeys.stats}),
-      queryClient.invalidateQueries({queryKey: queryKeys.smartReview}),
-    ])
-  }
-
   const createTopicMutation = useMutation({
     mutationFn: () => createTopic(newTopicName.trim(), newTopicParentId === '' ? null : newTopicParentId),
     onSuccess: (created) => {
-      queryClient.setQueryData<Topic[]>(queryKeys.topics, (current = []) => [...current, created])
+      appendTopicToLists(queryClient, created)
       void queryClient.invalidateQueries({queryKey: queryKeys.stats})
       setNewTopicName('')
       setNewTopicParentId('')
@@ -66,11 +66,7 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   const deleteTopicMutation = useMutation({
     mutationFn: (id: number) => deleteTopic(id, false),
     onSuccess: async () => {
-      await Promise.all([
-        invalidateSidebarData(),
-        queryClient.invalidateQueries({queryKey: queryKeys.trashWords}),
-        queryClient.invalidateQueries({queryKey: queryKeys.trashTopics}),
-      ])
+      await invalidateTopicTrashDependencies(queryClient)
       setDeleteTopicId(null)
       setDeleteTopicError(null)
     },
@@ -82,10 +78,8 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   const updateTopicMutation = useMutation({
     mutationFn: ({id, payload}: {id: number; payload: TopicUpdatePayload}) => updateTopic(id, payload),
     onSuccess: async (updated) => {
-      queryClient.setQueryData<Topic[]>(queryKeys.topics, (current = []) =>
-        current.map((topic) => (topic.id === updated.id ? updated : topic)),
-      )
-      await invalidateSidebarData()
+      replaceTopicInLists(queryClient, updated)
+      await invalidateTopicDependencies(queryClient)
       setEditTopicId(null)
       setEditTopicError(null)
       navigate(routes.topic(updated.slug), {replace: true})
@@ -106,7 +100,7 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     } catch (error) {
       redirectIfUnauthorized(error)
       if (error instanceof ApiError && (error.status === 401 || error.status === 403)) return
-      window.alert(error instanceof Error ? error.message : 'Failed to export workbook.')
+      window.alert(getWorkbookActionErrorMessage(error, 'Failed to export workbook.'))
     } finally {
       setWorkbookBusy(false)
     }
@@ -120,22 +114,12 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     try {
       setWorkbookBusy(true)
       const result = await importWordsWorkbook(file)
-      await invalidateSidebarData()
-      window.alert(
-        [
-          'Workbook imported successfully.',
-          '',
-          `Created: ${result.created}`,
-          `Updated: ${result.updated}`,
-          `Skipped: ${result.skipped}`,
-          '',
-          result.sheets.map((sheet) => `${sheet.topic_name}: +${sheet.created} new, ${sheet.updated} updated`).join('\n'),
-        ].join('\n'),
-      )
+      await invalidateTopicDependencies(queryClient)
+      window.alert(formatWorkbookImportSuccessMessage(result))
     } catch (error) {
       redirectIfUnauthorized(error)
       if (error instanceof ApiError && (error.status === 401 || error.status === 403)) return
-      window.alert(error instanceof Error ? error.message : 'Failed to import workbook.')
+      window.alert(getWorkbookActionErrorMessage(error, 'Failed to import workbook.'))
     } finally {
       setWorkbookBusy(false)
     }
@@ -144,6 +128,31 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   function startAddTopic() {
     setNewTopicParentId(selectedTopic && canUseSelectedTopicAsParent ? selectedTopic.id : '')
     setAddingTopic(true)
+  }
+
+  function changeNewTopicName(value: string) {
+    setNewTopicName(value)
+    setTopicError(null)
+  }
+
+  function openDeleteTopic(id: number) {
+    setDeleteTopicId(id)
+    setDeleteTopicError(null)
+  }
+
+  function closeDeleteTopic() {
+    setDeleteTopicId(null)
+    setDeleteTopicError(null)
+  }
+
+  function openEditTopic(id: number) {
+    setEditTopicId(id)
+    setEditTopicError(null)
+  }
+
+  function closeEditTopic() {
+    setEditTopicId(null)
+    setEditTopicError(null)
   }
 
   function cancelAddTopic() {
@@ -158,20 +167,20 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     addingTopic,
     setAddingTopic,
     newTopicName,
-    setNewTopicName,
+    changeNewTopicName,
     newTopicParentId,
     setNewTopicParentId,
     topicError,
     setTopicError,
     workbookBusy,
     deleteTopicId,
-    setDeleteTopicId,
+    openDeleteTopic,
+    closeDeleteTopic,
     deleteTopicError,
-    setDeleteTopicError,
     editTopicId,
-    setEditTopicId,
+    openEditTopic,
+    closeEditTopic,
     editTopicError,
-    setEditTopicError,
     editingTopic,
     createTopicMutation,
     deleteTopicMutation,

@@ -15,7 +15,7 @@ from app.shared.logging_utils import log_audit_event
 
 
 def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
-    return lifecycle.complete_queue_item(db, item_id, log_audit_event_fn=log_audit_event)
+    return lifecycle.complete_queue_item(db, item_id)
 
 
 def deactivate_all_queues(db: Session) -> None:
@@ -59,14 +59,7 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
         return None
     queue: StudyQueue | None = cast(StudyQueue | None, lifecycle.load_active_queue(db))
     if queue is not None:
-        if queue.total_count == 0:
-            cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=settings.smart_review_cooldown_days)
-            if selection.has_any_candidates(db, level_buckets=_level_buckets(), excluded_ids=cooldown_ids):
-                return generate_queue(db)
-            return queue
-        if lifecycle.queue_needs_regeneration(queue):
-            return generate_queue(db)
-        if queue.completed_count >= queue.total_count:
+        if _should_regenerate_queue(db, queue):
             return generate_queue(db)
         return queue
     return generate_queue(db)
@@ -80,3 +73,12 @@ def _level_buckets() -> dict[int, int]:
         4: settings.smart_review_level_4_count,
         5: settings.smart_review_level_5_count,
     }
+
+
+def _should_regenerate_queue(db: Session, queue: StudyQueue) -> bool:
+    if queue.total_count == 0:
+        cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=settings.smart_review_cooldown_days)
+        return selection.has_any_candidates(db, level_buckets=_level_buckets(), excluded_ids=cooldown_ids)
+    if lifecycle.queue_needs_regeneration(queue):
+        return True
+    return queue.completed_count >= queue.total_count

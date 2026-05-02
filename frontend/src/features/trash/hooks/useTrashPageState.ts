@@ -2,9 +2,12 @@ import {useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {queryKeys} from '@/app/queryKeys'
 import {usePublicConfig} from '@/shared/config/usePublicConfig'
-import type {Topic} from '@/features/topics/types/topicTypes'
 import type {Word} from '@/features/words/types/wordTypes'
 import {fetchTrashTopics, restoreTopic} from '@/features/topics/api/topicsApi'
+import {
+  invalidateTopicTrashDependencies,
+  removeTopicFromTrashLists,
+} from '@/features/topics/model/topicCache'
 import {purgeTrash} from '@/features/trash/api/trashApi'
 import {fetchTrashWords, restoreWord} from '@/features/words/api/wordsApi'
 
@@ -26,25 +29,13 @@ export function useTrashPageState() {
   const topics = topicsQuery.data ?? []
   const pendingRestoreTopic = topics.find((topic) => topic.id === restoreTopicId) ?? null
 
-  async function invalidateTrashDependencies() {
-    await Promise.all([
-      queryClient.invalidateQueries({queryKey: queryKeys.topics}),
-      queryClient.invalidateQueries({queryKey: queryKeys.words}),
-      queryClient.invalidateQueries({queryKey: queryKeys.trashWords}),
-      queryClient.invalidateQueries({queryKey: queryKeys.trashTopics}),
-      queryClient.invalidateQueries({queryKey: queryKeys.topicSidebar}),
-      queryClient.invalidateQueries({queryKey: queryKeys.stats}),
-      queryClient.invalidateQueries({queryKey: queryKeys.smartReview}),
-    ])
-  }
-
   const restoreWordMutation = useMutation({
     mutationFn: restoreWord,
     onSuccess: async (restored) => {
       queryClient.setQueryData<Word[]>(queryKeys.trashWords, (current = []) =>
         current.filter((word) => word.id !== restored.id),
       )
-      await invalidateTrashDependencies()
+      await invalidateTopicTrashDependencies(queryClient)
       setRestoreWordError((current) => (current?.id === restored.id ? null : current))
     },
     onError: (error: Error, wordId) => {
@@ -55,10 +46,8 @@ export function useTrashPageState() {
   const restoreTopicMutation = useMutation({
     mutationFn: ({id, restoreWords}: {id: number; restoreWords: boolean}) => restoreTopic(id, restoreWords),
     onSuccess: async (restored) => {
-      queryClient.setQueryData<Topic[]>(queryKeys.trashTopics, (current = []) =>
-        current.filter((topic) => topic.id !== restored.id),
-      )
-      await invalidateTrashDependencies()
+      removeTopicFromTrashLists(queryClient, restored.id)
+      await invalidateTopicTrashDependencies(queryClient)
       setRestoreTopicId(null)
       setRestoreTopicError(null)
     },
@@ -70,7 +59,7 @@ export function useTrashPageState() {
   const purgeMutation = useMutation({
     mutationFn: purgeTrash,
     onSuccess: async () => {
-      await invalidateTrashDependencies()
+      await invalidateTopicTrashDependencies(queryClient)
       setConfirmPurge(false)
     },
   })

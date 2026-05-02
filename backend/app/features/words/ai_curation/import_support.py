@@ -29,13 +29,16 @@ def _assert_unique_ids(ids: list[int], label: str) -> None:
     raise AiCurationImportError(f"Duplicate {label} word ids in payload: {duplicates}")
 
 
-def _validate_payload_ids(payload: AiCurationImportRequest, words_by_id: dict[int, Word]) -> None:
+def _collect_existing_word_ids(payload: AiCurationImportRequest) -> list[int]:
     update_ids = [op.id for op in payload.word_updates]
     reassign_ids = [op.id for op in payload.word_reassigns]
     _assert_unique_ids(update_ids, "word_updates")
     _assert_unique_ids(reassign_ids, "word_reassigns")
+    return update_ids + reassign_ids
 
-    existing_ids = update_ids + reassign_ids
+
+def _validate_payload_ids(payload: AiCurationImportRequest, words_by_id: dict[int, Word]) -> None:
+    existing_ids = _collect_existing_word_ids(payload)
     missing_ids = sorted(set(existing_ids) - set(words_by_id))
     if missing_ids:
         raise AiCurationImportError(f"These word ids do not exist in source topic: {missing_ids}")

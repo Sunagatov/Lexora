@@ -22,7 +22,7 @@ def queue_needs_regeneration(queue: StudyQueue) -> bool:
     )
 
 
-def complete_queue_item(db, item_id: int, *, log_audit_event_fn) -> StudyQueue:
+def complete_queue_item(db, item_id: int) -> StudyQueue:
     item: StudyQueueItem | None = cast(StudyQueueItem | None, db.get(StudyQueueItem, item_id))
     if item is None:
         raise QueueItemNotFoundError

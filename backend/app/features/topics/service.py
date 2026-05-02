@@ -14,17 +14,17 @@ from app.features.topics.exceptions import (
     TopicSlugConflictError as TopicSlugConflictError,
 )
 from app.features.topics.model import Topic
+from app.features.topics.repository import update_topic as persist_topic_update
 from app.features.topics.rules import (
     assert_active_topic_name_available as assert_active_topic_name_available,
     assert_slug_available as assert_slug_available,
     assert_topic_has_no_active_children as assert_topic_has_no_active_children,
-    build_topic_slug as build_topic_slug,
     assert_topic_parent_valid as assert_topic_parent_valid,
     assert_topics_exist as assert_topics_exist,
+    build_topic_slug as build_topic_slug,
 )
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.sidebar_stats import compute_topic_sidebar_stats as compute_topic_sidebar_stats
-from app.features.topics.repository import update_topic as persist_topic_update
 from app.shared.text import slugify as slugify
 
 
@@ -33,6 +33,21 @@ def _build_topic_slug(name: str) -> str:
     if not slug:
         raise InvalidTopicNameError(name)
     return slug
+
+
+def _build_topic_create_payload(
+    *,
+    name: str,
+    description: str | None = None,
+    parent_topic_id: int | None = None,
+    is_active: bool = True,
+) -> TopicCreate:
+    return TopicCreate(
+        name=name,
+        description=description,
+        parent_topic_id=parent_topic_id,
+        is_active=is_active,
+    )
 
 
 def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> Topic:
@@ -66,7 +81,7 @@ def create_topic_draft(
 ) -> Topic:
     return create_topic(
         db,
-        TopicCreate(
+        _build_topic_create_payload(
             name=name,
             description=description,
             parent_topic_id=parent_topic_id,
@@ -87,7 +102,7 @@ def create_topic_from_values(
 ) -> Topic:
     return create_topic(
         db,
-        TopicCreate(
+        _build_topic_create_payload(
             name=name,
             description=description,
             parent_topic_id=parent_topic_id,
