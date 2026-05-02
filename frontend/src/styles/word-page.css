@@ -547,18 +547,18 @@
 
 /* ── Word detail panel ───────────────────────────────────── */
 .word-detail-panel {
-  width: 360px;
+  width: 390px;
   flex-shrink: 0;
   border-left: 1px solid var(--border);
   background: var(--surface);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: wdp-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: wdp-in 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes wdp-in {
-  from { transform: translateX(28px); opacity: 0; }
+  from { transform: translateX(32px); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
 
@@ -567,8 +567,8 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 7px 10px;
+  gap: 6px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
@@ -660,19 +660,19 @@
 /* ── Hero ── */
 .wdp-hero {
   flex-shrink: 0;
-  padding: 13px 16px 12px;
+  padding: 20px 22px 18px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
 }
 
-.wdp-hero.level-unset { background: var(--bg); }
-.wdp-hero.level-1  { background: linear-gradient(150deg, #fef2f2 0%, var(--bg) 78%); }
-.wdp-hero.level-2  { background: linear-gradient(150deg, #eff6ff 0%, var(--bg) 78%); }
-.wdp-hero.level-3  { background: linear-gradient(150deg, #f5f3ff 0%, var(--bg) 78%); }
-.wdp-hero.level-4  { background: linear-gradient(150deg, #ecfdf5 0%, var(--bg) 78%); }
-.wdp-hero.level-5  { background: var(--bg); }
+.wdp-hero.level-unset { background: var(--surface); }
+.wdp-hero.level-1  { background: linear-gradient(150deg, #fee2e2 0%, var(--surface) 68%); }
+.wdp-hero.level-2  { background: linear-gradient(150deg, #dbeafe 0%, var(--surface) 68%); }
+.wdp-hero.level-3  { background: linear-gradient(150deg, #ede9fe 0%, var(--surface) 68%); }
+.wdp-hero.level-4  { background: linear-gradient(150deg, #d1fae5 0%, var(--surface) 68%); }
+.wdp-hero.level-5  { background: var(--surface); }
 
 .wdp-hero-chips {
   display: flex;
@@ -734,19 +734,19 @@
 .wdp-speak-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .wdp-term {
-  font-size: 1.45rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.035em;
-  line-height: 1.15;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
   margin: 0;
 }
 
 .wdp-translation {
-  font-size: 0.875rem;
+  font-size: 0.94rem;
   color: var(--text-2);
   font-style: italic;
-  line-height: 1.4;
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -765,17 +765,17 @@
 }
 
 .wdp-body .word-page-view-row {
-  grid-template-columns: 88px 1fr;
-  padding: 9px 16px;
-  gap: 10px;
+  grid-template-columns: 96px 1fr;
+  padding: 12px 22px;
+  gap: 12px;
 }
 
 .wdp-body .word-page-view-label {
-  font-size: 0.62rem;
+  font-size: 0.63rem;
 }
 
 .wdp-body .word-page-view-value {
-  font-size: 0.865rem;
+  font-size: 0.9rem;
 }
 
 .wdp-loading {

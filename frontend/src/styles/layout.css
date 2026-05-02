@@ -18,10 +18,10 @@
 
 .main-inner {
   width: 100%;
-  padding: 0 28px 24px;
+  padding: 0 28px 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 /* Sticky header + toolbar */
@@ -30,17 +30,17 @@
   top: 0;
   z-index: 10;
   background: var(--bg);
-  padding: 14px 28px 8px;
+  padding: 16px 28px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .topic-header-card {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .topic-header-left {
@@ -48,9 +48,10 @@
 }
 
 .topic-header-title {
-  font-size: 1.1rem;
+  font-size: 1.18rem;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .topic-header-meta {
@@ -83,7 +84,7 @@
 
 .topic-header-bar {
   display: flex;
-  height: 6px;
+  height: 7px;
   border-radius: 999px;
   overflow: hidden;
   background: var(--border);
@@ -97,8 +98,8 @@
 .topic-header-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 12px;
-  font-size: 0.72rem;
+  gap: 4px 14px;
+  font-size: 0.74rem;
   color: var(--text-2);
   font-weight: 600;
 }

@@ -190,7 +190,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: visible;
-  padding: 4px 12px 12px;
+  padding: 6px 12px 20px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
   min-height: 0;
@@ -206,7 +206,7 @@
 }
 
 /* ── Section group ───────────────────────────────────────────────────────── */
-.sidebar-group { margin-bottom: 2px; }
+.sidebar-group { margin-bottom: 6px; }
 
 .sidebar-group-header {
   display: flex;
@@ -222,14 +222,14 @@
   gap: 6px;
   background: transparent;
   border: none;
-  padding: 5px 4px 4px 12px;
+  padding: 7px 4px 6px 12px;
   cursor: pointer;
   color: var(--sidebar-text-2);
-  font-size: 0.67rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  opacity: 0.7;
+  letter-spacing: 0.08em;
+  opacity: 0.65;
   transition: opacity 0.12s;
 }
 
@@ -485,7 +485,7 @@
   gap: 6px;
   background: transparent;
   border: none;
-  padding: 8px 0 8px 8px;
+  padding: 10px 0 10px 10px;
   cursor: pointer;
   color: inherit;
   text-align: left;
@@ -504,28 +504,30 @@
 }
 
 .topic-item-name {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  letter-spacing: -0.01em;
 }
 
 .topic-count {
   flex-shrink: 0;
-  min-width: 28px;
+  min-width: 24px;
   height: 18px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
   color: var(--sidebar-text-2);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  letter-spacing: 0.01em;
 }
 
 .topic-item-active .topic-count {

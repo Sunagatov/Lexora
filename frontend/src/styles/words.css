@@ -14,16 +14,16 @@
   display: grid;
   grid-template-columns: 22% 1fr 130px;
   align-items: center;
-  padding: 6px 16px 6px 19px;
-  border-bottom: 2px solid var(--border);
+  padding: 8px 20px 8px 21px;
+  border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
 
 .word-list-header-cell {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--text-3);
 }
 
@@ -53,7 +53,7 @@
 .word-table tbody tr:last-child  td:last-child  { border-bottom-right-radius: var(--radius-lg); }
 
 .word-table td {
-  padding: 12px 16px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
@@ -68,8 +68,7 @@
 }
 
 .word-row:hover {
-  background: #f2f4ff;
-  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.1);
+  background: #f5f7ff;
   z-index: 1;
 }
 
@@ -147,11 +146,12 @@
 }
 
 .word-term-link {
-  color: #dc2626;
+  color: var(--text);
   cursor: pointer;
 }
 
 .word-term-link:hover {
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
