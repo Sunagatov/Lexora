@@ -4,12 +4,14 @@ import type {Word, WordKnowledgeLevel, WorkbookImportResponse} from '@/features/
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
-export const fetchWords = (params: {topicId?: number; search?: string} = {}) => {
+export const fetchWords = async (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()
   if (params.topicId) q.set('topic_id', String(params.topicId))
   if (params.search?.trim()) q.set('search', params.search.trim())
+  q.set('page_size', '100')
   const qs = q.toString()
-  return request<Word[]>(`/api/words${qs ? `?${qs}` : ''}`)
+  const res = await request<{words: Word[]}>(`/api/words${qs ? `?${qs}` : ''}`)
+  return res.words
 }
 
 export const fetchWord                = (id: number)                                                    => request<Word>(`/api/words/${id}`)
