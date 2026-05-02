@@ -50,7 +50,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = useResponsivePageSize(20, 40)
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile(768)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
 
   useEffect(() => { setPanelWordId(null) }, [queue?.id])

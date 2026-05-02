@@ -18,7 +18,7 @@ export function StudyPage() {
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
   const {collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed} = useSidebarCollapsedPref()
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile(768)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
 
   useEffect(() => {
