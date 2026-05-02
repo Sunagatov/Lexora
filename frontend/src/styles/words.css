@@ -179,6 +179,32 @@
   border: 1px solid var(--border);
 }
 
+/* CEFR badge colors */
+.chip-cefr-a  { background: #059669; color: #fff; border-color: #059669; }
+.chip-cefr-b1 { background: #2563eb; color: #fff; border-color: #2563eb; }
+.chip-cefr-b2 { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+.chip-cefr-c1 { background: #d97706; color: #fff; border-color: #d97706; }
+.chip-cefr-c2 { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+/* Register chip — outlined */
+.chip-register {
+  background: transparent;
+  border: 1px dashed var(--text-3);
+  color: var(--text-3);
+  font-style: italic;
+}
+
+/* Definition preview line in summary card */
+.word-definition-line {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.4;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Smart preview line */
 .word-preview-line {
   display: flex;

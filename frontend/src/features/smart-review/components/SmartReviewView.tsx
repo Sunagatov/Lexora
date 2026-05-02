@@ -119,6 +119,9 @@ export function SmartReviewView({queue, isLoading}: Props) {
           wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
           sortBy={filter.sortBy} setSortBy={filter.setSortBy}
           levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
+          posFilter={filter.posFilter} setPosFilter={filter.setPosFilter}
+          cefrFilter={filter.cefrFilter} setCefrFilter={filter.setCefrFilter}
+          completeness={filter.completeness} setCompleteness={filter.setCompleteness}
           onReset={filter.resetFilters}
           totalWordsOverall={words.length} topicTotalCount={words.length}
           filteredCount={filter.filteredWords.length}

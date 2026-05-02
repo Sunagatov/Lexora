@@ -44,51 +44,53 @@ describe('filterAndSort', () => {
     makeWord({id: 3, term: 'cherry', knowledge_level: 2, translation_entries: ['вишня']}),
   ]
 
+  const defaultOpts = {search: '', levelFilter: 'all' as const, posFilter: null, cefrFilter: null, completeness: 'all' as const, sortBy: 'term-asc' as const, frozenIds: null}
+
   it('returns all words with no filter', () => {
-    expect(filterAndSort(words, '', 'all', 'term-asc', null)).toHaveLength(3)
+    expect(filterAndSort(words, defaultOpts)).toHaveLength(3)
   })
 
   it('filters by search term', () => {
-    const result = filterAndSort(words, 'apple', 'all', 'term-asc', null)
+    const result = filterAndSort(words, {...defaultOpts, search: 'apple'})
     expect(result).toHaveLength(1)
     expect(result[0].term).toBe('apple')
   })
 
   it('filters by translation', () => {
-    const result = filterAndSort(words, 'банан', 'all', 'term-asc', null)
+    const result = filterAndSort(words, {...defaultOpts, search: 'банан'})
     expect(result[0].term).toBe('banana')
   })
 
   it('filters by level', () => {
-    const result = filterAndSort(words, '', 3, 'term-asc', null)
+    const result = filterAndSort(words, {...defaultOpts, levelFilter: 3})
     expect(result).toHaveLength(1)
     expect(result[0].term).toBe('banana')
   })
 
   it('sorts term-asc', () => {
-    const result = filterAndSort(words, '', 'all', 'term-asc', null)
+    const result = filterAndSort(words, defaultOpts)
     expect(result.map((w) => w.term)).toEqual(['apple', 'banana', 'cherry'])
   })
 
   it('sorts term-desc', () => {
-    const result = filterAndSort(words, '', 'all', 'term-desc', null)
+    const result = filterAndSort(words, {...defaultOpts, sortBy: 'term-desc'})
     expect(result.map((w) => w.term)).toEqual(['cherry', 'banana', 'apple'])
   })
 
   it('sorts level-asc: lowest level first', () => {
-    const result = filterAndSort(words, '', 'all', 'level-asc', null)
+    const result = filterAndSort(words, {...defaultOpts, sortBy: 'level-asc'})
     expect(result[0].knowledge_level).toBe(1)
     expect(result[2].knowledge_level).toBe(3)
   })
 
   it('sorts level-desc: highest level first', () => {
-    const result = filterAndSort(words, '', 'all', 'level-desc', null)
+    const result = filterAndSort(words, {...defaultOpts, sortBy: 'level-desc'})
     expect(result[0].knowledge_level).toBe(3)
     expect(result[2].knowledge_level).toBe(1)
   })
 
   it('respects frozenIds order', () => {
-    const result = filterAndSort(words, '', 'all', 'term-asc', [3, 1, 2])
+    const result = filterAndSort(words, {...defaultOpts, frozenIds: [3, 1, 2]})
     expect(result.map((w) => w.id)).toEqual([3, 1, 2])
   })
 })

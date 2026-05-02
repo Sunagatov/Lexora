@@ -7,7 +7,14 @@ import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import {WordPageView} from '@/features/words/components/WordPageView'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
+import {truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
+
+const CEFR_HERO_CLASS: Record<string, string> = {
+  A1: 'wdp-chip-cefr-a', A2: 'wdp-chip-cefr-a',
+  B1: 'wdp-chip-cefr-b1', B2: 'wdp-chip-cefr-b2',
+  C1: 'wdp-chip-cefr-c1', C2: 'wdp-chip-cefr-c2',
+}
 
 type Props = {
   wordId: number
@@ -130,6 +137,9 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
               {word.part_of_speech && (
                 <span className="wdp-chip wdp-chip-pos">{word.part_of_speech}</span>
               )}
+              {word.cefr_level && (
+                <span className={`wdp-chip ${CEFR_HERO_CLASS[word.cefr_level] ?? ''}`}>{word.cefr_level}</span>
+              )}
               <span className="wdp-chip wdp-chip-level">
                 {word.knowledge_level
                   ? `L${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}`
@@ -152,8 +162,16 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
               </button>
             </div>
 
-            <h2 className="wdp-term">{word.term}</h2>
+            <div className="wdp-term-row">
+              <h2 className="wdp-term">{word.term}</h2>
+              {word.pronunciation_ipa && (
+                <button type="button" className="wdp-ipa" onClick={handleSpeak} title="Pronounce">
+                  /{word.pronunciation_ipa}/
+                </button>
+              )}
+            </div>
             <p className="wdp-translation">{getMainTranslation(word)}</p>
+            {word.definition && <p className="wdp-definition">{truncate(word.definition, 100)}</p>}
           </div>
 
           {/* ── Scrollable fields ── */}

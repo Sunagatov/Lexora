@@ -72,6 +72,9 @@ export function StudyPage() {
                   wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
                   sortBy={s.sortBy} setSortBy={s.setSortBy}
                   levelFilter={s.levelFilter} setLevelFilter={s.setLevelFilter}
+                  posFilter={s.posFilter} setPosFilter={s.setPosFilter}
+                  cefrFilter={s.cefrFilter} setCefrFilter={s.setCefrFilter}
+                  completeness={s.completeness} setCompleteness={s.setCompleteness}
                   onReset={s.resetFilters}
                   totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                   filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}

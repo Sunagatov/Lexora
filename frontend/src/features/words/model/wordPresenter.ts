@@ -1,10 +1,14 @@
 import type {Word} from '@/features/words/types/wordTypes'
 
-export function lexicalChips(word: Word): string[] {
-  const chips: string[] = []
-  if (word.part_of_speech) chips.push(word.part_of_speech)
-  if (word.verb_form?.past_simple || word.verb_form?.past_participle) chips.push('irregular')
-  if (word.countability) chips.push(word.countability.toLowerCase())
+export type ChipType = 'pos' | 'cefr' | 'countability' | 'register'
+export type LexicalChip = {label: string; type: ChipType}
+
+export function lexicalChips(word: Word): LexicalChip[] {
+  const chips: LexicalChip[] = []
+  if (word.part_of_speech) chips.push({label: word.part_of_speech, type: 'pos'})
+  if (word.cefr_level) chips.push({label: word.cefr_level, type: 'cefr'})
+  if (word.countability) chips.push({label: word.countability.toLowerCase(), type: 'countability'})
+  if (word.register && word.register.toLowerCase() !== 'neutral') chips.push({label: word.register, type: 'register'})
   return chips
 }
 
@@ -19,4 +23,8 @@ export function smartPreview(word: Word): {label: string; text: string} | null {
   if (word.example_entries.length)  return {label: 'Example', text: word.example_entries[0]}
   if (word.notes)    return {label: 'Notes',   text: word.notes}
   return null
+}
+
+export function truncate(text: string, max: number): string {
+  return text.length > max ? text.slice(0, max) + '…' : text
 }

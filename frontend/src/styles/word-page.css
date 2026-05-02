@@ -742,6 +742,26 @@
   margin: 0;
 }
 
+.wdp-term-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wdp-ipa {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.12s;
+}
+.wdp-ipa:hover { color: var(--accent); }
+
 .wdp-translation {
   font-size: 0.94rem;
   color: var(--text-2);
@@ -749,6 +769,20 @@
   line-height: 1.45;
   margin: 0;
 }
+
+.wdp-definition {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  line-height: 1.4;
+  margin: 2px 0 0;
+}
+
+/* CEFR badge colors in detail panel hero */
+.wdp-chip-cefr-a  { background: #059669; color: #fff; }
+.wdp-chip-cefr-b1 { background: #2563eb; color: #fff; }
+.wdp-chip-cefr-b2 { background: #7c3aed; color: #fff; }
+.wdp-chip-cefr-c1 { background: #d97706; color: #fff; }
+.wdp-chip-cefr-c2 { background: #dc2626; color: #fff; }
 
 /* ── Scrollable body ── */
 .wdp-body {
@@ -820,4 +854,212 @@
   text-align: left;
   cursor: pointer;
   width: 100%;
+}
+
+/* ── WordPageView sections ── */
+.wpv-section {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.wpv-section:last-of-type { border-bottom: none; }
+
+.wpv-section-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  margin: 0 0 8px;
+}
+
+.wpv-definition {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.wpv-ipa-badge {
+  display: inline-block;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--surface-2, #f1f5f9);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.wpv-numbered-list {
+  margin: 0;
+  padding: 0 0 0 1.4em;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.wpv-numbered-list li + li { margin-top: 2px; }
+
+/* Grammar grid */
+.wpv-grammar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.wpv-grammar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wpv-grammar-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+
+.wpv-grammar-value {
+  font-size: 0.9rem;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+/* CEFR badge in grammar section */
+.wpv-cefr-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+.cefr-badge-a  { background: #059669; }
+.cefr-badge-b1 { background: #2563eb; }
+.cefr-badge-b2 { background: #7c3aed; }
+.cefr-badge-c1 { background: #d97706; }
+.cefr-badge-c2 { background: #dc2626; }
+
+/* Verb forms 2-column grid */
+.wpv-verb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.wpv-verb-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wpv-verb-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+
+.wpv-verb-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Related words chip groups */
+.wpv-chip-group {
+  margin-bottom: 8px;
+}
+.wpv-chip-group:last-child { margin-bottom: 0; }
+
+.wpv-chip-group-label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  margin-bottom: 5px;
+}
+
+.wpv-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.wpv-related-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: var(--surface-2, #f1f5f9);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.wpv-topic-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.05);
+  color: var(--text-2);
+}
+
+/* Confusables */
+.wpv-confusables {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wpv-confusable-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 14px;
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.wpv-confusable-word {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.wpv-confusable-explanation {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* Notes */
+.wpv-notes {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Panel body overrides for sections */
+.wdp-body .wpv-section {
+  padding: 12px 22px;
+}
+
+@media (max-width: 860px) {
+  .wpv-section { padding: 12px 14px; }
+  .wpv-grammar-grid { grid-template-columns: 1fr 1fr; }
+  .wpv-verb-grid { grid-template-columns: 1fr 1fr; }
 }

@@ -296,3 +296,94 @@
 .toolbar-card {
   position: relative;
 }
+
+/* Filter toggle button */
+.toolbar-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.toolbar-filter-toggle-active {
+  background: var(--accent-light);
+  border-color: #c7d2fe;
+  color: var(--accent-dark);
+}
+
+.toolbar-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Filter panel */
+.toolbar-filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--border);
+}
+
+.toolbar-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-filter-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-3);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.toolbar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.toolbar-chip {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.toolbar-chip:hover {
+  background: var(--accent-light);
+  border-color: #c7d2fe;
+  color: var(--accent-dark);
+}
+
+.toolbar-chip-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.toolbar-chip-active:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
