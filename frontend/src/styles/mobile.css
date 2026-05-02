@@ -163,16 +163,16 @@
     top: 0;
     z-index: 10;
     background: var(--bg);
-    padding: 6px 0 4px;
-    gap: 6px;
+    padding: 2px 0 1px;
+    gap: 3px;
     flex-shrink: 0;
   }
 
-  .topic-header-card {
+  .card.topic-header-card {
     flex-direction: column;
     align-items: stretch;
-    padding: 10px 14px;
-    gap: 6px;
+    padding: 8px 14px;
+    gap: 4px;
   }
 
   .topic-header-card .level-summary {
@@ -225,7 +225,7 @@
   }
 
   /* Toolbar */
-  .toolbar-card { padding: 10px; gap: 8px; }
+  .toolbar-card { padding: 1px 10px; gap: 4px; }
 
   .toolbar-search-row-desktop,
   .toolbar-controls-row,
@@ -437,7 +437,7 @@
   }
 
   .toolbar-card {
-    padding: 7px;
+    padding: 1px 7px;
   }
 
   .toolbar-mobile-row {

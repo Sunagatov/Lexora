@@ -33,14 +33,16 @@ function SmartReviewSkeleton() {
   )
 }
 
-import {useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
+import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 
@@ -48,6 +50,10 @@ export function SmartReviewView({queue, isLoading}: Props) {
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = useResponsivePageSize(20, 40)
+  const isMobile = useIsMobile()
+  const [panelWordId, setPanelWordId] = useState<number | null>(null)
+
+  useEffect(() => { setPanelWordId(null) }, [queue?.id])
 
   const filter = useWordFilter(words, {defaultPageSize})
   const update = useWordUpdate(
@@ -75,7 +81,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
   const isComplete = remaining === 0 && queue.total_count > 0
 
   return (
-    <>
+    <div className="study-topic-panel">
       <div className="sticky-controls">
         <div className="card topic-header-card topic-header-card-desktop">
           <div className="topic-header-main">
@@ -108,19 +114,31 @@ export function SmartReviewView({queue, isLoading}: Props) {
         </div>
       </div>
 
-      <WordCollectionView
-        wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
-        sortBy={filter.sortBy} setSortBy={filter.setSortBy}
-        levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
-        onReset={filter.resetFilters}
-        totalWordsOverall={words.length} topicTotalCount={words.length}
-        filteredCount={filter.filteredWords.length}
-        pageStart={filter.pageStart} pageEnd={filter.pageEnd}
-        levelSummary={filter.levelSummary}
-        pageWords={filter.pageWords} page={filter.page} totalPages={filter.totalPages}
-        pageSize={filter.pageSize} setPageSize={filter.setPageSize} setPage={filter.setPage}
-        pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
-      />
-    </>
+      <div className={`word-collection-split${panelWordId && !isMobile ? ' has-panel' : ''}`}>
+        <WordCollectionView
+          wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
+          sortBy={filter.sortBy} setSortBy={filter.setSortBy}
+          levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
+          onReset={filter.resetFilters}
+          totalWordsOverall={words.length} topicTotalCount={words.length}
+          filteredCount={filter.filteredWords.length}
+          pageStart={filter.pageStart} pageEnd={filter.pageEnd}
+          levelSummary={filter.levelSummary}
+          pageWords={filter.pageWords} page={filter.page} totalPages={filter.totalPages}
+          pageSize={filter.pageSize} setPageSize={filter.setPageSize} setPage={filter.setPage}
+          pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
+          onWordSelect={isMobile ? undefined : setPanelWordId}
+          selectedWordId={panelWordId}
+        />
+        {panelWordId !== null && !isMobile && (
+          <WordDetailPanel
+            wordId={panelWordId}
+            words={filter.pageWords}
+            onClose={() => setPanelWordId(null)}
+            onNavigate={setPanelWordId}
+          />
+        )}
+      </div>
+    </div>
   )
 }

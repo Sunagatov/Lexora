@@ -30,17 +30,18 @@
   top: 0;
   z-index: 10;
   background: var(--bg);
-  padding: 16px 28px 10px;
+  padding: 8px 28px 4px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
-.topic-header-card {
+.card.topic-header-card {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 24px;
+  padding: 10px 18px;
 }
 
 .topic-header-left {
