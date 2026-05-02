@@ -48,8 +48,8 @@ export function TopicButton({
   const isPinned = pinnedIds.includes(topic.id)
   const count    = topicCounts.get(topic.id) ?? 0
   const style = {
-    paddingLeft: `${level * 14}px`,
-    '--topic-indent': `${level * 14}px`,
+    paddingLeft: `${level * 8}px`,
+    '--topic-indent': `${level * 8}px`,
     animationDelay: `${Math.min(staggerIdx, 9) * 30}ms`,
   } as CSSProperties
 
