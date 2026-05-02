@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useOutletContext} from 'react-router-dom'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {useStudyState} from '@/features/study/hooks/useStudyState'
@@ -20,6 +20,10 @@ export function StudyPage() {
   const {collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed} = useSidebarCollapsedPref()
   const isMobile = useIsMobile()
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
+
+  useEffect(() => {
+    setPanelWordId(null)
+  }, [s.selectedTopicId])
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,

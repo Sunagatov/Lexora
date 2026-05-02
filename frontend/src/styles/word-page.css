@@ -787,6 +787,15 @@
   font-size: 0.88rem;
 }
 
+/* ── Clickable row in panel mode ── */
+.word-row-clickable {
+  cursor: pointer;
+}
+
+.word-row-clickable:hover td {
+  background: rgba(99, 102, 241, 0.03);
+}
+
 /* ── Active word row in the table ── */
 .word-row-panel-active {
   background: rgba(99, 102, 241, 0.04) !important;

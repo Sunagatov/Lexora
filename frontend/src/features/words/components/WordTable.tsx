@@ -38,16 +38,15 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
 
             return (
               <Fragment key={word.id}>
-                <tr className={`word-row ${lc}${selectedWordId === word.id ? ' word-row-panel-active' : ''}`}>
+                <tr
+                  className={`word-row ${lc}${selectedWordId === word.id ? ' word-row-panel-active' : ''}${onWordSelect ? ' word-row-clickable' : ''}`}
+                  onClick={onWordSelect ? () => onWordSelect(word.id) : undefined}
+                >
                   <td className="word-cell-word">
                     {onWordSelect ? (
-                      <button
-                        type="button"
-                        className="word-term word-term-link word-term-panel-btn"
-                        onClick={() => onWordSelect(word.id)}
-                      >
+                      <span className="word-term word-term-link">
                         {word.term}
-                      </button>
+                      </span>
                     ) : (
                       <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
                         {word.term}
@@ -62,7 +61,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}
                           disabled={pendingWordId === word.id}
-                          onClick={(e) => { if (isOpen) { setOpenId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenId(word.id) }}
+                          onClick={(e) => { e.stopPropagation(); if (isOpen) { setOpenId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenId(word.id) }}
                         >
                           {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -80,7 +79,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                         <button
                           type="button"
                           className="word-table-expand-btn"
-                          onClick={() => setExpandedId(isExpanded ? null : word.id)}
+                          onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : word.id) }}
                           aria-expanded={isExpanded}
                         >
                           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
