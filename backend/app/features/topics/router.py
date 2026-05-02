@@ -2,18 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.shared.deps import get_db
-from app.features.topics.repository import (
-    get_all_topics, get_topic_by_id, soft_delete_topic,
-)
+from app.features.topics.api import get_all_topics, get_topic_by_id
 from app.features.topics.schemas import TopicCreate, TopicResponse, TopicSidebarStatsResponse, TopicUpdate
 from app.features.topics.service import (
+    delete_topic as delete_topic_service,
     InvalidTopicNameError,
     InvalidTopicParentError,
     TopicHasActiveChildrenError,
     TopicNameConflictError,
     TopicSlugConflictError,
     compute_topic_sidebar_stats,
-    assert_topic_has_no_active_children,
     create_topic,
     update_topic,
 )
@@ -104,7 +102,6 @@ def delete_topic(topic_id: int, delete_words: bool = False, db: Session = Depend
     if topic is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Topic not found")
     try:
-        assert_topic_has_no_active_children(db, topic.id)
-        soft_delete_topic(db, topic, delete_words=delete_words)
+        delete_topic_service(db, topic, delete_words=delete_words)
     except TopicHasActiveChildrenError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)

@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 from typing import cast
 
+from app.features.stats import content_metrics as stats_content_metrics
 from app.features.stats import service as stats_service
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
@@ -146,7 +147,7 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
 def test_load_topic_word_ids_short_circuits_for_empty_word_map() -> None:
     db = MagicMock()
 
-    result = stats_service._load_topic_word_ids(db, {})
+    result = stats_content_metrics._load_topic_word_ids(db, {})
 
     assert result == {}
     db.execute.assert_not_called()

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from app.features.topics.repository import count_active_topics, list_active_topics_page_rows
+from app.features.topics.api import count_active_topics, list_active_topics_page_rows
 from app.features.words.ai_curation.schemas import (
     AiCurationAllowedValues,
     AiCurationTopicListResponse,

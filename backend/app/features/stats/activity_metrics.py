@@ -18,7 +18,7 @@ from app.features.stats.schemas import (
     UsageSummary,
 )
 from app.features.words.progress import WordProgressEvent
-from app.features.words.repository import WordStatsSnapshot
+from app.features.stats.content_metrics import WordStatsSnapshot
 
 
 def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyActivity], str | None]:

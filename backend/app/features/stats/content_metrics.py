@@ -1,13 +1,27 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import selectinload
 
 from app.features.stats.schemas import TopicStat, VocabularyOverview
 from app.features.topics.model import Topic
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
-from app.features.words.repository import WordStatsSnapshot, load_topic_word_ids
+from app.features.words.model import Word, word_topics
+
+
+@dataclass(frozen=True)
+class WordStatsSnapshot:
+    id: int
+    knowledge_level: int | None
+    part_of_speech: str | None
+    example: str | None
+    example_items: tuple[object, ...]
+    created_at: datetime
 
 
 def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
@@ -112,3 +126,33 @@ def _summarize_topic_progress(words: list[WordStatsSnapshot]) -> tuple[int, int,
 
     progress = round((score_sum / active_count) * 100) if active_count > 0 else 0
     return progress, weak_count, strong_count
+
+
+def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
+    words = db.scalars(
+        select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
+    ).all()
+    return [
+        WordStatsSnapshot(
+            id=int(word.id),
+            knowledge_level=word.knowledge_level,
+            part_of_speech=word.part_of_speech,
+            example=word.example,
+            example_items=tuple(getattr(word, "example_items", ()) or ()),
+            created_at=word.created_at,
+        )
+        for word in words
+    ]
+
+
+def load_topic_word_ids(db: Session, word_ids: set[int] | list[int]) -> dict[int, list[int]]:
+    if not word_ids:
+        return {}
+
+    rows = db.execute(
+        select(word_topics.c.topic_id, word_topics.c.word_id).where(word_topics.c.word_id.in_(word_ids))
+    ).all()
+    topic_word_ids: dict[int, list[int]] = {}
+    for topic_id, word_id in rows:
+        topic_word_ids.setdefault(int(topic_id), []).append(int(word_id))
+    return topic_word_ids

@@ -36,6 +36,7 @@ For backend work, start with the target feature folder and nearby tests. Only ad
 ## Local Rules
 
 - Keep router/service/repository/schema separation where the feature already uses it.
+- For backend cleanup or structural work, follow `docs/ai/backend-refactor-rules.md`.
 - Preserve session-cookie plus CSRF behavior for protected routers.
 - Do not read or print env/secret values.
 - Do not run live operational scripts unless explicitly requested.

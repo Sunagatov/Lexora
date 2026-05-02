@@ -6,13 +6,17 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
+from app.features.topics.api import (
+    get_deleted_topics,
+    get_topic_by_id_including_deleted,
+    hard_delete_topics_by_ids,
+    list_deleted_topics_for_purge,
+    restore_topic as restore_deleted_topic,
+)
 from app.features.topics.model import Topic
-from app.features.topics.repository import hard_delete_topics_by_ids, list_deleted_topics_for_purge
-from app.features.topics.repository import get_deleted_topics, get_topic_by_id_including_deleted
-from app.features.topics.service import restore_topic as restore_deleted_topic
-from app.features.words.domain import assert_word_restore_allowed
+from app.features.words.api import assert_word_restore_allowed
 from app.features.words.model import Word
-from app.features.words.repository import (
+from app.features.words.api import (
     get_deleted_words,
     get_word_by_id_including_deleted,
     hard_delete_deleted_words,

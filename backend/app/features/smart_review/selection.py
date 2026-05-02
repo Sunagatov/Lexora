@@ -5,9 +5,10 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.words.repository import has_smart_review_candidate, list_smart_review_candidates
+from app.features.words.model import Word
 
 
 def cooldown_word_ids(db, *, cooldown_days: int) -> set[int]:
@@ -35,7 +36,7 @@ def pick_for_level(
 ) -> list:
     if needed <= 0:
         return []
-    candidates = list_smart_review_candidates(db, level=level, excluded_ids=excluded_ids)
+    candidates = _list_smart_review_candidates(db, level=level, excluded_ids=excluded_ids)
     random.shuffle(candidates)
 
     picked: list = []
@@ -84,10 +85,37 @@ def has_any_candidates(db, *, level_buckets: dict[int, int], excluded_ids: set[i
     for level, needed in level_buckets.items():
         if needed <= 0:
             continue
-        if has_smart_review_candidate(db, level=level, excluded_ids=excluded_ids):
+        if _has_smart_review_candidate(db, level=level, excluded_ids=excluded_ids):
             return True
     return False
 
 
 def empty_topic_counts() -> dict[int, int]:
     return defaultdict(int)
+
+
+def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int]) -> list[Word]:
+    stmt = (
+        select(Word)
+        .options(selectinload(Word.topics))
+        .where(Word.is_active.is_(True))
+        .where(Word.deleted_at.is_(None))
+        .where(Word.knowledge_level == level)
+        .order_by(Word.updated_at.asc())
+    )
+    if excluded_ids:
+        stmt = stmt.where(Word.id.not_in(excluded_ids))
+    return list(db.scalars(stmt).all())
+
+
+def _has_smart_review_candidate(db, *, level: int, excluded_ids: set[int]) -> bool:
+    stmt = (
+        select(Word.id)
+        .where(Word.is_active.is_(True))
+        .where(Word.deleted_at.is_(None))
+        .where(Word.knowledge_level == level)
+        .limit(1)
+    )
+    if excluded_ids:
+        stmt = stmt.where(Word.id.not_in(excluded_ids))
+    return db.scalar(stmt) is not None

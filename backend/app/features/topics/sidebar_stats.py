@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicSidebarStatsResponse
-from app.features.words.repository import count_active_words, list_active_word_topic_levels
+from app.features.words.api import count_active_words, list_active_word_topic_levels
 
 
 def compute_topic_sidebar_stats(db: Session) -> TopicSidebarStatsResponse:

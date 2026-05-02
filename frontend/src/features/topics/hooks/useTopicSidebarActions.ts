@@ -13,10 +13,6 @@ import {
   invalidateTopicTrashDependencies,
   replaceTopicInLists,
 } from '@/features/topics/model/topicCache'
-import {
-  formatWorkbookImportSuccessMessage,
-  getWorkbookActionErrorMessage,
-} from '@/features/topics/model/workbookFeedback'
 import {exportWordsWorkbook, importWordsWorkbook} from '@/features/words/api/wordsApi'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
@@ -24,6 +20,29 @@ type Params = {
   topics: Topic[]
   selectedTopic: Topic | null
   canUseSelectedTopicAsParent: boolean
+}
+
+function getWorkbookActionErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback
+}
+
+function formatWorkbookImportSuccessMessage(result: Awaited<ReturnType<typeof importWordsWorkbook>>): string {
+  const lines = [
+    'Workbook imported successfully.',
+    '',
+    `Created: ${result.created}`,
+    `Updated: ${result.updated}`,
+    `Skipped: ${result.skipped}`,
+  ]
+
+  if (result.sheets.length > 0) {
+    lines.push(
+      '',
+      ...result.sheets.map((sheet) => `${sheet.topic_name}: +${sheet.created} new, ${sheet.updated} updated`),
+    )
+  }
+
+  return lines.join('\n')
 }
 
 export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTopicAsParent}: Params) {

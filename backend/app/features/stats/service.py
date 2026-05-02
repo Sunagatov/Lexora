@@ -16,6 +16,7 @@ from app.features.stats.activity_metrics import (
     _build_usage_stats,
 )
 from app.features.stats.content_metrics import (
+    list_active_word_stats,
     _build_overview,
     _build_topic_stats,
     _build_words_added_by_month,
@@ -24,7 +25,6 @@ from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
 from app.features.topics.model import Topic
 from app.features.words.progress import WordProgressEvent
-from app.features.words.repository import list_active_word_stats
 
 
 @dataclass(frozen=True)
@@ -169,9 +169,3 @@ def compute_stats(db: Session) -> StatsResponse:
         tracking_started_at=tracking_started_at,
         usage_started_at=usage_started_at,
     )
-
-
-def _load_topic_word_ids(db: Session, word_map):
-    from app.features.stats.content_metrics import _load_topic_word_ids as _content_load_topic_word_ids
-
-    return _content_load_topic_word_ids(db, word_map)

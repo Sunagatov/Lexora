@@ -1,9 +1,8 @@
 import {useMemo} from 'react'
 import {useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
-import {fetchTopics} from '@/features/topics/api/topicsApi'
+import {fetchTopicSidebarStats, fetchTopics, type TopicSidebarStats} from '@/features/topics/api/topicsApi'
 import {fetchWords} from '@/features/words/api/wordsApi'
-import {fetchTopicSidebarStats} from '@/features/topics/api/topicsApi'
 import {useTopicState} from '@/features/topics/hooks/useTopicState'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
@@ -11,6 +10,18 @@ import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
+
+const EMPTY_SIDEBAR_STATS: TopicSidebarStats = {
+  total_words: 0,
+  topic_counts: {},
+  topic_progress: {},
+}
+
+function buildNumericMap(values: Record<number, number>): Map<number, number> {
+  return new Map(
+    Object.entries(values).map(([id, value]) => [Number(id), value] as const),
+  )
+}
 
 export function useStudyState() {
   const location      = useLocation()
@@ -20,13 +31,13 @@ export function useStudyState() {
   const sidebarStatsQuery = useQuery({queryKey: queryKeys.topicSidebar, queryFn: fetchTopicSidebarStats})
 
   const topics = topicsQuery.data  ?? []
-  const sidebarStats = sidebarStatsQuery.data ?? {total_words: 0, topic_counts: {}, topic_progress: {}}
+  const sidebarStats = sidebarStatsQuery.data ?? EMPTY_SIDEBAR_STATS
   const topicCounts = useMemo(
-    () => new Map(Object.entries(sidebarStats.topic_counts).map(([id, count]) => [Number(id), count] as const)),
+    () => buildNumericMap(sidebarStats.topic_counts),
     [sidebarStats.topic_counts],
   )
   const topicProgress = useMemo(
-    () => new Map(Object.entries(sidebarStats.topic_progress).map(([id, progress]) => [Number(id), progress] as const)),
+    () => buildNumericMap(sidebarStats.topic_progress),
     [sidebarStats.topic_progress],
   )
 
@@ -47,10 +58,18 @@ export function useStudyState() {
   const update = useWordUpdate(() =>
     filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
   )
+  const totalWords = sidebarStats.total_words
+  const topicWordCount = topicWords.length
+  const filteredWordCount = filter.filteredWords.length
+  const isLoading =
+    topicsQuery.isLoading ||
+    sidebarStatsQuery.isLoading ||
+    (isSmartReview && smartReview.isLoading)
+  const isWordsLoading = wordsQuery.isLoading
 
   return {
     isSmartReview,
-    topics, totalWords: sidebarStats.total_words, topicWords,
+    topics, totalWords, topicWords,
     selectedTopic: topicState.selectedTopic,
     selectedTopicId: topicState.selectedTopicId, topicCounts: topicState.topicCounts, topicProgress: topicState.topicProgress,
     topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
@@ -62,11 +81,11 @@ export function useStudyState() {
     pageWords: filter.pageWords, page: filter.page, totalPages: filter.totalPages,
     setPage: filter.setPage, pageSize: filter.pageSize, setPageSize: filter.setPageSize,
     pageStart: filter.pageStart, pageEnd: filter.pageEnd, resetFilters: filter.resetFilters,
-    overallWordCount: sidebarStats.total_words, topicWordCount: topicWords.length,
-    filteredWordCount: filter.filteredWords.length,
+    overallWordCount: totalWords, topicWordCount,
+    filteredWordCount,
     updateLevel: update.updateLevel, pendingWordId: update.pendingWordId,
     smartQueue: smartReview.queue,
-    isLoading: topicsQuery.isLoading || sidebarStatsQuery.isLoading || (isSmartReview && smartReview.isLoading),
-    isWordsLoading: wordsQuery.isLoading,
+    isLoading,
+    isWordsLoading,
   }
 }

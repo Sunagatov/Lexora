@@ -6,10 +6,10 @@ from openpyxl import load_workbook
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
-from app.features.words.domain import assert_no_duplicate_word, existing_normalized_terms
+from app.features.words.api import existing_normalized_terms, sync_word_multivalue_fields
+from app.features.words.domain import assert_no_duplicate_word
 from app.features.words.model import Word
 from app.features.words.progress import record_level_change
-from app.features.words.repository import sync_word_multivalue_fields as sync_word_multivalue_fields
 from app.features.words.schemas import WorkbookImportResponse, WorkbookImportSheetSummary
 from app.features.words.workbook.cells import _build_header_map, _read_meta_topic_refs
 from app.features.words.workbook.format import (

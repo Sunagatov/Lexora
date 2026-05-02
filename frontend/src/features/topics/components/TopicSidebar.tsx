@@ -119,6 +119,32 @@ function renderTopicTree(
   })
 }
 
+function renderFlatTopicButtons(
+  topics: Topic[],
+  shared: TopicButtonSharedProps,
+): ReactElement[] {
+  return topics.map((topic) => (
+    <TopicButton
+      key={topic.id}
+      topic={topic}
+      selectedTopicId={shared.selectedTopicId}
+      isSmartReview={shared.isSmartReview}
+      topicCounts={shared.topicCounts}
+      topicProgress={shared.topicProgress}
+      pinnedIds={shared.pinnedIds}
+      onSelect={shared.onSelect}
+      onEdit={shared.onEdit}
+      onDelete={shared.onDelete}
+      onPin={shared.onPin}
+    />
+  ))
+}
+
+function buildDeleteTopicMessage(topics: Topic[], deleteTopicId: number): string {
+  const topicName = topics.find((topic) => topic.id === deleteTopicId)?.name
+  return `Are you sure you want to delete "${topicName}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`
+}
+
 export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
@@ -272,21 +298,7 @@ export function TopicSidebar({
             <div className="sidebar-group-header">
               <span className="sidebar-group-label">📌 Pinned</span>
             </div>
-            {pinnedTopics.map((topic) => (
-              <TopicButton
-                key={topic.id}
-                topic={topic}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onEdit={handleEditTopic}
-                onDelete={setDeleteTopicId}
-                onPin={prefs.togglePin}
-              />
-            ))}
+            {renderFlatTopicButtons(pinnedTopics, topicButtonSharedProps)}
           </div>
         )}
 
@@ -307,21 +319,7 @@ export function TopicSidebar({
             }}
             meta={posMeta}
           >
-            {posTopics.map((topic) => (
-              <TopicButton
-                key={topic.id}
-                topic={topic}
-                selectedTopicId={selectedTopicId}
-                isSmartReview={isSmartReview}
-                topicCounts={topicCounts}
-                topicProgress={topicProgress}
-                pinnedIds={prefs.pinnedIds}
-                onSelect={handleSelect}
-                onEdit={handleEditTopic}
-                onDelete={setDeleteTopicId}
-                onPin={prefs.togglePin}
-              />
-            ))}
+            {renderFlatTopicButtons(posTopics, topicButtonSharedProps)}
           </TopicSidebarGroup>
         )}
 
@@ -383,7 +381,7 @@ export function TopicSidebar({
       {deleteTopicId !== null && (
         <ConfirmModal
           title="Delete Topic?"
-          message={`Are you sure you want to delete "${topics.find((topic) => topic.id === deleteTopicId)?.name}"? The topic will be moved to trash. Words that would lose their last active topic will also be trashed; words that still belong to another active topic will stay available.`}
+          message={buildDeleteTopicMessage(topics, deleteTopicId)}
           error={deleteTopicError}
           confirmLabel="Delete"
           danger

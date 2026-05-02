@@ -11,16 +11,15 @@ from app.features.words.bulk.exceptions import (
 )
 from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.exceptions import InvalidTopicNameError, TopicNameConflictError, TopicSlugConflictError
-from app.features.topics.repository import (
+from app.features.topics.api import (
     find_active_topic_by_exact_name,
     find_active_topic_by_slug,
+    create_topic_draft,
     find_deleted_topic_by_exact_name,
     find_deleted_topic_by_slug,
 )
-from app.features.topics.service import create_topic_draft
 from app.features.words.model import Word
-from app.features.words.domain import existing_normalized_terms
-from app.features.words.repository import sync_word_multivalue_fields
+from app.features.words.api import existing_normalized_terms, sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.shared.text import normalize_term, slugify
 

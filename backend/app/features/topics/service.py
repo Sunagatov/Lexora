@@ -15,6 +15,7 @@ from app.features.topics.exceptions import (
 )
 from app.features.topics.model import Topic
 from app.features.topics.repository import restore_topic as persist_topic_restore
+from app.features.topics.repository import soft_delete_topic
 from app.features.topics.repository import update_topic as persist_topic_update
 from app.features.topics.rules import (
     assert_active_topic_name_available as assert_active_topic_name_available,
@@ -26,7 +27,7 @@ from app.features.topics.rules import (
 )
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.sidebar_stats import compute_topic_sidebar_stats as compute_topic_sidebar_stats
-from app.features.words.domain import assert_word_restore_allowed
+from app.features.words.api import assert_word_restore_allowed
 from app.shared.text import slugify as slugify
 
 
@@ -157,3 +158,8 @@ def _assert_topic_parent_can_be_restored(db: Session, topic: Topic) -> None:
         raise InvalidTopicParentError(
             "Cannot restore subtopic while its parent topic is deleted. Restore the parent first."
         )
+
+
+def delete_topic(db: Session, topic: Topic, *, delete_words: bool = False) -> Topic:
+    assert_topic_has_no_active_children(db, topic.id)
+    return soft_delete_topic(db, topic, delete_words=delete_words)

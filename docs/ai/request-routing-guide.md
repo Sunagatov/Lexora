@@ -30,6 +30,10 @@ Read:
 - the target router/service/repository/schema files
 - directly related backend tests
 
+For backend structure or refactor tasks, also read:
+
+- `docs/ai/backend-refactor-rules.md`
+
 Only read `backend/app/shared/config.py`, `backend/app/shared/deps.py`, or `backend/app/shared/db.py` when config, auth, DB sessions, or dependencies are involved.
 
 ## Frontend Task

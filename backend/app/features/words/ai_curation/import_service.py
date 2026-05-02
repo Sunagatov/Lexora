@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 
 from app.features.topics.exceptions import InvalidTopicNameError, TopicSlugConflictError
-from app.features.topics.service import create_topic_from_values as _create_topic_from_values
+from app.features.topics.api import create_topic_from_values as _create_topic_from_values
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
 from app.features.words.ai_curation.import_loading import (
     load_existing_words as _load_existing_words,
@@ -31,7 +31,7 @@ from app.features.words.ai_curation.schemas import (
     CreateTopicOperation,
 )
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.repository import create_word, update_word
+from app.features.words.api import create_word, update_word
 
 
 def create_topic(db: Session, payload: CreateTopicOperation, commit: bool = True):

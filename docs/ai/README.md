@@ -10,6 +10,7 @@
 - `invariants.md` captures hard rules that should not be violated without explicit instruction.
 - `token-budget-rules.md` defines context-minimisation rules for agents.
 - `architecture.md` summarizes application flow at a high level.
+- `backend-refactor-rules.md` captures the canonical backend cleanup and boundary rules.
 - `api-surface.md` summarizes confirmed API routes; inspect routers before changing contracts.
 - `env-reference.md` lists configuration names and themes without secret values.
 - `development-workflow.md` summarizes safe local validation commands.
