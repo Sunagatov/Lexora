@@ -4,6 +4,7 @@ import {NotFoundPage} from '@/app/layout/NotFoundPage'
 import {LoginPage} from '@/features/auth/routes/LoginPage'
 import {StudyPage} from '@/features/study/routes/StudyPage'
 import {WordPage} from '@/features/words/routes/WordPage'
+import {AllWordsPage} from '@/features/words/routes/AllWordsPage'
 import {TrashPage} from '@/features/trash/routes/TrashPage'
 import {StatsPage} from '@/features/stats/routes/StatsPage'
 import {routes} from '@/app/routes'
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       {index: true,                element: <Navigate to={routes.smartReview} replace />},
       {path: 'trash',              element: <TrashPage />},
       {path: 'stats',              element: <StatsPage />},
+      {path: 'words',              element: <AllWordsPage />},
       {path: 'words/:wordId',      element: <WordPage />},
       {path: 'words/:wordId/edit', element: <WordPage />},
       {path: 'smart-review',       element: <StudyPage />},

@@ -10,9 +10,13 @@ from app.features.topics.exceptions import MissingTopicsError
 from app.features.topics.rules import assert_topics_exist
 from app.features.words.repository import (
     get_all_words, get_word_by_id, create_word, update_word, soft_delete_word,
+    bulk_update_words,
 )
 from app.features.words.schemas import (
+    BatchUpdateRequest,
+    BatchUpdateResponse,
     WordCreate,
+    WordListResponse,
     WordResponse,
     WordUpdate,
     WorkbookImportResponse,
@@ -35,13 +39,45 @@ from app.features.words.ai_review import (
 router = APIRouter(prefix="/api/words", tags=["words"])
 
 
-@router.get("", response_model=list[WordResponse])
+@router.get("", response_model=WordListResponse)
 def list_words(
     topic_id: int | None = Query(default=None, gt=0),
     search: str | None = Query(default=None, min_length=1),
+    pos: str | None = Query(default=None, min_length=1),
+    cefr: str | None = Query(default=None, min_length=1),
+    level: int | None = Query(default=None, ge=1, le=5),
+    completeness: str | None = Query(default=None, pattern="^(complete|incomplete)$"),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
-) -> list[WordResponse]:
-    return [WordResponse.from_word(w) for w in get_all_words(db, topic_id=topic_id, search=search)]
+) -> WordListResponse:
+    words, total = get_all_words(
+        db, topic_id=topic_id, search=search, pos=pos, cefr=cefr,
+        level=level, completeness=completeness, page=page, page_size=page_size,
+    )
+    total_pages = (total + page_size - 1) // page_size if total > 0 else 0
+    return WordListResponse(
+        words=[WordResponse.from_word(w) for w in words],
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
+
+
+@router.patch("/batch", response_model=BatchUpdateResponse)
+def batch_update_words(
+    payload: BatchUpdateRequest,
+    db: Session = Depends(get_db),
+) -> BatchUpdateResponse:
+    updated = bulk_update_words(
+        db,
+        word_ids=payload.word_ids,
+        knowledge_level=payload.knowledge_level,
+        add_topic_ids=payload.add_topic_ids,
+        remove_topic_ids=payload.remove_topic_ids,
+    )
+    return BatchUpdateResponse(updated=updated)
 
 
 @router.get("/export/xlsx")

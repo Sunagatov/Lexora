@@ -603,3 +603,105 @@
 }
 
 .smart-review-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* All Words page — bulk select bar */
+.bulk-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.bulk-bar-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.bulk-bar select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.bulk-bar .btn {
+  font-size: 0.82rem;
+}
+
+/* Bulk checkbox in table rows */
+.bulk-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.word-cell-checkbox {
+  width: 40px;
+  text-align: center;
+}
+
+/* Topic chip — small badge on word rows */
+.topic-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-light, #e0e7ff);
+  color: var(--accent-dark, #3730a3);
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* All Words page layout */
+.all-words-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.all-words-page h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.all-words-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.all-words-toolbar .search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.all-words-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+}
+
+.all-words-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

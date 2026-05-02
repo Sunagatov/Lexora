@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, Link} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
@@ -18,6 +18,7 @@ export function AppHeader({hasDrawer = false, onOpenDrawer}: Props) {
         <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
           Lexora
         </button>
+        <Link to={routes.allWords} className="app-header-nav-link">All Words</Link>
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">

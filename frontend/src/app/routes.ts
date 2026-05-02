@@ -2,6 +2,7 @@ export const routes = {
   home:        '/',
   login:       '/login',
   smartReview: '/smart-review',
+  allWords:    '/words',
   trash:       '/trash',
   stats:       '/stats',
   topic:       (slug: string) => `/topics/${slug}`,

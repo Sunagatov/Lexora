@@ -249,6 +249,27 @@ class BulkImportResponse(BaseModel):
     skipped_terms: list[str]
 
 
+class WordListResponse(BaseModel):
+    words: list[WordResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
+
+class BatchUpdateRequest(BaseModel):
+    word_ids: list[int] = Field(min_length=1)
+    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    add_topic_ids: list[int] | None = None
+    remove_topic_ids: list[int] | None = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class BatchUpdateResponse(BaseModel):
+    updated: int
+
+
 class WorkbookImportSheetSummary(BaseModel):
     sheet_name: str
     topic_name: str

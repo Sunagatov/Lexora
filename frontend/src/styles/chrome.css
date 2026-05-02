@@ -33,6 +33,16 @@
 }
 .app-header-brand:hover { opacity: 0.75; }
 
+.app-header-nav-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  margin-left: 12px;
+  transition: color 0.12s;
+}
+.app-header-nav-link:hover { color: #fff; }
+
 .app-header-breadcrumb {
   min-width: 0;
   display: flex;

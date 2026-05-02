@@ -74,6 +74,36 @@ export async function exportWordsWorkbook(): Promise<void> {
   setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
+export type WordListParams = {
+  search?: string; topicId?: number; pos?: string; cefr?: string;
+  level?: number; completeness?: string; page?: number; pageSize?: number;
+}
+
+export type WordListResponse = {
+  words: Word[]; total: number; page: number; page_size: number; total_pages: number;
+}
+
+export const fetchWordList = (params: WordListParams = {}): Promise<WordListResponse> => {
+  const q = new URLSearchParams()
+  if (params.search?.trim()) q.set('search', params.search.trim())
+  if (params.topicId) q.set('topic_id', String(params.topicId))
+  if (params.pos) q.set('pos', params.pos)
+  if (params.cefr) q.set('cefr', params.cefr)
+  if (params.level) q.set('level', String(params.level))
+  if (params.completeness) q.set('completeness', params.completeness)
+  if (params.page) q.set('page', String(params.page))
+  if (params.pageSize) q.set('page_size', String(params.pageSize))
+  const qs = q.toString()
+  return request<WordListResponse>(`/api/words${qs ? `?${qs}` : ''}`)
+}
+
+export const batchUpdateWords = (payload: {
+  word_ids: number[];
+  knowledge_level?: number;
+  add_topic_ids?: number[];
+  remove_topic_ids?: number[];
+}) => request<{updated: number}>('/api/words/batch', {method: 'PATCH', body: JSON.stringify(payload)})
+
 export function importWordsWorkbook(file: File): Promise<WorkbookImportResponse> {
   const formData = new FormData()
   formData.append('file', file)

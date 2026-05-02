@@ -25,15 +25,31 @@ from app.features.words.model import (
 from app.features.words.progress import record_level_change
 from app.features.words.repository_queries import (
     active_words_stmt,
+    apply_cefr_filter,
+    apply_completeness_filter,
+    apply_level_filter,
+    apply_pos_filter,
     apply_word_search,
+    count_stmt,
     ordered_word_stmt,
+    paginate_stmt,
     with_word_details,
     words_for_topics_stmt,
 )
 from app.features.words.schemas import WordCreate, WordUpdate
 
 
-def get_all_words(db: Session, topic_id: int | None = None, search: str | None = None) -> list[Word]:
+def get_all_words(
+    db: Session,
+    topic_id: int | None = None,
+    search: str | None = None,
+    pos: str | None = None,
+    cefr: str | None = None,
+    level: int | None = None,
+    completeness: str | None = None,
+    page: int | None = None,
+    page_size: int | None = None,
+) -> list[Word] | tuple[list[Word], int]:
     stmt = active_words_stmt()
     if topic_id is not None:
         from app.features.topics.api import get_active_subtree_topic_ids
@@ -41,6 +57,20 @@ def get_all_words(db: Session, topic_id: int | None = None, search: str | None =
         stmt = words_for_topics_stmt(topic_ids)
     if search:
         stmt = apply_word_search(stmt, search)
+    if pos:
+        stmt = apply_pos_filter(stmt, pos)
+    if cefr:
+        stmt = apply_cefr_filter(stmt, cefr)
+    if level is not None:
+        stmt = apply_level_filter(stmt, level)
+    if completeness:
+        stmt = apply_completeness_filter(stmt, completeness)
+
+    if page is not None and page_size is not None:
+        total = db.scalar(count_stmt(stmt)) or 0
+        stmt = ordered_word_stmt(paginate_stmt(stmt, page, page_size))
+        return list(db.scalars(stmt).all()), total
+
     stmt = ordered_word_stmt(stmt)
     return list(db.scalars(stmt).all())
 
@@ -166,6 +196,38 @@ def restore_word(db: Session, word: Word) -> Word:
     db.add(word)
     _finalize_write(db, word, commit=True)
     return word
+
+
+def bulk_update_words(
+    db: Session,
+    word_ids: list[int],
+    knowledge_level: int | None = None,
+    add_topic_ids: list[int] | None = None,
+    remove_topic_ids: list[int] | None = None,
+) -> int:
+    words = list(db.scalars(
+        select(Word).where(Word.id.in_(word_ids)).where(Word.deleted_at.is_(None))
+    ).all())
+    if not words:
+        return 0
+
+    add_topics = list(db.scalars(select(Topic).where(Topic.id.in_(add_topic_ids))).all()) if add_topic_ids else []
+    remove_set = set(remove_topic_ids) if remove_topic_ids else set()
+
+    for word in words:
+        if knowledge_level is not None:
+            word.knowledge_level = knowledge_level
+        if add_topics:
+            existing_ids = {t.id for t in word.topics}
+            for t in add_topics:
+                if t.id not in existing_ids:
+                    word.topics.append(t)
+        if remove_set:
+            word.topics = [t for t in word.topics if t.id not in remove_set]
+        db.add(word)
+
+    db.commit()
+    return len(words)
 
 
 def hard_delete_word(db: Session, word: Word) -> None:
