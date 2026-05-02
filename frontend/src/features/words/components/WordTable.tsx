@@ -31,7 +31,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
             const isOpen     = openId === word.id
             const isExpanded = expandedId === word.id
 
-            const showExample = word.example
+            const showExample = word.example_entries.length > 0
             const showNotes   = word.notes   && smartPreview(word)?.label !== 'Notes'
             const showPattern = word.pattern && smartPreview(word)?.label !== 'Pattern' && smartPreview(word)?.label !== 'Forms'
             const hasExpanded = showExample || showNotes || showPattern
@@ -102,12 +102,12 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                           {showExample && (
                             <div className="word-extra">
                               <strong>Example:</strong>
-                              {word.example_entries && word.example_entries.length > 1 ? (
+                              {word.example_entries.length > 1 ? (
                                 <ol className="word-extra-examples">
                                   {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
                                 </ol>
                               ) : (
-                                <span> {word.example_entries?.[0] ?? word.example}</span>
+                                <span> {word.example_entries[0]}</span>
                               )}
                             </div>
                           )}

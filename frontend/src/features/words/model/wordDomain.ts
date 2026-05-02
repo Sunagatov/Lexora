@@ -68,7 +68,7 @@ export function filterAndSort(
   const result = words.filter((w) => {
     if (levelFilter !== 'all' && w.knowledge_level !== levelFilter && !frozenSet?.has(w.id)) return false
     if (!needle) return true
-    return [w.term, w.translations, w.part_of_speech, w.pattern, w.example, w.notes, w.past_simple, w.past_participle]
+    return [w.term, w.translation_entries?.join(' '), w.part_of_speech, w.pattern, w.example_entries?.join(' '), w.notes, w.verb_form?.past_simple, w.verb_form?.past_participle]
       .some((v) => v?.toLowerCase().trim().includes(needle))
   })
 

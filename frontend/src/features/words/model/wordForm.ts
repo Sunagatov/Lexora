@@ -16,6 +16,7 @@ export type EditState = {
   pattern: string
 }
 
+
 function splitMultiline(value: string): string[] {
   return value
     .split(/\r?\n/)
@@ -26,14 +27,14 @@ function splitMultiline(value: string): string[] {
 export function toEditState(word: Word): EditState {
   return {
     term: word.term,
-    translations: word.translation_entries?.length ? word.translation_entries.join('\n') : word.translations,
+    translations: word.translation_entries.length ? word.translation_entries.join('\n') : '',
     knowledge_level: levelToStr(word.knowledge_level),
     part_of_speech: toStr(word.part_of_speech),
     topic_ids: word.topic_ids.map(String),
     countability: toStr(word.countability),
-    past_simple: toStr(word.past_simple),
-    past_participle: toStr(word.past_participle),
-    example: word.example_entries?.length ? word.example_entries.join('\n') : toStr(word.example),
+    past_simple: toStr(word.verb_form?.past_simple),
+    past_participle: toStr(word.verb_form?.past_participle),
+    example: word.example_entries.length ? word.example_entries.join('\n') : '',
     notes: toStr(word.notes),
     pattern: toStr(word.pattern),
   }
@@ -46,15 +47,17 @@ export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: bool
 
   return {
     term: draft.term.trim(),
-    translations: draft.translations.trim(),
     translation_entries: translationEntries,
     knowledge_level: strToLevel(draft.knowledge_level),
     part_of_speech: toNullStr(draft.part_of_speech),
     topic_ids: topicIds,
     countability: toNullStrIf(isNoun, draft.countability),
-    past_simple: toNullStrIf(isVerb, draft.past_simple),
-    past_participle: toNullStrIf(isVerb, draft.past_participle),
-    example: toNullStr(draft.example),
+    verb_form: isVerb ? {
+      past_simple: toNullStr(draft.past_simple) ?? null,
+      past_participle: toNullStr(draft.past_participle) ?? null,
+      present_participle: null,
+      third_person: null,
+    } : null,
     example_entries: exampleEntries,
     notes: toNullStr(draft.notes),
     pattern: toNullStr(draft.pattern),

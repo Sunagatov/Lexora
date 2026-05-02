@@ -11,7 +11,7 @@ export function WordSummaryContent({word}: Props) {
       {chips.length > 0 && (
         <div className="word-chips">{chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
       )}
-      <div className="word-translation">{word.translations}</div>
+      <div className="word-translation">{word.translation_entries.join(', ')}</div>
       {preview && (
         <div className="word-preview-line">
           <span className="word-preview-label">{preview.label}:</span>

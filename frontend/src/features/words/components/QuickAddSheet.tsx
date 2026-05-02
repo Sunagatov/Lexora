@@ -1,4 +1,4 @@
-import {useEffect, useRef, type KeyboardEvent} from 'react'
+import {useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 
@@ -22,7 +22,7 @@ export function QuickAddSheet({onClose}: Props) {
   }, [])
 
   useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
       if (event.key === 'Escape') onClose()
     }
 
@@ -30,7 +30,7 @@ export function QuickAddSheet({onClose}: Props) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
-  function handleSheetKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+  function handleSheetKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Escape') onClose()
   }
 

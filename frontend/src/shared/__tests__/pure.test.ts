@@ -6,10 +6,17 @@ import type {Word} from '@/features/words/types/wordTypes'
 
 function makeWord(overrides: Partial<Word> = {}): Word {
   return {
-    id: 1, topic_ids: [1], term: 'test', translations: 'тест',
-    past_simple: null, past_participle: null, part_of_speech: null,
-    knowledge_level: null, countability: null, pattern: null,
-    example: null, notes: null, is_active: true,
+    id: 1, topic_ids: [1], term: 'test',
+    language: 'en', definition: null,
+    pronunciation_ipa: null, pronunciation_audio_url: null,
+    image_url: null, cefr_level: null, register: null,
+    frequency_rank: null, verb_form: null,
+    translation_entries: ['тест'],
+    part_of_speech: null, knowledge_level: null, countability: null, pattern: null,
+    example_entries: [], example_count: 0, example_target_count: 3,
+    example_status: 'missing', needs_example_enrichment: false,
+    synonym_entries: [], antonym_entries: [], collocation_entries: [], confusable_entries: [],
+    notes: null, is_active: true, deleted_at: null,
     created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z',
     ...overrides,
   }
@@ -32,9 +39,9 @@ describe('buildLevelSummary', () => {
 
 describe('filterAndSort', () => {
   const words = [
-    makeWord({id: 1, term: 'apple',  knowledge_level: 1, translations: 'яблоко'}),
-    makeWord({id: 2, term: 'banana', knowledge_level: 3, translations: 'банан'}),
-    makeWord({id: 3, term: 'cherry', knowledge_level: 2, translations: 'вишня'}),
+    makeWord({id: 1, term: 'apple',  knowledge_level: 1, translation_entries: ['яблоко']}),
+    makeWord({id: 2, term: 'banana', knowledge_level: 3, translation_entries: ['банан']}),
+    makeWord({id: 3, term: 'cherry', knowledge_level: 2, translation_entries: ['вишня']}),
   ]
 
   it('returns all words with no filter', () => {
@@ -88,7 +95,7 @@ describe('filterAndSort', () => {
 
 describe('smartPreview', () => {
   it('returns verb forms when past_simple present', () => {
-    const w = makeWord({term: 'go', past_simple: 'went', past_participle: 'gone'})
+    const w = makeWord({term: 'go', verb_form: {past_simple: 'went', past_participle: 'gone', present_participle: null, third_person: null}})
     const p = smartPreview(w)
     expect(p?.label).toBe('Forms')
     expect(p?.text).toContain('went')
@@ -102,7 +109,7 @@ describe('smartPreview', () => {
   })
 
   it('returns example when no other priority matches', () => {
-    const w = makeWord({example: 'She runs fast.'})
+    const w = makeWord({example_entries: ['She runs fast.']})
     const p = smartPreview(w)
     expect(p?.label).toBe('Example')
   })

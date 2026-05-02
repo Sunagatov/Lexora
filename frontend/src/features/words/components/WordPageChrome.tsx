@@ -22,10 +22,10 @@ type FooterNavProps = {
 }
 
 function getHeroTranslation(word: Word): string {
-  if (word.translation_entries?.length) {
+  if (word.translation_entries.length) {
     return word.translation_entries.join(' · ')
   }
-  return word.translations?.trim() ?? ''
+  return ''
 }
 
 export function WordPageSkeleton() {

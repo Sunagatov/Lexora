@@ -18,11 +18,10 @@ type Props = {
 }
 
 function getMainTranslation(word: Word): string {
-  if (word.translation_entries?.length) {
+  if (word.translation_entries.length) {
     return word.translation_entries.slice(0, 2).join(' · ')
   }
-  const first = word.translations.split('\n')[0].trim()
-  return first.length > 90 ? first.slice(0, 88) + '…' : first
+  return ''
 }
 
 export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNavigate}: Props) {

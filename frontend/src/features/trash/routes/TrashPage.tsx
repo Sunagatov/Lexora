@@ -73,7 +73,7 @@ export function TrashPage() {
               <div key={word.id} className="trash-item">
                 <div className="trash-item-info">
                   <span className="trash-item-name">{word.term}</span>
-                  <span className="trash-item-meta">{word.translations}</span>
+                  <span className="trash-item-meta">{word.translation_entries.join(', ')}</span>
                   <span className="trash-item-days">{daysLeft(word.deleted_at)} days left</span>
                   {restoreWordError?.id === word.id && (
                     <span className="login-error">{restoreWordError.message}</span>

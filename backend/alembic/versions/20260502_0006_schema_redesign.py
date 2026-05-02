@@ -29,8 +29,7 @@ def upgrade() -> None:
     for name in POS_SEED:
         bind.execute(sa.text("INSERT INTO parts_of_speech (name) VALUES (:n)"), {"n": name})
 
-    # ── 2. topics: add UNIQUE(name), CHECK(no self-ref) ──
-    op.create_unique_constraint("uq_topics_name", "topics", ["name"])
+    # ── 2. topics: add CHECK(no self-ref) ──
     op.create_check_constraint("ck_topics_no_self_ref", "topics", "id != parent_topic_id")
 
     # ── 3. words: add new columns ──
@@ -85,14 +84,13 @@ def upgrade() -> None:
     op.create_check_constraint("ck_words_language", "words", "language IN ('en', 'ru')")
     op.create_check_constraint("ck_words_cefr_level", "words", "cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')")
     op.create_check_constraint("ck_words_register", "words", "register IN ('formal', 'informal', 'neutral', 'slang', 'technical')")
+    # Lowercase-normalize existing countability values BEFORE adding the CHECK
+    bind.execute(sa.text("UPDATE words SET countability = lower(countability) WHERE countability IS NOT NULL"))
     op.create_check_constraint("ck_words_countability", "words", "countability IN ('countable', 'uncountable', 'both', 'plural', 'collective')")
     op.create_check_constraint("ck_words_knowledge_level", "words", "knowledge_level BETWEEN 1 AND 5")
     op.create_check_constraint("ck_words_frequency_rank", "words", "frequency_rank >= 1")
 
-    # ── 8. Lowercase-normalize existing countability values ──
-    bind.execute(sa.text("UPDATE words SET countability = lower(countability) WHERE countability IS NOT NULL"))
-
-    # ── 9. word_translations / word_examples: drop timestamps, add CHECKs ──
+    # ── 8. word_translations / word_examples: drop timestamps, add CHECKs ──
     op.drop_column("word_translations", "created_at")
     op.drop_column("word_translations", "updated_at")
     op.drop_column("word_examples", "created_at")
