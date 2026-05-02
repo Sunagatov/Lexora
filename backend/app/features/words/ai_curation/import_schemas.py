@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.features.words.ai_curation.schema_support import (
     COMMON_MODEL_CONFIG,
     COUNTABILITY_ALLOWED_VALUES,
-    JsonEntry,
     PART_OF_SPEECH_ALLOWED_VALUES,
+    JsonEntry,
     SCHEMA_VERSION,
     _clean_entries,
     _json_entry_field,
@@ -19,10 +19,7 @@ from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.constants import (
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
-    WORD_COUNT_MAX_LEN,
-    WORD_POS_MAX_LEN,
     WORD_TERM_MAX_LEN,
-    WORD_VERB_FORM_MAX_LEN,
 )
 
 JsonEntryField = Annotated[JsonEntry, _json_entry_field()]
@@ -53,20 +50,25 @@ class CreateTopicOperation(BaseModel):
 
 
 class _WordPayloadBase(BaseModel):
-    translations: str | None = Field(default=None, min_length=1)
     translation_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
     pattern: str | None = Field(default=None, max_length=2000)
     example_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
-    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
-    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
-    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
+    countability: str | None = None
+    part_of_speech: str | None = None
     notes: str | None = Field(default=None, max_length=4000)
     knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    language: str | None = None
+    definition: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    frequency_rank: int | None = Field(default=None, ge=1)
+    synonym_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
+    antonym_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
+    collocation_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
 
     model_config = COMMON_MODEL_CONFIG
 
-    @field_validator("translation_entries", "example_entries")
+    @field_validator("translation_entries", "example_entries", "synonym_entries", "antonym_entries", "collocation_entries")
     @classmethod
     def clean_entries(cls, value: list[str] | None) -> list[str] | None:
         return _clean_entries(value)
@@ -89,7 +91,7 @@ class WordUpdateV2(_WordPayloadBase):
 
     @model_validator(mode="after")
     def reject_explicit_nulls(self) -> "WordUpdateV2":
-        for field in ("term", "translations", "is_active"):
+        for field in ("term", "is_active"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
         return self
@@ -98,7 +100,7 @@ class WordUpdateV2(_WordPayloadBase):
 class WordCreateV2(_WordPayloadBase):
     target_topic_refs: list[TopicRef] = Field(min_length=1, max_length=20)
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    translations: str = Field(min_length=1)
+    translation_entries: list[JsonEntryField] = Field(min_length=1, max_length=20)
     knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     is_active: bool = True
 

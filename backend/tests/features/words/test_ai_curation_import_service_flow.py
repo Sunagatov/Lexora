@@ -17,14 +17,19 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
     return SimpleNamespace(
         id=id,
         term=term,
-        translations="ипотека",
+        language="en",
+        definition=None,
         translation_items=translation_items or [],
         example_items=example_items or [],
         topics=topics if topics is not None else [topic],
         countability=None,
         part_of_speech=None,
-        past_simple=None,
-        past_participle=None,
+        part_of_speech_id=None,
+        verb_form=None,
+        synonym_items=[],
+        antonym_items=[],
+        collocation_items=[],
+        confusable_items=[],
         pattern=None,
         notes=None,
         knowledge_level=None,
@@ -51,7 +56,7 @@ def test_import_rollback_on_failure(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"topic_id": 1}],
                 "term": "bond",
-                "translations": "облигация",
+                "translation_entries": ["облигация"],
             }
         ],
     )
@@ -110,7 +115,7 @@ def test_full_import_flow_all_operation_types(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"client_key": "retail"}],
                 "term": "collateral",
-                "translations": "залог",
+                "translation_entries": ["залог"],
             },
             {
                 "op": "reassign_word_topics",
@@ -158,8 +163,8 @@ def test_import_duplicate_new_word_propagates_error_and_rolls_back(monkeypatch) 
     payload = AiCurationImportRequest(
         source_topic_id=1,
         word_operations=[
-            {"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translations": "облигация"},
-            {"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translations": "облигация"},
+            {"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translation_entries": ["облигация"]},
+            {"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translation_entries": ["облигация"]},
         ],
     )
 

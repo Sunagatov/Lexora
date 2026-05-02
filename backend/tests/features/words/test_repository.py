@@ -41,12 +41,12 @@ def _make_word_mock(
     *,
     id: int,
     term: str,
-    translations: str,
-    part_of_speech,
+    translations: str = "",
+    part_of_speech=None,
     knowledge_level,
     countability,
     pattern,
-    example,
+    example=None,
     notes,
     is_active: bool,
     topics,
@@ -55,13 +55,26 @@ def _make_word_mock(
     word = MagicMock(spec=Word)
     word.id = id
     word.term = term
-    word.translations = translations
+    word.language = "en"
+    word.definition = None
+    word.pronunciation_ipa = None
+    word.pronunciation_audio_url = None
+    word.image_url = None
     word.part_of_speech = part_of_speech
+    word.part_of_speech_id = None
+    word.cefr_level = None
+    word.register = None
+    word.frequency_rank = None
     word.knowledge_level = knowledge_level
     word.countability = countability
     word.pattern = pattern
-    word.example = example
     word.example_items = list(example_items or [])
+    word.translation_items = []
+    word.synonym_items = []
+    word.antonym_items = []
+    word.collocation_items = []
+    word.confusable_items = []
+    word.verb_form = None
     word.notes = notes
     word.is_active = is_active
     word.topics = list(topics)
@@ -80,7 +93,7 @@ def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
     payload = WordCreate(
         topic_ids=[1, 2],
         term="run",
-        translations="бежать",
+        translation_entries=["бежать"],
         knowledge_level=2,
     )
 
@@ -88,7 +101,6 @@ def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
 
     assert isinstance(word, DummyWord)
     assert word.term == "run"
-    assert word.translations == "бежать"
     assert word.knowledge_level == 2
     assert [topic.id for topic in word.topics] == [1, 2]
 
@@ -261,7 +273,7 @@ def test_update_word_clears_examples_when_explicit_empty_list_is_provided(monkey
         knowledge_level=3,
         countability=None,
         pattern=None,
-        example="Old example line",
+        example=None,
         example_items=[ExampleStub("Old example line")],
         notes=None,
         is_active=True,
@@ -277,7 +289,6 @@ def test_update_word_clears_examples_when_explicit_empty_list_is_provided(monkey
     result = word_repository.update_word(db, word, payload)
 
     assert result is word
-    assert word.example is None
     assert word.example_items == []
     db.add.assert_called_once_with(word)
     db.commit.assert_called_once()

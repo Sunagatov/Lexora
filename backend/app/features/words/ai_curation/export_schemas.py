@@ -25,13 +25,17 @@ class AiCurationTopicListResponse(BaseModel):
 class AiCurationAllowedValues(BaseModel):
     countability: list[str]
     part_of_speech: list[str]
+    cefr_level: list[str]
+    register: list[str]
+    language: list[str]
 
 
 class AiCurationWord(BaseModel):
     id: int
     topic_ids: list[int]
     term: str
-    translations: str
+    language: str
+    definition: str | None
     translation_entries: list[str]
     pattern: str | None
     example_entries: list[str]
@@ -41,8 +45,14 @@ class AiCurationWord(BaseModel):
     needs_example_enrichment: bool
     countability: str | None
     part_of_speech: str | None
-    past_simple: str | None
-    past_participle: str | None
+    cefr_level: str | None
+    register: str | None
+    frequency_rank: int | None
+    verb_form: dict | None
+    synonym_entries: list[str]
+    antonym_entries: list[str]
+    collocation_entries: list[str]
+    confusable_entries: list[dict]
     notes: str | None
     knowledge_level: int | None
     is_active: bool

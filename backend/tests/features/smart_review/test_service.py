@@ -299,8 +299,8 @@ def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:
     db = _make_sqlite_session()
     now = datetime.now(timezone.utc)
 
-    word_completed = Word(term="done", translations="done")
-    word_pending = Word(term="pending", translations="pending")
+    word_completed = Word(term="done")
+    word_pending = Word(term="pending")
     db.add_all([word_completed, word_pending])
     db.flush()
 

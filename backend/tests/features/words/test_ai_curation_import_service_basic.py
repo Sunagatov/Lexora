@@ -16,15 +16,19 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
     return SimpleNamespace(
         id=id,
         term=term,
-        translations="ипотека",
-        example=None,
+        language="en",
+        definition=None,
         translation_items=translation_items or [],
         example_items=example_items or [],
         topics=topics if topics is not None else [topic],
         countability=None,
         part_of_speech=None,
-        past_simple=None,
-        past_participle=None,
+        part_of_speech_id=None,
+        verb_form=None,
+        synonym_items=[],
+        antonym_items=[],
+        collocation_items=[],
+        confusable_items=[],
         pattern=None,
         notes=None,
         knowledge_level=None,
@@ -65,7 +69,7 @@ def test_import_dry_run_does_not_commit(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"topic_id": 1}],
                 "term": "collateral",
-                "translations": "залог",
+                "translation_entries": ["залог"],
             }
         ],
     )
@@ -93,7 +97,7 @@ def test_import_live_commits(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"topic_id": 1}],
                 "term": "collateral",
-                "translations": "залог",
+                "translation_entries": ["залог"],
             }
         ],
     )
@@ -125,7 +129,7 @@ def test_import_with_new_topic_and_word(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"client_key": "retail-banking"}],
                 "term": "overdraft",
-                "translations": "овердрафт",
+                "translation_entries": ["овердрафт"],
             }
         ],
     )
@@ -225,7 +229,7 @@ def test_import_dry_run_returns_null_ids_for_created_topics(monkeypatch) -> None
                 "op": "create_new_word",
                 "target_topic_refs": [{"client_key": "retail-banking"}],
                 "term": "overdraft",
-                "translations": "овердрафт",
+                "translation_entries": ["овердрафт"],
             }
         ],
     )
@@ -261,7 +265,7 @@ def test_import_non_dry_run_keeps_created_ids(monkeypatch) -> None:
                 "op": "create_new_word",
                 "target_topic_refs": [{"client_key": "retail-banking"}],
                 "term": "overdraft",
-                "translations": "овердрафт",
+                "translation_entries": ["овердрафт"],
             }
         ],
     )

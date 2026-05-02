@@ -12,16 +12,22 @@ from app.features.words.ai_review.schemas import (
     AiReviewTopic,
     AiReviewWord,
 )
+from app.features.words.constants import (
+    CEFR_LEVELS,
+    COUNTABILITY_VALUES,
+    LANGUAGES,
+    PART_OF_SPEECH_VALUES,
+    REGISTER_VALUES,
+)
 from app.features.words.model import Word, word_topics
-from app.features.words.repository_queries import with_word_content_details
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
+from app.features.words.repository_queries import with_word_details
 
 EXPORT_INSTRUCTIONS = [
     "Return the same JSON shape and schema_version.",
     "Only enrich existing words from this topic; do not add, remove, rename, or duplicate words.",
     "Keep every word id and term unchanged.",
     "Use example_entries for examples; keep each example as one string.",
-    "Use only allowed countability and part_of_speech values already present in the JSON.",
+    "Use only allowed countability, part_of_speech, cefr_level, and register values from allowed_values.",
 ]
 
 
@@ -34,25 +40,20 @@ def build_topic_ai_review_export(
 ) -> AiReviewExportResponse:
     total_words = db.scalar(_topic_words_count_stmt(subtree_topic_ids)) or 0
     total_pages = max(1, math.ceil(total_words / page_size))
-    words = _load_topic_words(
-        db,
-        subtree_topic_ids,
-        page=page,
-        page_size=page_size,
-    )
+    words = _load_topic_words(db, subtree_topic_ids, page=page, page_size=page_size)
     return AiReviewExportResponse(
         exported_at=datetime.now(timezone.utc),
         topic_id=topic.id,
         topic=AiReviewTopic(id=topic.id, name=topic.name),
         pagination=AiReviewPagination(
-            page=page,
-            page_size=page_size,
-            total_words=total_words,
-            total_pages=total_pages,
+            page=page, page_size=page_size, total_words=total_words, total_pages=total_pages,
         ),
         allowed_values=AiReviewAllowedValues(
-            countability=COUNTABILITY_VALUES,
-            part_of_speech=PART_OF_SPEECH_VALUES,
+            countability=list(COUNTABILITY_VALUES),
+            part_of_speech=list(PART_OF_SPEECH_VALUES),
+            cefr_level=list(CEFR_LEVELS),
+            register=list(REGISTER_VALUES),
+            language=list(LANGUAGES),
         ),
         instructions=EXPORT_INSTRUCTIONS,
         words=[_word_to_ai_review_word(word) for word in words],
@@ -81,21 +82,37 @@ def _load_topic_words(db, subtree_topic_ids: list[int], *, page: int, page_size:
         .offset(offset)
         .limit(page_size)
     )
-    return list(db.scalars(with_word_content_details(stmt)).all())
+    return list(db.scalars(with_word_details(stmt)).all())
 
 
 def _word_to_ai_review_word(word: Word) -> AiReviewWord:
+    vf = word.verb_form
     return AiReviewWord(
         id=word.id,
         term=word.term,
-        translations=word.translations,
+        language=word.language,
+        definition=word.definition,
         translation_entries=[item.value for item in getattr(word, "translation_items", [])],
         pattern=word.pattern,
         example_entries=[item.value for item in getattr(word, "example_items", [])],
         countability=word.countability,
-        part_of_speech=word.part_of_speech,
-        past_simple=word.past_simple,
-        past_participle=word.past_participle,
+        part_of_speech=word.part_of_speech.name if word.part_of_speech else None,
+        cefr_level=word.cefr_level,
+        register=word.register,
+        frequency_rank=word.frequency_rank,
+        verb_form={
+            "past_simple": vf.past_simple,
+            "past_participle": vf.past_participle,
+            "present_participle": vf.present_participle,
+            "third_person": vf.third_person,
+        } if vf else None,
+        synonym_entries=[item.value for item in getattr(word, "synonym_items", [])],
+        antonym_entries=[item.value for item in getattr(word, "antonym_items", [])],
+        collocation_entries=[item.value for item in getattr(word, "collocation_items", [])],
+        confusable_entries=[
+            {"value": item.value, "explanation": item.explanation}
+            for item in getattr(word, "confusable_items", [])
+        ],
         notes=word.notes,
         knowledge_level=word.knowledge_level,
     )

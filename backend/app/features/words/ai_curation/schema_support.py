@@ -4,7 +4,13 @@ from math import ceil
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
+from app.features.words.constants import (
+    CEFR_LEVELS,
+    COUNTABILITY_VALUES,
+    LANGUAGES,
+    PART_OF_SPEECH_VALUES,
+    REGISTER_VALUES,
+)
 
 SCHEMA_VERSION = "lexora.ai-curation.v2"
 JsonEntry = str
@@ -31,7 +37,7 @@ def _clean_entries(values: list[str] | None) -> list[str] | None:
     return result
 
 
-def _normalize_optional_choice(value: str | None, allowed_values: list[str], field_name: str) -> str | None:
+def _normalize_optional_choice(value: str | None, allowed_values: tuple | list, field_name: str) -> str | None:
     if value in (None, ""):
         return None
     if value not in allowed_values:
@@ -63,3 +69,6 @@ class PaginationMeta(BaseModel):
 COMMON_MODEL_CONFIG = ConfigDict(extra="forbid", str_strip_whitespace=True)
 COUNTABILITY_ALLOWED_VALUES = COUNTABILITY_VALUES
 PART_OF_SPEECH_ALLOWED_VALUES = PART_OF_SPEECH_VALUES
+CEFR_LEVEL_ALLOWED_VALUES = CEFR_LEVELS
+REGISTER_ALLOWED_VALUES = REGISTER_VALUES
+LANGUAGE_ALLOWED_VALUES = LANGUAGES

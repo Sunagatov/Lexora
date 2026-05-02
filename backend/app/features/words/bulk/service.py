@@ -19,7 +19,8 @@ from app.features.topics.api import (
     find_deleted_topic_by_slug,
 )
 from app.features.words.model import Word
-from app.features.words.api import existing_normalized_terms, sync_word_multivalue_fields
+from app.features.words.api import existing_normalized_terms
+from app.features.words.multivalue import sync_word_multivalue_fields
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
 from app.shared.text import normalize_term, slugify
 
@@ -51,14 +52,22 @@ def _resolve_topic_for_bulk_import(db: Session, topic_name: str):
 
 def _build_bulk_word(topic, payload_word) -> Word:
     word = Word(
-        **payload_word.model_dump(exclude={"translation_entries", "example_entries"}),
+        term=payload_word.term,
+        language=getattr(payload_word, "language", "en"),
+        definition=getattr(payload_word, "definition", None),
+        pronunciation_ipa=getattr(payload_word, "pronunciation_ipa", None),
+        knowledge_level=payload_word.knowledge_level,
+        countability=payload_word.countability,
+        pattern=payload_word.pattern,
+        notes=payload_word.notes,
+        is_active=True,
         topics=[topic],
     )
     sync_word_multivalue_fields(
         word,
-        payload_word.translations,
+        None,
         payload_word.translation_entries,
-        payload_word.example,
+        None,
         payload_word.example_entries,
     )
     return word

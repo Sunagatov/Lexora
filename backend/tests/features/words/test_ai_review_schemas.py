@@ -17,7 +17,6 @@ def test_ai_review_import_allows_clean_example_enrichment() -> None:
         AiReviewImportWord(
             id=10,
             term="mortgage",
-            translations="ипотека",
             translation_entries=["ипотека"],
             example_entries=[
                 "They applied for a mortgage last month.",
@@ -25,7 +24,7 @@ def test_ai_review_import_allows_clean_example_enrichment() -> None:
                 "Higher rates made the mortgage more expensive.",
             ],
             part_of_speech="noun",
-            countability="Countable",
+            countability="countable",
         )
     ]
     payload = AiReviewImportRequest(

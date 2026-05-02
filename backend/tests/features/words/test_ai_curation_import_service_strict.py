@@ -18,14 +18,19 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
     return SimpleNamespace(
         id=id,
         term=term,
-        translations="ипотека",
+        language="en",
+        definition=None,
         translation_items=translation_items or [],
         example_items=example_items or [],
         topics=topics if topics is not None else [topic],
         countability=None,
         part_of_speech=None,
-        past_simple=None,
-        past_participle=None,
+        part_of_speech_id=None,
+        verb_form=None,
+        synonym_items=[],
+        antonym_items=[],
+        collocation_items=[],
+        confusable_items=[],
         pattern=None,
         notes=None,
         knowledge_level=None,
@@ -56,7 +61,7 @@ def test_update_existing_word_only_passes_set_fields_to_update_word(monkeypatch)
     update_payload = captured[0]
     assert "example_entries" in update_payload.model_fields_set
     assert "progress_source" in update_payload.model_fields_set
-    assert "translations" not in update_payload.model_fields_set
+    assert "translation_entries" not in update_payload.model_fields_set
     assert "notes" not in update_payload.model_fields_set
     assert "countability" not in update_payload.model_fields_set
 
@@ -138,7 +143,7 @@ def test_import_logs_audit_on_commit(monkeypatch, caplog) -> None:
     payload = AiCurationImportRequest(
         source_topic_id=1,
         dry_run=False,
-        word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "collateral", "translations": "залог"}],
+        word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "collateral", "translation_entries": ["залог"]}],
     )
 
     with caplog.at_level(logging.INFO, logger="audit"):

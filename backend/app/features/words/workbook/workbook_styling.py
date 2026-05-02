@@ -20,8 +20,9 @@ EXPORT_COLUMNS = [
     ("examples", "Examples (EN + RU)"),
     ("countability", "Countability"),
     ("part_of_speech", "Part of speech"),
-    ("past_simple", "Past simple"),
-    ("past_participle", "Past participle"),
+    ("definition", "Definition"),
+    ("cefr_level", "CEFR"),
+    ("register", "Register"),
     ("notes", "Notes"),
     ("word_id", "Word ID"),
 ]
@@ -33,15 +34,16 @@ PART_OF_SPEECH_VALUES = [
     "adverb",
     "phrase",
     "preposition",
+    "phrasal verb",
     "other",
 ]
-COUNTABILITY_VALUES = ["Countable", "Uncountable", "Both", "Plural", "Collective"]
+COUNTABILITY_VALUES = ["countable", "uncountable", "both", "plural", "collective"]
 COUNTABILITY_ALIASES = {
-    "countable": "Countable",
-    "uncountable": "Uncountable",
-    "both": "Both",
-    "plural": "Plural",
-    "collective": "Collective",
+    "countable": "countable",
+    "uncountable": "uncountable",
+    "both": "both",
+    "plural": "plural",
+    "collective": "collective",
 }
 
 HEADER_FILL = PatternFill(fill_type="solid", fgColor="1F2937")
@@ -88,14 +90,15 @@ def _set_column_widths(ws) -> None:
         "E": 42,
         "F": 16,
         "G": 18,
-        "H": 18,
-        "I": 20,
-        "J": 28,
-        "K": 12,
+        "H": 28,
+        "I": 10,
+        "J": 14,
+        "K": 28,
+        "L": 12,
     }
     for column, width in widths.items():
         ws.column_dimensions[column].width = width
-    ws.column_dimensions["K"].hidden = True
+    ws.column_dimensions["L"].hidden = True
 
 
 def _apply_base_styling(ws, last_row: int) -> None:
@@ -110,7 +113,7 @@ def _apply_base_styling(ws, last_row: int) -> None:
         cell.alignment = Alignment(vertical="center", horizontal="center")
 
     ws.freeze_panes = "A2"
-    ws.auto_filter.ref = f"A1:J{last_row}"
+    ws.auto_filter.ref = f"A1:K{last_row}"
 
 
 def _add_dynamic_row_colors(ws, last_row: int) -> None:
@@ -134,7 +137,7 @@ def _add_validations(workbook: Workbook, ws, last_row: int) -> None:
         allow_blank=True,
     )
     pos_dv = DataValidation(
-        type="list", formula1=f"={LISTS_SHEET_NAME}!$C$1:$C$7", allow_blank=True
+        type="list", formula1=f"={LISTS_SHEET_NAME}!$C$1:$C${len(PART_OF_SPEECH_VALUES)}", allow_blank=True
     )
 
     ws.add_data_validation(knowledge_dv)

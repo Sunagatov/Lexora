@@ -93,23 +93,35 @@ def _process_word_creates(
         if not target_topic_ids:
             raise AiCurationImportError(f"New word '{op.term}' has no target topics")
 
+        create_kwargs: dict = dict(
+            topic_ids=target_topic_ids,
+            term=op.term,
+            translation_entries=list(op.translation_entries),
+            pattern=op.pattern,
+            example_entries=op.example_entries,
+            countability=op.countability,
+            part_of_speech=op.part_of_speech,
+            definition=op.definition,
+            cefr_level=op.cefr_level,
+            frequency_rank=op.frequency_rank,
+            synonym_entries=op.synonym_entries,
+            antonym_entries=op.antonym_entries,
+            collocation_entries=op.collocation_entries,
+            notes=op.notes,
+            knowledge_level=op.knowledge_level,
+            is_active=op.is_active,
+        )
+        # language defaults to None on WordCreateV2 but "en" on WordCreate;
+        # only forward when explicitly set.
+        if "language" in op.model_fields_set:
+            create_kwargs["language"] = op.model_dump(include={"language"})["language"]
+        # "register" shadows ABCMeta.register on BaseModel; use model_fields_set.
+        if "register" in op.model_fields_set:
+            create_kwargs["register"] = op.model_dump(include={"register"})["register"]
+
         word = operations.create_word(
             db,
-            WordCreate(
-                topic_ids=target_topic_ids,
-                term=op.term,
-                translations=op.translations,
-                translation_entries=op.translation_entries,
-                pattern=op.pattern,
-                example_entries=op.example_entries,
-                countability=op.countability,
-                part_of_speech=op.part_of_speech,
-                past_simple=op.past_simple,
-                past_participle=op.past_participle,
-                notes=op.notes,
-                knowledge_level=op.knowledge_level,
-                is_active=op.is_active,
-            ),
+            WordCreate(**create_kwargs),
             commit=False,
         )
         created_word_ids.append(word.id)

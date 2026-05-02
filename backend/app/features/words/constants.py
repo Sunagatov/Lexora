@@ -3,14 +3,42 @@ from __future__ import annotations
 from typing import Literal, get_args
 
 WORD_TERM_MAX_LEN = 255
-WORD_VERB_FORM_MAX_LEN = 255
-WORD_POS_MAX_LEN = 50
-WORD_COUNT_MAX_LEN = 50
 
 KNOWLEDGE_LEVEL_MIN = 1
 KNOWLEDGE_LEVEL_MAX = 5
 
 BULK_WORDS_MAX = 500
+
+# ── Language ──
+
+LANGUAGES = ("en", "ru")
+
+# ── CEFR levels ──
+
+CEFR_LEVELS = ("A1", "A2", "B1", "B2", "C1", "C2")
+
+# ── Register ──
+
+REGISTER_VALUES = ("formal", "informal", "neutral", "slang", "technical")
+
+# ── Countability (lowercase, matches DB CHECK) ──
+
+COUNTABILITY_VALUES = ("countable", "uncountable", "both", "plural", "collective")
+
+# ── Parts of speech (seed values — canonical source is the DB table) ──
+
+PART_OF_SPEECH_VALUES = (
+    "noun",
+    "verb",
+    "adjective",
+    "adverb",
+    "phrase",
+    "preposition",
+    "phrasal verb",
+    "other",
+)
+
+# ── Progress sources ──
 
 PROGRESS_SOURCE_MANUAL = "manual"
 PROGRESS_SOURCE_STUDY_LIST = "study_list"

@@ -8,7 +8,7 @@ from app.features.words.workbook.cells import (
     _validate_countability,
     _validate_max_length,
 )
-from app.features.words.constants import WORD_TERM_MAX_LEN, WORD_VERB_FORM_MAX_LEN
+from app.features.words.constants import WORD_TERM_MAX_LEN
 from app.features.words.workbook.format import InvalidWorkbookError
 
 
@@ -22,8 +22,9 @@ class WorkbookRowData:
     examples_text: str | None
     countability: str | None
     part_of_speech_text: str | None
-    past_simple: str | None
-    past_participle: str | None
+    definition: str | None
+    cefr_level: str | None
+    register: str | None
     notes: str | None
 
 
@@ -42,13 +43,7 @@ def _read_row_data(ws, row_idx: int, header_map: dict[str, int]) -> WorkbookRowD
     if not translations_text:
         raise InvalidWorkbookError(f"{ws.title}, row {row_idx}: translations are required for '{term}'")
 
-    knowledge_value = _read_optional_int(
-        ws,
-        row_idx,
-        header_map.get("knowledge_level"),
-        "knowledge",
-        ws.title,
-    )
+    knowledge_value = _read_optional_int(ws, row_idx, header_map.get("knowledge_level"), "knowledge", ws.title)
     if knowledge_value is not None and knowledge_value not in {1, 2, 3, 4, 5}:
         raise InvalidWorkbookError(f"{ws.title}, row {row_idx}: knowledge must be between 1 and 5")
 
@@ -60,25 +55,12 @@ def _read_row_data(ws, row_idx: int, header_map: dict[str, int]) -> WorkbookRowD
         pattern=_read_str(ws, row_idx, header_map.get("pattern")),
         examples_text=_read_str(ws, row_idx, header_map.get("examples")),
         countability=_validate_countability(
-            _read_str(ws, row_idx, header_map.get("countability")),
-            ws.title,
-            row_idx,
+            _read_str(ws, row_idx, header_map.get("countability")), ws.title, row_idx,
         ),
         part_of_speech_text=_read_str(ws, row_idx, header_map.get("part_of_speech")),
-        past_simple=_validate_max_length(
-            _read_str(ws, row_idx, header_map.get("past_simple")),
-            WORD_VERB_FORM_MAX_LEN,
-            "past simple",
-            ws.title,
-            row_idx,
-        ),
-        past_participle=_validate_max_length(
-            _read_str(ws, row_idx, header_map.get("past_participle")),
-            WORD_VERB_FORM_MAX_LEN,
-            "past participle",
-            ws.title,
-            row_idx,
-        ),
+        definition=_read_str(ws, row_idx, header_map.get("definition")),
+        cefr_level=_read_str(ws, row_idx, header_map.get("cefr_level")),
+        register=_read_str(ws, row_idx, header_map.get("register")),
         notes=_read_str(ws, row_idx, header_map.get("notes")),
     )
 
@@ -92,8 +74,7 @@ def _row_fingerprint(
     examples_text: str | None,
     countability: str | None,
     part_of_speech: str | None,
-    past_simple: str | None,
-    past_participle: str | None,
+    definition: str | None,
     notes: str | None,
 ) -> tuple[object, ...]:
     return (
@@ -104,7 +85,6 @@ def _row_fingerprint(
         (examples_text or "").strip(),
         (countability or "").strip().lower(),
         (part_of_speech or "").strip().lower(),
-        (past_simple or "").strip(),
-        (past_participle or "").strip(),
+        (definition or "").strip(),
         (notes or "").strip(),
     )

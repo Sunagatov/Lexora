@@ -11,11 +11,11 @@ from app.features.words.workbook import service as workbook_service
 
 
 def test_normalize_countability_canonicalizes_known_values() -> None:
-    assert workbook_cells._normalize_countability("countable") == "Countable"
-    assert workbook_cells._normalize_countability(" UnCountable ") == "Uncountable"
-    assert workbook_cells._normalize_countability("both") == "Both"
-    assert workbook_cells._normalize_countability("plural") == "Plural"
-    assert workbook_cells._normalize_countability("Collective") == "Collective"
+    assert workbook_cells._normalize_countability("countable") == "countable"
+    assert workbook_cells._normalize_countability(" UnCountable ") == "uncountable"
+    assert workbook_cells._normalize_countability("both") == "both"
+    assert workbook_cells._normalize_countability("plural") == "plural"
+    assert workbook_cells._normalize_countability("Collective") == "collective"
     assert workbook_cells._normalize_countability("") is None
 
 
@@ -40,10 +40,9 @@ def test_countability_validation_range_covers_all_export_values() -> None:
     )
 
 
-def test_countability_for_export_uses_canonical_value() -> None:
-    word = SimpleNamespace(countability="uncountable")
-
-    assert workbook_service._countability_for_export(word) == "Uncountable"
+def test_countability_values_are_lowercase() -> None:
+    """Countability values in the workbook are now lowercase."""
+    assert workbook_format.COUNTABILITY_VALUES == ["countable", "uncountable", "both", "plural", "collective"]
 
 
 def test_load_export_words_by_topic_groups_shared_words_for_each_active_topic() -> None:

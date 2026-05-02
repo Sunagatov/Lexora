@@ -20,8 +20,6 @@ def _build_queue(make_topic, make_word, fixed_now):
     word = make_word(
         id=10,
         term="plane",
-        translations="самолет",
-        part_of_speech="noun",
         knowledge_level=2,
         topics=[topic],
         created_at=fixed_now,

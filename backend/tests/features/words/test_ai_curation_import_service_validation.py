@@ -21,14 +21,19 @@ def _make_word(id=10, term="mortgage", topics=None, translation_items=None, exam
     return SimpleNamespace(
         id=id,
         term=term,
-        translations="ипотека",
+        language="en",
+        definition=None,
         translation_items=translation_items or [],
         example_items=example_items or [],
         topics=topics if topics is not None else [topic],
         countability=None,
         part_of_speech=None,
-        past_simple=None,
-        past_participle=None,
+        part_of_speech_id=None,
+        verb_form=None,
+        synonym_items=[],
+        antonym_items=[],
+        collocation_items=[],
+        confusable_items=[],
         pattern=None,
         notes=None,
         knowledge_level=None,
@@ -63,7 +68,7 @@ def test_import_duplicate_client_key_raises_error(monkeypatch) -> None:
     payload = AiCurationImportRequest(
         source_topic_id=1,
         topic_operations=[CreateTopicOperation(client_key="dup", name="Topic A"), CreateTopicOperation(client_key="dup", name="Topic B")],
-        word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translations": "облигация"}],
+        word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translation_entries": ["облигация"]}],
     )
 
     with pytest.raises(AiCurationImportError, match="Duplicate topic client_keys"):
@@ -117,7 +122,7 @@ def test_schema_rejects_invalid_part_of_speech() -> None:
     with pytest.raises(Exception):
         AiCurationImportRequest(
             source_topic_id=1,
-            word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translations": "облигация", "part_of_speech": "emoji"}],
+            word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1}], "term": "bond", "translation_entries": ["облигация"], "part_of_speech": "emoji"}],
         )
 
 
@@ -125,12 +130,12 @@ def test_topic_ref_requires_exactly_one_field() -> None:
     with pytest.raises(Exception, match="Exactly one"):
         AiCurationImportRequest(
             source_topic_id=1,
-            word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1, "client_key": "both"}], "term": "bond", "translations": "облигация"}],
+            word_operations=[{"op": "create_new_word", "target_topic_refs": [{"topic_id": 1, "client_key": "both"}], "term": "bond", "translation_entries": ["облигация"]}],
         )
 
 
 def test_word_update_v2_rejects_explicit_null_translations() -> None:
-    with pytest.raises(Exception, match="translations cannot be null"):
+    with pytest.raises(Exception, match="Extra inputs are not permitted"):
         WordUpdateV2(id=1, translations=None)
 
 

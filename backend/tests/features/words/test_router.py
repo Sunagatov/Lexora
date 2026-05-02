@@ -30,7 +30,7 @@ def test_create_word_route_maps_missing_topics_to_400(monkeypatch) -> None:
 
     monkeypatch.setattr(words_router, "assert_topics_exist", fake_assert_topics_exist)
 
-    payload = WordCreate(topic_ids=[9], term="run", translations="бежать")
+    payload = WordCreate(topic_ids=[9], term="run")
 
     with pytest.raises(HTTPException) as exc_info:
         words_router.create_word_route(payload, db=object())
@@ -75,7 +75,7 @@ def test_bulk_create_words_maps_topic_in_trash_to_409(monkeypatch) -> None:
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="stay", translations="остаться")],
+        words=[WordInput(term="stay", translation_entries=["остаться"])],
     )
 
     with pytest.raises(HTTPException) as exc_info:

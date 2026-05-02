@@ -20,8 +20,14 @@ from app.features.words.ai_curation.export_queries import (
     _load_topic_words,
     _topic_words_count_stmt,
 )
+from app.features.words.constants import (
+    CEFR_LEVELS,
+    COUNTABILITY_VALUES,
+    LANGUAGES,
+    PART_OF_SPEECH_VALUES,
+    REGISTER_VALUES,
+)
 from app.features.words.model import Word, word_topics
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
 EXPORT_INSTRUCTIONS = [
     "Return valid JSON only. No markdown fences. No explanation.",
@@ -71,8 +77,11 @@ def export_topic_words_page(
         source_topic=_source_topic_summary(topic, total),
         pagination=PaginationMeta.build(page=page, page_size=page_size, total_items=total),
         allowed_values=AiCurationAllowedValues(
-            countability=COUNTABILITY_VALUES,
-            part_of_speech=PART_OF_SPEECH_VALUES,
+            countability=list(COUNTABILITY_VALUES),
+            part_of_speech=list(PART_OF_SPEECH_VALUES),
+            cefr_level=list(CEFR_LEVELS),
+            register=list(REGISTER_VALUES),
+            language=list(LANGUAGES),
         ),
         instructions=EXPORT_INSTRUCTIONS,
         words=[_word_to_export(word) for word in words],

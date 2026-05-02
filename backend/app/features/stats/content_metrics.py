@@ -18,8 +18,7 @@ from app.features.words.model import Word, word_topics
 class WordStatsSnapshot:
     id: int
     knowledge_level: int | None
-    part_of_speech: str | None
-    example: str | None
+    has_pos: bool
     example_items: tuple[object, ...]
     created_at: datetime
 
@@ -29,7 +28,7 @@ def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview,
     example_counts = [example_count(word) for word in words]
     with_example = sum(1 for count in example_counts if count > 0)
     with_examples_3plus = sum(1 for count in example_counts if count >= EXAMPLE_TARGET_COUNT)
-    with_pos = sum(1 for word in words if word.part_of_speech)
+    with_pos = sum(1 for word in words if word.has_pos)
 
     level_counts: dict[int | None, int] = defaultdict(int)
     for word in words:
@@ -47,7 +46,7 @@ def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview,
         missing_example=total - with_example,
         needs_example_enrichment=total - with_examples_3plus,
         missing_pos=total - with_pos,
-        needs_enrichment=sum(1 for word in words if not word.example or not word.part_of_speech),
+        needs_enrichment=sum(1 for word in words if not word.example_items or not word.has_pos),
     )
     return overview, level_counts, okay_pct
 
@@ -80,9 +79,9 @@ def _build_topic_stats(
                 progress=progress,
                 weak_count=weak_count,
                 strong_count=strong_count,
-                missing_example=sum(1 for word in words if not word.example),
+                missing_example=sum(1 for word in words if not word.example_items),
                 needs_example_enrichment=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
-                missing_pos=sum(1 for word in words if not word.part_of_speech),
+                missing_pos=sum(1 for word in words if not word.has_pos),
                 reviewed_count=reviewed_count,
                 regressed_count=regressed_count,
                 never_reviewed_count=max(0, len(words) - reviewed_count),
@@ -130,14 +129,16 @@ def _summarize_topic_progress(words: list[WordStatsSnapshot]) -> tuple[int, int,
 
 def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
     words = db.scalars(
-        select(Word).options(selectinload(Word.example_items)).where(Word.deleted_at.is_(None))
+        select(Word).options(
+            selectinload(Word.example_items),
+            selectinload(Word.part_of_speech),
+        ).where(Word.deleted_at.is_(None))
     ).all()
     return [
         WordStatsSnapshot(
             id=int(word.id),
             knowledge_level=word.knowledge_level,
-            part_of_speech=word.part_of_speech,
-            example=word.example,
+            has_pos=word.part_of_speech_id is not None,
             example_items=tuple(getattr(word, "example_items", ()) or ()),
             created_at=word.created_at,
         )

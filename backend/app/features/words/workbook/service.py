@@ -9,8 +9,7 @@ from sqlalchemy.orm import Session, load_only
 
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
-from app.features.words.repository_queries import with_word_content_details
-from app.features.words.workbook.cells import _normalize_countability
+from app.features.words.repository_queries import with_word_details
 from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
     EXTRA_EMPTY_ROWS,
@@ -31,17 +30,13 @@ __all__ = ["InvalidWorkbookError", "build_words_workbook", "import_words_workboo
 def _translation_entries_for_export(word: Word) -> str:
     if word.translation_items:
         return "\n".join(item.value for item in word.translation_items)
-    return word.translations
+    return ""
 
 
 def _example_entries_for_export(word: Word) -> str | None:
     if word.example_items:
         return "\n".join(item.value for item in word.example_items)
-    return word.example
-
-
-def _countability_for_export(word: Word) -> str | None:
-    return _normalize_countability(word.countability)
+    return None
 
 
 def _load_export_topics(db: Session) -> list[Topic]:
@@ -61,7 +56,7 @@ def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, 
 
     words = list(
         db.scalars(
-            with_word_content_details(
+            with_word_details(
                 select(Word)
                 .join(word_topics, Word.id == word_topics.c.word_id)
                 .join(Topic, Topic.id == word_topics.c.topic_id)
@@ -82,7 +77,7 @@ def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, 
         .where(word_topics.c.word_id.in_(word_map))
     ).all()
 
-    words_by_topic: dict[int, list[Word]] = {topic_id: [] for topic_id in topic_ids}
+    words_by_topic: dict[int, list[Word]] = {tid: [] for tid in topic_ids}
     for topic_id, word_id in topic_rows:
         word = word_map.get(word_id)
         if word is not None and topic_id in words_by_topic:
@@ -112,7 +107,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
         _add_dynamic_row_colors(ws, 2)
         _add_validations(workbook, ws, 2)
     else:
-        words_by_topic = _load_export_words_by_topic(db, [topic.id for topic in topics])
+        words_by_topic = _load_export_words_by_topic(db, [t.id for t in topics])
         for topic in topics:
             words = words_by_topic.get(topic.id, [])
             sheet_title = _safe_sheet_title(topic.name, used_titles)
@@ -124,17 +119,19 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
 
             row_idx = 2
             for word in words:
+                pos_name = word.part_of_speech.name if word.part_of_speech else None
                 ws.cell(row=row_idx, column=1, value=word.knowledge_level)
                 ws.cell(row=row_idx, column=2, value=word.term)
                 ws.cell(row=row_idx, column=3, value=_translation_entries_for_export(word))
                 ws.cell(row=row_idx, column=4, value=word.pattern)
                 ws.cell(row=row_idx, column=5, value=_example_entries_for_export(word))
-                ws.cell(row=row_idx, column=6, value=_countability_for_export(word))
-                ws.cell(row=row_idx, column=7, value=word.part_of_speech)
-                ws.cell(row=row_idx, column=8, value=word.past_simple)
-                ws.cell(row=row_idx, column=9, value=word.past_participle)
-                ws.cell(row=row_idx, column=10, value=word.notes)
-                ws.cell(row=row_idx, column=11, value=word.id)
+                ws.cell(row=row_idx, column=6, value=word.countability)
+                ws.cell(row=row_idx, column=7, value=pos_name)
+                ws.cell(row=row_idx, column=8, value=word.definition)
+                ws.cell(row=row_idx, column=9, value=word.cefr_level)
+                ws.cell(row=row_idx, column=10, value=word.register)
+                ws.cell(row=row_idx, column=11, value=word.notes)
+                ws.cell(row=row_idx, column=12, value=word.id)
                 row_idx += 1
 
             last_row = max(2, row_idx + EXTRA_EMPTY_ROWS - 1)

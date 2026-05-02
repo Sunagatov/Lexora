@@ -26,9 +26,9 @@ def test_compute_topic_sidebar_stats_aggregates_by_topic_tree() -> None:
     db.flush()
 
     db.add_all([
-        Word(term="alpha", translations="alpha", knowledge_level=4, topics=[child]),
-        Word(term="beta", translations="beta", knowledge_level=2, topics=[sibling]),
-        Word(term="gamma", translations="gamma", knowledge_level=1, topics=[child, sibling]),
+        Word(term="alpha", knowledge_level=4, topics=[child]),
+        Word(term="beta", knowledge_level=2, topics=[sibling]),
+        Word(term="gamma", knowledge_level=1, topics=[child, sibling]),
     ])
     db.commit()
 

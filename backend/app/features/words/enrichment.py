@@ -10,14 +10,7 @@ def example_count(word: object) -> int:
     items = getattr(word, "example_items", None)
     if items is not None:
         return len(items or [])
-
-    raw = getattr(word, "example", None)
-    if raw is None:
-        return 0
-    if not isinstance(raw, str):
-        raw = str(raw)
-    normalized = raw.replace("\r\n", "\n").replace("\r", "\n")
-    return len([line for line in normalized.split("\n") if line.strip()])
+    return 0
 
 
 def example_enrichment_status(count: int) -> ExampleEnrichmentStatus:

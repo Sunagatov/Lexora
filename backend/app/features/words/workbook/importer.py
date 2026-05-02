@@ -51,8 +51,9 @@ def _import_sheet(
             has_examples="examples" in header_map,
             has_countability="countability" in header_map,
             has_part_of_speech="part_of_speech" in header_map,
-            has_past_simple="past_simple" in header_map,
-            has_past_participle="past_participle" in header_map,
+            has_definition="definition" in header_map,
+            has_cefr_level="cefr_level" in header_map,
+            has_register="register" in header_map,
             has_notes="notes" in header_map,
         ),
         sheet_name=ws.title,
@@ -169,8 +170,9 @@ def _enabled_header_map(header_map: dict[str, int]) -> dict[str, int]:
         "examples",
         "countability",
         "part_of_speech",
-        "past_simple",
-        "past_participle",
+        "definition",
+        "cefr_level",
+        "register",
         "notes",
     }
     return {

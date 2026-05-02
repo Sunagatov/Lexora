@@ -5,7 +5,17 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.features.words.constants import ProgressSource
+from app.features.words.constants import (
+    BULK_WORDS_MAX,
+    CEFR_LEVELS,
+    COUNTABILITY_VALUES,
+    KNOWLEDGE_LEVEL_MAX,
+    KNOWLEDGE_LEVEL_MIN,
+    LANGUAGES,
+    REGISTER_VALUES,
+    ProgressSource,
+    WORD_TERM_MAX_LEN,
+)
 from app.features.words.enrichment import (
     EXAMPLE_TARGET_COUNT,
     example_count as count_examples,
@@ -13,86 +23,140 @@ from app.features.words.enrichment import (
     needs_example_enrichment,
 )
 from app.features.topics.constants import TOPIC_NAME_MAX_LEN
-from app.features.words.constants import (
-    BULK_WORDS_MAX,
-    KNOWLEDGE_LEVEL_MAX,
-    KNOWLEDGE_LEVEL_MIN,
-    WORD_COUNT_MAX_LEN,
-    WORD_POS_MAX_LEN,
-    WORD_TERM_MAX_LEN,
-    WORD_VERB_FORM_MAX_LEN,
-)
 
 if TYPE_CHECKING:
     from app.features.words.model import Word
 
 
-class WordCreate(BaseModel):
-    topic_ids: list[int] = Field(min_length=1)
-    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    translations: str = Field(min_length=1)
-    translation_entries: list[str] | None = None
-    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
-    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
-    pattern: str | None = None
-    example: str | None = None
-    example_entries: list[str] | None = None
-    notes: str | None = None
-    is_active: bool = True
+# ── Nested schemas for entry tables ──
+
+class VerbFormData(BaseModel):
+    past_simple: str | None = None
+    past_participle: str | None = None
+    present_participle: str | None = None
+    third_person: str | None = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ConfusableEntry(BaseModel):
+    value: str = Field(min_length=1)
+    explanation: str | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
+# ── Create ──
+
+class WordCreate(BaseModel):
+    topic_ids: list[int] = Field(min_length=1)
+    term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
+    language: str = Field(default="en")
+    definition: str | None = None
+    pronunciation_ipa: str | None = None
+    pronunciation_audio_url: str | None = None
+    image_url: str | None = None
+    part_of_speech: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    countability: str | None = None
+    frequency_rank: int | None = Field(default=None, ge=1)
+    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    pattern: str | None = None
+    notes: str | None = None
+    is_active: bool = True
+    translation_entries: list[str] | None = None
+    example_entries: list[str] | None = None
+    synonym_entries: list[str] | None = None
+    antonym_entries: list[str] | None = None
+    collocation_entries: list[str] | None = None
+    confusable_entries: list[ConfusableEntry] | None = None
+    verb_form: VerbFormData | None = None
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+
+# ── Update ──
+
 class WordUpdate(BaseModel):
     topic_ids: list[int] | None = Field(default=None, min_length=1)
     term: str | None = Field(default=None, min_length=1, max_length=WORD_TERM_MAX_LEN)
-    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    translations: str | None = Field(default=None, min_length=1)
-    translation_entries: list[str] | None = None
-    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
+    language: str | None = None
+    definition: str | None = None
+    pronunciation_ipa: str | None = None
+    pronunciation_audio_url: str | None = None
+    image_url: str | None = None
+    part_of_speech: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    countability: str | None = None
+    frequency_rank: int | None = Field(default=None, ge=1)
     knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
-    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
-    example: str | None = None
-    example_entries: list[str] | None = None
     notes: str | None = None
     is_active: bool | None = None
     progress_source: ProgressSource | None = None
+    translation_entries: list[str] | None = None
+    example_entries: list[str] | None = None
+    synonym_entries: list[str] | None = None
+    antonym_entries: list[str] | None = None
+    collocation_entries: list[str] | None = None
+    confusable_entries: list[ConfusableEntry] | None = None
+    verb_form: VerbFormData | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     @model_validator(mode="after")
     def reject_explicit_nulls(self) -> "WordUpdate":
-        for field in ("topic_ids", "term", "translations", "is_active"):
+        for field in ("topic_ids", "term", "is_active"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
         return self
+
+
+# ── Response ──
+
+class VerbFormResponse(BaseModel):
+    past_simple: str | None = None
+    past_participle: str | None = None
+    present_participle: str | None = None
+    third_person: str | None = None
+
+
+class ConfusableResponse(BaseModel):
+    value: str
+    explanation: str | None = None
 
 
 class WordResponse(BaseModel):
     id: int
     topic_ids: list[int]
     term: str
-    past_simple: str | None
-    past_participle: str | None
-    translations: str
-    translation_entries: list[str] = Field(default_factory=list)
+    language: str
+    definition: str | None
+    pronunciation_ipa: str | None
+    pronunciation_audio_url: str | None
+    image_url: str | None
     part_of_speech: str | None
-    knowledge_level: int | None
+    cefr_level: str | None
+    register: str | None
     countability: str | None
+    frequency_rank: int | None
+    knowledge_level: int | None
     pattern: str | None
-    example: str | None
+    notes: str | None
+    is_active: bool
+    verb_form: VerbFormResponse | None = None
+    translation_entries: list[str] = Field(default_factory=list)
     example_entries: list[str] = Field(default_factory=list)
     example_count: int
     example_target_count: int
     example_status: Literal["missing", "partial", "complete"]
     needs_example_enrichment: bool
-    notes: str | None
-    is_active: bool
+    synonym_entries: list[str] = Field(default_factory=list)
+    antonym_entries: list[str] = Field(default_factory=list)
+    collocation_entries: list[str] = Field(default_factory=list)
+    confusable_entries: list[ConfusableResponse] = Field(default_factory=list)
     deleted_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
@@ -101,47 +165,70 @@ class WordResponse(BaseModel):
 
     @classmethod
     def from_word(cls, word: "Word") -> "WordResponse":
-        example_count = count_examples(word)
+        ec = count_examples(word)
+        vf = word.verb_form
         return cls(
             id=word.id,
             topic_ids=[t.id for t in word.topics if t.deleted_at is None],
             term=word.term,
-            past_simple=word.past_simple,
-            past_participle=word.past_participle,
-            translations=word.translations,
-            translation_entries=[item.value for item in getattr(word, "translation_items", [])],
-            part_of_speech=word.part_of_speech,
-            knowledge_level=word.knowledge_level,
+            language=word.language,
+            definition=word.definition,
+            pronunciation_ipa=word.pronunciation_ipa,
+            pronunciation_audio_url=word.pronunciation_audio_url,
+            image_url=word.image_url,
+            part_of_speech=word.part_of_speech.name if word.part_of_speech else None,
+            cefr_level=word.cefr_level,
+            register=word.register,
             countability=word.countability,
+            frequency_rank=word.frequency_rank,
+            knowledge_level=word.knowledge_level,
             pattern=word.pattern,
-            example=word.example,
-            example_entries=[item.value for item in getattr(word, "example_items", [])],
-            example_count=example_count,
-            example_target_count=EXAMPLE_TARGET_COUNT,
-            example_status=example_enrichment_status(example_count),
-            needs_example_enrichment=needs_example_enrichment(word),
             notes=word.notes,
             is_active=word.is_active,
+            verb_form=VerbFormResponse(
+                past_simple=vf.past_simple,
+                past_participle=vf.past_participle,
+                present_participle=vf.present_participle,
+                third_person=vf.third_person,
+            ) if vf else None,
+            translation_entries=[item.value for item in getattr(word, "translation_items", [])],
+            example_entries=[item.value for item in getattr(word, "example_items", [])],
+            example_count=ec,
+            example_target_count=EXAMPLE_TARGET_COUNT,
+            example_status=example_enrichment_status(ec),
+            needs_example_enrichment=needs_example_enrichment(word),
+            synonym_entries=[item.value for item in getattr(word, "synonym_items", [])],
+            antonym_entries=[item.value for item in getattr(word, "antonym_items", [])],
+            collocation_entries=[item.value for item in getattr(word, "collocation_items", [])],
+            confusable_entries=[
+                ConfusableResponse(value=item.value, explanation=item.explanation)
+                for item in getattr(word, "confusable_items", [])
+            ],
             deleted_at=word.deleted_at,
             created_at=word.created_at,
             updated_at=word.updated_at,
         )
 
 
+# ── Bulk import ──
+
 class WordInput(BaseModel):
     """Word data for bulk import — no topic_id, comes from WordBulkCreate."""
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    translations: str = Field(min_length=1)
-    translation_entries: list[str] | None = None
-    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
+    language: str = Field(default="en")
+    definition: str | None = None
+    pronunciation_ipa: str | None = None
+    part_of_speech: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    countability: str | None = None
+    frequency_rank: int | None = Field(default=None, ge=1)
     knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
-    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
     pattern: str | None = None
-    example: str | None = None
-    example_entries: list[str] | None = None
     notes: str | None = None
+    translation_entries: list[str] | None = None
+    example_entries: list[str] | None = None
+    verb_form: VerbFormData | None = None
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

@@ -37,23 +37,39 @@ def _source_topic_summary(topic, total: int) -> AiCurationTopicSummary:
 
 
 def _word_to_export(word: Word) -> AiCurationWord:
-    example_count_value = example_count(word)
+    ec = example_count(word)
+    vf = word.verb_form
     return AiCurationWord(
         id=word.id,
-        topic_ids=[int(topic.id) for topic in word.topics if topic.deleted_at is None],
+        topic_ids=[int(t.id) for t in word.topics if t.deleted_at is None],
         term=str(word.term),
-        translations=str(word.translations),
+        language=word.language,
+        definition=word.definition,
         translation_entries=[item.value for item in getattr(word, "translation_items", [])],
         pattern=word.pattern,
         example_entries=[item.value for item in getattr(word, "example_items", [])],
-        example_count=example_count_value,
+        example_count=ec,
         example_target_count=EXAMPLE_TARGET_COUNT,
-        example_status=example_enrichment_status(example_count_value),
+        example_status=example_enrichment_status(ec),
         needs_example_enrichment=needs_example_enrichment(word),
         countability=word.countability,
-        part_of_speech=word.part_of_speech,
-        past_simple=word.past_simple,
-        past_participle=word.past_participle,
+        part_of_speech=word.part_of_speech.name if word.part_of_speech else None,
+        cefr_level=word.cefr_level,
+        register=word.register,
+        frequency_rank=word.frequency_rank,
+        verb_form={
+            "past_simple": vf.past_simple,
+            "past_participle": vf.past_participle,
+            "present_participle": vf.present_participle,
+            "third_person": vf.third_person,
+        } if vf else None,
+        synonym_entries=[item.value for item in getattr(word, "synonym_items", [])],
+        antonym_entries=[item.value for item in getattr(word, "antonym_items", [])],
+        collocation_entries=[item.value for item in getattr(word, "collocation_items", [])],
+        confusable_entries=[
+            {"value": item.value, "explanation": item.explanation}
+            for item in getattr(word, "confusable_items", [])
+        ],
         notes=word.notes,
         knowledge_level=word.knowledge_level,
         is_active=word.is_active,

@@ -5,6 +5,7 @@ from typing import cast
 
 from app.features.stats import content_metrics as stats_content_metrics
 from app.features.stats import service as stats_service
+from app.features.stats.content_metrics import WordStatsSnapshot
 from app.features.stats.schemas import DailyActivity, UsageDay, UsageEventCreate
 from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
@@ -62,12 +63,13 @@ def test_record_usage_event_is_idempotent() -> None:
 
 
 def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> None:
+    now = datetime(2026, 1, 1, tzinfo=timezone.utc)
     words = [
-        make_word(id=1, knowledge_level=1, example="ex", part_of_speech="verb"),
-        make_word(id=2, knowledge_level=3, example="ex", part_of_speech=None),
-        make_word(id=3, knowledge_level=4, example=None, part_of_speech="noun"),
-        make_word(id=4, knowledge_level=5, example=None, part_of_speech=None),
-        make_word(id=5, knowledge_level=None, example=None, part_of_speech=None),
+        WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_items=(SimpleNamespace(value="ex"),), created_at=now),
+        WordStatsSnapshot(id=2, knowledge_level=3, has_pos=False, example_items=(SimpleNamespace(value="ex"),), created_at=now),
+        WordStatsSnapshot(id=3, knowledge_level=4, has_pos=True, example_items=(), created_at=now),
+        WordStatsSnapshot(id=4, knowledge_level=5, has_pos=False, example_items=(), created_at=now),
+        WordStatsSnapshot(id=5, knowledge_level=None, has_pos=False, example_items=(), created_at=now),
     ]
 
     overview, level_counts, okay_pct = stats_service._build_overview(words)
@@ -100,9 +102,9 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
 
     topics = [_topic_stub(id=1, name="Travel", slug="travel"), _topic_stub(id=2, name="Work", slug="work")]
     word_map = {
-        1: _word_stub(id=1, knowledge_level=1, example=None, part_of_speech="verb"),
-        2: _word_stub(id=2, knowledge_level=4, example="ex", part_of_speech="noun"),
-        3: _word_stub(id=3, knowledge_level=1, example=None, part_of_speech=None),
+        1: WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_items=(), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
+        2: WordStatsSnapshot(id=2, knowledge_level=4, has_pos=True, example_items=(SimpleNamespace(value="ex"),), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
+        3: WordStatsSnapshot(id=3, knowledge_level=1, has_pos=False, example_items=(), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
     }
 
     result = stats_service._build_topic_stats(
@@ -362,16 +364,16 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
         deleted_at=None,
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
         knowledge_level=2,
-        example="ex",
-        part_of_speech="noun",
+        part_of_speech_id=1,
+        example_items=[SimpleNamespace(value="ex")],
     )
     deleted_word_january = SimpleNamespace(
         id=2,
         deleted_at=datetime(2026, 3, 20, tzinfo=timezone.utc),
         created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
         knowledge_level=1,
-        example=None,
-        part_of_speech=None,
+        part_of_speech_id=None,
+        example_items=[],
     )
     _ = deleted_word_january  # not returned by the active-words query — that's the invariant
 

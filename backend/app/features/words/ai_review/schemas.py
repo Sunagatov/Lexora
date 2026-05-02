@@ -6,14 +6,15 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.features.words.constants import (
+    CEFR_LEVELS,
+    COUNTABILITY_VALUES,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
-    WORD_COUNT_MAX_LEN,
-    WORD_POS_MAX_LEN,
+    LANGUAGES,
+    PART_OF_SPEECH_VALUES,
+    REGISTER_VALUES,
     WORD_TERM_MAX_LEN,
-    WORD_VERB_FORM_MAX_LEN,
 )
-from app.features.words.workbook.format import COUNTABILITY_VALUES, PART_OF_SPEECH_VALUES
 
 SCHEMA_VERSION = "lexora.ai-review.v1"
 JsonEntry = Annotated[str, Field(min_length=1, max_length=1000)]
@@ -51,19 +52,29 @@ class AiReviewPagination(BaseModel):
 class AiReviewAllowedValues(BaseModel):
     countability: list[str]
     part_of_speech: list[str]
+    cefr_level: list[str]
+    register: list[str]
+    language: list[str]
 
 
 class AiReviewWord(BaseModel):
     id: int
     term: str
-    translations: str
+    language: str
+    definition: str | None
     translation_entries: list[str]
     pattern: str | None
     example_entries: list[str]
     countability: str | None
     part_of_speech: str | None
-    past_simple: str | None
-    past_participle: str | None
+    cefr_level: str | None
+    register: str | None
+    frequency_rank: int | None
+    verb_form: dict | None
+    synonym_entries: list[str]
+    antonym_entries: list[str]
+    collocation_entries: list[str]
+    confusable_entries: list[dict]
     notes: str | None
     knowledge_level: int | None
 
@@ -83,14 +94,18 @@ class AiReviewExportResponse(BaseModel):
 class AiReviewImportWord(BaseModel):
     id: int = Field(gt=0)
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    translations: str | None = Field(default=None, min_length=1)
     translation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     pattern: str | None = Field(default=None, max_length=2000)
     example_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
-    countability: str | None = Field(default=None, max_length=WORD_COUNT_MAX_LEN)
-    part_of_speech: str | None = Field(default=None, max_length=WORD_POS_MAX_LEN)
-    past_simple: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
-    past_participle: str | None = Field(default=None, max_length=WORD_VERB_FORM_MAX_LEN)
+    countability: str | None = None
+    part_of_speech: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    frequency_rank: int | None = Field(default=None, ge=1)
+    definition: str | None = None
+    synonym_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
+    antonym_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
+    collocation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     notes: str | None = Field(default=None, max_length=4000)
     knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
 
@@ -102,8 +117,7 @@ class AiReviewImportWord(BaseModel):
         if value in (None, ""):
             return None
         if value not in COUNTABILITY_VALUES:
-            allowed = ", ".join(COUNTABILITY_VALUES)
-            raise ValueError(f"countability must be one of: {allowed}")
+            raise ValueError(f"countability must be one of: {', '.join(COUNTABILITY_VALUES)}")
         return value
 
     @field_validator("part_of_speech")
@@ -112,20 +126,13 @@ class AiReviewImportWord(BaseModel):
         if value in (None, ""):
             return None
         if value not in PART_OF_SPEECH_VALUES:
-            allowed = ", ".join(PART_OF_SPEECH_VALUES)
-            raise ValueError(f"part_of_speech must be one of: {allowed}")
+            raise ValueError(f"part_of_speech must be one of: {', '.join(PART_OF_SPEECH_VALUES)}")
         return value
 
-    @field_validator("translation_entries", "example_entries")
+    @field_validator("translation_entries", "example_entries", "synonym_entries", "antonym_entries", "collocation_entries")
     @classmethod
     def clean_entries(cls, value: list[str] | None) -> list[str] | None:
         return _clean_entries(value)
-
-    @model_validator(mode="after")
-    def reject_explicit_null_translations(self) -> "AiReviewImportWord":
-        if "translations" in self.model_fields_set and self.translations is None:
-            raise ValueError("translations cannot be null; omit it to leave it unchanged")
-        return self
 
 
 class AiReviewImportRequest(BaseModel):

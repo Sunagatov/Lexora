@@ -24,9 +24,9 @@ def test_bulk_import_reuses_existing_topic_and_skips_duplicates(monkeypatch) -> 
     payload = WordBulkCreate(
         topic_name="Travel",
         words=[
-            WordInput(term="go", translations="идти"),
-            WordInput(term="Go", translations="идти again"),
-            WordInput(term="stay", translations="остаться"),
+            WordInput(term="go", translation_entries=["идти"]),
+            WordInput(term="Go", translation_entries=["идти again"]),
+            WordInput(term="stay", translation_entries=["остаться"]),
         ],
     )
 
@@ -52,7 +52,7 @@ def test_bulk_import_raises_when_topic_exists_only_in_trash(monkeypatch) -> None
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="stay", translations="остаться")],
+        words=[WordInput(term="stay", translation_entries=["остаться"])],
     )
 
     with pytest.raises(bulk_service.BulkTopicInTrashError) as exc_info:
@@ -75,7 +75,7 @@ def test_bulk_import_maps_invalid_topic_name_from_create_topic(monkeypatch) -> N
 
     payload = WordBulkCreate(
         topic_name="!!!",
-        words=[WordInput(term="stay", translations="остаться")],
+        words=[WordInput(term="stay", translation_entries=["остаться"])],
     )
 
     with pytest.raises(bulk_service.BulkInvalidTopicNameError) as exc_info:
@@ -98,7 +98,7 @@ def test_bulk_import_maps_slug_conflict_from_create_topic(monkeypatch) -> None:
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="stay", translations="остаться")],
+        words=[WordInput(term="stay", translation_entries=["остаться"])],
     )
 
     with pytest.raises(bulk_service.BulkSlugConflictError) as exc_info:
@@ -118,7 +118,7 @@ def test_bulk_import_reuses_existing_topic_when_name_slugifies_to_same_slug(monk
 
     payload = WordBulkCreate(
         topic_name="daily-life",
-        words=[WordInput(term="routine", translations="рутина")],
+        words=[WordInput(term="routine", translation_entries=["рутина"])],
     )
 
     result = bulk_service.bulk_import(db, payload)
@@ -140,7 +140,7 @@ def test_bulk_import_raises_when_slug_equivalent_topic_is_in_trash(monkeypatch) 
 
     payload = WordBulkCreate(
         topic_name="daily-life",
-        words=[WordInput(term="routine", translations="рутина")],
+        words=[WordInput(term="routine", translation_entries=["рутина"])],
     )
 
     with pytest.raises(bulk_service.BulkTopicInTrashError) as exc_info:
@@ -172,7 +172,7 @@ def test_bulk_import_creates_topic_without_committing_early(monkeypatch) -> None
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="stay", translations="остаться")],
+        words=[WordInput(term="stay", translation_entries=["остаться"])],
     )
 
     with pytest.raises(RuntimeError):
@@ -191,7 +191,7 @@ def test_bulk_import_reuses_existing_topic_when_exact_name_matches_but_slug_diff
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="ticket", translations="билет")],
+        words=[WordInput(term="ticket", translation_entries=["билет"])],
     )
 
     result = bulk_service.bulk_import(db, payload)
@@ -211,7 +211,7 @@ def test_bulk_import_raises_when_exact_name_match_is_only_in_trash(monkeypatch) 
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="ticket", translations="билет")],
+        words=[WordInput(term="ticket", translation_entries=["билет"])],
     )
 
     with pytest.raises(bulk_service.BulkTopicInTrashError) as exc_info:
@@ -234,7 +234,7 @@ def test_bulk_import_maps_name_conflict_from_create_topic(monkeypatch) -> None:
 
     payload = WordBulkCreate(
         topic_name="Travel",
-        words=[WordInput(term="ticket", translations="билет")],
+        words=[WordInput(term="ticket", translation_entries=["билет"])],
     )
 
     with pytest.raises(bulk_service.BulkSlugConflictError) as exc_info:

@@ -22,7 +22,7 @@ from sqlalchemy.orm import selectinload
 from app.features.smart_review.model import StudyQueueItem
 from app.features.words.model import Word, word_topics
 from app.features.words.progress import WordProgressEvent
-from app.features.words.repository import sync_word_multivalue_fields
+from app.features.words.multivalue import sync_word_multivalue_fields
 from app.shared.db import SessionLocal
 from app.shared.text import normalize_term
 

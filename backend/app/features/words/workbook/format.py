@@ -34,10 +34,11 @@ HEADER_ALIASES: dict[str, set[str]] = {
     "examples": {"examples (en + ru)", "examples", "example", "example (en+ru)"},
     "countability": {"countability"},
     "part_of_speech": {"part of speech", "pos"},
-    "past_simple": {"past simple"},
-    "past_participle": {"past participle"},
     "notes": {"notes", "note", "meaning / usage note"},
     "word_id": {"word id", "id"},
+    "definition": {"definition"},
+    "cefr_level": {"cefr", "cefr level"},
+    "register": {"register"},
 }
 
 

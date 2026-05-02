@@ -17,8 +17,9 @@ class WorkbookImportFlags:
     has_examples: bool
     has_countability: bool
     has_part_of_speech: bool
-    has_past_simple: bool
-    has_past_participle: bool
+    has_definition: bool
+    has_cefr_level: bool
+    has_register: bool
     has_notes: bool
 
 
@@ -49,7 +50,7 @@ def update_existing_word_from_row(
     row_idx: int,
     context: WorkbookSheetContext,
 ) -> None:
-    existing_topic_ids = {existing_topic.id for existing_topic in existing.topics}
+    existing_topic_ids = {t.id for t in existing.topics}
     topic_was_missing = topic.id not in existing_topic_ids
     if topic_was_missing:
         existing.topics.append(topic)
@@ -64,18 +65,16 @@ def update_existing_word_from_row(
     effective_knowledge_level = row.knowledge_value if context.flags.has_knowledge else existing.knowledge_level
     effective_countability = row.countability if context.flags.has_countability else existing.countability
     effective_pattern = row.pattern if context.flags.has_pattern else existing.pattern
-    effective_examples_text = row.examples_text if context.flags.has_examples else existing.example
+    effective_examples_text = row.examples_text if context.flags.has_examples else None
+    effective_pos_name = existing.part_of_speech.name if existing.part_of_speech else None
     effective_part_of_speech = _normalize_part_of_speech(
         _validate_part_of_speech(row.part_of_speech_text, context.sheet_name, row_idx)
         if context.flags.has_part_of_speech
         else None,
         effective_countability,
-        existing.past_simple if not context.flags.has_past_simple else row.past_simple,
-        existing.past_participle if not context.flags.has_past_participle else row.past_participle,
-        existing.part_of_speech,
+        effective_pos_name,
     )
-    effective_past_simple = row.past_simple if context.flags.has_past_simple else existing.past_simple
-    effective_past_participle = row.past_participle if context.flags.has_past_participle else existing.past_participle
+    effective_definition = row.definition if context.flags.has_definition else existing.definition
     effective_notes = row.notes if context.flags.has_notes else existing.notes
 
     fingerprint = _row_fingerprint(
@@ -86,8 +85,7 @@ def update_existing_word_from_row(
         examples_text=effective_examples_text,
         countability=effective_countability,
         part_of_speech=effective_part_of_speech,
-        past_simple=effective_past_simple,
-        past_participle=effective_past_participle,
+        definition=effective_definition,
         notes=effective_notes,
     )
     _track_existing_word_fingerprint(
@@ -98,14 +96,11 @@ def update_existing_word_from_row(
     )
 
     existing.term = row.term
-    existing.translations = row.translations_text
     existing.knowledge_level = effective_knowledge_level
     existing.countability = effective_countability
     existing.pattern = effective_pattern
+    existing.definition = effective_definition
     existing.notes = effective_notes
-    existing.past_simple = effective_past_simple
-    existing.past_participle = effective_past_participle
-    existing.part_of_speech = effective_part_of_speech
 
     context.ops.sync_word_multivalue_fields(
         existing,
@@ -117,11 +112,7 @@ def update_existing_word_from_row(
 
     if existing.knowledge_level != old_level and existing.knowledge_level is not None:
         context.ops.record_level_change(
-            db,
-            int(existing.id),
-            old_level,
-            existing.knowledge_level,
-            PROGRESS_SOURCE_XLSX_IMPORT,
+            db, int(existing.id), old_level, existing.knowledge_level, PROGRESS_SOURCE_XLSX_IMPORT,
         )
 
     db.add(existing)
@@ -144,21 +135,15 @@ def create_new_word_from_row(
         if context.flags.has_part_of_speech
         else None,
         row.countability if context.flags.has_countability else None,
-        row.past_simple if context.flags.has_past_simple else None,
-        row.past_participle if context.flags.has_past_participle else None,
         None,
     )
 
     word = context.ops.word_cls(
         term=row.term,
-        past_simple=row.past_simple if context.flags.has_past_simple else None,
-        past_participle=row.past_participle if context.flags.has_past_participle else None,
-        translations=row.translations_text,
-        part_of_speech=part_of_speech,
         knowledge_level=knowledge_for_create,
         countability=row.countability if context.flags.has_countability else None,
         pattern=row.pattern if context.flags.has_pattern else None,
-        example=row.examples_text if context.flags.has_examples else None,
+        definition=row.definition if context.flags.has_definition else None,
         notes=row.notes if context.flags.has_notes else None,
         is_active=True,
         topics=[topic],

@@ -65,7 +65,16 @@ def _current_value(word: Word, field: str):
         return [item.value for item in getattr(word, "translation_items", [])]
     if field == "example_entries":
         return [item.value for item in getattr(word, "example_items", [])]
-    return getattr(word, field)
+    if field == "synonym_entries":
+        return [item.value for item in getattr(word, "synonym_items", [])]
+    if field == "antonym_entries":
+        return [item.value for item in getattr(word, "antonym_items", [])]
+    if field == "collocation_entries":
+        return [item.value for item in getattr(word, "collocation_items", [])]
+    if field == "part_of_speech":
+        pos = word.part_of_speech
+        return pos.name if pos else None
+    return getattr(word, field, None)
 
 
 def _resolve_topic_id_set(
