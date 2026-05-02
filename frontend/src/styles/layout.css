@@ -2,8 +2,18 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
   overflow-x: hidden;
+}
+
+.study-topic-panel {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .main-inner {
@@ -30,48 +40,81 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 20px;
 }
 
-.topic-header-main {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.topic-header-title-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-width: 0;
-}
-
-.topic-header-count {
+.topic-header-left {
   flex-shrink: 0;
-  color: var(--text-3);
-  font-size: 0.78rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.topic-header-subtitle {
-  color: var(--text-2);
-  font-size: 0.86rem;
-  line-height: 1.4;
 }
 
 .topic-header-title {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.topic-header-desc { display: none; }
+.topic-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.topic-header-mastered {
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.topic-header-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.topic-header-bar {
+  display: flex;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.topic-header-bar-seg {
+  height: 100%;
+  min-width: 2px;
+}
+
+.topic-header-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.topic-header-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.topic-header-legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
 .level-summary {
   display: flex;
@@ -114,6 +157,19 @@
 .level-chip-parked {
   opacity: 0.5;
   border-style: dashed;
+}
+
+/* ── Word collection split pane ─────────────────────────── */
+.word-collection-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.word-collection-split > .word-collection-layout {
+  flex: 1;
+  min-width: 0;
 }
 
 .mobile-progress-pill {

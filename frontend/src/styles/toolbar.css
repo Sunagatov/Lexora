@@ -3,7 +3,11 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .toolbar-search-row {
@@ -17,6 +21,14 @@
   align-items: center;
   gap: 10px;
   flex-wrap: nowrap;
+}
+
+.toolbar-range {
+  margin-left: auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
 }
 
 .toolbar-meta-row {

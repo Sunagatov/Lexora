@@ -1,5 +1,7 @@
-import {ACTIVE_LEVELS, PARKED_LEVEL, LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
+import {ACTIVE_LEVELS, LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
+
+const BAR_COLORS: Record<number, string> = {1: '#dc2626', 2: '#2563eb', 3: '#7c3aed', 4: '#059669', 5: '#64748b'}
 
 type Props = {
   selectedTopicId: number | null
@@ -12,40 +14,46 @@ type Props = {
 export function StudyTopicSummary({
   selectedTopicId,
   selectedTopicName,
-  filteredWordCount,
   topicWordCount,
   levelSummary,
 }: Props) {
+  const total = topicWordCount || 1
+  const masteredPct = Math.round((levelSummary[4] / total) * 100)
+
   return (
     <div className="sticky-controls">
-      <div className="card topic-header-card topic-header-card-desktop">
-        <div className="topic-header-main">
-          <div className="topic-header-title-row">
-            <div className="topic-header-title">{selectedTopicName ?? 'No topic selected'}</div>
-            {selectedTopicId !== null && (
-              <div className="topic-header-count">{filteredWordCount} of {topicWordCount} words</div>
-            )}
-          </div>
-          <div className="topic-header-subtitle topic-header-subtitle-desktop">
-            {selectedTopicId !== null
-              ? (filteredWordCount === topicWordCount ? 'Reviewing the full topic.' : '')
-              : 'Select a topic to start reviewing words.'}
-          </div>
-        </div>
-        <div className="level-summary">
-          {ACTIVE_LEVELS.map((level) => (
-            <div key={level} className={`level-chip ${levelClass(level)}`}>
-              <span className="level-chip-label">{LEVEL_LABELS[level]}</span>
-              <span className="level-chip-value">{levelSummary[level]}</span>
-            </div>
-          ))}
-          {levelSummary[PARKED_LEVEL] > 0 && (
-            <div className={`level-chip ${levelClass(PARKED_LEVEL)} level-chip-parked`}>
-              <span className="level-chip-label">{LEVEL_LABELS[PARKED_LEVEL]}</span>
-              <span className="level-chip-value">{levelSummary[PARKED_LEVEL]}</span>
+      <div className="card topic-header-card">
+        <div className="topic-header-left">
+          <div className="topic-header-title">{selectedTopicName ?? 'No topic selected'}</div>
+          {selectedTopicId !== null && (
+            <div className="topic-header-meta">
+              <span>{topicWordCount} words</span>
+              <span className="topic-header-mastered">{masteredPct}% mastered</span>
             </div>
           )}
         </div>
+        {selectedTopicId !== null && (
+          <div className="topic-header-right">
+            <div className="topic-header-bar">
+              {ACTIVE_LEVELS.map((l) => {
+                const pct = (levelSummary[l] / total) * 100
+                if (pct === 0) return null
+                return <div key={l} className="topic-header-bar-seg" style={{width: `${pct}%`, background: BAR_COLORS[l]}} />
+              })}
+            </div>
+            <div className="topic-header-legend">
+              {ACTIVE_LEVELS.map((l) => {
+                if (!levelSummary[l]) return null
+                return (
+                  <span key={l} className="topic-header-legend-item">
+                    <span className="topic-header-legend-dot" style={{background: BAR_COLORS[l]}} />
+                    {levelSummary[l]} {LEVEL_LABELS[l]}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

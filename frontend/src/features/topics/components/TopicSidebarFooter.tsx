@@ -74,7 +74,8 @@ export function TopicSidebarFooter({
         </div>
       ) : (
         <button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd}>
-          + New topic
+          <span className="sidebar-add-topic-plus">+</span>
+          <span className="sidebar-add-topic-text"> New topic</span>
         </button>
       )}
       <div className="sidebar-footer-actions-grid">

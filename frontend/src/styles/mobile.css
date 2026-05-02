@@ -169,18 +169,28 @@
   }
 
   .topic-header-card {
+    flex-direction: column;
+    align-items: stretch;
     padding: 10px 14px;
-    gap: 0;
-    flex-direction: row;
-    align-items: center;
+    gap: 6px;
   }
 
   .topic-header-card .level-summary {
     display: none;
   }
 
-  .topic-header-subtitle-desktop {
+  .topic-header-mastered {
     display: none;
+  }
+
+  .topic-header-bar-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .topic-header-legend {
+    gap: 2px 8px;
+    font-size: 0.68rem;
   }
 
   .topic-header-title {
@@ -365,9 +375,19 @@
 
   /* Compact mobile pagination */
   .pagination-bar {
-    padding: 12px 0 16px;
-    flex-shrink: 0;
-    margin-top: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+    padding: 4px 12px 6px;
+  }
+
+  .word-collection-scroll {
+    padding-bottom: 60px;
   }
 
   /* Hide table, show cards */

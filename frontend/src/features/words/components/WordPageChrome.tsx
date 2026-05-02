@@ -1,13 +1,6 @@
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import type {Word} from '@/features/words/types/wordTypes'
 
-type WordWithPronunciation = Word & {
-  ipa?: string | null
-  pronunciation?: string | null
-  phonetic?: string | null
-  ipa_pronunciation?: string | null
-}
-
 type HeroProps = {
   word: Word
   topicName?: string
@@ -28,12 +21,11 @@ type FooterNavProps = {
   onNext: () => void
 }
 
-function resolvePronunciation(word: Word): string | null {
-  const candidate = word as WordWithPronunciation
-  for (const value of [candidate.ipa, candidate.ipa_pronunciation, candidate.pronunciation, candidate.phonetic]) {
-    if (typeof value === 'string' && value.trim()) return value.trim()
+function getHeroTranslation(word: Word): string {
+  if (word.translation_entries?.length) {
+    return word.translation_entries.join(' · ')
   }
-  return null
+  return word.translations?.trim() ?? ''
 }
 
 export function WordPageSkeleton() {
@@ -45,7 +37,7 @@ export function WordPageSkeleton() {
           <div className="sk" style={{width: 48, height: 14}} />
           <div className="sk" style={{width: 38, height: 14}} />
         </div>
-        <div className="sk" style={{height: 122, borderRadius: 'var(--radius-lg)'}} />
+        <div className="sk" style={{height: 130, borderRadius: 'var(--radius-lg)'}} />
       </div>
       <div className="word-page-inner">
         <div className="sk-rows">
@@ -81,8 +73,8 @@ export function WordPageHero({
   onSpeak,
   hasSpeechSynthesis,
 }: HeroProps) {
-  const pronunciation = resolvePronunciation(word)
   const heroLevelClass = levelClass(word.knowledge_level)
+  const translation = getHeroTranslation(word)
 
   return (
     <div className="word-page-hero-wrap">
@@ -97,23 +89,26 @@ export function WordPageHero({
           <button type="button" className="word-page-edit-btn" onClick={onEdit}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
+              <path d="M7.5 2.5l2 2" />
             </svg>
             Edit
           </button>
         )}
       </div>
+
       <div className={`word-page-hero ${heroLevelClass}`}>
         <div className="word-page-hero-meta">
-          <span className="word-page-level-chip">
-            {word.knowledge_level ? `Level ${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : 'Unrated word'}
-          </span>
-          {topicName && <span className="word-page-topic-chip">{topicName}</span>}
-        </div>
-        <h1 className="word-page-term">{word.term}</h1>
-        <div className="word-page-pronunciation-row">
-          <p className={`word-page-pronunciation${pronunciation ? '' : ' is-muted'}`}>
-            {pronunciation ?? 'Pronunciation unavailable'}
-          </p>
+          <div className="word-page-hero-chips">
+            {word.part_of_speech && (
+              <span className="word-page-pos-chip">{word.part_of_speech}</span>
+            )}
+            <span className="word-page-level-chip">
+              {word.knowledge_level
+                ? `Level ${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}`
+                : 'Unrated word'}
+            </span>
+            {topicName && <span className="word-page-topic-chip">{topicName}</span>}
+          </div>
           <button
             type="button"
             className="word-page-pronounce-btn"
@@ -121,13 +116,19 @@ export function WordPageHero({
             disabled={!hasSpeechSynthesis}
             aria-label={`Play pronunciation for ${word.term}`}
           >
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M3 6h3l4-3v10l-4-3H3z" />
               <path d="M12.2 5.2a4 4 0 0 1 0 5.6" />
             </svg>
             {isSpeaking ? 'Playing…' : 'Pronounce'}
           </button>
         </div>
+
+        <h1 className="word-page-term">{word.term}</h1>
+
+        {translation && (
+          <p className="word-page-hero-translation">{translation}</p>
+        )}
       </div>
     </div>
   )

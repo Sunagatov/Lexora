@@ -42,6 +42,9 @@ type Props = {
   isLoading?: boolean
   // empty state
   emptyMessage?: string
+  // panel
+  onWordSelect?: (id: number) => void
+  selectedWordId?: number | null
 }
 
 export function WordCollectionView({
@@ -52,52 +55,56 @@ export function WordCollectionView({
   pendingWordId, onUpdate, fromTopicSlug,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
+  onWordSelect,
+  selectedWordId,
 }: Props) {
   function handlePage(p: number) {
     setPage(p)
-    document.querySelector('.main-content')?.scrollTo({top: 0, behavior: 'smooth'})
+    document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'smooth'})
   }
 
   return (
-    <>
-      <div className="sticky-controls">
-        <WordCollectionToolbar
-          wordSearch={wordSearch} setWordSearch={setWordSearch}
-          sortBy={sortBy} setSortBy={setSortBy}
-          levelFilter={levelFilter} setLevelFilter={setLevelFilter}
-          onReset={onReset}
-          totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
-          filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
-          levelSummary={levelSummary} topicName={topicName}
-        />
-        {pageWords.length > 0 && (
-          <div className="word-list-header" aria-hidden="true">
-            <span className="word-list-header-cell">Word</span>
-            <span className="word-list-header-cell">Translation / details</span>
-            <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-          </div>
-        )}
-      </div>
-
-      <div className="main-inner">
-        {isLoading && pageWords.length === 0 ? (
-          <WordTableSkeleton />
-        ) : pageWords.length === 0 ? (
-          <div className="empty-state">{emptyMessage}</div>
-        ) : (
-          <>
-            <WordTable words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
-            <WordCardList words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
-          </>
-        )}
-        <div className="pagination-bar">
-          <WordPagination
-            page={page} totalPages={totalPages}
-            pageSize={pageSize} onPageSize={setPageSize}
-            onPage={handlePage}
+    <div className="word-collection-layout">
+      <div className="word-collection-scroll">
+        <div className="sticky-controls">
+          <WordCollectionToolbar
+            wordSearch={wordSearch} setWordSearch={setWordSearch}
+            sortBy={sortBy} setSortBy={setSortBy}
+            levelFilter={levelFilter} setLevelFilter={setLevelFilter}
+            onReset={onReset}
+            totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
+            filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
+            levelSummary={levelSummary} topicName={topicName}
           />
+          {pageWords.length > 0 && (
+            <div className="word-list-header" aria-hidden="true">
+              <span className="word-list-header-cell">Word</span>
+              <span className="word-list-header-cell">Translation / details</span>
+              <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
+            </div>
+          )}
+        </div>
+        <div className="main-inner">
+          {isLoading && pageWords.length === 0 ? (
+            <WordTableSkeleton />
+          ) : pageWords.length === 0 ? (
+            <div className="empty-state word-collection-empty-state">{emptyMessage}</div>
+          ) : (
+            <>
+              <WordTable words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
+              <WordCardList words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+            </>
+          )}
         </div>
       </div>
-    </>
+
+      <div className="pagination-bar">
+        <WordPagination
+          page={page} totalPages={totalPages}
+          pageSize={pageSize} onPageSize={setPageSize}
+          onPage={handlePage}
+        />
+      </div>
+    </div>
   )
 }

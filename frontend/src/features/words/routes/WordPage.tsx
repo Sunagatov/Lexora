@@ -78,7 +78,7 @@ export function WordPage() {
       />
 
       <div className="word-page-inner">
-        {!editing && <WordPageView word={word} topics={topics} />}
+        {!editing && <WordPageView word={word} topics={topics} hideTranslation hidePOS />}
 
         {editing && draft && (
           <WordPageEditForm

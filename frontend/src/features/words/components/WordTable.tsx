@@ -12,9 +12,11 @@ type Props = {
   pendingWordId: number | null
   fromTopicSlug?: string
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
+  onWordSelect?: (id: number) => void
+  selectedWordId?: number | null
 }
 
-export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props) {
+export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [flipUp,     setFlipUp]     = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -36,11 +38,21 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate}: Props
 
             return (
               <Fragment key={word.id}>
-                <tr className={`word-row ${lc}`}>
+                <tr className={`word-row ${lc}${selectedWordId === word.id ? ' word-row-panel-active' : ''}`}>
                   <td className="word-cell-word">
-                    <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
-                      {word.term}
-                    </Link>
+                    {onWordSelect ? (
+                      <button
+                        type="button"
+                        className="word-term word-term-link word-term-panel-btn"
+                        onClick={() => onWordSelect(word.id)}
+                      >
+                        {word.term}
+                      </button>
+                    ) : (
+                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
+                        {word.term}
+                      </Link>
+                    )}
                   </td>
                   <td className="word-cell-details">
                     <WordSummaryContent word={word} />

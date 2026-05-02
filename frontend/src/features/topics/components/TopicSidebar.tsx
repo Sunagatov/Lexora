@@ -28,6 +28,8 @@ type Props = {
   onSelect: (id: number) => void
   onSelectSmartReview: () => void
   smartQueue: StudyQueue | null
+  isCollapsed?: boolean
+  onToggleCollapsed?: () => void
 }
 
 type TopicButtonSharedProps = {
@@ -121,6 +123,7 @@ export function TopicSidebar({
   topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
+  isCollapsed = false, onToggleCollapsed,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
   const [posSortOpen, setPosSortOpen] = useState(false)
@@ -243,6 +246,20 @@ export function TopicSidebar({
 
   return (
     <>
+      {!isMobile && (
+        <button
+          type="button"
+          className="sidebar-collapse-btn"
+          onClick={onToggleCollapsed}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points={isCollapsed ? '4,2 9,7 4,12' : '9,2 4,7 9,12'} />
+          </svg>
+        </button>
+      )}
+
       <TopicSidebarHeader
         topicCount={topics.length}
         totalWords={totalWords}

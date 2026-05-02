@@ -4,3 +4,4 @@
 @import './shared/styles.css';
 @import './features/trash/styles.css';
 @import './features/stats/styles.css';
+@import './styles/mobile.css';

@@ -43,6 +43,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
 }
 
 /* Round the four corner cells so hover backgrounds don't poke out of the wrapper's border-radius */
@@ -86,6 +87,7 @@
 
 .word-cell-details {
   width: auto;
+  overflow: hidden;
 }
 
 .word-cell-knowledge {
@@ -145,6 +147,7 @@
 }
 
 .word-term-link {
+  color: #dc2626;
   cursor: pointer;
 }
 

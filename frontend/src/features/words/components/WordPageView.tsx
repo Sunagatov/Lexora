@@ -5,9 +5,11 @@ import type {Word} from '@/features/words/types/wordTypes'
 type Props = {
   word: Word
   topics: Topic[]
+  hideTranslation?: boolean
+  hidePOS?: boolean
 }
 
-export function WordPageView({word, topics}: Props) {
+export function WordPageView({word, topics, hideTranslation = false, hidePOS = false}: Props) {
   const translationsToView = word.translation_entries?.length
     ? word.translation_entries.join('\n')
     : word.translations
@@ -21,8 +23,8 @@ export function WordPageView({word, topics}: Props) {
 
   return (
     <div className="word-page-view">
-      <ViewRow label="Translations" value={translationsToView} preserveLines />
-      <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />
+      {!hideTranslation && <ViewRow label="Translations" value={translationsToView} preserveLines />}
+      {!hidePOS && <ViewRow label="Part of speech" value={word.part_of_speech ?? '—'} />}
       <ViewRow label="Topics" value={topicNames || '—'} />
       <ViewRow label="Knowledge" value={word.knowledge_level ? `${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}` : '—'} />
       {word.countability && <ViewRow label="Countability" value={word.countability} />}
@@ -40,8 +42,11 @@ export function WordPageView({word, topics}: Props) {
       {word.pattern && <ViewRow label="Pattern" value={word.pattern} preserveLines />}
       {word.past_simple && <ViewRow label="Past simple" value={word.past_simple} />}
       {word.past_participle && <ViewRow label="Past participle" value={word.past_participle} />}
-      <ViewRow label="Updated" value={new Date(word.updated_at).toLocaleDateString()} />
-      <ViewRow label="Created" value={new Date(word.created_at).toLocaleDateString()} />
+      <div className="word-page-view-timestamps">
+        <span>Updated {new Date(word.updated_at).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+        <span className="word-page-view-timestamps-sep">·</span>
+        <span>Added {new Date(word.created_at).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+      </div>
     </div>
   )
 }

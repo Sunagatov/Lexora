@@ -51,7 +51,10 @@ export function TopicSidebarHeader({
 
       <div className="sidebar-smart-review-wrap">
         <button type="button" className={`sidebar-smart-review-btn ${isSmartReview ? 'active' : ''}`} onClick={onSelectSmartReview}>
-          <span className="sidebar-smart-review-title">✨ Daily Word Mix</span>
+          <span className="sidebar-smart-review-title">
+            <span className="sidebar-smart-review-emoji" aria-hidden="true">✨</span>
+            <span className="sidebar-smart-review-text"> Daily Word Mix</span>
+          </span>
           {remaining !== null && <span className="sidebar-smart-review-count">{remaining} left</span>}
           {smartQueue && (
             <div className="sidebar-smart-review-bar">
