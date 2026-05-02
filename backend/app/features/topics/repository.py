@@ -7,7 +7,6 @@ from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
 from app.features.topics.domain import soft_delete_exclusive_words, soft_delete_all_words
 from app.features.words.progress import WordProgressEvent  # noqa: F401
-from app.features.words.domain import assert_word_restore_allowed
 from app.features.words.model import Word
 
 
@@ -181,26 +180,9 @@ def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> 
 
 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
-    if topic.parent_topic_id is not None:
-        from app.features.topics.service import InvalidTopicParentError
-
-        parent = db.scalar(
-            select(Topic)
-            .where(Topic.id == topic.parent_topic_id)
-            .where(Topic.deleted_at.is_(None))
-        )
-        if parent is None:
-            raise InvalidTopicParentError(
-                "Cannot restore subtopic while its parent topic is deleted. Restore the parent first."
-            )
-
     topic.deleted_at = None
 
     if restore_words:
-        for word in topic.words:
-            if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
-                assert_word_restore_allowed(db, word, restoring_topic_ids={topic.id})
-
         for word in topic.words:
             if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
                 word.deleted_at = None

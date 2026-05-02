@@ -2,12 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.features.topics.exceptions import InvalidTopicParentError
-from app.features.topics.repository import get_deleted_topics, get_topic_by_id_including_deleted, restore_topic
 from app.features.topics.schemas import TopicResponse
-from app.features.trash.service import purge_trash
-from app.features.words.domain import assert_word_restore_allowed
+from app.features.trash.service import (
+    DeletedTopicNotFoundError,
+    DeletedWordNotFoundError,
+    RestoreWordTopicDeletedError,
+    list_deleted_topics_in_trash,
+    list_deleted_words_in_trash,
+    purge_trash,
+    restore_topic_from_trash,
+    restore_word_from_trash,
+)
 from app.features.words.exceptions import DuplicateWordInTopicError
-from app.features.words.repository import get_deleted_words, get_word_by_id_including_deleted, restore_word
 from app.features.words.schemas import WordResponse
 from app.shared.deps import get_db
 
@@ -16,39 +22,35 @@ router = APIRouter(prefix="/api/trash", tags=["trash"])
 
 @router.get("/words", response_model=list[WordResponse])
 def list_deleted_words(db: Session = Depends(get_db)) -> list[WordResponse]:
-    return [WordResponse.from_word(w) for w in get_deleted_words(db)]
+    return [WordResponse.from_word(w) for w in list_deleted_words_in_trash(db)]
 
 
 @router.get("/topics", response_model=list[TopicResponse])
 def list_deleted_topics(db: Session = Depends(get_db)) -> list[TopicResponse]:
-    return [TopicResponse.model_validate(topic) for topic in get_deleted_topics(db)]
+    return [TopicResponse.model_validate(topic) for topic in list_deleted_topics_in_trash(db)]
 
 
 @router.post("/words/{word_id}/restore", response_model=WordResponse)
 def restore_word_route(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
-    word = get_word_by_id_including_deleted(db, word_id)
-    if word is None or word.deleted_at is None:
+    try:
+        return WordResponse.from_word(restore_word_from_trash(db, word_id))
+    except DeletedWordNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted word not found")
-    active_topics = [t for t in word.topics if t.deleted_at is None]
-    if not active_topics:
+    except RestoreWordTopicDeletedError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Cannot restore word: all its topics are deleted. Restore a topic first.",
         )
-    try:
-        assert_word_restore_allowed(db, word)
-        return WordResponse.from_word(restore_word(db, word))
     except DuplicateWordInTopicError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @router.post("/topics/{topic_id}/restore", response_model=TopicResponse)
 def restore_topic_route(topic_id: int, restore_words: bool = False, db: Session = Depends(get_db)) -> TopicResponse:
-    topic = get_topic_by_id_including_deleted(db, topic_id)
-    if topic is None or topic.deleted_at is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
     try:
-        return TopicResponse.model_validate(restore_topic(db, topic, restore_words=restore_words))
+        return TopicResponse.model_validate(restore_topic_from_trash(db, topic_id, restore_words=restore_words))
+    except DeletedTopicNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
     except InvalidTopicParentError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
     except DuplicateWordInTopicError as e:

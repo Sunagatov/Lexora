@@ -14,6 +14,7 @@ from app.features.topics.exceptions import (
     TopicSlugConflictError as TopicSlugConflictError,
 )
 from app.features.topics.model import Topic
+from app.features.topics.repository import restore_topic as persist_topic_restore
 from app.features.topics.repository import update_topic as persist_topic_update
 from app.features.topics.rules import (
     assert_active_topic_name_available as assert_active_topic_name_available,
@@ -25,6 +26,7 @@ from app.features.topics.rules import (
 )
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 from app.features.topics.sidebar_stats import compute_topic_sidebar_stats as compute_topic_sidebar_stats
+from app.features.words.domain import assert_word_restore_allowed
 from app.shared.text import slugify as slugify
 
 
@@ -136,3 +138,22 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
         assert_topic_parent_valid(db, payload.parent_topic_id, exclude_topic_id=topic.id)
 
     return persist_topic_update(db, topic, payload)
+
+
+def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
+    _assert_topic_parent_can_be_restored(db, topic)
+    if restore_words:
+        for word in topic.words:
+            if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
+                assert_word_restore_allowed(db, word, restoring_topic_ids={topic.id})
+    return persist_topic_restore(db, topic, restore_words=restore_words)
+
+
+def _assert_topic_parent_can_be_restored(db: Session, topic: Topic) -> None:
+    if topic.parent_topic_id is None:
+        return
+    parent = db.get(Topic, topic.parent_topic_id)
+    if parent is None or parent.deleted_at is not None:
+        raise InvalidTopicParentError(
+            "Cannot restore subtopic while its parent topic is deleted. Restore the parent first."
+        )

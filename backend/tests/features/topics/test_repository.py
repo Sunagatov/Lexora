@@ -1,14 +1,9 @@
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
-import pytest
-
 from app.features.topics import repository as topic_repository
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
-from app.features.topics.service import InvalidTopicParentError
-
-
 def _make_topic_mock(
     *,
     id: int = 1,
@@ -141,17 +136,6 @@ def test_restore_topic_restores_words_deleted_with_that_topic_including_shared(
     db.add.assert_called_once_with(topic)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(topic)
-
-
-def test_restore_topic_rejects_restoring_child_when_parent_is_deleted(make_topic) -> None:
-    db = MagicMock()
-    topic = _make_topic_mock(id=5, name="Child", slug="child", description="", is_active=True, deleted_at=datetime.now(timezone.utc), parent_topic_id=1)
-    db.scalar.return_value = None
-
-    with pytest.raises(InvalidTopicParentError) as exc_info:
-        topic_repository.restore_topic(db, topic, restore_words=False)
-
-    assert "Restore the parent first" in str(exc_info.value)
 
 
 def test_hard_delete_topic_soft_deletes_exclusive_words_then_deletes_topic(monkeypatch, make_topic) -> None:

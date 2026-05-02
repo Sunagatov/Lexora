@@ -227,3 +227,31 @@ def test_assert_topic_has_no_active_children_passes_when_no_children() -> None:
     db.scalars.return_value.all.return_value = []
 
     topic_service.assert_topic_has_no_active_children(db, 5)
+
+
+def test_restore_topic_rejects_restoring_child_when_parent_is_deleted(make_topic) -> None:
+    db = MagicMock()
+    topic = make_topic(id=5, deleted_at=object(), parent_topic_id=1)
+    db.get.return_value = None
+
+    with pytest.raises(topic_service.InvalidTopicParentError) as exc_info:
+        topic_service.restore_topic(db, topic, restore_words=False)
+
+    assert "Restore the parent first" in str(exc_info.value)
+
+
+def test_restore_topic_validates_words_before_restoring(monkeypatch, make_topic, make_word) -> None:
+    db = MagicMock()
+    topic = make_topic(id=5, deleted_at=object())
+    deleted_word = make_word(id=10, term="plane", deleted_at=object(), deleted_via_topic_id=5, topics=[topic])
+    topic.words = [deleted_word]
+
+    validate = MagicMock()
+    persisted = object()
+    monkeypatch.setattr(topic_service, "assert_word_restore_allowed", validate)
+    monkeypatch.setattr(topic_service, "persist_topic_restore", lambda db_arg, topic_arg, restore_words=False: persisted)
+
+    result = topic_service.restore_topic(db, topic, restore_words=True)
+
+    assert result is persisted
+    validate.assert_called_once_with(db, deleted_word, restoring_topic_ids={5})

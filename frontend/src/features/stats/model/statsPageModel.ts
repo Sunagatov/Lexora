@@ -194,3 +194,133 @@ export function findWorstDay(days: DailyActivity[]) {
     .filter((day) => day.downgraded > 0)
     .reduce((worst, day) => (day.downgraded > (worst?.downgraded ?? -Infinity) ? day : worst), null as DailyActivity | null)
 }
+
+export type TrendInfo = {
+  value: string
+  direction: 'up' | 'down' | 'flat'
+  tone: 'good' | 'bad' | 'neutral'
+}
+
+export type OverviewCard = {
+  value: string | number
+  label: string
+  sub: string
+  trend: TrendInfo
+  sparkline: number[]
+}
+
+export type StatsPageDerivedData = {
+  filteredActivity: DailyActivity[]
+  activityTotals: ReturnType<typeof sumActivity>
+  activityChartData: ReturnType<typeof buildActivityChartData>
+  usageChartData: ReturnType<typeof buildUsageChartData>
+  monthChartData: ReturnType<typeof buildMonthChartData>
+  sortedTopics: TopicStat[]
+  bestDay: DailyActivity | null
+  worstDay: DailyActivity | null
+  overviewCards: OverviewCard[]
+}
+
+function monthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+function sparklineValues(values: number[], count = 10): number[] {
+  return values.slice(-count)
+}
+
+export function buildTrendLabel(current: number, previous: number, suffix: string): TrendInfo {
+  const delta = percentDelta(current, previous)
+  if (delta === null) return {value: `${current.toLocaleString()} ${suffix}`, direction: 'up', tone: 'good'}
+  if (delta === 0) return {value: `0% ${suffix}`, direction: 'flat', tone: 'neutral'}
+  return {
+    value: `${delta > 0 ? '+' : ''}${Math.round(delta)}% ${suffix}`,
+    direction: delta > 0 ? 'up' : 'down',
+    tone: delta > 0 ? 'good' : 'bad',
+  }
+}
+
+export function buildOverviewCards(
+  stats: StatsResponse,
+  filteredActivity: DailyActivity[],
+  filteredUsage: UsageDay[],
+): OverviewCard[] {
+  const now = new Date()
+  const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
+  const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const previousMonthAdds = stats.words_added_by_month[monthKey(previousMonthDate)] ?? 0
+  const monthAddSparkline = sparklineValues(
+    Object.entries(stats.words_added_by_month)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, value]) => value),
+    8,
+  )
+  const usageSparkline = sparklineValues(filteredUsage.map((day) => day.active_seconds), 12)
+  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.net), 12)
+  const levelDistributionSparkline = [
+    stats.level_counts.level_1,
+    stats.level_counts.level_2,
+    stats.level_counts.level_3,
+    stats.level_counts.level_4,
+    stats.level_counts.level_5,
+    stats.level_counts.unset,
+  ]
+  const weeklyActivityTotals = sumActivity(filterByDays(stats.daily_activity, '7'))
+  const previousWeeklyActivityTotals = sumActivity(filterPreviousDays(stats.daily_activity, 7))
+  const currentWeeklyUsage = sumUsageSeconds(filterByDays(stats.usage_daily, '7'))
+  const previousWeeklyUsage = sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7))
+
+  return [
+    {
+      value: stats.overview.total_words,
+      label: 'Total words',
+      sub: `${currentMonthAdds.toLocaleString()} added this month`,
+      trend: buildTrendLabel(currentMonthAdds, previousMonthAdds, 'vs last month'),
+      sparkline: monthAddSparkline,
+    },
+    {
+      value: currentWeeklyUsage,
+      label: 'This week',
+      sub: 'active seconds',
+      trend: buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d'),
+      sparkline: usageSparkline,
+    },
+    {
+      value: weeklyActivityTotals.reviewed,
+      label: 'Level changes',
+      sub: 'last 7 days',
+      trend: buildTrendLabel(weeklyActivityTotals.reviewed, previousWeeklyActivityTotals.reviewed, 'vs previous 7d'),
+      sparkline: activitySparkline,
+    },
+    {
+      value: stats.okay_or_better_pct,
+      label: 'Okay or better',
+      sub: `${stats.level_counts.level_4.toLocaleString()} strong words`,
+      trend: buildTrendLabel(weeklyActivityTotals.net, previousWeeklyActivityTotals.net, 'net this week'),
+      sparkline: levelDistributionSparkline,
+    },
+  ]
+}
+
+export function buildStatsPageDerivedData(
+  stats: StatsResponse,
+  activityPeriod: ActivityPeriod,
+  usagePeriod: ActivityPeriod,
+  monthPeriod: MonthPeriod,
+  topicSort: TopicSort,
+): StatsPageDerivedData {
+  const filteredActivity = filterByDays(stats.daily_activity, activityPeriod)
+  const filteredUsage = filterByDays(stats.usage_daily, usagePeriod)
+
+  return {
+    filteredActivity,
+    activityTotals: sumActivity(filteredActivity),
+    activityChartData: buildActivityChartData(filteredActivity),
+    usageChartData: buildUsageChartData(filteredUsage),
+    monthChartData: buildMonthChartData(stats, monthPeriod),
+    sortedTopics: sortTopics(stats.topics, topicSort),
+    bestDay: findBestDay(filteredActivity),
+    worstDay: findWorstDay(filteredActivity),
+    overviewCards: buildOverviewCards(stats, filteredActivity, filteredUsage),
+  }
+}
