@@ -46,6 +46,27 @@ export type Word = {
   updated_at: string
 }
 
+export type EnrichResult = {
+  term: string
+  definition: string | null
+  pronunciation_ipa: string | null
+  pronunciation_audio_url: string | null
+  part_of_speech: string | null
+  cefr_level: string | null
+  register: string | null
+  countability: string | null
+  frequency_rank: number | null
+  pattern: string | null
+  notes: string | null
+  translation_entries: string[]
+  example_entries: string[]
+  synonym_entries: string[]
+  antonym_entries: string[]
+  collocation_entries: string[]
+  confusable_entries: ConfusableEntry[]
+  verb_form: VerbForm | null
+}
+
 export type WorkbookImportSheetSummary = {
   sheet_name: string
   topic_name: string

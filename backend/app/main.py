@@ -14,6 +14,7 @@ from app.features.topics.router import router as topics_router
 from app.features.words.router import router as words_router
 from app.features.words.agent_router import router as words_agent_router
 from app.features.words.suggest.router import router as suggest_router
+from app.features.words.enrich.router import router as enrich_router
 from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
@@ -138,6 +139,7 @@ app.include_router(words_agent_router)
 app.include_router(topics_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(words_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(suggest_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(enrich_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(smart_review_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(trash_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(stats_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])

@@ -279,6 +279,30 @@
   gap: 14px;
 }
 
+.wp-enrich-row {
+  display: flex;
+  justify-content: flex-end;
+}
+.wp-btn-enrich {
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.wp-btn-enrich:hover:not(:disabled) { opacity: 0.88; }
+.wp-btn-enrich:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.wp-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .wp-field {
   display: flex;
   flex-direction: column;

@@ -86,6 +86,7 @@ export function WordPage() {
             topics={topics}
             saveError={s.saveError}
             savePending={s.savePending}
+            enrichPending={s.enrichPending}
             onFieldChange={set}
             onClearError={() => s.setSaveError(null)}
             onDelete={() => s.setConfirming(true)}
@@ -94,6 +95,7 @@ export function WordPage() {
               s.setSaveError(null)
             }}
             onSave={s.save}
+            onEnrich={s.handleEnrich}
           />
         )}
       </div>

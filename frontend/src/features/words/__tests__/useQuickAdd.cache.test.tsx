@@ -9,7 +9,6 @@ import type {Word} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 import * as wordsApi from '@/features/words/api/wordsApi'
-import * as quickAddAssistApi from '@/features/words/api/quickAddAssistApi'
 
 vi.mock('@/features/topics/api/topicsApi')
 vi.mock('@/features/words/api/wordsApi')
@@ -99,7 +98,9 @@ describe('useQuickAdd cache invalidation', () => {
     })
 
     await waitFor(() => {
-      expect(wordsApi.quickAddWord).toHaveBeenCalledWith('run', 'correr', [2])
+      expect(wordsApi.quickAddWord).toHaveBeenCalledWith(
+        expect.objectContaining({term: 'run', translation_entries: ['correr'], topic_ids: [2], knowledge_level: 1}),
+      )
     })
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
@@ -287,34 +288,6 @@ describe('useQuickAdd cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topics})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
-  })
-
-  it('matches AI-suggested topics case-insensitively, following the backend topic-name rule', async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
-    })
-
-    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Phrasal Verbs', 'phrasal-verbs')])
-    vi.spyOn(quickAddAssistApi, 'suggestTopic').mockResolvedValue('phrasal verbs')
-
-    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
-
-    await waitFor(() => {
-      expect(result.current.topicsLoading).toBe(false)
-    })
-
-    act(() => {
-      result.current.setTerm('run into')
-      result.current.setTranslation('наткнуться')
-    })
-
-    await act(async () => {
-      await result.current.suggestOnly()
-    })
-
-    expect(result.current.topicId).toBe(2)
-    expect(result.current.aiSuggested).toBe(true)
-    expect(result.current.feedback).toBeNull()
   })
 
   it('reports duplicate quick-add failures as library-wide, matching the backend rule', async () => {

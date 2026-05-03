@@ -1,56 +1,42 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {createTopic, fetchTopics} from '@/features/topics/api/topicsApi'
-import {quickAddWord} from '@/features/words/api/wordsApi'
+import {quickAddWord, enrichWord} from '@/features/words/api/wordsApi'
 import {ApiError} from '@/shared/api/apiError'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import type {EnrichResult} from '@/features/words/types/wordTypes'
 import {queryKeys} from '@/app/queryKeys'
-import {
-  ensureInboxTopic,
-  findTopicByName,
-  suggestTopic,
-  translateTerm,
-} from '@/features/words/api/quickAddAssistApi'
+import {ensureInboxTopic, findTopicByName} from '@/features/words/api/quickAddAssistApi'
 import {invalidateWordDependencies} from '@/features/words/model/wordCache'
 
 const INBOX_TOPIC_NAME = 'Inbox'
 const isInboxTopic = (topic: Topic) => topic.name.trim().toLowerCase() === INBOX_TOPIC_NAME.toLowerCase()
-
-type AssistMode = 'idle' | 'translate' | 'suggest' | 'autofill'
-type AssistStage = 'idle' | 'translating' | 'suggesting'
 const EMPTY_TOPICS: Topic[] = []
 
 function sortQuickAddTopics(topics: Topic[]): Topic[] {
   const inboxTopics: Topic[] = []
   const otherTopics: Topic[] = []
-
   for (const topic of topics) {
-    if (isInboxTopic(topic)) {
-      inboxTopics.push(topic)
-      continue
-    }
-    otherTopics.push(topic)
+    if (isInboxTopic(topic)) inboxTopics.push(topic)
+    else otherTopics.push(topic)
   }
-
   otherTopics.sort((a, b) => a.name.localeCompare(b.name))
   return [...inboxTopics, ...otherTopics]
 }
 
 export function useQuickAdd() {
   const queryClient = useQueryClient()
-  const termRef     = useRef<HTMLInputElement>(null)
+  const termRef = useRef<HTMLInputElement>(null)
 
-  const [term,        setTerm]        = useState('')
+  const [term, setTerm] = useState('')
   const [translation, setTranslation] = useState('')
-  const [topicId,     setTopicId]     = useState<number | null>(null)
-  const [newTopic,    setNewTopic]    = useState('')
+  const [topicId, setTopicId] = useState<number | null>(null)
+  const [newTopic, setNewTopic] = useState('')
   const [addingTopic, setAddingTopic] = useState(false)
-  const [feedback,    setFeedback]    = useState<{ok: boolean; msg: string} | null>(null)
-  const [assistMode, setAssistMode] = useState<AssistMode>('idle')
-  const [assistStage, setAssistStage] = useState<AssistStage>('idle')
-  const [translationAiDone, setTranslationAiDone] = useState(false)
-  const [topicAiDone, setTopicAiDone] = useState(false)
-  const [aiSuggested, setAiSuggested] = useState(false)
+  const [feedback, setFeedback] = useState<{ok: boolean; msg: string} | null>(null)
+  const [enrichResult, setEnrichResult] = useState<EnrichResult | null>(null)
+  const [enrichDone, setEnrichDone] = useState(false)
+  const [enriching, setEnriching] = useState(false)
 
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
   const topics: Topic[] = topicsQuery.data ?? EMPTY_TOPICS
@@ -61,68 +47,57 @@ export function useQuickAdd() {
     if (inbox) setTopicId(inbox.id)
   }, [topics, topicId])
 
-  function focusTermInput() {
-    const input = termRef.current
-    if (input !== null) {
-      input.focus()
+  function focusTermInput() { termRef.current?.focus() }
+
+  function resetMarkers() {
+    setEnrichResult(null)
+    setEnrichDone(false)
+  }
+
+  function buildSavePayload(resolvedTopicId: number) {
+    const base: Record<string, unknown> = {
+      term: term.trim(),
+      topic_ids: [resolvedTopicId],
+      translation_entries: [translation.trim()],
+      knowledge_level: 1,
     }
-  }
+    if (!enrichResult) return base
 
-  function resetAssistMarkers() {
-    setAiSuggested(false)
-    setTranslationAiDone(false)
-    setTopicAiDone(false)
-  }
-
-  function setAssist(mode: AssistMode, stage: AssistStage) {
-    setAssistMode(mode)
-    setAssistStage(stage)
-  }
-
-  function clearAssist() {
-    setAssist('idle', 'idle')
-  }
-
-  function validateTerm(trimmedTerm: string): boolean {
-    if (trimmedTerm.length > 0) return true
-    setFeedback({ok: false, msg: 'Enter a word first.'})
-    focusTermInput()
-    return false
-  }
-
-  function validateTranslation(trimmedTranslation: string): boolean {
-    if (trimmedTranslation.length > 0) return true
-    setFeedback({ok: false, msg: 'Enter a translation first so AI can suggest a topic.'})
-    return false
-  }
-
-  function applySuggestedTopic(suggested: string | null): boolean {
-    if (!suggested) {
-      setFeedback({ok: false, msg: 'Could not suggest a topic — please select one manually.'})
-      return false
+    const er = enrichResult
+    if (er.definition) base.definition = er.definition
+    if (er.pronunciation_ipa) base.pronunciation_ipa = er.pronunciation_ipa
+    if (er.pronunciation_audio_url) base.pronunciation_audio_url = er.pronunciation_audio_url
+    if (er.part_of_speech) base.part_of_speech = er.part_of_speech
+    if (er.cefr_level) base.cefr_level = er.cefr_level
+    if (er.register) base.register = er.register
+    if (er.countability) base.countability = er.countability
+    if (er.frequency_rank) base.frequency_rank = er.frequency_rank
+    if (er.pattern) base.pattern = er.pattern
+    if (er.notes) base.notes = er.notes
+    if (er.translation_entries.length > 0) {
+      // Prepend user's manual translation if it differs from AI translations
+      const userTrans = translation.trim()
+      const aiHasUserTrans = er.translation_entries.some((t) => t.toLowerCase() === userTrans.toLowerCase())
+      base.translation_entries = aiHasUserTrans ? er.translation_entries : [userTrans, ...er.translation_entries]
     }
-
-    const match = findTopicByName(topics, suggested)
-    if (!match) {
-      setFeedback({ok: false, msg: `AI suggested "${suggested}" but it wasn't found in your topics.`})
-      return false
-    }
-
-    setTopicId(match.id)
-    setAiSuggested(true)
-    setTopicAiDone(true)
-    return true
+    if (er.example_entries.length > 0) base.example_entries = er.example_entries
+    if (er.synonym_entries.length > 0) base.synonym_entries = er.synonym_entries
+    if (er.antonym_entries.length > 0) base.antonym_entries = er.antonym_entries
+    if (er.collocation_entries.length > 0) base.collocation_entries = er.collocation_entries
+    if (er.confusable_entries.length > 0) base.confusable_entries = er.confusable_entries
+    if (er.verb_form) base.verb_form = er.verb_form
+    return base
   }
 
   const addWordMutation = useMutation({
-    mutationFn: (resolvedTopicId: number) => quickAddWord(term.trim(), translation.trim(), [resolvedTopicId]),
+    mutationFn: (resolvedTopicId: number) => quickAddWord(buildSavePayload(resolvedTopicId) as Parameters<typeof quickAddWord>[0]),
     onSuccess: () => {
       invalidateWordDependencies(queryClient)
       setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
       setTerm('')
       setTranslation('')
-      resetAssistMarkers()
-      setTimeout(() => { setFeedback(null); termRef.current?.focus() }, 1800)
+      resetMarkers()
+      setTimeout(() => { setFeedback(null); focusTermInput() }, 1800)
     },
     onError: (err: Error) => {
       const msg = err instanceof ApiError && err.status === 409
@@ -149,58 +124,31 @@ export function useQuickAdd() {
     }),
   })
 
-  async function requestTranslation(trimmedTerm: string) {
-    setFeedback(null)
-    const result = await translateTerm(trimmedTerm)
-    if (!result) {
-      setFeedback({ok: false, msg: 'Translation not found — please enter it manually.'})
-      return null
-    }
-    setTranslation(result)
-    setTranslationAiDone(true)
-    return result
-  }
-
-  async function requestTopicSuggestion(trimmedTerm: string, trimmedTranslation: string) {
-    setFeedback(null)
-    const suggested = await suggestTopic(trimmedTerm, trimmedTranslation)
-    applySuggestedTopic(suggested)
-    return suggested
-  }
-
-  async function translateOnly() {
+  async function enrich() {
     const trimmedTerm = term.trim()
-    if (!validateTerm(trimmedTerm)) return
-    setAssist('translate', 'translating')
-    await requestTranslation(trimmedTerm)
-    clearAssist()
-  }
-
-  async function suggestOnly() {
-    const trimmedTerm = term.trim()
-    const trimmedTranslation = translation.trim()
-
-    if (!validateTerm(trimmedTerm) || !validateTranslation(trimmedTranslation)) return
-    setAssist('suggest', 'suggesting')
-    await requestTopicSuggestion(trimmedTerm, trimmedTranslation)
-    clearAssist()
-  }
-
-  async function autoFill() {
-    const trimmedTerm = term.trim()
-    if (!validateTerm(trimmedTerm)) return
-
-    resetAssistMarkers()
-    setAssist('autofill', 'translating')
-    const translated = await requestTranslation(trimmedTerm)
-    if (!translated) {
-      clearAssist()
+    if (!trimmedTerm) {
+      setFeedback({ok: false, msg: 'Enter a word first.'})
+      focusTermInput()
       return
     }
 
-    setAssist('autofill', 'suggesting')
-    await requestTopicSuggestion(trimmedTerm, translated)
-    clearAssist()
+    resetMarkers()
+    setEnriching(true)
+    setFeedback(null)
+
+    try {
+      const result = await enrichWord(trimmedTerm)
+      setEnrichResult(result)
+      setEnrichDone(true)
+
+      if (result.translation_entries.length > 0 && !translation.trim()) {
+        setTranslation(result.translation_entries[0])
+      }
+    } catch {
+      setFeedback({ok: false, msg: 'Enrichment failed — you can still save manually.'})
+    } finally {
+      setEnriching(false)
+    }
   }
 
   async function save() {
@@ -208,16 +156,17 @@ export function useQuickAdd() {
     const trimmedTranslation = translation.trim()
 
     if (addWordMutation.isPending) return
-    if (trimmedTerm.length === 0) {
+    if (!trimmedTerm) {
       setFeedback({ok: false, msg: 'Word or phrase is required.'})
       focusTermInput()
       return
     }
-    if (trimmedTranslation.length === 0) {
+    if (!trimmedTranslation) {
       setFeedback({ok: false, msg: 'Translation is required.'})
       return
     }
     setFeedback(null)
+
     let resolvedTopicId = topicId
     if (!resolvedTopicId) {
       const inboxId = await ensureInboxTopic(topics, (id) => {
@@ -239,23 +188,20 @@ export function useQuickAdd() {
   return {
     termRef,
     term, setTerm,
-    translation, setTranslation: (v: string) => { setTranslation(v); setAiSuggested(false); setTranslationAiDone(false) },
-    topicId, setTopicId: (id: number) => { setTopicId(id); setAiSuggested(false); setTopicAiDone(false) },
+    translation, setTranslation: (v: string) => { setTranslation(v); resetMarkers() },
+    topicId, setTopicId: (id: number) => { setTopicId(id) },
     newTopic, setNewTopic,
     addingTopic, setAddingTopic,
-    translating: assistStage === 'translating',
-    suggesting: assistStage === 'suggesting',
-    aiSuggested,
-    autoFillPending: assistMode === 'autofill' && assistStage !== 'idle',
-    translationAiDone,
-    topicAiDone,
+    enriching,
+    enrichResult,
+    enrichDone,
     feedback,
     topicsLoading: topicsQuery.isLoading,
     sortedTopics,
     savePending: addWordMutation.isPending,
     createTopicPending: createTopicMutation.isPending,
     canSave: term.trim().length > 0 && translation.trim().length > 0 && !addWordMutation.isPending,
-    save, translateOnly, suggestOnly, autoFill,
+    save, enrich,
     createTopic: () => {
       if (!newTopic.trim() || createTopicMutation.isPending) return
       createTopicMutation.mutate()

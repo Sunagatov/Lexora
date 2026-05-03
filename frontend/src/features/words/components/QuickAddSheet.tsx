@@ -16,16 +16,13 @@ export function QuickAddSheet({onClose}: Props) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
+    return () => { document.body.style.overflow = previousOverflow }
   }, [])
 
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent) {
       if (event.key === 'Escape') onClose()
     }
-
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
@@ -38,12 +35,7 @@ export function QuickAddSheet({onClose}: Props) {
     <>
       <div className="quick-add-overlay" onClick={onClose} />
       <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown}>
-        <button
-          type="button"
-          className="quick-add-handle-hitbox"
-          aria-label="Close quick add sheet"
-          onClick={onClose}
-        >
+        <button type="button" className="quick-add-handle-hitbox" aria-label="Close quick add sheet" onClick={onClose}>
           <span className="quick-add-handle" />
         </button>
 
@@ -63,6 +55,7 @@ export function QuickAddSheet({onClose}: Props) {
               ref={q.termRef}
               className="quick-add-input"
               placeholder="e.g. ephemeral"
+              maxLength={255}
               value={q.term}
               onChange={(e) => q.setTerm(e.target.value)}
               onKeyDown={(e) => {
@@ -73,22 +66,14 @@ export function QuickAddSheet({onClose}: Props) {
               }}
             />
             <div className="quick-add-actions-row">
-              <button type="button" className={`quick-add-action-btn quick-add-action-btn-primary${q.autoFillPending ? ' is-loading' : ''}`}
-                onClick={q.autoFill} disabled={!q.term.trim() || q.translating || q.suggesting}
-                title="Translate + suggest topic automatically">
+              <button type="button"
+                className={`quick-add-action-btn quick-add-action-btn-primary${q.enriching ? ' is-loading' : ''}`}
+                onClick={q.enrich}
+                disabled={!q.term.trim() || q.enriching}
+                title="Enrich word with AI — fills translation, definition, examples, and more">
                 <span className="quick-add-action-btn-text">
-                  {q.translating ? 'Translating…' : q.suggesting ? 'Suggesting…' : '✨ Auto-fill AI'}
+                  {q.enriching ? 'Enriching…' : '✨ Enrich'}
                 </span>
-              </button>
-              <button type="button" className="quick-add-action-btn"
-                onClick={q.translateOnly} disabled={!q.term.trim() || q.translating || q.suggesting}
-                title="Translate only">
-                Translate
-              </button>
-              <button type="button" className="quick-add-action-btn"
-                onClick={q.suggestOnly} disabled={!q.term.trim() || q.suggesting || q.translating}
-                title="Suggest topic based on word and translation">
-                {q.suggesting ? '…' : 'Suggest topic'}
               </button>
             </div>
           </div>
@@ -96,12 +81,12 @@ export function QuickAddSheet({onClose}: Props) {
           <div className="quick-add-field">
             <label className="quick-add-label">
               Translation
-              {q.translationAiDone && (
+              {q.enrichDone && q.enrichResult?.translation_entries.length ? (
                 <span className="quick-add-field-status quick-add-field-status-ok">✓ AI filled</span>
-              )}
+              ) : null}
             </label>
             <input
-              className={`quick-add-input${q.translationAiDone ? ' is-ai-complete' : ''}`}
+              className={`quick-add-input${q.enrichDone ? ' is-ai-complete' : ''}`}
               placeholder="e.g. недолговечный"
               value={q.translation}
               onChange={(e) => q.setTranslation(e.target.value)}
@@ -115,14 +100,10 @@ export function QuickAddSheet({onClose}: Props) {
           </div>
 
           <div className="quick-add-field">
-            <label className="quick-add-label">
-              Topic
-              {q.aiSuggested && <span className="quick-add-ai-badge">✨ AI suggested</span>}
-              {q.topicAiDone && <span className="quick-add-field-status">✨ Completed</span>}
-            </label>
+            <label className="quick-add-label">Topic</label>
             {!q.addingTopic ? (
               <div className="quick-add-topic-row">
-                <select className={`quick-add-select${q.topicAiDone ? ' is-ai-complete' : ''}`} value={q.topicId ?? ''}
+                <select className="quick-add-select" value={q.topicId ?? ''}
                   onChange={(e) => q.setTopicId(Number(e.target.value))}>
                   {q.topicsLoading && <option value="">Loading…</option>}
                   {!q.topicsLoading && q.topicId === null && <option value="" disabled>📥 Inbox (default)</option>}
@@ -157,6 +138,8 @@ export function QuickAddSheet({onClose}: Props) {
             )}
           </div>
 
+          {q.enrichDone && q.enrichResult && <EnrichPreview result={q.enrichResult} />}
+
           {q.feedback && (
             <div className={`quick-add-feedback ${q.feedback.ok ? 'quick-add-feedback-ok' : 'quick-add-feedback-err'}`}>
               {q.feedback.msg}
@@ -173,5 +156,76 @@ export function QuickAddSheet({onClose}: Props) {
       </div>
     </>,
     document.body,
+  )
+}
+
+function EnrichPreview({result}: {result: import('@/features/words/types/wordTypes').EnrichResult}) {
+  const chips: string[] = []
+  if (result.part_of_speech) chips.push(result.part_of_speech)
+  if (result.cefr_level) chips.push(result.cefr_level)
+  if (result.register && result.register !== 'neutral') chips.push(result.register)
+  if (result.countability) chips.push(result.countability)
+
+  return (
+    <div className="enrich-preview">
+      <div className="enrich-preview-header">✨ Enriched details</div>
+
+      {chips.length > 0 && (
+        <div className="enrich-preview-chips">
+          {chips.map((c) => <span key={c} className="enrich-chip">{c}</span>)}
+        </div>
+      )}
+
+      {result.definition && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Definition</span>
+          <span className="enrich-preview-value">{result.definition}</span>
+        </div>
+      )}
+
+      {result.pronunciation_ipa && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">IPA</span>
+          <span className="enrich-preview-value">{result.pronunciation_ipa}</span>
+        </div>
+      )}
+
+      {result.translation_entries.length > 0 && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Translations</span>
+          <span className="enrich-preview-value">{result.translation_entries.join(', ')}</span>
+        </div>
+      )}
+
+      {result.example_entries.length > 0 && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Examples</span>
+          <ul className="enrich-preview-list">
+            {result.example_entries.map((ex, i) => <li key={i}>{ex}</li>)}
+          </ul>
+        </div>
+      )}
+
+      {result.synonym_entries.length > 0 && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Synonyms</span>
+          <span className="enrich-preview-value">{result.synonym_entries.join(', ')}</span>
+        </div>
+      )}
+
+      {result.antonym_entries.length > 0 && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Antonyms</span>
+          <span className="enrich-preview-value">{result.antonym_entries.join(', ')}</span>
+        </div>
+      )}
+
+      {result.collocation_entries.length > 0 && (
+        <div className="enrich-preview-row">
+          <span className="enrich-preview-label">Collocations</span>
+          <span className="enrich-preview-value">{result.collocation_entries.join(', ')}</span>
+        </div>
+      )}
+    </div>
   )
 }

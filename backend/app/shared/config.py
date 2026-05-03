@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://models.inference.ai.azure.com"
     openai_model: str = "gpt-4o-mini"
 
+    # AI / word enrichment — uses Google Gemini free tier
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash-lite"
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",

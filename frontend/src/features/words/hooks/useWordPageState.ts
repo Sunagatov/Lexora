@@ -1,9 +1,9 @@
 import {useState, useMemo, useEffect, useRef} from 'react'
 import {useParams, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
-import {fetchWord, fetchWords, updateWord, deleteWord} from '@/features/words/api/wordsApi'
+import {fetchWord, fetchWords, updateWord, deleteWord, enrichWord} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
-import type {Word} from '@/features/words/types/wordTypes'
+import type {Word, EnrichResult} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import {queryKeys} from '@/app/queryKeys'
 import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
@@ -25,6 +25,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const [draft, setDraft] = useState<EditState | null>(null)
   const [confirming, setConfirming] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [enrichPending, setEnrichPending] = useState(false)
 
   const numericWordId = Number(wordId)
   const isValidWordId = Number.isInteger(numericWordId) && numericWordId > 0
@@ -142,7 +143,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
       return
     }
 
-    const isVerb = draft.part_of_speech === 'verb'
+    const isVerb = draft.part_of_speech === 'verb' || draft.part_of_speech === 'phrasal verb'
     const isNoun = draft.part_of_speech === 'noun'
     saveMutation.mutate(buildSavePayload(draft, isVerb, isNoun))
   }
@@ -150,6 +151,44 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   function handleDelete() {
     setConfirming(false)
     deleteMutation.mutate()
+  }
+
+  async function handleEnrich() {
+    if (!draft || enrichPending) return
+    const termVal = draft.term.trim()
+    if (!termVal) return
+    setEnrichPending(true)
+    try {
+      const r: EnrichResult = await enrichWord(termVal)
+      setDraft((d) => {
+        if (!d) return d
+        return {
+          ...d,
+          definition: d.definition || r.definition || '',
+          pronunciation_ipa: d.pronunciation_ipa || r.pronunciation_ipa || '',
+          cefr_level: d.cefr_level || r.cefr_level || '',
+          register: d.register || r.register || '',
+          countability: d.countability || r.countability || '',
+          frequency_rank: d.frequency_rank || (r.frequency_rank ? String(r.frequency_rank) : ''),
+          pattern: d.pattern || r.pattern || '',
+          notes: d.notes || r.notes || '',
+          part_of_speech: d.part_of_speech || r.part_of_speech || '',
+          translations: d.translations || (r.translation_entries.length ? r.translation_entries.join('\n') : ''),
+          example: d.example || (r.example_entries.length ? r.example_entries.join('\n') : ''),
+          synonyms: d.synonyms || (r.synonym_entries.length ? r.synonym_entries.join('\n') : ''),
+          antonyms: d.antonyms || (r.antonym_entries.length ? r.antonym_entries.join('\n') : ''),
+          collocations: d.collocations || (r.collocation_entries.length ? r.collocation_entries.join('\n') : ''),
+          past_simple: d.past_simple || r.verb_form?.past_simple || '',
+          past_participle: d.past_participle || r.verb_form?.past_participle || '',
+          present_participle: d.present_participle || r.verb_form?.present_participle || '',
+          third_person: d.third_person || r.verb_form?.third_person || '',
+        }
+      })
+    } catch {
+      setSaveError('Enrichment failed — you can still save manually.')
+    } finally {
+      setEnrichPending(false)
+    }
   }
 
   return {
@@ -170,9 +209,11 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     setSaveError,
     savePending: saveMutation.isPending,
     deletePending: deleteMutation.isPending,
+    enrichPending,
     confirming,
     setConfirming,
     handleDelete,
+    handleEnrich,
     fromTopicSlug,
     isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || (!!topic && topicWordsQuery.isLoading)),
   }

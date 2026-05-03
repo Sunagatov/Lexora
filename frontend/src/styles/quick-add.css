@@ -505,3 +505,62 @@
 @media (min-width: 768px) {
   .main-inner { padding-bottom: 24px; }
 }
+
+/* ── Enrichment preview ────────────────────────────────────── */
+.enrich-preview {
+  margin-top: 4px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.enrich-preview-header {
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+.enrich-preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.enrich-chip {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.enrich-preview-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.enrich-preview-label {
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.enrich-preview-value {
+  color: var(--text);
+}
+.enrich-preview-list {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text);
+}
+.enrich-preview-list li {
+  margin-bottom: 1px;
+}

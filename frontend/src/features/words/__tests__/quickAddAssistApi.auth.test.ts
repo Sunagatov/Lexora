@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {ApiError} from '@/shared/api/apiError'
-import {ensureInboxTopic, suggestTopic, findTopicByName} from '@/features/words/api/quickAddAssistApi'
+import {ensureInboxTopic, findTopicByName} from '@/features/words/api/quickAddAssistApi'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 
 vi.mock('@/features/topics/api/topicsApi', () => ({
@@ -12,11 +12,6 @@ vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({
   redirectIfUnauthorized: vi.fn(),
 }))
 
-vi.mock('@/shared/api/http', () => ({
-  request: vi.fn(),
-}))
-
-import {request} from '@/shared/api/http'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 describe('quickAddAssistApi auth handling', () => {
@@ -26,13 +21,6 @@ describe('quickAddAssistApi auth handling', () => {
 
   afterEach(() => {
     vi.clearAllMocks()
-  })
-
-  it('redirects unauthorized suggest-topic failures and returns null', async () => {
-    vi.mocked(request).mockRejectedValue(new ApiError(403, 'Invalid CSRF token'))
-
-    await expect(suggestTopic('run', 'бежать')).resolves.toBeNull()
-    expect(redirectIfUnauthorized).toHaveBeenCalledWith(expect.objectContaining({status: 403}))
   })
 
   it('redirects unauthorized inbox creation failures and returns null', async () => {
