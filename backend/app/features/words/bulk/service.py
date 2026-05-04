@@ -67,6 +67,7 @@ def _build_bulk_word(db: Session, topic, payload_word) -> Word:
         pattern=payload_word.pattern,
         notes=payload_word.notes,
         is_active=True,
+        source="import",
         topics=[topic],
     )
     if payload_word.verb_form:

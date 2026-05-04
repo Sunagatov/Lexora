@@ -13,35 +13,66 @@ import {
   WordsAddedSection,
 } from '@/features/stats/components/StatsSections'
 import {SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
+import {VocabProfileSection, EnrichmentCoverageSection} from '@/features/stats/components/StatsEnrichment'
 import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
+import {formatDuration} from '@/features/stats/model/statsPageModel'
 
 function StatsPageSkeleton() {
   return (
     <div className="stats-page">
       <div className="stats-inner">
-        <div className="stats-topbar">
-          <div className="sk" style={{width: 48, height: 14}} />
-          <div className="sk" style={{width: 100, height: 22}} />
-        </div>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10}}>
-          {[0, 1, 2, 3].map(i => (
-            <div key={i} className="sk" style={{height: 64, borderRadius: 14}} />
-          ))}
-        </div>
-        <div className="stats-section">
-          <div className="sk" style={{height: 12, width: 150}} />
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10}}>
+        <div className="stats-hero-skeleton">
+          <div className="sk" style={{width: 200, height: 28, borderRadius: 8}} />
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16}}>
             {[0, 1, 2, 3].map(i => (
-              <div key={i} className="sk" style={{height: 72, borderRadius: 10}} />
+              <div key={i} className="sk" style={{height: 80, borderRadius: 16}} />
             ))}
           </div>
         </div>
-        {[140, 100, 90].map((h, i) => (
+        {[180, 140, 100].map((h, i) => (
           <div key={i} className="stats-section">
-            <div className="sk" style={{height: 12, width: 120}} />
-            <div className="sk" style={{height: h, borderRadius: 8}} />
+            <div className="sk" style={{height: 14, width: 150}} />
+            <div className="sk" style={{height: h, borderRadius: 10}} />
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
+  totalWords: number
+  strongPct: number
+  streak: number
+  activeMinutes: number
+}) {
+  return (
+    <div className="stats-hero">
+      <div className="stats-hero-header">
+        <h1 className="stats-hero-title">Your Vocabulary</h1>
+        <p className="stats-hero-subtitle">Progress at a glance</p>
+      </div>
+      <div className="stats-hero-cards">
+        <div className="stats-hero-card stats-hero-card-words" data-card="words">
+          <span className="stats-hero-card-icon">📚</span>
+          <span className="stats-hero-card-value">{totalWords.toLocaleString()}</span>
+          <span className="stats-hero-card-label">Words</span>
+        </div>
+        <div className="stats-hero-card stats-hero-card-strong" data-card="strong">
+          <span className="stats-hero-card-icon">💪</span>
+          <span className="stats-hero-card-value">{strongPct}%</span>
+          <span className="stats-hero-card-label">Okay or better</span>
+        </div>
+        <div className="stats-hero-card stats-hero-card-streak" data-card="streak">
+          <span className="stats-hero-card-icon">🔥</span>
+          <span className="stats-hero-card-value">{streak}</span>
+          <span className="stats-hero-card-label">Day streak</span>
+        </div>
+        <div className="stats-hero-card stats-hero-card-time" data-card="time">
+          <span className="stats-hero-card-icon">⏱️</span>
+          <span className="stats-hero-card-value">{formatDuration(activeMinutes * 60)}</span>
+          <span className="stats-hero-card-label">Active time</span>
+        </div>
       </div>
     </div>
   )
@@ -69,8 +100,14 @@ export function StatsPage() {
             </svg>
             Back
           </button>
-          <h1 className="stats-title">Statistics</h1>
         </div>
+
+        <HeroBanner
+          totalWords={totalWords}
+          strongPct={stats.okay_or_better_pct}
+          streak={stats.consistency_summary.active_streak_days}
+          activeMinutes={activeMinutes}
+        />
 
         <InsightsStrip s={stats} />
 
@@ -82,6 +119,9 @@ export function StatsPage() {
             {s.overviewCards.map((card) => <StatCard key={card.label} {...card} />)}
           </div>
         </section>
+
+        <VocabProfileSection profile={stats.vocab_profile} totalWords={totalWords} />
+        <EnrichmentCoverageSection coverage={stats.enrichment_coverage} />
 
         <AppTimeSection
           stats={stats}

@@ -103,6 +103,26 @@ class UsageEventCreate(BaseModel):
     active_seconds: int = Field(gt=0, le=60 * 60 * 24)
 
 
+class VocabProfileSummary(BaseModel):
+    cefr_distribution: dict[str, int] = Field(default_factory=dict)
+    register_distribution: dict[str, int] = Field(default_factory=dict)
+    pos_distribution: dict[str, int] = Field(default_factory=dict)
+
+
+class EnrichmentCoverage(BaseModel):
+    total_words: int = 0
+    with_definition: int = 0
+    with_ipa: int = 0
+    with_translation: int = 0
+    with_examples: int = 0
+    with_synonyms: int = 0
+    with_antonyms: int = 0
+    with_collocations: int = 0
+    with_confusables: int = 0
+    with_cefr: int = 0
+    with_register: int = 0
+
+
 class VocabularyOverview(BaseModel):
     total_words: int = 0
     total_topics: int = 0
@@ -119,6 +139,8 @@ class StatsResponse(BaseModel):
     overview: VocabularyOverview = Field(default_factory=VocabularyOverview)
     level_counts: LevelCounts = Field(default_factory=LevelCounts)
     okay_or_better_pct: int = 0
+    vocab_profile: VocabProfileSummary = Field(default_factory=VocabProfileSummary)
+    enrichment_coverage: EnrichmentCoverage = Field(default_factory=EnrichmentCoverage)
     usage_summary: UsageSummary = Field(default_factory=UsageSummary)
     retention_summary: RetentionSummary = Field(default_factory=RetentionSummary)
     efficiency_summary: EfficiencySummary = Field(default_factory=EfficiencySummary)
@@ -126,7 +148,7 @@ class StatsResponse(BaseModel):
     queue_summary: QueueSummary = Field(default_factory=QueueSummary)
     usage_daily: list[UsageDay] = Field(default_factory=list)
     topics: list[TopicStat] = Field(default_factory=list)
-    daily_activity: list[DailyActivity] = Field(default_factory=list)   # all recorded days, newest first
-    words_added_by_month: dict[str, int] = Field(default_factory=dict)  # "YYYY-MM" -> count, all months with data
-    tracking_started_at: str | None = None      # ISO date of first recorded event, or None
-    usage_started_at: str | None = None         # ISO date of first usage event, or None
+    daily_activity: list[DailyActivity] = Field(default_factory=list)
+    words_added_by_month: dict[str, int] = Field(default_factory=dict)
+    tracking_started_at: str | None = None
+    usage_started_at: str | None = None

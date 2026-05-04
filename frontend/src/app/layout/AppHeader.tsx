@@ -2,6 +2,7 @@ import {useNavigate, Link} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
+import {useTheme} from '@/shared/hooks/useTheme'
 
 type Props = {
   hasDrawer?: boolean
@@ -11,6 +12,7 @@ type Props = {
 export function AppHeader({hasDrawer = false, onOpenDrawer}: Props) {
   const navigate = useNavigate()
   const {logoutPending, handleLogout} = useLogoutAction()
+  const {isDark, toggle} = useTheme()
 
   return (
     <header className="app-header">
@@ -22,6 +24,9 @@ export function AppHeader({hasDrawer = false, onOpenDrawer}: Props) {
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
+        <button type="button" className="app-header-theme-toggle" onClick={toggle} aria-label="Toggle dark mode">
+          {isDark ? '☀️' : '🌙'}
+        </button>
         <button type="button" className="app-header-logout" onClick={handleLogout} disabled={logoutPending}>
           {logoutPending ? 'Signing out…' : 'Sign out'}
         </button>

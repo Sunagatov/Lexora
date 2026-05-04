@@ -17,8 +17,10 @@ from app.features.stats.activity_metrics import (
 )
 from app.features.stats.content_metrics import (
     list_active_word_stats,
+    _build_enrichment_coverage,
     _build_overview,
     _build_topic_stats,
+    _build_vocab_profile,
     _build_words_added_by_month,
 )
 from app.features.stats.model import AppUsageEvent
@@ -157,6 +159,8 @@ def compute_stats(db: Session) -> StatsResponse:
             level_5=level_counts[5],
         ),
         okay_or_better_pct=okay_pct,
+        vocab_profile=_build_vocab_profile(words),
+        enrichment_coverage=_build_enrichment_coverage(words),
         usage_summary=usage_summary,
         retention_summary=retention_summary,
         efficiency_summary=efficiency_summary,

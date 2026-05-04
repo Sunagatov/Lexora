@@ -3,11 +3,12 @@ import type {StatsResponse} from '@/features/stats/types/statsTypes'
 import {SectionTitle} from '@/features/stats/components/StatsComponents'
 
 export function InsightsStrip({s}: {s: StatsResponse}) {
-  const weakest = [...s.topics].sort((a, b) => a.progress - b.progress)[0]
-  const strongest = [...s.topics].sort((a, b) => b.progress - a.progress)[0]
-  const mostWeak = [...s.topics].sort((a, b) => b.weak_count - a.weak_count)[0]
+  const reviewedTopics = s.topics.filter((t) => t.reviewed_count > 0)
+  const weakest = [...reviewedTopics].sort((a, b) => a.progress - b.progress)[0]
+  const strongest = [...reviewedTopics].sort((a, b) => b.progress - a.progress)[0]
+  const mostWeak = [...reviewedTopics].sort((a, b) => b.weak_count - a.weak_count)[0]
   const mostRegressed = [...s.topics].sort((a, b) => b.regressed_count - a.regressed_count)[0]
-  const leastReviewed = [...s.topics].sort((a, b) => a.reviewed_count - b.reviewed_count)[0]
+  const notStartedCount = s.topics.filter((t) => t.reviewed_count === 0 && t.total > 0).length
 
   const insights: {icon: string; text: ReactNode}[] = []
 
@@ -17,8 +18,8 @@ export function InsightsStrip({s}: {s: StatsResponse}) {
     insights.push({icon: '📚', text: <><strong>{mostWeak.weak_count}</strong> weak words in <strong>{mostWeak.name}</strong></>})
   if (mostRegressed && mostRegressed.regressed_count > 0)
     insights.push({icon: '📉', text: <><strong>{mostRegressed.regressed_count}</strong> words regressed in <strong>{mostRegressed.name}</strong></>})
-  if (leastReviewed && leastReviewed.reviewed_count === 0 && leastReviewed.total > 0)
-    insights.push({icon: '🕳️', text: <><strong>{leastReviewed.name}</strong> has not been reviewed yet</>})
+  if (notStartedCount > 0)
+    insights.push({icon: '🕳️', text: <><strong>{notStartedCount}</strong> {notStartedCount === 1 ? 'topic has' : 'topics have'} not been reviewed yet</>})
   if (s.overview.needs_example_enrichment > 0)
     insights.push({icon: '✏️', text: <><strong>{s.overview.needs_example_enrichment.toLocaleString()}</strong> words need 3+ examples</>})
   if (strongest && strongest.progress >= 80)

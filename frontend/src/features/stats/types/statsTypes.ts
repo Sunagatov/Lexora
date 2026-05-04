@@ -102,10 +102,32 @@ export type VocabularyOverview = {
   needs_enrichment: number
 }
 
+export type VocabProfileSummary = {
+  cefr_distribution: Record<string, number>
+  register_distribution: Record<string, number>
+  pos_distribution: Record<string, number>
+}
+
+export type EnrichmentCoverage = {
+  total_words: number
+  with_definition: number
+  with_ipa: number
+  with_translation: number
+  with_examples: number
+  with_synonyms: number
+  with_antonyms: number
+  with_collocations: number
+  with_confusables: number
+  with_cefr: number
+  with_register: number
+}
+
 export type StatsResponse = {
   overview: VocabularyOverview
   level_counts: LevelCounts
   okay_or_better_pct: number
+  vocab_profile: VocabProfileSummary
+  enrichment_coverage: EnrichmentCoverage
   usage_summary: UsageSummary
   retention_summary: RetentionSummary
   efficiency_summary: EfficiencySummary

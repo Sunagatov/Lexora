@@ -495,7 +495,7 @@
   }
 
   .fab {
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     right: 14px;
     width: 48px;
     height: 48px;

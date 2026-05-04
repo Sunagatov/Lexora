@@ -31,6 +31,8 @@ export function QuickAddSheet({onClose}: Props) {
     if (e.key === 'Escape') onClose()
   }
 
+  const enriched = q.enrichDone && q.enrichResult
+
   return createPortal(
     <>
       <div className="quick-add-overlay" onClick={onClose} />
@@ -49,44 +51,49 @@ export function QuickAddSheet({onClose}: Props) {
         </div>
 
         <div className="quick-add-body">
+          {/* Term + Enrich — compact row after enrichment */}
           <div className="quick-add-field">
             <label className="quick-add-label">Word or phrase</label>
-            <input
-              ref={q.termRef}
-              className="quick-add-input"
-              placeholder="e.g. ephemeral"
-              maxLength={255}
-              value={q.term}
-              onChange={(e) => q.setTerm(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  if (!q.savePending) q.save().catch(() => {})
-                }
-              }}
-            />
-            <div className="quick-add-actions-row">
+            <div className="quick-add-term-row">
+              <input
+                ref={q.termRef}
+                className="quick-add-input"
+                placeholder="e.g. ephemeral"
+                maxLength={255}
+                value={q.term}
+                onChange={(e) => q.setTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (!q.savePending && !q.enriching) {
+                      if (enriched) q.save().catch(() => {})
+                      else q.enrich()
+                    }
+                  }
+                }}
+              />
               <button type="button"
-                className={`quick-add-action-btn quick-add-action-btn-primary${q.enriching ? ' is-loading' : ''}`}
+                className={`quick-add-enrich-btn${q.enriching ? ' is-loading' : ''}`}
                 onClick={q.enrich}
-                disabled={!q.term.trim() || q.enriching}
-                title="Enrich word with AI — fills translation, definition, examples, and more">
-                <span className="quick-add-action-btn-text">
-                  {q.enriching ? 'Enriching…' : '✨ Enrich'}
-                </span>
+                disabled={!q.term.trim() || q.enriching}>
+                {q.enriching ? '…' : '✨'}
               </button>
             </div>
           </div>
 
+          {/* Enriched details — the hero section, shown right after term */}
+          {enriched && <EnrichPreview result={q.enrichResult!} />}
+
+          {/* Translation — compact, usually auto-filled */}
           <div className="quick-add-field">
             <label className="quick-add-label">
               Translation
-              {q.enrichDone && q.enrichResult?.translation_entries.length ? (
-                <span className="quick-add-field-status quick-add-field-status-ok">✓ AI filled</span>
-              ) : null}
+              {enriched && q.enrichResult!.translation_entries.length > 0 && (
+                <span className="quick-add-field-status quick-add-field-status-ok">✓ AI</span>
+              )}
             </label>
             <input
-              className={`quick-add-input${q.enrichDone ? ' is-ai-complete' : ''}`}
+              className={`quick-add-input${enriched ? ' is-ai-complete' : ''}`}
               placeholder="e.g. недолговечный"
               value={q.translation}
               onChange={(e) => q.setTranslation(e.target.value)}
@@ -99,6 +106,7 @@ export function QuickAddSheet({onClose}: Props) {
             />
           </div>
 
+          {/* Topic — compact single row */}
           <div className="quick-add-field">
             <label className="quick-add-label">Topic</label>
             {!q.addingTopic ? (
@@ -109,7 +117,7 @@ export function QuickAddSheet({onClose}: Props) {
                   {!q.topicsLoading && q.topicId === null && <option value="" disabled>📥 Inbox (default)</option>}
                   {q.sortedTopics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <button type="button" className="quick-add-new-topic-btn" onClick={() => q.setAddingTopic(true)}>+ New</button>
+                <button type="button" className="quick-add-new-topic-btn" onClick={() => q.setAddingTopic(true)}>+</button>
               </div>
             ) : (
               <div className="quick-add-topic-row">
@@ -137,8 +145,6 @@ export function QuickAddSheet({onClose}: Props) {
               </div>
             )}
           </div>
-
-          {q.enrichDone && q.enrichResult && <EnrichPreview result={q.enrichResult} />}
 
           {q.feedback && (
             <div className={`quick-add-feedback ${q.feedback.ok ? 'quick-add-feedback-ok' : 'quick-add-feedback-err'}`}>
@@ -168,8 +174,6 @@ function EnrichPreview({result}: {result: import('@/features/words/types/wordTyp
 
   return (
     <div className="enrich-preview">
-      <div className="enrich-preview-header">✨ Enriched details</div>
-
       {chips.length > 0 && (
         <div className="enrich-preview-chips">
           {chips.map((c) => <span key={c} className="enrich-chip">{c}</span>)}

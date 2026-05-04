@@ -3,7 +3,6 @@ import {useOutletContext} from 'react-router-dom'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {useStudyState} from '@/features/study/hooks/useStudyState'
 import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
-import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
 import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {useResizableSidebarWidth} from '@/features/study/hooks/useResizableSidebarWidth'
@@ -15,7 +14,6 @@ import {StudyTopicSummary} from '@/features/study/components/StudyTopicSummary'
 export function StudyPage() {
   const s = useStudyState()
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
-  const [quickAddOpen, setQuickAddOpen] = useState(false)
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
   const {collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed} = useSidebarCollapsedPref()
   const isMobile = useIsMobile(768)
@@ -100,21 +98,7 @@ export function StudyPage() {
             )}
           </div>
         )}
-
-        <button
-          type="button"
-          className={`fab ${drawerOpen ? 'fab-hidden' : ''}`}
-          aria-label="Add word"
-          onClick={() => setQuickAddOpen(true)}
-        >
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="11" y1="3" x2="11" y2="19" />
-            <line x1="3" y1="11" x2="19" y2="11" />
-          </svg>
-        </button>
       </div>
-
-      {quickAddOpen && <QuickAddSheet onClose={() => setQuickAddOpen(false)} />}
     </>
   )
 }

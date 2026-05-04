@@ -110,6 +110,7 @@ def _process_word_creates(
             notes=op.notes,
             knowledge_level=op.knowledge_level,
             is_active=op.is_active,
+            source="import",
         )
         # language defaults to None on WordCreateV2 but "en" on WordCreate;
         # only forward when explicitly set.

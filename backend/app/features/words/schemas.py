@@ -65,6 +65,7 @@ class WordCreate(BaseModel):
     pattern: str | None = None
     notes: str | None = None
     is_active: bool = True
+    source: str = "manual"
     translation_entries: list[str] | None = None
     example_entries: list[str] | None = None
     synonym_entries: list[str] | None = None

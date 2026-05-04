@@ -333,6 +333,7 @@ def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> 
         id=1,
         deleted_at=None,
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
+        source="manual",
     )
 
     active_words = [active_word]
@@ -347,6 +348,7 @@ def test_build_words_added_by_month_excludes_deleted_words_via_caller_filter() -
         id=1,
         deleted_at=None,
         created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
+        source="manual",
     )
     active_words = [active]
     result = stats_service._build_words_added_by_month(active_words)
@@ -365,7 +367,18 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
         knowledge_level=2,
         part_of_speech_id=1,
+        part_of_speech=SimpleNamespace(name="noun"),
+        definition="a definition",
+        pronunciation_ipa=None,
+        source="manual",
+        translation_items=[],
         example_items=[SimpleNamespace(value="ex")],
+        synonym_items=[],
+        antonym_items=[],
+        collocation_items=[],
+        confusable_items=[],
+        cefr_level=None,
+        register=None,
     )
     deleted_word_january = SimpleNamespace(
         id=2,

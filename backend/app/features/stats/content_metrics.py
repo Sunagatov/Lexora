@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import selectinload
 
-from app.features.stats.schemas import TopicStat, VocabularyOverview
+from app.features.stats.schemas import EnrichmentCoverage, TopicStat, VocabProfileSummary, VocabularyOverview
 from app.features.topics.model import Topic
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
 from app.features.words.model import Word, word_topics
@@ -21,6 +21,17 @@ class WordStatsSnapshot:
     has_pos: bool
     example_items: tuple[object, ...]
     created_at: datetime
+    source: str = "manual"
+    pos_name: str | None = None
+    cefr_level: str | None = None
+    register: str | None = None
+    has_definition: bool = False
+    has_ipa: bool = False
+    translation_count: int = 0
+    synonym_count: int = 0
+    antonym_count: int = 0
+    collocation_count: int = 0
+    confusable_count: int = 0
 
 
 def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
@@ -95,6 +106,8 @@ def _build_topic_stats(
 def _build_words_added_by_month(words: list[WordStatsSnapshot]) -> dict[str, int]:
     counts: dict[str, int] = defaultdict(int)
     for word in words:
+        if word.source != "manual":
+            continue
         key = f"{word.created_at.year}-{word.created_at.month:02d}"
         counts[key] += 1
     return dict(sorted(counts.items()))
@@ -127,11 +140,44 @@ def _summarize_topic_progress(words: list[WordStatsSnapshot]) -> tuple[int, int,
     return progress, weak_count, strong_count
 
 
+def _build_vocab_profile(words: list[WordStatsSnapshot]) -> VocabProfileSummary:
+    cefr: dict[str, int] = defaultdict(int)
+    register: dict[str, int] = defaultdict(int)
+    pos: dict[str, int] = defaultdict(int)
+    for w in words:
+        cefr[w.cefr_level or "unknown"] += 1
+        register[w.register or "unknown"] += 1
+        pos[w.pos_name or "unknown"] += 1
+    return VocabProfileSummary(cefr_distribution=dict(cefr), register_distribution=dict(register), pos_distribution=dict(pos))
+
+
+def _build_enrichment_coverage(words: list[WordStatsSnapshot]) -> EnrichmentCoverage:
+    total = len(words)
+    return EnrichmentCoverage(
+        total_words=total,
+        with_definition=sum(1 for w in words if w.has_definition),
+        with_ipa=sum(1 for w in words if w.has_ipa),
+        with_translation=sum(1 for w in words if w.translation_count > 0),
+        with_examples=sum(1 for w in words if w.example_items),
+        with_synonyms=sum(1 for w in words if w.synonym_count > 0),
+        with_antonyms=sum(1 for w in words if w.antonym_count > 0),
+        with_collocations=sum(1 for w in words if w.collocation_count > 0),
+        with_confusables=sum(1 for w in words if w.confusable_count > 0),
+        with_cefr=sum(1 for w in words if w.cefr_level),
+        with_register=sum(1 for w in words if w.register),
+    )
+
+
 def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
     words = db.scalars(
         select(Word).options(
             selectinload(Word.example_items),
             selectinload(Word.part_of_speech),
+            selectinload(Word.translation_items),
+            selectinload(Word.synonym_items),
+            selectinload(Word.antonym_items),
+            selectinload(Word.collocation_items),
+            selectinload(Word.confusable_items),
         ).where(Word.deleted_at.is_(None))
     ).all()
     return [
@@ -139,8 +185,19 @@ def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
             id=int(word.id),
             knowledge_level=word.knowledge_level,
             has_pos=word.part_of_speech_id is not None,
+            pos_name=word.part_of_speech.name if word.part_of_speech else None,
             example_items=tuple(getattr(word, "example_items", ()) or ()),
             created_at=word.created_at,
+            source=word.source,
+            cefr_level=word.cefr_level,
+            register=word.register,
+            has_definition=bool(word.definition),
+            has_ipa=bool(word.pronunciation_ipa),
+            translation_count=len(word.translation_items),
+            synonym_count=len(word.synonym_items),
+            antonym_count=len(word.antonym_items),
+            collocation_count=len(word.collocation_items),
+            confusable_count=len(word.confusable_items),
         )
         for word in words
     ]

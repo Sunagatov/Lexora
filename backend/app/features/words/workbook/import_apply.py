@@ -146,6 +146,7 @@ def create_new_word_from_row(
         definition=row.definition if context.flags.has_definition else None,
         notes=row.notes if context.flags.has_notes else None,
         is_active=True,
+        source="import",
         topics=[topic],
     )
     context.ops.sync_word_multivalue_fields(

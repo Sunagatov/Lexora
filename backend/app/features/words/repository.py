@@ -146,6 +146,7 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
         pattern=payload.pattern,
         notes=payload.notes,
         is_active=payload.is_active,
+        source=payload.source,
         topics=list(topics),
     )
     _sync_entry_tables(word, payload)

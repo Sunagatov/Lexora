@@ -6,7 +6,7 @@ export const LEVEL_LABELS: Record<string, string> = {
   level_3: 'Okay',
   level_4: 'Strong',
   level_5: 'Parked',
-  unset: 'No level',
+  unset: 'Not yet studied',
 }
 
 export const LEVEL_COLORS: Record<string, string> = {
