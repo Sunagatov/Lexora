@@ -198,3 +198,33 @@
   font-size: 0.82rem;
   font-weight: 800;
 }
+
+.app-header-theme-toggle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.18s ease, transform 0.18s ease;
+  color: var(--text-2);
+}
+
+.app-header-theme-toggle:hover {
+  background: var(--surface-2);
+  transform: scale(1.08);
+  color: var(--text);
+}
+
+.app-header-theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.app-header-theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

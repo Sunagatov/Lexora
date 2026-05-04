@@ -1,13 +1,19 @@
-@keyframes sk-shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
 }
 
 .sk {
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--surface-2) 25%, #e2e8f0 50%, var(--surface-2) 75%);
-  background-size: 200% 100%;
-  animation: sk-shimmer 1.4s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    var(--surface) 25%,
+    var(--surface-2) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
 }
 
 /* Container for word-table-style skeleton rows */
