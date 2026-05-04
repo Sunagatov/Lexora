@@ -1,5 +1,6 @@
 import {useEffect} from 'react'
 import {createPortal} from 'react-dom'
+import {Button} from '@/shared/components/Button'
 
 type Props = {
   title: string
@@ -43,17 +44,18 @@ export function ConfirmModal({
         <p className="modal-message">{message}</p>
         {error && <p className="login-error" style={{textAlign: 'left'}}>{error}</p>}
         <div className="modal-actions">
-          <button type="button" className="modal-btn-cancel" onClick={onCancel} disabled={pending}>
+          <Button type="button" variant="secondary" size="sm" onClick={onCancel} disabled={pending}>
             {cancelLabel}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className={`modal-btn-confirm ${danger ? 'modal-btn-danger' : ''}`}
+            variant={danger ? 'danger' : 'primary'}
+            size="sm"
+            isLoading={pending}
             onClick={onConfirm}
-            disabled={pending}
           >
-            {pending ? 'Working…' : confirmLabel}
-          </button>
+            {confirmLabel}
+          </Button>
         </div>
       </div>
     </div>,

@@ -83,8 +83,10 @@
 
 /* ── Hero ── */
 .word-page-hero {
-  background: linear-gradient(145deg, #f8fafc 0%, #ffffff 64%);
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(145deg, #f8fafc 0%, #ffffff 64%) padding-box,
+    linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(14, 165, 233, 0.14)) border-box;
   border-radius: var(--radius-lg);
   padding: 20px 22px 18px;
   box-shadow: var(--shadow-sm);
@@ -93,12 +95,12 @@
   gap: 6px;
 }
 
-.word-page-hero.level-unset { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 64%); }
-.word-page-hero.level-1 { background: linear-gradient(145deg, #fef2f2 0%, #ffffff 58%); border-color: #fecaca; }
-.word-page-hero.level-2 { background: linear-gradient(145deg, #eff6ff 0%, #ffffff 58%); border-color: #bfdbfe; }
-.word-page-hero.level-3 { background: linear-gradient(145deg, #f5f3ff 0%, #ffffff 58%); border-color: #ddd6fe; }
-.word-page-hero.level-4 { background: linear-gradient(145deg, #ecfdf5 0%, #ffffff 58%); border-color: #a7f3d0; }
-.word-page-hero.level-5 { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 58%); border-color: #cbd5e1; }
+.word-page-hero.level-unset { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 64%) padding-box, linear-gradient(135deg, rgba(148, 163, 184, 0.16), rgba(99, 102, 241, 0.1)) border-box; }
+.word-page-hero.level-1 { background: linear-gradient(145deg, #fef2f2 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #fecaca 0%, #dc2626 100%) border-box; }
+.word-page-hero.level-2 { background: linear-gradient(145deg, #eff6ff 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #bfdbfe 0%, #2563eb 100%) border-box; }
+.word-page-hero.level-3 { background: linear-gradient(145deg, #f5f3ff 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #ddd6fe 0%, #7c3aed 100%) border-box; }
+.word-page-hero.level-4 { background: linear-gradient(145deg, #ecfdf5 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #a7f3d0 0%, #059669 100%) border-box; }
+.word-page-hero.level-5 { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #cbd5e1 0%, #64748b 100%) border-box; }
 
 /* Chips row: left group + Pronounce right */
 .word-page-hero-meta {
@@ -319,17 +321,21 @@
 
 .wp-input {
   width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.92rem;
   outline: none;
-  transition: border-color 0.12s;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.wp-input:focus { border-color: var(--accent); background: var(--surface); }
+.wp-input:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 0 0 1px rgba(99, 102, 241, 0.08);
+}
 
 .wp-textarea { resize: vertical; min-height: 80px; }
 
@@ -407,6 +413,10 @@
   padding: 10px 28px;
   border-top: 1px solid var(--border);
   background: var(--surface);
+}
+
+.word-page-edit-form .btn {
+  min-height: 36px;
 }
 
 .word-page-edit-actions-row {

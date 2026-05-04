@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
+import {routes} from '@/app/routes'
 import {InsightsStrip} from '@/features/stats/components/StatsInsights'
 import {
   AppTimeSection,
@@ -17,19 +18,15 @@ import {SectionTitle, StatCard} from '@/features/stats/components/StatsComponent
 import {VocabProfileSection, EnrichmentCoverageSection} from '@/features/stats/components/StatsEnrichment'
 import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
 import {formatDuration} from '@/features/stats/model/statsPageModel'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
+import {EmptyState} from '@/shared/components/EmptyState'
+import {SkeletonHero} from '@/shared/components/Skeletons'
 
 function StatsPageSkeleton() {
   return (
     <div className="stats-page">
       <div className="stats-inner">
-        <div className="stats-hero-skeleton">
-          <div className="sk" style={{width: 200, height: 28, borderRadius: 8}} />
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16}}>
-            {[0, 1, 2, 3].map(i => (
-              <div key={i} className="sk" style={{height: 80, borderRadius: 16}} />
-            ))}
-          </div>
-        </div>
+        <SkeletonHero />
         {[180, 140, 100].map((h, i) => (
           <div key={i} className="stats-section">
             <div className="sk" style={{height: 14, width: 150}} />
@@ -113,7 +110,22 @@ export function StatsPage() {
   const s = useStatsPageState()
 
   if (s.isLoading) return <StatsPageSkeleton />
-  if (!s.stats) return <div className="stats-loading">Failed to load statistics.</div>
+  if (!s.stats) {
+    return (
+      <div className="stats-page">
+        <div className="stats-inner">
+          <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />
+          <EmptyState
+            icon="📈"
+            title="Statistics unavailable"
+            description="We couldn't load your statistics right now. Try again in a moment."
+            variant="error"
+            actions={[{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
+          />
+        </div>
+      </div>
+    )
+  }
 
   const {stats} = s
   const overview = stats.overview
@@ -123,6 +135,7 @@ export function StatsPage() {
   return (
     <div className="stats-page">
       <div className="stats-inner">
+        <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />
         <div className="stats-topbar">
           <button type="button" className="word-page-back-btn" onClick={() => navigate(-1)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

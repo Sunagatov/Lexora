@@ -1,9 +1,11 @@
+import type {ReactNode} from 'react'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import type {Word} from '@/features/words/types/wordTypes'
 
 type HeroProps = {
   word: Word
   topicName?: string
+  breadcrumb?: ReactNode
   editing: boolean
   isSpeaking: boolean
   onBack: () => void
@@ -66,6 +68,7 @@ export function WordPageSkeleton() {
 export function WordPageHero({
   word,
   topicName,
+  breadcrumb,
   editing,
   isSpeaking,
   onBack,
@@ -78,6 +81,7 @@ export function WordPageHero({
 
   return (
     <div className="word-page-hero-wrap">
+      {breadcrumb}
       <div className="word-page-topbar">
         <button type="button" className="word-page-back-btn" onClick={onBack}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

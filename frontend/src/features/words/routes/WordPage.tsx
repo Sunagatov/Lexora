@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {routes} from '@/app/routes'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {NotFoundPage} from '@/app/layout/NotFoundPage'
 import {usePublicConfig} from '@/shared/config/usePublicConfig'
@@ -67,6 +68,15 @@ export function WordPage() {
       <WordPageHero
         word={word}
         topicName={topic?.name}
+        breadcrumb={
+          <Breadcrumb
+            items={[
+              {label: 'Home', onClick: () => navigate(routes.home)},
+              ...(topic?.name ? [{label: topic.name, onClick: () => navigate(backRoute)}] : []),
+              {label: word.term, isActive: true},
+            ]}
+          />
+        }
         editing={editing}
         isSpeaking={isSpeaking}
         onBack={() => editing

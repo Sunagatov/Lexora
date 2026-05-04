@@ -34,8 +34,10 @@ function SmartReviewSkeleton() {
 }
 
 import {useEffect, useMemo, useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
+import {routes} from '@/app/routes'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
@@ -43,10 +45,13 @@ import {WordCollectionView} from '@/features/words/components/WordCollectionView
 import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
+import {EmptyState} from '@/shared/components/EmptyState'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
 
 export function SmartReviewView({queue, isLoading}: Props) {
+  const navigate = useNavigate()
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = useResponsivePageSize(20, 40)
@@ -83,7 +88,19 @@ export function SmartReviewView({queue, isLoading}: Props) {
   }
 
   if (isLoading) return <SmartReviewSkeleton />
-  if (!queue) return <div className="empty-state">Daily Word Mix is unavailable.</div>
+  if (!queue) {
+    return (
+      <div className="main-inner">
+        <EmptyState
+          icon="✨"
+          title="Daily Word Mix unavailable"
+          description="Your smart review queue is empty or still being prepared. Try generating a new session."
+          variant="info"
+          actions={[{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
+        />
+      </div>
+    )
+  }
 
   const remaining  = queue.total_count - queue.completed_count
   const progress   = queue.total_count > 0 ? Math.round((queue.completed_count / queue.total_count) * 100) : 0
@@ -96,6 +113,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
       <div className="sticky-controls">
         <div className="card topic-header-card topic-header-card-desktop smart-review-stage-card">
           <div className="topic-header-main smart-review-stage-copy">
+            <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Daily Word Mix', isActive: true}]} />
             <div className="smart-review-title-row">
               <div className="topic-header-title">✨ Daily Word Mix</div>
               <span className={`smart-review-status-pill ${isComplete ? 'is-complete' : ''}`}>

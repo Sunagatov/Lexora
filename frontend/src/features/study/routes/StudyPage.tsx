@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react'
-import {useOutletContext} from 'react-router-dom'
+import {useEffect, useMemo, useState} from 'react'
+import {useNavigate, useOutletContext} from 'react-router-dom'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
+import {routes} from '@/app/routes'
 import {useStudyState} from '@/features/study/hooks/useStudyState'
 import {SmartReviewView} from '@/features/smart-review/components/SmartReviewView'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
@@ -10,8 +11,11 @@ import {useSidebarCollapsedPref} from '@/features/study/hooks/useSidebarCollapse
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {StudySidebarShell} from '@/features/study/components/StudySidebarShell'
 import {StudyTopicSummary} from '@/features/study/components/StudyTopicSummary'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
+import {EmptyState} from '@/shared/components/EmptyState'
 
 export function StudyPage() {
+  const navigate = useNavigate()
   const s = useStudyState()
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
@@ -22,6 +26,11 @@ export function StudyPage() {
   useEffect(() => {
     setPanelWordId(null)
   }, [s.selectedTopicId])
+
+  const selectedWord = useMemo(
+    () => s.pageWords.find((word) => word.id === panelWordId) ?? null,
+    [panelWordId, s.pageWords],
+  )
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
@@ -52,6 +61,15 @@ export function StudyPage() {
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} />
         ) : (
           <div className="study-topic-panel">
+            <div className="main-inner" style={{paddingBottom: 0}}>
+              <Breadcrumb
+                items={[
+                  {label: 'Home', onClick: () => navigate(routes.home)},
+                  ...(s.selectedTopic?.name ? [{label: s.selectedTopic.name, isActive: !selectedWord}] : []),
+                  ...(selectedWord ? [{label: selectedWord.term, isActive: true}] : []),
+                ]}
+              />
+            </div>
             <StudyTopicSummary
               selectedTopicId={s.selectedTopicId}
               selectedTopicName={s.selectedTopic?.name}
@@ -62,7 +80,12 @@ export function StudyPage() {
 
             {s.selectedTopicId === null ? (
               <div className="main-inner">
-                <div className="empty-state">Select a topic to start reviewing words.</div>
+                <EmptyState
+                  icon="🧭"
+                  title="Select a topic"
+                  description="Choose a topic from the sidebar to start reviewing words and track progress."
+                  variant="info"
+                />
               </div>
             ) : (
               <div className={`word-collection-split${panelWordId && !isMobile ? ' has-panel' : ''}`}>

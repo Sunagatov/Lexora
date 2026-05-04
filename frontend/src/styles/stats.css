@@ -85,10 +85,12 @@
 }
 
 .stats-hero-card {
-  background: rgba(255, 255, 255, 0.15);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)) padding-box,
+    linear-gradient(135deg, var(--card-gradient-1, rgba(255, 255, 255, 0.2)), var(--card-gradient-2, rgba(255, 255, 255, 0.05))) border-box;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid transparent;
   border-radius: 14px;
   padding: 14px 16px;
   display: flex;
@@ -104,22 +106,26 @@
 }
 
 .stats-hero-card[data-card="words"] {
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  --card-gradient-1: rgba(99, 102, 241, 0.25);
+  --card-gradient-2: rgba(14, 165, 233, 0.18);
 }
 
 .stats-hero-card[data-card="strong"] {
   background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  --card-gradient-1: rgba(5, 150, 105, 0.22);
+  --card-gradient-2: rgba(34, 197, 94, 0.18);
 }
 
 .stats-hero-card[data-card="streak"] {
   background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%);
-  border: 1px solid rgba(217, 119, 6, 0.2);
+  --card-gradient-1: rgba(250, 204, 21, 0.25);
+  --card-gradient-2: rgba(217, 119, 6, 0.18);
 }
 
 .stats-hero-card[data-card="time"] {
   background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%);
-  border: 1px solid rgba(190, 24, 93, 0.2);
+  --card-gradient-1: rgba(249, 115, 115, 0.2);
+  --card-gradient-2: rgba(219, 39, 119, 0.18);
 }
 
 .stats-hero-card-icon {
@@ -387,6 +393,7 @@
 
 .stats-donut {
   flex-shrink: 0;
+  animation: chart-appear 0.5s ease-out 0.2s both;
 }
 
 .stats-donut-label {
@@ -461,6 +468,8 @@
   height: 100%;
   transition: width 0.4s ease;
   min-width: 3px;
+  background-size: 1000px 100%;
+  animation: progress-shimmer 3s ease-in-out infinite;
 }
 
 .stats-dist-legend {
@@ -538,6 +547,7 @@
   height: 120px;
   overflow-x: auto;
   padding-bottom: 2px;
+  animation: chart-appear 0.5s ease-out 0.2s both;
 }
 
 .stats-chart-col {
@@ -563,7 +573,7 @@
   width: 100%;
   display: flex;
   align-items: flex-end;
-  background: var(--bg);
+  background: linear-gradient(to top, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0) 100%);
   border-radius: 4px 4px 0 0;
   overflow: hidden;
 }
@@ -572,8 +582,15 @@
   width: 100%;
   opacity: 0.8;
   border-radius: 3px 3px 0 0;
-  transition: height 0.4s ease;
+  transition: height 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
   min-height: 2px;
+  background-size: 1000px 100%;
+  animation: progress-shimmer 3s ease-in-out infinite;
+}
+
+.stats-chart-bar:hover {
+  transform: translateY(-4px) scaleY(1.04);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
 }
 
 .stats-chart-label {
@@ -737,9 +754,11 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 
 .stats-topic-bar-fill {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+  background-size: 1000px 100%;
   border-radius: 999px;
   transition: width 0.4s ease;
+  animation: progress-shimmer 3s ease-in-out infinite;
 }
 
 .stats-show-more {

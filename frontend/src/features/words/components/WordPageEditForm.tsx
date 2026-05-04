@@ -57,7 +57,7 @@ export function WordPageEditForm({
       <div className="word-page-edit-form">
         {onEnrich && (
           <div className="wp-enrich-row">
-            <button type="button" className="wp-btn-enrich" disabled={enrichPending || !draft.term.trim()} onClick={onEnrich}>
+            <button type="button" className="btn btn-secondary btn-sm ripple-btn" disabled={enrichPending || !draft.term.trim()} onClick={onEnrich}>
               {enrichPending ? '✨ Enriching…' : '✨ Enrich with AI'}
             </button>
           </div>
@@ -222,8 +222,8 @@ export function WordPageEditForm({
         <div className="word-page-edit-actions-row">
           <button type="button" className="wp-btn-delete" onClick={onDelete}>Delete</button>
           <div className="word-page-edit-actions-right">
-            <button type="button" className="wp-btn-cancel" onClick={onCancel}>Cancel</button>
-            <button type="button" className="wp-btn-save" disabled={savePending} onClick={onSave}>
+            <button type="button" className="btn btn-secondary btn-sm ripple-btn" onClick={onCancel}>Cancel</button>
+            <button type="button" className="btn btn-primary btn-sm ripple-btn" disabled={savePending} onClick={onSave}>
               {savePending ? 'Saving…' : 'Save'}
             </button>
           </div>

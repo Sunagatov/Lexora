@@ -60,25 +60,27 @@ export function QuickAddSheet({onClose}: Props) {
         <div className="quick-add-body">
           {/* Term + Enrich — compact row after enrichment */}
           <div className="quick-add-field">
-            <label className="quick-add-label">Word or phrase</label>
             <div className="quick-add-term-row">
-              <input
-                ref={q.termRef}
-                className="quick-add-input"
-                placeholder="e.g. ephemeral"
-                maxLength={255}
-                value={q.term}
-                onChange={(e) => q.setTerm(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    if (!q.savePending && !q.enriching) {
-                      if (enriched) q.save().catch(() => {})
-                      else q.enrich()
+              <div className="input-group quick-add-input-group">
+                <input
+                  ref={q.termRef}
+                  className="quick-add-input input-field"
+                  placeholder=" "
+                  maxLength={255}
+                  value={q.term}
+                  onChange={(e) => q.setTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (!q.savePending && !q.enriching) {
+                        if (enriched) q.save().catch(() => {})
+                        else q.enrich()
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+                <label className="input-label">Word or phrase</label>
+              </div>
               <button type="button"
                 className={`quick-add-enrich-btn ripple-btn${q.enriching ? ' is-loading' : ''}`}
                 onClick={q.enrich}
@@ -93,24 +95,27 @@ export function QuickAddSheet({onClose}: Props) {
 
           {/* Translation — compact, usually auto-filled */}
           <div className="quick-add-field">
-            <label className="quick-add-label">
-              Translation
+            <div className="quick-add-field-topline">
+              <span />
               {enriched && q.enrichResult!.translation_entries.length > 0 && (
                 <span className="quick-add-field-status quick-add-field-status-ok">✓ AI</span>
               )}
-            </label>
-            <input
-              className={`quick-add-input${enriched ? ' is-ai-complete' : ''}`}
-              placeholder="e.g. недолговечный"
-              value={q.translation}
-              onChange={(e) => q.setTranslation(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  if (!q.savePending) q.save().catch(() => {})
-                }
-              }}
-            />
+            </div>
+            <div className="input-group">
+              <input
+                className={`quick-add-input input-field${enriched ? ' is-ai-complete is-success' : ''}`}
+                placeholder=" "
+                value={q.translation}
+                onChange={(e) => q.setTranslation(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (!q.savePending) q.save().catch(() => {})
+                  }
+                }}
+              />
+              <label className="input-label">Translation</label>
+            </div>
           </div>
 
           {/* Topic — compact single row */}

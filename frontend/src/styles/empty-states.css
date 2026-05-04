@@ -1,0 +1,62 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 320px;
+  padding: 56px 32px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state::before {
+  content: none;
+}
+
+.empty-state-icon {
+  font-size: 3.8rem;
+  line-height: 1;
+  opacity: 0.72;
+}
+
+.empty-state-title {
+  font-size: 1.32rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.empty-state-description {
+  max-width: 36ch;
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.empty-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.empty-state.is-error {
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.55) 0%, rgba(239, 68, 68, 0.05) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.empty-state.is-info {
+  background: linear-gradient(135deg, rgba(230, 245, 255, 0.55) 0%, rgba(14, 165, 233, 0.05) 100%);
+  border-color: rgba(14, 165, 233, 0.2);
+}
+
+.empty-state.is-success {
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.55) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border-color: rgba(5, 150, 105, 0.2);
+}

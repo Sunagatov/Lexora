@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {Link, useSearchParams} from 'react-router-dom'
+import {Link, useNavigate, useSearchParams} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {fetchWordList, batchUpdateWords} from '@/features/words/api/wordsApi'
@@ -9,6 +9,9 @@ import {LEVEL_LABELS, LEVELS, CEFR_LEVELS, POS_VALUES, levelClass} from '@/featu
 import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
+import {EmptyState} from '@/shared/components/EmptyState'
+import {SkeletonTable} from '@/shared/components/Skeletons'
 
 type PosValue = (typeof POS_VALUES)[number]
 type CefrLevel = (typeof CEFR_LEVELS)[number]
@@ -25,6 +28,7 @@ function numParam(sp: URLSearchParams, key: string, fallback: number): number {
 }
 
 export function AllWordsPage() {
+  const navigate = useNavigate()
   const [sp, setSp] = useSearchParams()
   const search       = param(sp, 'search')
   const pos          = param(sp, 'pos') as PosValue | ''
@@ -121,6 +125,7 @@ export function AllWordsPage() {
 
   return (
     <div className="all-words-page">
+      <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'All Words', isActive: true}]} />
       <h1>All Words</h1>
 
       {/* Toolbar */}
@@ -155,9 +160,15 @@ export function AllWordsPage() {
 
       {/* Table */}
       {loading ? (
-        <p>Loading…</p>
+        <SkeletonTable rows={6} />
       ) : words.length === 0 ? (
-        <p>No words found.</p>
+        <EmptyState
+          icon={hasFilters ? '🔍' : '📚'}
+          title={hasFilters ? 'No words match these filters' : 'No words yet'}
+          description={hasFilters ? 'Try broadening your search or clearing some filters.' : 'Start building your library by adding your first word.'}
+          variant={hasFilters ? 'info' : 'default'}
+          actions={hasFilters ? [{label: 'Reset filters', onClick: resetFilters, variant: 'secondary'}] : [{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
+        />
       ) : (
         <div className="word-table-wrap">
           <table className="word-table" aria-label="All words table">

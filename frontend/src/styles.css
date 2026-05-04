@@ -1,5 +1,9 @@
 @import './app/styles.css';
 @import './styles/animations.css';
+@import './styles/buttons.css';
+@import './styles/breadcrumb.css';
+@import './styles/empty-states.css';
+@import './styles/badges.css';
 @import './features/study/styles.css';
 @import './features/words/styles.css';
 @import './shared/styles.css';

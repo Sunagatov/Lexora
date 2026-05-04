@@ -5,6 +5,8 @@
   --accent: #6366f1;
   --accent-light: #eef2ff;
   --accent-dark: #4f46e5;
+  --level-color-start: #6366f1;
+  --level-color-end: #4f46e5;
   --bg: #f0f2f8;
   --surface: #ffffff;
   --surface-2: #f8fafc;
@@ -37,6 +39,11 @@
   color-scheme: dark;
 }
 
+@keyframes progress-shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
 *:focus {
   outline: none;
 }
@@ -63,6 +70,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+:root[color-scheme="dark"] body {
+  background: linear-gradient(135deg, #0a0f1f 0%, #1a202c 100%);
+}
+
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 
@@ -74,11 +85,96 @@ button, input, select, textarea { font: inherit; }
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(14, 165, 233, 0.12)) border-box;
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   box-shadow: var(--shadow-sm);
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+.input-label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: var(--text-2);
+  font-weight: 500;
+  transition: top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+  pointer-events: none;
+}
+
+.input-field:focus ~ .input-label,
+.input-field:not(:placeholder-shown) ~ .input-label {
+  top: -8px;
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: var(--surface);
+  padding: 0 4px;
+}
+
+.input-field.is-error {
+  border-color: #ef4444;
+  background: rgba(254, 242, 242, 0.5);
+}
+
+.input-field.is-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--level-color-start, #6366f1) 0%, var(--level-color-end, #4f46e5) 100%);
+  background-size: 1000px 100%;
+  animation: progress-shimmer 3s ease-in-out infinite;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 999px;
+}
+
+.progress-label {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 .empty-state {

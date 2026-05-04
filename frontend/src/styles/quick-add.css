@@ -1,36 +1,64 @@
 /* ── Floating Action Button ─────────────────────────────────── */
 .fab {
   position: fixed;
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  right: 16px;
-  width: 48px;
-  height: 48px;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: var(--accent);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: #fff;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45);
-  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
   z-index: 40;
+  overflow: hidden;
+  animation: fab-pulse 2.5s ease-in-out infinite;
 }
 
 .fab:hover {
-  background: var(--accent-dark);
-  transform: scale(1.07);
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55);
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 10px 32px rgba(99, 102, 241, 0.5);
 }
 
-.fab:active { transform: scale(0.96); }
+.fab:active { transform: translateY(-2px) scale(0.96); }
+
+@keyframes fab-pulse {
+  0%, 100% { box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35); }
+  50% { box-shadow: 0 8px 28px rgba(99, 102, 241, 0.5); }
+}
+
+.fab-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #1e293b;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.fab:hover .fab-tooltip {
+  opacity: 1;
+}
 
 /* ── Quick-add overlay ──────────────────────────────────────── */
 .quick-add-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 50;
   animation: qa-fade-in 0.18s ease;
 }
@@ -55,14 +83,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(0px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px 20px 0 0;
   z-index: 51;
   display: flex;
   flex-direction: column;
   max-height: 92vh;
   animation: qa-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -160,6 +190,13 @@
   gap: 14px;
 }
 
+.quick-add-field-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .quick-add-field {
   display: flex;
   flex-direction: column;
@@ -195,17 +232,20 @@
 
 .quick-add-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.quick-add-input:focus { border-color: var(--accent); }
+.quick-add-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), inset 0 0 0 1px rgba(99, 102, 241, 0.1);
+}
 
 .quick-add-input.is-ai-complete,
 .quick-add-select.is-ai-complete {
@@ -221,6 +261,10 @@
 }
 
 .quick-add-term-row .quick-add-input { flex: 1; }
+
+.quick-add-input-group {
+  flex: 1;
+}
 
 /* Three action buttons below the term input */
 .quick-add-actions-row {
@@ -311,14 +355,14 @@
 .quick-add-select {
   flex: 1;
   padding: 10px 36px 10px 14px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.95rem;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   min-width: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -328,7 +372,10 @@
   background-position: right 12px center;
 }
 
-.quick-add-select:focus { border-color: var(--accent); }
+.quick-add-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
 
 .quick-add-new-topic-btn {
   flex-shrink: 0;
@@ -527,6 +574,15 @@
   .fab { bottom: 56px; right: 32px; }
 }
 
+@media (max-width: 640px) {
+  .fab {
+    width: 52px;
+    height: 52px;
+    bottom: 24px;
+    right: 20px;
+  }
+}
+
 /* Ensure last word card is never hidden behind FAB */
 .main-inner { padding-bottom: 88px; }
 
@@ -549,7 +605,7 @@
   width: 44px;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--accent);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: #fff;
   font-size: 1.1rem;
   cursor: pointer;
@@ -561,9 +617,9 @@
 
 .enrich-preview {
   padding: 10px 12px;
-  background: var(--surface-2);
+  background: rgba(248, 250, 252, 0.9);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(99, 102, 241, 0.12);
   font-size: 0.82rem;
   line-height: 1.45;
   display: flex;
@@ -579,8 +635,8 @@
   display: inline-block;
   padding: 1px 7px;
   border-radius: 6px;
-  background: var(--accent-light);
-  color: var(--accent);
+  background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
+  color: var(--accent-dark);
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -606,4 +662,24 @@
 }
 .enrich-preview-list li {
   margin-bottom: 1px;
+}
+
+:root[color-scheme="dark"] .quick-add-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root[color-scheme="dark"] .quick-add-sheet {
+  background: rgba(26, 32, 44, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[color-scheme="dark"] .fab {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+:root[color-scheme="dark"] .fab:hover {
+  box-shadow: 0 10px 32px rgba(99, 102, 241, 0.6);
 }

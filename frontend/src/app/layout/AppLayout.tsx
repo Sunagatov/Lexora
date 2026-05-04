@@ -42,6 +42,7 @@ export function AppLayout() {
         aria-label="Add word"
         onClick={() => setQuickAddOpen(true)}
       >
+        <span className="fab-tooltip">Add word</span>
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <line x1="11" y1="3" x2="11" y2="19" />
           <line x1="3" y1="11" x2="19" y2="11" />

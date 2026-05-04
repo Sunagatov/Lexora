@@ -9,6 +9,7 @@ import {WordPageView} from '@/features/words/components/WordPageView'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
+import {SkeletonList} from '@/shared/components/Skeletons'
 
 const CEFR_HERO_CLASS: Record<string, string> = {
   A1: 'wdp-chip-cefr-a', A2: 'wdp-chip-cefr-a',
@@ -133,7 +134,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
       </div>
 
       {wordQuery.isLoading ? (
-        <div className="wdp-loading">Loading…</div>
+        <div className="wdp-loading"><SkeletonList count={4} /></div>
       ) : !word ? (
         <div className="wdp-loading">Word not found.</div>
       ) : (
