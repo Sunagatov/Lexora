@@ -44,3 +44,4 @@ frontend/vite.config.d.ts
 /backend/lexora_backend.egg-info/requires.txt
 /backend/lexora_backend.egg-info/SOURCES.txt
 /backend/lexora_backend.egg-info/top_level.txt
+storage/import_topics.py
