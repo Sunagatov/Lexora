@@ -612,24 +612,65 @@
   margin-top: 8px;
 }
 
+.smart-review-stage-card {
+  background: linear-gradient(145deg, rgba(238, 242, 255, 0.95) 0%, rgba(240, 249, 255, 0.98) 100%);
+  border-color: rgba(129, 140, 248, 0.18);
+  box-shadow: 0 14px 32px rgba(99, 102, 241, 0.08), var(--shadow-sm);
+}
+
+.smart-review-stage-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.smart-review-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.smart-review-status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.smart-review-status-pill.is-complete {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border-color: rgba(16, 185, 129, 0.18);
+}
+
 .smart-review-progress-bar {
-  height: 4px;
-  background: var(--border);
+  height: 5px;
+  background: rgba(99, 102, 241, 0.1);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .smart-review-progress-fill {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
   border-radius: 999px;
-  transition: width 0.4s ease;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .smart-review-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--text-2);
   margin-top: 3px;
+  max-width: 52ch;
 }
 
 .daily-mix-subtitle {
@@ -647,26 +688,52 @@
   gap: 12px;
 }
 
-.smart-review-refresh-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
+.study-progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.study-progress-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.smart-review-progress-percent {
+  color: var(--accent);
+}
+
+.smart-review-progress-label {
+  font-size: 0.78rem;
   color: var(--text-2);
+  font-weight: 600;
+}
+
+.smart-review-refresh-btn {
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-dark);
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s, color 0.12s;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   flex-shrink: 0;
 }
 
 .smart-review-refresh-btn:hover:not(:disabled) {
-  background: var(--accent-light);
+  background: linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%);
   color: var(--accent-dark);
-  border-color: var(--accent);
+  border-color: rgba(99, 102, 241, 0.26);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.14);
+  transform: translateY(-2px);
 }
 
+.smart-review-refresh-btn:active:not(:disabled) { transform: translateY(0); }
 .smart-review-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* All Words page — bulk select bar */

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchWord} from '@/features/words/api/wordsApi'
@@ -34,6 +34,7 @@ function getMainTranslation(word: Word): string {
 export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNavigate}: Props) {
   const navigate = useNavigate()
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
 
   const wordQuery = useQuery({
     queryKey: queryKeys.word(wordId),
@@ -51,15 +52,21 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
   const prevWord = currentIdx > 0 ? words[currentIdx - 1] : null
   const nextWord = currentIdx >= 0 && currentIdx < words.length - 1 ? words[currentIdx + 1] : null
 
+  const handleClose = useCallback(() => {
+    if (isClosing) return
+    setIsClosing(true)
+    window.setTimeout(onClose, 250)
+  }, [isClosing, onClose])
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') handleClose()
       if (e.key === 'ArrowLeft' && prevWord) onNavigate(prevWord.id)
       if (e.key === 'ArrowRight' && nextWord) onNavigate(nextWord.id)
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, prevWord, nextWord, onNavigate])
+  }, [handleClose, prevWord, nextWord, onNavigate])
 
   useEffect(() => {
     setIsSpeaking(false)
@@ -82,25 +89,25 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
   const lc = word ? levelClass(word.knowledge_level) : ''
 
   return (
-    <aside className="word-detail-panel" aria-label="Word details">
+    <aside className={`word-detail-panel${isClosing ? ' is-closing' : ''}`} aria-label="Word details">
 
       {/* ── Topbar ── */}
       <div className="word-detail-panel-topbar">
-        <button type="button" className="wdp-icon-btn" onClick={onClose} aria-label="Close">
+        <button type="button" className="wdp-icon-btn ripple-btn" onClick={handleClose} aria-label="Close">
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
           </svg>
         </button>
 
         <div className="wdp-nav">
-          <button type="button" className="wdp-nav-btn" disabled={!prevWord}
+          <button type="button" className="wdp-nav-btn ripple-btn" disabled={!prevWord}
             onClick={() => prevWord && onNavigate(prevWord.id)} aria-label="Previous">
             <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12"/>
             </svg>
           </button>
           <span className="wdp-nav-pos">{currentIdx >= 0 ? `${currentIdx + 1} / ${words.length}` : ''}</span>
-          <button type="button" className="wdp-nav-btn" disabled={!nextWord}
+          <button type="button" className="wdp-nav-btn ripple-btn" disabled={!nextWord}
             onClick={() => nextWord && onNavigate(nextWord.id)} aria-label="Next">
             <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <polyline points="5,2 10,7 5,12"/>
@@ -112,7 +119,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
 
         <div className="wdp-actions">
           {word && (
-            <button type="button" className="wdp-edit-btn"
+            <button type="button" className="wdp-edit-btn ripple-btn"
               onClick={() => navigate(routes.editWord(wordId), {state: {fromTopicSlug}})}>
               Edit
             </button>
@@ -130,9 +137,9 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
       ) : !word ? (
         <div className="wdp-loading">Word not found.</div>
       ) : (
-        <>
+        <div key={wordId} className={`word-detail-content${wordQuery.isFetching ? ' is-loading' : ''}`}>
           {/* ── Hero ── */}
-          <div className={`wdp-hero ${lc}`}>
+          <div className={`wdp-hero ${lc} word-detail-section`}>
             <div className="wdp-hero-chips">
               {word.part_of_speech && (
                 <span className="wdp-chip wdp-chip-pos">{word.part_of_speech}</span>
@@ -147,7 +154,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
               </span>
               <button
                 type="button"
-                className={`wdp-speak-btn${isSpeaking ? ' is-speaking' : ''}`}
+                className={`wdp-speak-btn ripple-btn${isSpeaking ? ' is-speaking' : ''}`}
                 onClick={handleSpeak}
                 disabled={!hasSpeechSynthesis}
                 aria-label="Pronounce"
@@ -175,10 +182,10 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
           </div>
 
           {/* ── Scrollable fields ── */}
-          <div className="wdp-body">
+          <div className={`wdp-body word-detail-section${wordQuery.isFetching ? ' is-loading' : ''}`}>
             <WordPageView word={word} topics={topics} hideTranslation hidePOS />
           </div>
-        </>
+        </div>
       )}
     </aside>
   )

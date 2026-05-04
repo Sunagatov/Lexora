@@ -1,12 +1,14 @@
-import {useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent} from 'react'
+import {useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
+import {Toast} from '@/shared/components/Toast'
 
 type Props = {onClose: () => void}
 
 export function QuickAddSheet({onClose}: Props) {
   const q = useQuickAdd()
   const sheetRef = useRef<HTMLDivElement>(null)
+  const [toastFeedback, setToastFeedback] = useState<{ok: boolean; msg: string} | null>(null)
 
   useEffect(() => {
     const id = window.requestAnimationFrame(() => q.termRef.current?.focus())
@@ -18,6 +20,11 @@ export function QuickAddSheet({onClose}: Props) {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = previousOverflow }
   }, [])
+
+  useEffect(() => {
+    if (!q.feedback) return
+    setToastFeedback(q.feedback)
+  }, [q.feedback])
 
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent) {
@@ -73,7 +80,7 @@ export function QuickAddSheet({onClose}: Props) {
                 }}
               />
               <button type="button"
-                className={`quick-add-enrich-btn${q.enriching ? ' is-loading' : ''}`}
+                className={`quick-add-enrich-btn ripple-btn${q.enriching ? ' is-loading' : ''}`}
                 onClick={q.enrich}
                 disabled={!q.term.trim() || q.enriching}>
                 {q.enriching ? '…' : '✨'}
@@ -117,7 +124,7 @@ export function QuickAddSheet({onClose}: Props) {
                   {!q.topicsLoading && q.topicId === null && <option value="" disabled>📥 Inbox (default)</option>}
                   {q.sortedTopics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <button type="button" className="quick-add-new-topic-btn" onClick={() => q.setAddingTopic(true)}>+</button>
+                <button type="button" className="quick-add-new-topic-btn ripple-btn" onClick={() => q.setAddingTopic(true)}>+</button>
               </div>
             ) : (
               <div className="quick-add-topic-row">
@@ -132,7 +139,7 @@ export function QuickAddSheet({onClose}: Props) {
                     if (e.key === 'Escape') q.cancelNewTopic()
                   }}
                 />
-                <button type="button" className="quick-add-translate-btn"
+                <button type="button" className="quick-add-translate-btn ripple-btn"
                   disabled={!q.newTopic.trim() || q.createTopicPending}
                   onClick={q.createTopic}>
                   {q.createTopicPending ? '…' : 'Create'}
@@ -154,11 +161,19 @@ export function QuickAddSheet({onClose}: Props) {
         </div>
 
         <div className="quick-add-footer">
-          <button type="button" className="quick-add-cancel" onClick={onClose}>Cancel</button>
-          <button type="button" className="quick-add-save" disabled={!q.canSave} onClick={q.save}>
+          <button type="button" className="quick-add-cancel ripple-btn" onClick={onClose}>Cancel</button>
+          <button type="button" className="quick-add-save ripple-btn" disabled={!q.canSave} onClick={q.save}>
             {q.savePending ? 'Saving…' : 'Save word'}
           </button>
         </div>
+
+        {toastFeedback && (
+          <Toast
+            message={toastFeedback.msg}
+            type={toastFeedback.ok ? 'success' : 'error'}
+            onClose={() => setToastFeedback(null)}
+          />
+        )}
       </div>
     </>,
     document.body,

@@ -50,7 +50,7 @@ export function TopicSidebarHeader({
       </div>
 
       <div className="sidebar-smart-review-wrap">
-        <button type="button" className={`sidebar-smart-review-btn ${isSmartReview ? 'active' : ''}`} onClick={onSelectSmartReview}>
+        <button type="button" className={`sidebar-smart-review-btn ripple-btn ${isSmartReview ? 'active' : ''}`} onClick={onSelectSmartReview}>
           <span className="sidebar-smart-review-title">
             <span className="sidebar-smart-review-emoji" aria-hidden="true">✨</span>
             <span className="sidebar-smart-review-text"> Daily Word Mix</span>
@@ -76,7 +76,7 @@ export function TopicSidebarHeader({
                 value={topicSearch}
                 onChange={(event) => setTopicSearch(event.target.value)}
               />
-              <button type="button" className="sidebar-search-close" onClick={closeMobileSearch} aria-label="Close search">
+              <button type="button" className="sidebar-search-close ripple-btn" onClick={closeMobileSearch} aria-label="Close search">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <line x1="1" y1="1" x2="13" y2="13" />
                   <line x1="13" y1="1" x2="1" y2="13" />
@@ -84,7 +84,7 @@ export function TopicSidebarHeader({
               </button>
             </div>
           ) : (
-            <button type="button" className="sidebar-search-toggle" onClick={() => setSearchOpen(true)} aria-label="Search topics">
+            <button type="button" className="sidebar-search-toggle ripple-btn" onClick={() => setSearchOpen(true)} aria-label="Search topics">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                 <circle cx="6.5" cy="6.5" r="4.5" />
                 <line x1="10" y1="10" x2="14" y2="14" />

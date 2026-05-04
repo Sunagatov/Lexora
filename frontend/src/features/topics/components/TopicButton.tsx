@@ -63,7 +63,7 @@ export function TopicButton({
       {hasChildren ? (
         <button
           type="button"
-          className={`topic-item-expander ${expanded ? 'expanded' : ''}`}
+          className={`topic-item-expander ripple-btn ${expanded ? 'expanded' : ''}`}
           aria-label={`${expanded ? 'Collapse' : 'Expand'} ${topic.name}`}
           aria-expanded={expanded}
           onClick={(e) => {
@@ -78,7 +78,7 @@ export function TopicButton({
       ) : (
         <span className="topic-item-expander-spacer" aria-hidden="true" />
       )}
-      <button type="button" className={`topic-item-select ${hasChildren ? 'has-expander' : ''}`} onClick={() => onSelect(topic.id)}>
+      <button type="button" className={`topic-item-select ripple-btn ${hasChildren ? 'has-expander' : ''}`} onClick={() => onSelect(topic.id)}>
         <span className="topic-item-icon" aria-hidden="true">{topic.name.charAt(0)}</span>
         <span className="topic-item-name">{topic.name}</span>
         <span className="topic-item-pct">
@@ -87,7 +87,7 @@ export function TopicButton({
         <span className="topic-count">{count}</span>
       </button>
       <div className="topic-item-actions">
-        <button type="button" className={`topic-item-pin ${isPinned ? 'pinned' : ''}`}
+        <button type="button" className={`topic-item-pin ripple-btn ${isPinned ? 'pinned' : ''}`}
           title={isPinned ? 'Unpin' : 'Pin'}
           onClick={(e) => { e.stopPropagation(); onPin(topic.id) }}
         >
@@ -95,7 +95,7 @@ export function TopicButton({
             <path d="M5 1l1 3-3 2 1 1 2-1 1 4 1-4 2 1 1-1-3-2 1-3z" />
           </svg>
         </button>
-        <button type="button" className="topic-item-edit" title="Edit topic"
+        <button type="button" className="topic-item-edit ripple-btn" title="Edit topic"
           onClick={(e) => { e.stopPropagation(); onEdit(topic.id) }}
         >
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -104,7 +104,7 @@ export function TopicButton({
           </svg>
         </button>
         <span className="topic-item-actions-sep" />
-        <button type="button" className="topic-item-delete" title="Delete topic"
+        <button type="button" className="topic-item-delete ripple-btn" title="Delete topic"
           onClick={(e) => { e.stopPropagation(); onDelete(topic.id) }}
         >
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">

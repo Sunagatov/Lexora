@@ -167,11 +167,20 @@
   min-height: 0;
   display: flex;
   overflow: hidden;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .word-collection-split > .word-collection-layout {
   flex: 1;
   min-width: 0;
+}
+
+.smart-review-word-content.is-loading {
+  opacity: 0.68;
+}
+
+.word-collection-split.has-panel > .word-collection-layout {
+  transition: transform 0.22s ease, filter 0.22s ease;
 }
 
 .mobile-progress-pill {

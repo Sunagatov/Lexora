@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {InsightsStrip} from '@/features/stats/components/StatsInsights'
 import {
@@ -40,6 +41,35 @@ function StatsPageSkeleton() {
   )
 }
 
+function AnimatedNumber({
+  value,
+  duration = 850,
+  formatter = (next: number) => next.toLocaleString(),
+}: {
+  value: number
+  duration?: number
+  formatter?: (value: number) => string
+}) {
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    let frame = 0
+    const start = performance.now()
+
+    function tick(now: number) {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setDisplayValue(Math.round(value * eased))
+      if (progress < 1) frame = window.requestAnimationFrame(tick)
+    }
+
+    frame = window.requestAnimationFrame(tick)
+    return () => window.cancelAnimationFrame(frame)
+  }, [value, duration])
+
+  return <span className="number-display">{formatter(displayValue)}</span>
+}
+
 function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
   totalWords: number
   strongPct: number
@@ -55,22 +85,22 @@ function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
       <div className="stats-hero-cards">
         <div className="stats-hero-card stats-hero-card-words" data-card="words">
           <span className="stats-hero-card-icon">📚</span>
-          <span className="stats-hero-card-value">{totalWords.toLocaleString()}</span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={totalWords} /></span>
           <span className="stats-hero-card-label">Words</span>
         </div>
         <div className="stats-hero-card stats-hero-card-strong" data-card="strong">
           <span className="stats-hero-card-icon">💪</span>
-          <span className="stats-hero-card-value">{strongPct}%</span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={strongPct} formatter={(next) => `${next}%`} /></span>
           <span className="stats-hero-card-label">Okay or better</span>
         </div>
         <div className="stats-hero-card stats-hero-card-streak" data-card="streak">
           <span className="stats-hero-card-icon">🔥</span>
-          <span className="stats-hero-card-value">{streak}</span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={streak} /></span>
           <span className="stats-hero-card-label">Day streak</span>
         </div>
         <div className="stats-hero-card stats-hero-card-time" data-card="time">
           <span className="stats-hero-card-icon">⏱️</span>
-          <span className="stats-hero-card-value">{formatDuration(activeMinutes * 60)}</span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={activeMinutes} formatter={(next) => formatDuration(next * 60)} /></span>
           <span className="stats-hero-card-label">Active time</span>
         </div>
       </div>

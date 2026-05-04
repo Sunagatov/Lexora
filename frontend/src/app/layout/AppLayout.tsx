@@ -30,7 +30,9 @@ export function AppLayout() {
       <UsageTracker />
       <AppHeader hasDrawer={hasDrawer} onOpenDrawer={hasDrawer ? () => setDrawerOpen(true) : undefined} />
       <div className="app-body">
-        <Outlet context={{drawerOpen, setDrawerOpen} satisfies AppLayoutOutletContext} />
+        <div key={location.pathname} className="page-enter">
+          <Outlet context={{drawerOpen, setDrawerOpen} satisfies AppLayoutOutletContext} />
+        </div>
       </div>
       <AppFooter />
 
