@@ -113,6 +113,10 @@
 }
 
 .page-enter {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
   animation: page-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
