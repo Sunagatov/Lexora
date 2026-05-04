@@ -58,7 +58,12 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  transition:
+    background 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +75,12 @@
   background: var(--accent-light);
   color: var(--accent-dark);
   border-color: #c7d2fe;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.page-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .page-btn:disabled {
@@ -81,6 +92,7 @@
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .page-btn-active:hover {
