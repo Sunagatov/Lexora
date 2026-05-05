@@ -225,11 +225,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 0;
+  order: 2;
   margin-bottom: 4px;
   padding-bottom: 2px;
   border-bottom: none;
-  order: 2;
 }
 
 .chip {
@@ -667,7 +666,7 @@
   flex-direction: row;
   gap: 8px;
   margin-bottom: 0;
-  padding-bottom: 4px;
+  padding-bottom: 0;
   align-items: flex-start;
 }
 
@@ -696,15 +695,15 @@
 
 .word-card .word-translation {
   margin-top: 0;
-  margin-bottom: 6px;
-  padding-bottom: 4px;
+  margin-bottom: 2px;
+  padding-bottom: 0;
   font-size: 1.15rem;
   line-height: 1.25;
   color: #334155;
   font-weight: 700;
   font-style: italic;
   font-family: 'Georgia', serif;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  border-bottom: none;
   order: 1;
 }
 
