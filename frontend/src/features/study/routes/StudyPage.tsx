@@ -10,9 +10,26 @@ import {useResizableSidebarWidth} from '@/features/study/hooks/useResizableSideb
 import {useSidebarCollapsedPref} from '@/features/study/hooks/useSidebarCollapsedPref'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {StudySidebarShell} from '@/features/study/components/StudySidebarShell'
-import {StudyTopicSummary} from '@/features/study/components/StudyTopicSummary'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
+import type {Topic} from '@/features/topics/types/topicTypes'
+
+function buildTopicBreadcrumbs(topics: Topic[], selectedTopic: Topic | null) {
+  if (!selectedTopic) return []
+
+  const topicsById = new Map(topics.map((topic) => [topic.id, topic]))
+  const lineage: Topic[] = []
+  const seen = new Set<number>()
+  let current: Topic | undefined | null = selectedTopic
+
+  while (current && !seen.has(current.id)) {
+    lineage.push(current)
+    seen.add(current.id)
+    current = current.parent_topic_id ? topicsById.get(current.parent_topic_id) : null
+  }
+
+  return lineage.reverse()
+}
 
 export function StudyPage() {
   const navigate = useNavigate()
@@ -30,6 +47,10 @@ export function StudyPage() {
   const selectedWord = useMemo(
     () => s.pageWords.find((word) => word.id === panelWordId) ?? null,
     [panelWordId, s.pageWords],
+  )
+  const topicBreadcrumbs = useMemo(
+    () => buildTopicBreadcrumbs(s.topics, s.selectedTopic),
+    [s.topics, s.selectedTopic],
   )
 
   const sidebarProps = {
@@ -65,18 +86,21 @@ export function StudyPage() {
               <Breadcrumb
                 items={[
                   {label: 'Home', onClick: () => navigate(routes.home)},
-                  ...(s.selectedTopic?.name ? [{label: s.selectedTopic.name, isActive: !selectedWord}] : []),
+                  ...topicBreadcrumbs.map((topic, index) => {
+                    const isLastTopic = index === topicBreadcrumbs.length - 1
+                    return ({
+                    label: topic.name,
+                    isActive: !selectedWord && isLastTopic,
+                    onClick: !isLastTopic ? () => {
+                      setPanelWordId(null)
+                      s.selectTopic(topic.id)
+                    } : undefined,
+                  })
+                  }),
                   ...(selectedWord ? [{label: selectedWord.term, isActive: true}] : []),
                 ]}
               />
             </div>
-            <StudyTopicSummary
-              selectedTopicId={s.selectedTopicId}
-              selectedTopicName={s.selectedTopic?.name}
-              filteredWordCount={s.filteredWordCount}
-              topicWordCount={s.topicWordCount}
-              levelSummary={s.levelSummary}
-            />
 
             {s.selectedTopicId === null ? (
               <div className="main-inner">
@@ -99,7 +123,7 @@ export function StudyPage() {
                   onReset={s.resetFilters}
                   totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                   filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}
-                  levelSummary={s.levelSummary} topicName={s.selectedTopic?.name}
+                  levelSummary={s.levelSummary}
                   pageWords={s.pageWords} page={s.page} totalPages={s.totalPages}
                   pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
                   pendingWordId={s.pendingWordId} onUpdate={s.updateLevel}

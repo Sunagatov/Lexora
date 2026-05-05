@@ -30,7 +30,6 @@ type Props = {
   totalWordsOverall: number; topicTotalCount: number; filteredCount: number
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
-  topicName?: string
   pageWords: Word[]
   page: number; totalPages: number
   pageSize: number; setPageSize: (n: number) => void
@@ -48,7 +47,7 @@ export function WordCollectionView({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
-  pageStart, pageEnd, levelSummary, topicName,
+  pageStart, pageEnd, levelSummary,
   pageWords, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, onUpdate, fromTopicSlug,
   isLoading = false,
@@ -74,7 +73,7 @@ export function WordCollectionView({
             onReset={onReset}
             totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
             filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
-            levelSummary={levelSummary} topicName={topicName}
+            levelSummary={levelSummary}
           />
           {pageWords.length > 0 && (
             <div className="word-list-header" aria-hidden="true">

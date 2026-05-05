@@ -305,6 +305,28 @@
     justify-self: end;
   }
 
+  .toolbar-progress {
+    gap: 8px;
+    min-width: 0;
+    flex-basis: 100%;
+  }
+
+  .toolbar-progress-copy {
+    min-width: 78px;
+  }
+
+  .toolbar-progress-label {
+    font-size: 0.64rem;
+  }
+
+  .toolbar-progress-value {
+    font-size: 0.76rem;
+  }
+
+  .toolbar-progress-bar {
+    height: 8px;
+  }
+
   .toolbar-meta-row {
     justify-content: flex-start;
     min-height: 16px;

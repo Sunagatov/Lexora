@@ -27,7 +27,6 @@ type Props = {
   totalWordsOverall: number; topicTotalCount: number; filteredCount: number
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
-  topicName?: string
 }
 
 const SearchIcon = () => (
@@ -74,8 +73,10 @@ export function WordCollectionToolbar({
   const levelActive = levelFilter !== 'all'
   const effectiveSortBy: SortOption = levelActive && isLevelSortOption(sortBy) ? FALLBACK_TERM_SORT : sortBy
   const searchActive = wordSearch.trim() !== ''
-  const hasActiveFilters = posFilter !== null || cefrFilter !== null || completeness !== 'all'
-  const activeFilterCount = (posFilter ? 1 : 0) + (cefrFilter ? 1 : 0) + (completeness !== 'all' ? 1 : 0)
+  const hasActiveFilters = levelFilter !== 'all' || posFilter !== null || cefrFilter !== null || completeness !== 'all'
+  const activeFilterCount = (levelFilter !== 'all' ? 1 : 0) + (posFilter ? 1 : 0) + (cefrFilter ? 1 : 0) + (completeness !== 'all' ? 1 : 0)
+  const total = topicTotalCount || 1
+  const masteredPct = Math.round((levelSummary[4] / total) * 100)
 
   function handleSortChange(v: SortOption) {
     if (levelActive && isLevelSortOption(v)) { setSortBy(FALLBACK_TERM_SORT); return }
@@ -135,14 +136,8 @@ export function WordCollectionToolbar({
           {CEFR_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
           {DATE_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
         </select>
-        <select className="toolbar-control toolbar-mobile-select" value={String(levelFilter)}
-          onChange={(e) => setLevelFilter(e.target.value === 'all' ? 'all' : (Number(e.target.value) as WordKnowledgeLevel))} aria-label="Filter by level">
-          <option value="all">All</option>
-          {ACTIVE_LEVELS.map((l) => <option key={l} value={String(l)}>{LEVEL_LABELS[l]}</option>)}
-          <option value={String(PARKED_LEVEL)}>{LEVEL_LABELS[PARKED_LEVEL]}</option>
-        </select>
         <button type="button"
-          className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters ? 'toolbar-filter-toggle-active' : ''}`}
+          className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
           onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
           ☰{activeFilterCount > 0 && <span className="toolbar-filter-badge">{activeFilterCount}</span>}
         </button>
@@ -160,24 +155,66 @@ export function WordCollectionToolbar({
           {CEFR_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
           {DATE_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
         </select>
-        <select className="toolbar-control toolbar-control-level" value={String(levelFilter)}
-          onChange={(e) => setLevelFilter(e.target.value === 'all' ? 'all' : (Number(e.target.value) as WordKnowledgeLevel))} aria-label="Filter words by level">
-          <option value="all">All levels — {topicTotalCount}</option>
-          {ACTIVE_LEVELS.map((l) => <option key={l} value={String(l)}>{l} {LEVEL_LABELS[l]} — {levelSummary[l]}</option>)}
-          <option value={String(PARKED_LEVEL)}>{LEVEL_LABELS[PARKED_LEVEL]} — {levelSummary[PARKED_LEVEL]}</option>
-        </select>
         <button type="button"
           className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
           onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
           Filters{activeFilterCount > 0 && <span className="toolbar-filter-badge">{activeFilterCount}</span>}
         </button>
         <button type="button" className="btn btn-ghost toolbar-reset-btn" onClick={onReset}>Reset</button>
+        <div className="toolbar-progress" aria-label={`Topic progress, ${masteredPct}% mastered`}>
+          <div className="toolbar-progress-copy">
+            <span className="toolbar-progress-label">Progress</span>
+            <span className="toolbar-progress-value">{masteredPct}% mastered</span>
+          </div>
+          <div className="toolbar-progress-bar">
+            {ACTIVE_LEVELS.map((l) => {
+              const pct = (levelSummary[l] / total) * 100
+              if (pct === 0) return null
+              return <div key={l} className={`toolbar-progress-seg level-${l}`} style={{width: `${pct}%`}} />
+            })}
+            {!!levelSummary[PARKED_LEVEL] && (
+              <div
+                className="toolbar-progress-seg level-5"
+                style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}}
+              />
+            )}
+          </div>
+        </div>
         <span className="toolbar-range">{showingLabel} of {filteredCount}</span>
       </div>
 
       {/* Filter chips panel */}
       {filtersOpen && (
         <div className="toolbar-filter-panel">
+          <div className="toolbar-filter-group">
+            <span className="toolbar-filter-label">Knowledge level</span>
+            <div className="toolbar-chips">
+              <button
+                type="button"
+                className={`toolbar-chip ${levelFilter === 'all' ? 'toolbar-chip-active' : ''}`}
+                onClick={() => setLevelFilter('all')}
+              >
+                All levels
+              </button>
+              {ACTIVE_LEVELS.map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  className={`toolbar-chip ${levelFilter === level ? 'toolbar-chip-active' : ''}`}
+                  onClick={() => setLevelFilter(level)}
+                >
+                  {level} {LEVEL_LABELS[level]}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={`toolbar-chip ${levelFilter === PARKED_LEVEL ? 'toolbar-chip-active' : ''}`}
+                onClick={() => setLevelFilter(PARKED_LEVEL)}
+              >
+                {LEVEL_LABELS[PARKED_LEVEL]}
+              </button>
+            </div>
+          </div>
           <div className="toolbar-filter-group">
             <span className="toolbar-filter-label">Part of speech</span>
             <div className="toolbar-chips">
