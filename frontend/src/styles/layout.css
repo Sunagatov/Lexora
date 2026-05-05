@@ -34,11 +34,11 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(238, 240, 251, 0.88);
+  background: rgba(244, 242, 238, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 8px 28px 4px;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
   display: flex;
   flex-direction: column;
   gap: 6px;

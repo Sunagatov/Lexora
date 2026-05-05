@@ -147,17 +147,18 @@
   border: none;
   font-size: 0.82rem;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--sidebar-text-2);
   cursor: pointer;
   padding: 0;
   transition: color 0.12s;
   flex-shrink: 0;
 }
-.app-footer-brand:hover { color: #fff; }
+.app-footer-brand:hover { color: var(--sidebar-text); }
 
 .app-footer-right {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--sidebar-text-2);
+  opacity: 0.6;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -233,7 +234,7 @@
     margin-left: 0;
     padding: 6px 8px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--sidebar-subtle);
     font-size: 0.74rem;
     max-width: 84px;
     overflow: hidden;
@@ -258,7 +259,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--sidebar-subtle);
   }
 
   .app-header-logout {
