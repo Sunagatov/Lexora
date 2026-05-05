@@ -150,6 +150,12 @@ button, input, select, textarea { font: inherit; }
   box-shadow: var(--shadow-sm);
 }
 
+:root[color-scheme="dark"] .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
 .input-group {
   position: relative;
 }

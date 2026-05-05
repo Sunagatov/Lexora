@@ -1024,6 +1024,7 @@
 .sidebar-collapsed .sidebar-smart-review-text { display: none; }
 .sidebar-collapsed .sidebar-smart-review-count { display: none; }
 .sidebar-collapsed .sidebar-smart-review-bar { display: none; }
+.sidebar-collapsed .sidebar-smart-review-title { flex: none; }
 
 /* Topic list: compact, centered items */
 .sidebar-collapsed .sidebar-topic-list {
