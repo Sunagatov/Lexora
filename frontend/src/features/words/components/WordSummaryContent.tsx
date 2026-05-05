@@ -16,7 +16,7 @@ export function WordSummaryContent({word}: Props) {
       </div>
       {(cefr || pos) && (
         <div className="word-summary-badges">
-          {cefr && <span className="header-badge header-badge-cefr">{cefr.label}</span>}
+          {cefr && <span className={`header-badge header-badge-cefr header-badge-cefr-${cefr.label.toLowerCase()}`}>{cefr.label}</span>}
           {pos  && <span className="header-badge header-badge-pos">{pos.label}</span>}
         </div>
       )}

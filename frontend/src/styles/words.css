@@ -524,10 +524,9 @@
 .word-card-level-wrap {
   position: relative;
   flex-shrink: 0;
-  order: 3;
-  align-self: center;
-  margin-top: 0;
-  margin-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .level-dropdown-overlay {
@@ -695,6 +694,34 @@
   justify-content: space-between;
 }
 
+.word-card-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.word-card-dropdown-open {
+  z-index: 42;
+  position: relative;
+}
+
+.word-card-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.word-card-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .word-card .word-term {
   min-width: 0;
   font-size: 1.28rem;
@@ -705,7 +732,6 @@
   color: #0f172a;
   flex: 1;
   letter-spacing: -0.02em;
-  order: 1;
 }
 
 :root[color-scheme="dark"] .word-card .word-term {
@@ -809,10 +835,20 @@
   color: #4f46e5;
 }
 
-:root[color-scheme="dark"] .header-badge-cefr {
-  background: #312e81;
-  color: #c7d2fe;
-}
+.header-badge-cefr-a1 { background: #ecfdf5; color: #047857; }
+.header-badge-cefr-a2 { background: #ecfdf5; color: #059669; }
+.header-badge-cefr-b1 { background: #eff6ff; color: #2563eb; }
+.header-badge-cefr-b2 { background: #f5f3ff; color: #7c3aed; }
+.header-badge-cefr-c1 { background: #fffbeb; color: #d97706; }
+.header-badge-cefr-c2 { background: #fef2f2; color: #dc2626; }
+
+:root[color-scheme="dark"] .header-badge-cefr { background: #312e81; color: #c7d2fe; }
+:root[color-scheme="dark"] .header-badge-cefr-a1 { background: #064e3b; color: #6ee7b7; }
+:root[color-scheme="dark"] .header-badge-cefr-a2 { background: #064e3b; color: #6ee7b7; }
+:root[color-scheme="dark"] .header-badge-cefr-b1 { background: #1e3a5f; color: #93c5fd; }
+:root[color-scheme="dark"] .header-badge-cefr-b2 { background: #2e1065; color: #c4b5fd; }
+:root[color-scheme="dark"] .header-badge-cefr-c1 { background: #451a03; color: #fcd34d; }
+:root[color-scheme="dark"] .header-badge-cefr-c2 { background: #450a0a; color: #fca5a5; }
 
 .header-badge-pos {
   background: #dcfce7;
