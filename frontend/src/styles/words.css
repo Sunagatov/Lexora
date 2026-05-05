@@ -34,9 +34,9 @@
 /* Desktop table */
 .word-table-wrap {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(99, 102, 241, 0.1);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.07), 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
 .word-table {
@@ -54,14 +54,18 @@
 
 .word-table td {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.07);
   vertical-align: middle;
-  background: var(--surface);
+  background: #ffffff;
   transition:
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.word-row:hover td {
+  background: #f8f9ff;
 }
 
 .word-row:last-child td {
@@ -86,9 +90,6 @@
   transform: translateY(-1px);
 }
 
-.word-row:hover td {
-  background: var(--surface-2);
-}
 
 .word-row td:first-child {
   box-shadow: inset 4px 0 0 var(--level-color);
@@ -171,8 +172,8 @@
 
 .word-term {
   display: block;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.0rem;
+  font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--text);
   margin: 0;
@@ -442,6 +443,14 @@
   color: #312e81;
 }
 
+/* Level-specific badge colors */
+.level-badge-btn.level-unset { background: #f1f5f9; color: #64748b; }
+.level-badge-btn.level-1 { background: #fee2e2; color: #b91c1c; }
+.level-badge-btn.level-2 { background: #dbeafe; color: #1d4ed8; }
+.level-badge-btn.level-3 { background: #ede9fe; color: #6d28d9; }
+.level-badge-btn.level-4 { background: #d1fae5; color: #047857; }
+.level-badge-btn.level-5 { background: #f1f5f9; color: #64748b; opacity: 0.7; }
+
 .level-badge-btn svg {
   width: 8px;
   height: 8px;
@@ -457,6 +466,11 @@
   background: #4c1d95;
   color: #e0e7ff;
 }
+
+:root[color-scheme="dark"] .level-badge-btn.level-1 { background: #450a0a; color: #fca5a5; }
+:root[color-scheme="dark"] .level-badge-btn.level-2 { background: #1e3a5f; color: #93c5fd; }
+:root[color-scheme="dark"] .level-badge-btn.level-3 { background: #2e1065; color: #c4b5fd; }
+:root[color-scheme="dark"] .level-badge-btn.level-4 { background: #052e16; color: #6ee7b7; }
 
 /* Tooltip wrapper around the level badge button */
 .level-badge-wrap {

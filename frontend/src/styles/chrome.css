@@ -5,7 +5,7 @@
   top: 0;
   z-index: 100;
   background: var(--sidebar-bg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--sidebar-divider);
   padding: 0 20px;
   height: 48px;
   align-items: center;
@@ -25,7 +25,7 @@
   border: none;
   font-size: 15px;
   font-weight: 800;
-  color: #fff;
+  color: var(--header-text);
   cursor: pointer;
   padding: 0;
   letter-spacing: -0.3px;
@@ -36,19 +36,19 @@
 .app-header-nav-link {
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--header-text-2);
   text-decoration: none;
   margin-left: 12px;
   transition: color 0.12s;
 }
-.app-header-nav-link:hover { color: #fff; }
+.app-header-nav-link:hover { color: var(--header-text); }
 
 .app-header-breadcrumb {
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 7px;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--header-text-2);
   font-size: 0.77rem;
   white-space: nowrap;
   overflow: hidden;
@@ -63,11 +63,11 @@
 }
 
 .app-header-crumb:hover {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--header-text);
 }
 
 .app-header-crumb-current {
-  color: #fff;
+  color: var(--header-text);
   font-weight: 600;
 }
 
@@ -84,9 +84,9 @@
 
 .app-header-logout {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.14);
+  border: 1px solid var(--sidebar-border);
   border-radius: 999px;
-  color: rgba(255,255,255,0.82);
+  color: var(--header-text-2);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 600;
@@ -95,9 +95,9 @@
   transition: color 0.12s, border-color 0.12s, background 0.12s;
 }
 .app-header-logout:hover:not(:disabled) {
-  color: #fff;
-  border-color: rgba(255,255,255,0.28);
-  background: rgba(255,255,255,0.05);
+  color: var(--header-text);
+  border-color: var(--sidebar-border);
+  background: var(--sidebar-subtle);
 }
 .app-header-logout:disabled {
   opacity: 0.65;
@@ -108,13 +108,13 @@
   display: none;
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.8);
+  color: var(--header-text-2);
   cursor: pointer;
   padding: 4px;
   line-height: 0;
   transition: color 0.12s;
 }
-.app-header-burger:hover { color: #fff; }
+.app-header-burger:hover { color: var(--header-text); }
 
 @media (max-width: 860px) {
   .app-header-burger { display: flex; align-items: center; }
@@ -133,7 +133,7 @@
 .app-footer {
   display: none;
   background: var(--sidebar-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--sidebar-divider);
   padding: 0 32px;
   height: 44px;
   align-items: center;
