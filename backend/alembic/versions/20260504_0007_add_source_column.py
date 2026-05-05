@@ -16,20 +16,24 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "words",
-        sa.Column("source", sa.String(10), nullable=False, server_default="manual"),
-    )
-    op.create_check_constraint(
-        "ck_words_source",
-        "words",
-        "source IN ('manual', 'import')",
-    )
-    # Backfill: words backdated to 2026-01-01 are bulk imports
-    op.execute(
-        "UPDATE words SET source = 'import' WHERE created_at < '2026-01-02'"
-    )
-    op.create_index("ix_words_source", "words", ["source"])
+    bind = op.get_bind()
+    result = bind.execute(sa.text(
+        "SELECT 1 FROM information_schema.columns WHERE table_name='words' AND column_name='source'"
+    ))
+    if not result.fetchone():
+        op.add_column(
+            "words",
+            sa.Column("source", sa.String(10), nullable=False, server_default="manual"),
+        )
+        op.create_check_constraint(
+            "ck_words_source",
+            "words",
+            "source IN ('manual', 'import')",
+        )
+        op.execute(
+            "UPDATE words SET source = 'import' WHERE created_at < '2026-01-02'"
+        )
+        op.create_index("ix_words_source", "words", ["source"])
 
 
 def downgrade() -> None:

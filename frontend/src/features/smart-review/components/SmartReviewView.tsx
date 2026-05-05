@@ -105,7 +105,6 @@ export function SmartReviewView({queue, isLoading}: Props) {
   const remaining  = queue.total_count - queue.completed_count
   const progress   = queue.total_count > 0 ? Math.round((queue.completed_count / queue.total_count) * 100) : 0
   const isComplete = remaining === 0 && queue.total_count > 0
-  const progressLabel = `${queue.completed_count}/${queue.total_count}`
   const splitClassName = `word-collection-split smart-review-word-content${isTransitioning || isRefreshing ? ' is-loading' : ''}${panelWordId && !isMobile ? ' has-panel' : ''}`
 
   return (
@@ -128,10 +127,6 @@ export function SmartReviewView({queue, isLoading}: Props) {
             </div>
           </div>
           <div className="smart-review-progress smart-review-progress-modern">
-            <div className="study-progress-container">
-              <div className="study-progress-text">{progressLabel}</div>
-              <div className="study-progress-text smart-review-progress-percent">{progress}%</div>
-            </div>
             <div className="smart-review-progress-bar">
               <div className="smart-review-progress-fill" style={{width: `${progress}%`}} />
             </div>

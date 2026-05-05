@@ -68,6 +68,7 @@ export function WordPage() {
       <WordPageHero
         word={word}
         topicName={topic?.name}
+        topicNames={topics.filter(t => word.topic_ids.includes(t.id)).map(t => t.name)}
         breadcrumb={
           <Breadcrumb
             items={[

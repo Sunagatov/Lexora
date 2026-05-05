@@ -138,7 +138,10 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
         <section className="wpv-section">
           <h3 className="wpv-section-title">Topics</h3>
           <div className="wpv-chip-row">
-            {wordTopics.map((t) => <span key={t.id} className="wpv-topic-chip">{t.name}</span>)}
+            {wordTopics.map((t) => {
+              const parent = t.parent_topic_id ? topics.find(p => p.id === t.parent_topic_id) : null
+              return <span key={t.id} className="wpv-topic-chip">{parent ? `${parent.name} › ${t.name}` : t.name}</span>
+            })}
           </div>
         </section>
       )}

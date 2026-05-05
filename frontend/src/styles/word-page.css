@@ -16,7 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px 28px 36px;
+  padding: 16px 28px 80px;
   flex: 1;
   overflow-y: auto;
   min-height: 0;
@@ -158,6 +158,11 @@
   border: 1px solid rgba(148, 163, 184, 0.22);
 }
 
+:root[color-scheme="dark"] .word-page-level-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
 .word-page-topic-chip {
   background: rgba(15, 23, 42, 0.05);
   color: var(--text-3);
@@ -178,6 +183,11 @@
   font-weight: 700;
   cursor: pointer;
   transition: border-color 0.12s, background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+
+:root[color-scheme="dark"] .word-page-pronounce-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 .word-page-pronounce-btn:hover:not(:disabled) {
   border-color: rgba(99, 102, 241, 0.4);
@@ -209,7 +219,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: var(--shadow-sm);
 }
 
@@ -1125,6 +1135,8 @@
   font-weight: 600;
   background: rgba(15, 23, 42, 0.05);
   color: var(--text-2);
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* Confusables */

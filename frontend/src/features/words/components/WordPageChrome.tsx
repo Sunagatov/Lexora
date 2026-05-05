@@ -5,6 +5,7 @@ import type {Word} from '@/features/words/types/wordTypes'
 type HeroProps = {
   word: Word
   topicName?: string
+  topicNames?: string[]
   breadcrumb?: ReactNode
   editing: boolean
   isSpeaking: boolean
@@ -68,6 +69,7 @@ export function WordPageSkeleton() {
 export function WordPageHero({
   word,
   topicName,
+  topicNames,
   breadcrumb,
   editing,
   isSpeaking,
@@ -111,7 +113,10 @@ export function WordPageHero({
                 ? `Level ${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}`
                 : 'Unrated word'}
             </span>
-            {topicName && <span className="word-page-topic-chip">{topicName}</span>}
+            {topicNames && topicNames.length > 0
+              ? topicNames.map((name) => <span key={name} className="word-page-topic-chip">{name}</span>)
+              : topicName && <span className="word-page-topic-chip">{topicName}</span>
+            }
           </div>
           <button
             type="button"

@@ -231,7 +231,7 @@
   }
 
   .app-header-nav-link {
-    margin-left: 0;
+    margin-left: 1px;
     padding: 6px 8px;
     border-radius: 8px;
     background: var(--sidebar-subtle);
