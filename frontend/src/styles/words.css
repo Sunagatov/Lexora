@@ -229,6 +229,7 @@
   margin-bottom: 4px;
   padding-bottom: 2px;
   border-bottom: none;
+  order: 2;
 }
 
 .chip {
@@ -277,6 +278,7 @@
   text-overflow: ellipsis;
   white-space: normal;
   transition: color 0.2s ease, opacity 0.2s ease;
+  order: 3;
 }
 
 :root[color-scheme="dark"] .word-definition-line {
@@ -294,6 +296,7 @@
   color: #475569;
   line-height: 1.4;
   transition: color 0.2s ease, opacity 0.2s ease;
+  order: 4;
 }
 
 :root[color-scheme="dark"] .word-preview-line {
@@ -683,11 +686,11 @@
 }
 
 .word-card .word-term {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   line-height: 1.2;
   margin: 0;
-  margin-bottom: 3px;
+  margin-bottom: 1px;
   color: #0f172a;
   order: 1;
   flex: 1;
@@ -701,13 +704,14 @@
   margin-top: 0;
   margin-bottom: 6px;
   padding-bottom: 4px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1.25;
   color: #334155;
   font-weight: 700;
   font-style: italic;
   font-family: 'Georgia', serif;
   border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  order: 1;
 }
 
 :root[color-scheme="dark"] .word-card .word-translation {
