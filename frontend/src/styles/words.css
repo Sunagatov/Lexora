@@ -382,12 +382,6 @@
 
 .word-card-expand-btn:hover { color: var(--accent); }
 
-.word-translation {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #334155;
-}
-
 .word-extra {
   font-size: 0.8rem;
   color: var(--text-3);
@@ -840,13 +834,14 @@
   }
 
   .word-card .word-translation {
-    margin-top: 2px;
-    font-size: 0.82rem;
+    margin-top: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
   }
 
   .word-card .word-chips {
     gap: 3px;
-    margin-top: 3px;
+    margin-top: 0;
   }
 
   .word-card .chip {
@@ -863,11 +858,13 @@
   }
 
   .word-card .word-term {
-    font-size: 0.98rem;
+    font-size: 1.2rem;
+    font-weight: 800;
   }
 
   .word-card .word-translation {
-    font-size: 0.88rem;
+    font-size: 1.15rem;
+    font-weight: 700;
   }
 
   .word-card .word-definition-line,
