@@ -155,17 +155,11 @@
 }
 .app-footer-brand:hover { color: #fff; }
 
-.app-footer-stats {
-  display: flex;
-  gap: 16px;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.35);
-}
-
 .app-footer-right {
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* ── Word page nav footer ───────────────────────────────── */

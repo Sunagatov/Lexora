@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import {ACTIVE_LEVELS, LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 
@@ -14,11 +15,14 @@ type Props = {
 export function StudyTopicSummary({
   selectedTopicId,
   selectedTopicName,
+  filteredWordCount,
   topicWordCount,
   levelSummary,
 }: Props) {
+  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false)
   const total = topicWordCount || 1
   const masteredPct = Math.round((levelSummary[4] / total) * 100)
+  const isFiltered = filteredWordCount !== topicWordCount
 
   return (
     <div className="sticky-controls">
@@ -27,12 +31,22 @@ export function StudyTopicSummary({
           <div className="topic-header-title">{selectedTopicName ?? 'No topic selected'}</div>
           {selectedTopicId !== null && (
             <div className="topic-header-meta">
-              <span>{topicWordCount} words</span>
+              <span>{isFiltered ? `${filteredWordCount} of ${topicWordCount} words` : `${topicWordCount} words`}</span>
               <span className="topic-header-mastered">{masteredPct}% mastered</span>
+              <button
+                type="button"
+                className="topic-header-toggle-btn ripple-btn"
+                onClick={() => setIsBreakdownOpen((open) => !open)}
+                aria-expanded={isBreakdownOpen}
+                aria-label="Toggle topic progress breakdown"
+              >
+                <span className={`topic-header-toggle-chevron${isBreakdownOpen ? ' is-open' : ''}`}>▶</span>
+                <span className="topic-header-toggle-label">{isBreakdownOpen ? 'Hide breakdown' : 'Show breakdown'}</span>
+              </button>
             </div>
           )}
         </div>
-        {selectedTopicId !== null && (
+        {selectedTopicId !== null && isBreakdownOpen && (
           <div className="topic-header-right">
             <div className="topic-header-bar">
               {ACTIVE_LEVELS.map((l) => {
