@@ -1,38 +1,25 @@
 import type {Word} from '@/features/words/types/wordTypes'
-import {lexicalChips, smartPreview, truncate} from '@/features/words/model/wordPresenter'
+import {lexicalChips} from '@/features/words/model/wordPresenter'
 
 type Props = {word: Word}
 
-const CEFR_CLASS: Record<string, string> = {
-  A1: 'chip-cefr-a', A2: 'chip-cefr-a',
-  B1: 'chip-cefr-b1', B2: 'chip-cefr-b2',
-  C1: 'chip-cefr-c1', C2: 'chip-cefr-c2',
-}
-
 export function WordSummaryContent({word}: Props) {
   const chips = lexicalChips(word)
-  const preview = smartPreview(word)
-  const translation = word.translation_entries.slice(0, 2).join(' · ')
+  const cefr = chips.find((c) => c.type === 'cefr')
+  const pos  = chips.find((c) => c.type === 'pos')
+  const translation = word.translation_entries[0]
 
   return (
-    <>
-      {chips.length > 0 && (
-        <div className="word-chips">
-          {chips.map((c) => (
-            <span key={c.label} className={`chip ${c.type === 'cefr' ? CEFR_CLASS[c.label] ?? '' : ''} ${c.type === 'register' ? 'chip-register' : ''}`}>
-              {c.label}
-            </span>
-          ))}
+    <div className="word-summary-row">
+      <div className="word-summary-main">
+        {translation && <span className="word-translation-focus">{translation}</span>}
+      </div>
+      {(cefr || pos) && (
+        <div className="word-summary-badges">
+          {cefr && <span className="header-badge header-badge-cefr">{cefr.label}</span>}
+          {pos  && <span className="header-badge header-badge-pos">{pos.label}</span>}
         </div>
       )}
-      {translation && <div className="word-translation">{translation}</div>}
-      {word.definition && <div className="word-definition-line">{truncate(word.definition, 80)}</div>}
-      {preview && (
-        <div className="word-preview-line">
-          <span className="word-preview-label">{preview.label}:</span>
-          <span className="word-preview-text">{preview.text}</span>
-        </div>
-      )}
-    </>
+    </div>
   )
 }

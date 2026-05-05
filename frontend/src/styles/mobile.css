@@ -542,7 +542,7 @@
   }
 
   .word-collection-scroll {
-    padding-bottom: 116px;
+    padding-bottom: 0;
   }
 
   /* Hide table, show cards */
