@@ -110,15 +110,26 @@
 
 .word-row.level-unset { --level-color: #cbd5e1; }
 .word-row.level-1 { --level-color: #dc2626; }
+.word-row.level-1 td { background: #fef2f2; }
 .word-row.level-2 { --level-color: #2563eb; }
+.word-row.level-2 td { background: #eff6ff; }
 .word-row.level-3 { --level-color: #7c3aed; }
+.word-row.level-3 td { background: #f5f3ff; }
 .word-row.level-4 { --level-color: #059669; }
+.word-row.level-4 td { background: #ecfdf5; }
 /* Level 5 Parked — dashed grey stripe, reduced opacity */
 .word-row.level-5 { --level-color: #cbd5e1; }
+.word-row.level-5 td { background: #f8fafc; }
 .word-row.level-5 td:first-child { box-shadow: none; border-left: 4px dashed #cbd5e1; }
 .word-row.level-5:hover td:first-child,
 .word-row.level-5.word-row-panel-active td:first-child { border-left-width: 6px; }
 .word-row.level-5 { opacity: 0.65; }
+
+:root[color-scheme="dark"] .word-row.level-1 td { background: #1c1517; }
+:root[color-scheme="dark"] .word-row.level-2 td { background: #151a22; }
+:root[color-scheme="dark"] .word-row.level-3 td { background: #1a1520; }
+:root[color-scheme="dark"] .word-row.level-4 td { background: #131c17; }
+:root[color-scheme="dark"] .word-row.level-5 td { background: #1a1c1e; }
 
 .word-cell-word {
   width: 22%;
@@ -665,11 +676,17 @@
 
 /* Remove colored backgrounds based on level - use subtle shadow instead */
 .word-card.level-unset { background: var(--surface); }
-.word-card.level-1 { background: var(--surface); }
-.word-card.level-2 { background: var(--surface); }
-.word-card.level-3 { background: var(--surface); }
-.word-card.level-4 { background: var(--surface); }
-.word-card.level-5 { background: var(--surface); opacity: 0.75; }
+.word-card.level-1 { background: #fef2f2; border-left: 3px solid #fca5a5; }
+.word-card.level-2 { background: #eff6ff; border-left: 3px solid #93c5fd; }
+.word-card.level-3 { background: #f5f3ff; border-left: 3px solid #c4b5fd; }
+.word-card.level-4 { background: #ecfdf5; border-left: 3px solid #6ee7b7; }
+.word-card.level-5 { background: #f8fafc; border-left: 3px dashed #cbd5e1; opacity: 0.75; }
+
+:root[color-scheme="dark"] .word-card.level-1 { background: #1c1517; border-left-color: #dc2626; }
+:root[color-scheme="dark"] .word-card.level-2 { background: #151a22; border-left-color: #2563eb; }
+:root[color-scheme="dark"] .word-card.level-3 { background: #1a1520; border-left-color: #7c3aed; }
+:root[color-scheme="dark"] .word-card.level-4 { background: #131c17; border-left-color: #059669; }
+:root[color-scheme="dark"] .word-card.level-5 { background: #1a1c1e; border-left-color: #64748b; }
 
 .word-card + .word-card {
   margin-top: 6px;
