@@ -42,7 +42,6 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
 
   const lc = levelClass(word.knowledge_level)
   const chips = lexicalChips(word)
-  const compactChips = chips.filter((chip) => chip.type === 'pos' || chip.type === 'cefr')
   const verbForms = word.verb_form ? [
     ['Past', word.verb_form.past_simple],
     ['Participle', word.verb_form.past_participle],
@@ -158,26 +157,16 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
         </div>
       )}
 
-      {(compactChips.length > 0 || hasExpanded) && (
+      {hasExpanded && (
         <div className="word-card-footer">
-          {compactChips.length > 0 && (
-            <div className="word-card-meta" aria-label="Word attributes">
-              {compactChips.map((chip) => (
-                <span key={`${chip.type}-${chip.label}`} className={`word-card-meta-chip is-${chip.type}`}>
-                  {chip.label}
-                </span>
-              ))}
-            </div>
-          )}
-          {hasExpanded && (
-            <button
-              type="button"
-              className={`word-card-expand-btn${expanded ? ' is-expanded' : ''}`}
-              onClick={() => setExpanded((value) => !value)}
-            >
-              {expanded ? '−' : '+'}
-            </button>
-          )}
+          <div />
+          <button
+            type="button"
+            className={`word-card-expand-btn${expanded ? ' is-expanded' : ''}`}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            {expanded ? '−' : '+'}
+          </button>
         </div>
       )}
 

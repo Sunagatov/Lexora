@@ -64,7 +64,7 @@ export function QuickAddSheet({onClose}: Props) {
               <div className="input-group quick-add-input-group">
                 <input
                   ref={q.termRef}
-                  className="quick-add-input input-field"
+                  className="quick-add-input"
                   placeholder=" "
                   maxLength={255}
                   value={q.term}
@@ -103,7 +103,7 @@ export function QuickAddSheet({onClose}: Props) {
             </div>
             <div className="input-group">
               <input
-                className={`quick-add-input input-field${enriched ? ' is-ai-complete is-success' : ''}`}
+                className={`quick-add-input${enriched ? ' is-ai-complete is-success' : ''}`}
                 placeholder=" "
                 value={q.translation}
                 onChange={(e) => q.setTranslation(e.target.value)}

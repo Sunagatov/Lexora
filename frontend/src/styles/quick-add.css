@@ -83,16 +83,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--surface);
   backdrop-filter: blur(0px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border);
   border-radius: 20px 20px 0 0;
   z-index: 51;
   display: flex;
   flex-direction: column;
   max-height: 92vh;
   animation: qa-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 767px) {
@@ -105,7 +105,8 @@
 
 @media (min-width: 768px) {
   .quick-add-sheet {
-    max-width: 480px;
+    width: 480px;
+    height: 360px;
     left: auto;
     right: 24px;
     bottom: 24px;
@@ -165,7 +166,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px 10px;
+  padding: 14px 20px 15px;
   flex-shrink: 0;
 }
 
@@ -190,7 +191,7 @@
 .quick-add-close:hover { color: var(--text); background: var(--bg); }
 
 .quick-add-body {
-  padding: 4px 20px 8px;
+  padding: 14px 20px 8px;
   overflow-y: auto;
   flex: 1;
   display: flex;
@@ -240,9 +241,9 @@
 
 .quick-add-input {
   width: 100%;
-  padding: 12px 0 6px 0;
+  padding: 4px 0 6px 0;
   border: none;
-  border-bottom: 1.5px solid #e2e8f0;
+  border-bottom: 1.5px solid rgba(15, 23, 42, 0.15);
   border-radius: 0;
   background: transparent;
   color: var(--text);
@@ -251,7 +252,17 @@
   outline: none;
   transition: border-color 0.2s ease, background 0.2s ease;
   -webkit-appearance: none;
-  -webkit-autocomplete: off;
+}
+
+.input-group .quick-add-input,
+.quick-add-input-group .quick-add-input {
+  border-bottom: none;
+  padding: 4px 0 0 0;
+}
+
+.quick-add-input:focus-visible {
+  outline: none;
+  border-radius: 0;
 }
 
 :root[color-scheme="dark"] .quick-add-input {
@@ -286,8 +297,9 @@
 .quick-add-input-group {
   position: relative;
   border: none;
-  border-bottom: 1.5px solid #e2e8f0;
+  border-bottom: 1.5px solid rgba(15, 23, 42, 0.15);
   background: transparent;
+  padding-top: 14px;
   padding-bottom: 6px;
   transition: border-color 0.2s ease;
 }
@@ -306,28 +318,28 @@
   flex: 1;
 }
 
-/* Floating label */
-.input-label {
+/* Floating label — scoped to quick-add */
+.quick-add-sheet .input-label {
   position: absolute;
-  top: 12px;
+  top: 20px;
   left: 0;
   font-size: 0.88rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-2);
   pointer-events: none;
   transition: all 0.2s ease;
   transform-origin: left top;
 }
 
-:root[color-scheme="dark"] .input-label {
-  color: #64748b;
+:root[color-scheme="dark"] .quick-add-sheet .input-label {
+  color: #94a3b8;
 }
 
 .quick-add-input:focus ~ .input-label,
 .quick-add-input:not(:placeholder-shown) ~ .input-label {
-  top: -6px;
+  top: 0;
   font-size: 0.72rem;
-  color: #6366f1;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -419,14 +431,19 @@
 .quick-add-topic-row {
   display: flex;
   gap: 8px;
-  align-items: stretch;
+  align-items: center;
+}
+
+.quick-add-topic-row .quick-add-input {
+  flex: 1;
+  min-width: 0;
 }
 
 .quick-add-select {
   flex: 1;
   padding: 10px 36px 10px 0;
   border: none;
-  border-bottom: 1.5px solid #e2e8f0;
+  border-bottom: 1.5px solid rgba(15, 23, 42, 0.15);
   border-radius: 0;
   background: transparent;
   color: var(--text);
@@ -451,6 +468,11 @@
 .quick-add-select:focus {
   border-bottom-color: #6366f1;
   box-shadow: none;
+}
+
+.quick-add-select:focus-visible {
+  outline: none;
+  border-radius: 0;
 }
 
 .quick-add-new-topic-btn {
@@ -522,7 +544,7 @@
 
   .quick-add-footer {
     padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.98) 36%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, var(--surface) 36%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -781,8 +803,9 @@
 }
 
 :root[color-scheme="dark"] .quick-add-sheet {
-  background: rgba(26, 32, 44, 0.95);
+  background: rgba(26, 32, 44, 0.97);
   border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.4);
 }
 
 :root[color-scheme="dark"] .fab {
