@@ -151,8 +151,7 @@
 .toolbar-progress-seg {
   min-width: 2px;
   height: 100%;
-  background-size: 1000px 100%;
-  animation: progress-shimmer 3s ease-in-out infinite;
+  transition: width 0.25s ease;
 }
 
 .toolbar-progress-seg.level-1 { background: linear-gradient(90deg, #fecaca 0%, #dc2626 100%); }
