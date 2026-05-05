@@ -232,16 +232,21 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  min-height: 16px;
-  padding: 0 6px;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-3);
-  font-size: 0.65rem;
+  min-height: 20px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: capitalize;
   letter-spacing: 0.02em;
-  border: 1px solid var(--border);
+  border: none;
+}
+
+:root[color-scheme="dark"] .chip {
+  background: #312e81;
+  color: #c7d2fe;
 }
 
 /* CEFR badge colors */
@@ -385,14 +390,36 @@
 
 .level-badge-btn {
   gap: 4px;
-  cursor: pointer;
-  background: transparent;
+  cursor: default;
+  background: #e0e7ff;
+  color: #4f46e5;
   white-space: nowrap;
-  transition: opacity 0.12s;
+  transition: none;
+  border: none;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  height: 24px;
+  width: auto;
+  min-width: 36px;
+  border-radius: 6px;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.level-badge-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.level-badge-btn:not(:disabled):hover { opacity: 0.8; }
+.level-badge-btn:disabled { opacity: 1; cursor: default; }
+.level-badge-btn:not(:disabled):hover { opacity: 1; }
+
+.level-badge-btn svg {
+  display: none;
+}
+
+:root[color-scheme="dark"] .level-badge-btn {
+  background: #312e81;
+  color: #c7d2fe;
+}
 
 /* Tooltip wrapper around the level badge button */
 .level-badge-wrap {
@@ -438,6 +465,9 @@
 .word-card-level-wrap {
   position: relative;
   flex-shrink: 0;
+  order: 2;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .level-dropdown-overlay {
@@ -596,36 +626,44 @@
 
 .word-card-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 2px;
 }
 
 .word-card-title-row {
   display: flex;
-  align-items: flex-start;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
   flex: 1;
 }
 
 .word-card .word-term {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.3;
   margin: 0;
+  color: #0f172a;
+  order: 1;
+  flex: 1;
+}
+
+:root[color-scheme="dark"] .word-card .word-term {
+  color: #f8fafc;
 }
 
 .word-card .word-translation {
   margin-top: 3px;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   line-height: 1.3;
-  color: #64748b;
+  color: #1e293b;
+  font-weight: 600;
 }
 
 :root[color-scheme="dark"] .word-card .word-translation {
-  color: #a1adc6;
+  color: #f1f5f9;
+  font-weight: 600;
 }
 
 .word-card-extras {
@@ -703,13 +741,13 @@
   .word-card .word-preview-text {
     font-size: 0.82rem;
     line-height: 1.4;
-    color: #64748b;
+    color: #475569;
   }
 
   :root[color-scheme="dark"] .word-card .word-definition-line,
   :root[color-scheme="dark"] .word-card .word-preview-line,
   :root[color-scheme="dark"] .word-card .word-preview-text {
-    color: #a1adc6;
+    color: #cbd5e1;
   }
 
   .word-card-expand-btn {
