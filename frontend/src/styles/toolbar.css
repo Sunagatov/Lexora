@@ -407,38 +407,19 @@
 
 /* Filter panel */
 .toolbar-sheet-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 39;
-  background: rgba(15, 23, 42, 0.28);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  display: none;
 }
 
 .toolbar-filter-panel {
-  position: fixed;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 40;
-  max-height: 80vh;
-  width: 420px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--border);
 }
 
 .toolbar-filter-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: none;
 }
 
 .toolbar-filter-panel-copy {

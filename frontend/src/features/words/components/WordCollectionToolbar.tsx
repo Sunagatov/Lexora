@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from 'react'
-import {createPortal} from 'react-dom'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
@@ -278,10 +277,8 @@ export function WordCollectionToolbar({
       </div>
 
       {/* Filter chips panel */}
-      {filtersOpen && createPortal(
-        <>
-          <div className="toolbar-sheet-overlay" onClick={() => setFiltersOpen(false)} aria-hidden="true" />
-          <div className="toolbar-filter-panel" role="dialog" aria-modal="true" aria-label="Filters">
+      {filtersOpen && (
+          <div className="toolbar-filter-panel">
           <div className="toolbar-filter-panel-header">
             <div className="toolbar-filter-panel-copy">
               <span className="toolbar-filter-panel-title">Filters</span>
@@ -361,8 +358,6 @@ export function WordCollectionToolbar({
             <button type="button" className="btn btn-primary toolbar-filter-apply" onClick={() => setFiltersOpen(false)}>Done</button>
           </div>
           </div>
-        </>,
-        document.body,
       )}
     </div>
   )
