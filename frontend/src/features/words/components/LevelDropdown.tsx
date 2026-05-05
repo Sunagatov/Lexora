@@ -9,12 +9,29 @@ export function LevelDropdown({current, flipUp, onSelect, onClose}: {
 }) {
   return (
     <>
-      <div className="level-dropdown-overlay" onClick={onClose} />
-      <div className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}>
+      <div
+        className="level-dropdown-overlay"
+        onClick={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          onClose()
+        }}
+      />
+      <div
+        className={`level-dropdown ${flipUp ? 'level-dropdown-up' : 'level-dropdown-down'}`}
+        onClick={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+        }}
+      >
         {LEVELS.map((l) => (
           <button key={l} type="button"
             className={`level-dropdown-option ${levelClass(l)} ${l === current ? 'level-dropdown-option-active' : ''}`}
-            onClick={() => onSelect(l)}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onSelect(l)
+            }}
           >
             <span className="level-dropdown-num">{l}</span>
             <span>{LEVEL_LABELS[l]}</span>
