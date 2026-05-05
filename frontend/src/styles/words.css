@@ -226,7 +226,9 @@
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 3px;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 }
 
 .chip {
@@ -267,13 +269,18 @@
 /* Definition preview line in summary card */
 .word-definition-line {
   font-size: 0.82rem;
-  color: var(--text-2);
+  color: #475569;
   line-height: 1.4;
-  margin-top: 2px;
+  margin-top: 0;
+  margin-bottom: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
   transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+:root[color-scheme="dark"] .word-definition-line {
+  color: #cbd5e1;
 }
 
 /* Smart preview line */
@@ -281,27 +288,42 @@
   display: flex;
   align-items: baseline;
   gap: 5px;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  color: var(--text-3);
+  margin-top: 3px;
+  margin-bottom: 0;
+  font-size: 0.82rem;
+  color: #475569;
   line-height: 1.4;
   transition: color 0.2s ease, opacity 0.2s ease;
 }
 
+:root[color-scheme="dark"] .word-preview-line {
+  color: #cbd5e1;
+}
+
 .word-preview-label {
   font-weight: 600;
-  color: var(--text-3);
+  color: #6366f1;
   flex-shrink: 0;
   font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+:root[color-scheme="dark"] .word-preview-label {
+  color: #818cf8;
 }
 
 .word-preview-text {
-  color: var(--text-2);
+  color: #475569;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+:root[color-scheme="dark"] .word-preview-text {
+  color: #cbd5e1;
 }
 
 .word-translation {
@@ -322,13 +344,16 @@
 /* Tappable card body */
 .word-card-body-tap {
   cursor: pointer;
-  border-radius: 6px;
-  margin: 0 -4px;
-  padding: 2px 4px;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
   transition: background 0.1s;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.word-card-body-tap:hover { background: rgba(0, 0, 0, 0.03); }
+.word-card-body-tap:hover { background: transparent; }
 
 /* Expand/collapse button */
 .word-card-expand-btn {
@@ -336,14 +361,20 @@
   align-items: center;
   gap: 4px;
   margin-top: 6px;
+  margin-bottom: 0;
   background: transparent;
   border: none;
   padding: 0;
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-3);
+  color: #6366f1;
   transition: color 0.12s;
+  align-self: flex-start;
+}
+
+.word-card-expand-btn:hover {
+  color: #4f46e5;
 }
 
 .word-card-expand-btn:hover { color: var(--accent); }
@@ -665,18 +696,21 @@
 }
 
 .word-card .word-translation {
-  margin-top: 4px;
-  font-size: 0.85rem;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  font-size: 0.9rem;
   line-height: 1.35;
-  color: #475569;
-  font-weight: 500;
+  color: #334155;
+  font-weight: 600;
   font-style: italic;
   font-family: 'Georgia', serif;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 }
 
 :root[color-scheme="dark"] .word-card .word-translation {
-  color: #cbd5e1;
-  font-weight: 500;
+  color: #e2e8f0;
+  font-weight: 600;
 }
 
 .word-card-extras {
