@@ -9,12 +9,12 @@
   position: relative;
   transition: width 0.22s ease;
   box-shadow: var(--sidebar-shadow);
-  border-right: 1px solid rgba(15, 23, 42, 0.06);
+  border-right: none;
 }
 
 :root[color-scheme="dark"] .desktop-sidebar {
   background: linear-gradient(180deg, #1e2a3e 0%, #1a2235 60%, #171e30 100%);
-  border-right-color: rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .desktop-sidebar.is-resizing {

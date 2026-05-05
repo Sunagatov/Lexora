@@ -289,7 +289,17 @@
   .toolbar-mobile-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    padding: 0 12px;
+  }
+
+  .toolbar-mobile-row .toolbar-search-toggle,
+  .toolbar-mobile-row .toolbar-filter-toggle {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    flex: 0 0 44px;
   }
 
   .toolbar-mobile-select-wrap {
@@ -300,8 +310,15 @@
   .toolbar-sort-trigger-mobile {
     height: 44px;
     border-radius: 14px;
-    font-size: 0.88rem;
-    padding-inline: 12px;
+    font-size: 0.84rem;
+    padding-inline: 10px;
+    overflow: hidden;
+  }
+
+  .toolbar-sort-trigger-mobile .dropdown-trigger-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
 

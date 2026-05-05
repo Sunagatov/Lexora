@@ -15,7 +15,7 @@
   --text-2: #475569;
   --text-3: #94a3b8;
   --sidebar-bg: #f8f7f4;
-  --sidebar-shadow: 1px 0 12px rgba(0, 0, 0, 0.06);
+  --sidebar-shadow: none;
   --sidebar-text: #1e293b;
   --sidebar-text-2: #64748b;
   --sidebar-subtle: rgba(99, 102, 241, 0.05);
@@ -89,8 +89,7 @@ a:focus-visible {
 html, body, #root { height: 100%; }
 
 body {
-  background: linear-gradient(160deg, #f4f2ee 0%, #f0eeeb 40%, #ece9e4 100%);
-  background-attachment: fixed;
+  background: #f4f2ee;
   color: var(--text);
   line-height: 1.5;
   font-size: 15px;

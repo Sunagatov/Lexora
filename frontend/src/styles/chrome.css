@@ -4,8 +4,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--sidebar-bg);
-  border-bottom: 1px solid var(--sidebar-divider);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   padding: 0 20px;
   height: 48px;
   align-items: center;
@@ -132,8 +132,8 @@
 /* ── Desktop App Footer ─────────────────────────────────── */
 .app-footer {
   display: none;
-  background: var(--sidebar-bg);
-  border-top: 1px solid var(--sidebar-divider);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   padding: 0 32px;
   height: 44px;
   align-items: center;

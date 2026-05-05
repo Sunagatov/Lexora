@@ -34,9 +34,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(244, 242, 238, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #f4f2ee;
   padding: 8px 28px 4px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
   display: flex;
@@ -45,7 +43,7 @@
 }
 
 :root[color-scheme="dark"] .sticky-controls {
-  background: rgba(10, 15, 31, 0.88);
+  background: #0a0f1f;
   border-bottom-color: var(--border);
 }
 
