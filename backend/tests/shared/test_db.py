@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
 from app.shared import db
@@ -26,9 +27,31 @@ def test_ensure_database_schema_creates_tables_once(monkeypatch) -> None:
     monkeypatch.setattr(db, "USING_SQLITE_FALLBACK", True)
     monkeypatch.setattr(db, "engine", sqlite_engine)
     monkeypatch.setattr(db, "_sqlite_schema_ready", False)
+    monkeypatch.setattr(db, "_sqlite_schema_has_drift", lambda candidate: False)
     monkeypatch.setattr(db.Base.metadata, "create_all", lambda bind: calls.append(bind))
 
     db.ensure_database_schema()
     db.ensure_database_schema()
 
     assert calls == [sqlite_engine]
+
+
+def test_ensure_database_schema_resets_stale_sqlite_fallback(monkeypatch, tmp_path) -> None:
+    original_engine = create_engine("sqlite+pysqlite:///:memory:")
+    replacement_engine = create_engine("sqlite+pysqlite:///:memory:")
+    calls: list[object] = []
+
+    with original_engine.begin() as connection:
+        connection.execute(text("CREATE TABLE words (id INTEGER PRIMARY KEY, term TEXT NOT NULL)"))
+
+    monkeypatch.setattr(db, "USING_SQLITE_FALLBACK", True)
+    monkeypatch.setattr(db, "engine", original_engine)
+    monkeypatch.setattr(db, "_sqlite_schema_ready", False)
+    monkeypatch.setattr(db, "_sqlite_database_path", lambda: tmp_path / "lexora-local.sqlite3")
+    monkeypatch.setattr(db, "_build_sqlite_engine", lambda: replacement_engine)
+    monkeypatch.setattr(db.Base.metadata, "create_all", lambda bind: calls.append(bind))
+
+    db.ensure_database_schema()
+
+    assert db.engine is replacement_engine
+    assert calls == [replacement_engine]
