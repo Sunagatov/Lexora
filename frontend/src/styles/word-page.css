@@ -102,6 +102,18 @@
 .word-page-hero.level-4 { background: linear-gradient(145deg, #ecfdf5 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #a7f3d0 0%, #059669 100%) border-box; }
 .word-page-hero.level-5 { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #cbd5e1 0%, #64748b 100%) border-box; }
 
+:root[color-scheme="dark"] .word-page-hero {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+:root[color-scheme="dark"] .word-page-hero.level-1 { background: #1c1517; border-color: rgba(220, 38, 38, 0.3); }
+:root[color-scheme="dark"] .word-page-hero.level-2 { background: #151a22; border-color: rgba(37, 99, 235, 0.3); }
+:root[color-scheme="dark"] .word-page-hero.level-3 { background: #1a1520; border-color: rgba(124, 58, 237, 0.3); }
+:root[color-scheme="dark"] .word-page-hero.level-4 { background: #131c17; border-color: rgba(5, 150, 105, 0.3); }
+:root[color-scheme="dark"] .word-page-hero.level-5 { background: #1a1c1e; border-color: rgba(100, 116, 139, 0.3); }
+:root[color-scheme="dark"] .word-page-hero.level-unset { background: var(--surface-2); border-color: var(--border); }
+
 /* Chips row: left group + Pronounce right */
 .word-page-hero-meta {
   display: flex;
@@ -732,6 +744,11 @@
 .wdp-hero.level-4  { background: linear-gradient(150deg, #d1fae5 0%, var(--surface) 68%); }
 .wdp-hero.level-5  { background: var(--surface); }
 
+:root[color-scheme="dark"] .wdp-hero.level-1  { background: linear-gradient(150deg, rgba(220,38,38,0.12) 0%, var(--surface) 68%); }
+:root[color-scheme="dark"] .wdp-hero.level-2  { background: linear-gradient(150deg, rgba(37,99,235,0.12) 0%, var(--surface) 68%); }
+:root[color-scheme="dark"] .wdp-hero.level-3  { background: linear-gradient(150deg, rgba(124,58,237,0.12) 0%, var(--surface) 68%); }
+:root[color-scheme="dark"] .wdp-hero.level-4  { background: linear-gradient(150deg, rgba(5,150,105,0.12) 0%, var(--surface) 68%); }
+
 .wdp-hero-chips {
   display: flex;
   align-items: center;
@@ -777,6 +794,10 @@
   transition: color 0.12s, border-color 0.12s, background 0.12s, box-shadow 0.12s;
   margin-left: auto;
   flex-shrink: 0;
+}
+:root[color-scheme="dark"] .wdp-speak-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 .wdp-speak-btn:hover:not(:disabled) {
   color: var(--accent);
