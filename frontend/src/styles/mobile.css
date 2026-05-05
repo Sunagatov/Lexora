@@ -239,24 +239,15 @@
     gap: 6px;
   }
 
-  .toolbar-mobile-select {
-    display: block;
+  .toolbar-mobile-select-wrap {
     flex: 1;
-    min-width: 0;
+  }
+
+  .toolbar-sort-trigger-mobile {
     height: 38px;
-    padding: 0 24px 0 10px;
-    border: 1px solid var(--border);
     border-radius: 10px;
-    background: var(--surface-2);
-    color: var(--text);
     font-size: 0.84rem;
-    font-weight: 600;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 7px center;
+    padding-inline: 10px;
   }
 
 

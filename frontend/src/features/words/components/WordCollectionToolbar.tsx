@@ -41,6 +41,12 @@ const CloseIcon = () => (
   </svg>
 )
 
+const SelectChevron = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M3 4.5 6 7.5l3-3"/>
+  </svg>
+)
+
 const SORT_LABELS: Record<SortOption, string> = {
   'level-asc': 'Level ↑', 'level-desc': 'Level ↓',
   'term-asc': 'A → Z', 'term-desc': 'Z → A',
@@ -67,8 +73,11 @@ export function WordCollectionToolbar({
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(() => wordSearch !== '')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [sortOpen, setSortOpen] = useState(false)
   const desktopSearchRef = useRef<HTMLInputElement>(null)
   const mobileSearchRef = useRef<HTMLInputElement>(null)
+  const desktopSortDropdownRef = useRef<HTMLDivElement>(null)
+  const mobileSortDropdownRef = useRef<HTMLDivElement>(null)
 
   const levelActive = levelFilter !== 'all'
   const effectiveSortBy: SortOption = levelActive && isLevelSortOption(sortBy) ? FALLBACK_TERM_SORT : sortBy
@@ -81,6 +90,7 @@ export function WordCollectionToolbar({
   function handleSortChange(v: SortOption) {
     if (levelActive && isLevelSortOption(v)) { setSortBy(FALLBACK_TERM_SORT); return }
     setSortBy(v)
+    setSortOpen(false)
   }
 
   function openSearch() { setSearchOpen(true) }
@@ -91,13 +101,37 @@ export function WordCollectionToolbar({
   }, [searchOpen])
 
   useEffect(() => {
-    if (!searchOpen) return
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') closeSearch() }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (sortOpen) setSortOpen(false)
+        if (searchOpen) closeSearch()
+      }
+    }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [searchOpen])
+  }, [searchOpen, sortOpen])
+
+  useEffect(() => {
+    if (!sortOpen) return
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node
+      const insideDesktop = !!desktopSortDropdownRef.current?.contains(target)
+      const insideMobile = !!mobileSortDropdownRef.current?.contains(target)
+      if (!insideDesktop && !insideMobile) {
+        setSortOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    return () => document.removeEventListener('mousedown', onPointerDown)
+  }, [sortOpen])
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'
+  const sortOptions = [
+    ...(!levelActive ? LEVEL_SORT_OPTIONS : []),
+    ...TERM_SORT_OPTIONS,
+    ...CEFR_SORT_OPTIONS,
+    ...DATE_SORT_OPTIONS,
+  ] as SortOption[]
 
   return (
     <div className="card toolbar-card">
@@ -129,13 +163,39 @@ export function WordCollectionToolbar({
         <button type="button"
           className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
           onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search"><SearchIcon /></button>
-        <select className="toolbar-control toolbar-mobile-select" value={effectiveSortBy}
-          onChange={(e) => handleSortChange(e.target.value as SortOption)} aria-label="Sort words">
-          {!levelActive && LEVEL_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {TERM_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {CEFR_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {DATE_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-        </select>
+        <div
+          ref={mobileSortDropdownRef}
+          className={`dropdown toolbar-sort-dropdown toolbar-mobile-select-wrap ${sortOpen ? 'dropdown-open' : ''}`}
+        >
+          <button
+            type="button"
+            className="dropdown-trigger toolbar-sort-trigger toolbar-sort-trigger-mobile"
+            onClick={() => setSortOpen((open) => !open)}
+            aria-haspopup="listbox"
+            aria-expanded={sortOpen}
+            aria-label="Sort words"
+          >
+            <span className="dropdown-trigger-label">{SORT_LABELS[effectiveSortBy]}</span>
+            <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
+          </button>
+          {sortOpen && (
+            <div className="dropdown-menu toolbar-sort-menu" role="listbox" aria-label="Sort options">
+              {sortOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="option"
+                  aria-selected={effectiveSortBy === option}
+                  className={`dropdown-option ${effectiveSortBy === option ? 'dropdown-option-active' : ''}`}
+                  onClick={() => handleSortChange(option)}
+                >
+                  <span className="dropdown-option-label">{SORT_LABELS[option]}</span>
+                  {effectiveSortBy === option ? <span className="dropdown-check">✓</span> : null}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <button type="button"
           className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
           onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
@@ -148,13 +208,39 @@ export function WordCollectionToolbar({
         <button type="button"
           className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
           onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search"><SearchIcon /></button>
-        <select className="toolbar-control toolbar-control-sort" value={effectiveSortBy}
-          onChange={(e) => handleSortChange(e.target.value as SortOption)} aria-label="Sort words">
-          {!levelActive && LEVEL_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {TERM_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {CEFR_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-          {DATE_SORT_OPTIONS.map((o) => <option key={o} value={o}>{SORT_LABELS[o]}</option>)}
-        </select>
+        <div
+          ref={desktopSortDropdownRef}
+          className={`dropdown toolbar-sort-dropdown toolbar-control-sort ${sortOpen ? 'dropdown-open' : ''}`}
+        >
+          <button
+            type="button"
+            className="dropdown-trigger toolbar-sort-trigger"
+            onClick={() => setSortOpen((open) => !open)}
+            aria-haspopup="listbox"
+            aria-expanded={sortOpen}
+            aria-label="Sort words"
+          >
+            <span className="dropdown-trigger-label">{SORT_LABELS[effectiveSortBy]}</span>
+            <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
+          </button>
+          {sortOpen && (
+            <div className="dropdown-menu toolbar-sort-menu" role="listbox" aria-label="Sort options">
+              {sortOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="option"
+                  aria-selected={effectiveSortBy === option}
+                  className={`dropdown-option ${effectiveSortBy === option ? 'dropdown-option-active' : ''}`}
+                  onClick={() => handleSortChange(option)}
+                >
+                  <span className="dropdown-option-label">{SORT_LABELS[option]}</span>
+                  {effectiveSortBy === option ? <span className="dropdown-check">✓</span> : null}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <button type="button"
           className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
           onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">

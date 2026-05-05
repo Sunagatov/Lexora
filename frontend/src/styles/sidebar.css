@@ -714,22 +714,51 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  align-items: stretch;
+}
+
+.sidebar-new-topic-parent-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: block;
+  box-sizing: border-box;
 }
 
 .sidebar-new-topic-parent {
+  display: block;
   width: 100%;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.06);
+  min-width: 0;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   color: var(--sidebar-text);
-  padding: 0 8px;
-  font-size: 0.78rem;
+  padding: 0 34px 0 10px;
+  font-size: 0.82rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .sidebar-new-topic-parent:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+.sidebar-new-topic-parent-chevron {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sidebar-text-2);
+  pointer-events: none;
+  opacity: 0.9;
 }
 
 .sidebar-new-topic-row {
@@ -741,6 +770,7 @@
 
 .sidebar-new-topic-input {
   flex: 1;
+  min-width: 0;
   height: 32px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
