@@ -83,6 +83,7 @@ export function WordCollectionToolbar({
   const effectiveSortBy: SortOption = levelActive && isLevelSortOption(sortBy) ? FALLBACK_TERM_SORT : sortBy
   const searchActive = wordSearch.trim() !== ''
   const hasActiveFilters = levelFilter !== 'all' || posFilter !== null || cefrFilter !== null || completeness !== 'all'
+  const hasAnyActiveControls = searchActive || hasActiveFilters
   const activeFilterCount = (levelFilter !== 'all' ? 1 : 0) + (posFilter ? 1 : 0) + (cefrFilter ? 1 : 0) + (completeness !== 'all' ? 1 : 0)
   const total = topicTotalCount || 1
   const masteredPct = Math.round((levelSummary[4] / total) * 100)
@@ -246,7 +247,13 @@ export function WordCollectionToolbar({
           onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
           Filters{activeFilterCount > 0 && <span className="toolbar-filter-badge">{activeFilterCount}</span>}
         </button>
-        <button type="button" className="btn btn-ghost toolbar-reset-btn" onClick={onReset}>Reset</button>
+        <button
+          type="button"
+          className={`btn btn-ghost toolbar-reset-btn${hasAnyActiveControls ? '' : ' is-inactive'}`}
+          onClick={onReset}
+        >
+          Reset
+        </button>
         <div className="toolbar-progress" aria-label={`Topic progress, ${masteredPct}% mastered`}>
           <div className="toolbar-progress-copy">
             <span className="toolbar-progress-label">Progress</span>
@@ -271,7 +278,18 @@ export function WordCollectionToolbar({
 
       {/* Filter chips panel */}
       {filtersOpen && (
-        <div className="toolbar-filter-panel">
+        <>
+          <div className="toolbar-sheet-overlay" onClick={() => setFiltersOpen(false)} aria-hidden="true" />
+          <div className="toolbar-filter-panel" role="dialog" aria-modal="true" aria-label="Filters">
+          <div className="toolbar-filter-panel-header">
+            <div className="toolbar-filter-panel-copy">
+              <span className="toolbar-filter-panel-title">Filters</span>
+              <span className="toolbar-filter-panel-subtitle">{activeFilterCount > 0 ? `${activeFilterCount} active` : 'Refine this topic view'}</span>
+            </div>
+            <button type="button" className="btn btn-ghost toolbar-filter-panel-close" onClick={() => setFiltersOpen(false)} aria-label="Close filters">
+              <CloseIcon />
+            </button>
+          </div>
           <div className="toolbar-filter-group">
             <span className="toolbar-filter-label">Knowledge level</span>
             <div className="toolbar-chips">
@@ -337,7 +355,12 @@ export function WordCollectionToolbar({
               ))}
             </div>
           </div>
-        </div>
+          <div className="toolbar-filter-panel-actions">
+            <button type="button" className="btn btn-ghost toolbar-filter-reset" onClick={onReset}>Reset</button>
+            <button type="button" className="btn btn-primary toolbar-filter-apply" onClick={() => setFiltersOpen(false)}>Done</button>
+          </div>
+          </div>
+        </>
       )}
     </div>
   )

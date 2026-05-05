@@ -30,6 +30,8 @@ describe('TopicSidebarFooter', () => {
         createPending
         workbookBusy={false}
         importInputRef={{current: null}}
+        statsActive={false}
+        trashActive={false}
         onNewTopicNameChange={vi.fn()}
         onNewTopicParentIdChange={vi.fn()}
         onCreate={onCreate}

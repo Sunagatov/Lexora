@@ -82,7 +82,7 @@ export function StudyPage() {
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} />
         ) : (
           <div className="study-topic-panel">
-            <div className="main-inner" style={{paddingBottom: 0}}>
+            <div className="main-inner study-breadcrumb-bar" style={{paddingBottom: 0}}>
               <Breadcrumb
                 items={[
                   {label: 'Home', onClick: () => navigate(routes.home)},

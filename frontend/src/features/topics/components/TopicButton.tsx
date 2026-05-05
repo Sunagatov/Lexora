@@ -78,7 +78,14 @@ export function TopicButton({
       ) : (
         <span className="topic-item-expander-spacer" aria-hidden="true" />
       )}
-      <button type="button" className={`topic-item-select ripple-btn ${hasChildren ? 'has-expander' : ''}`} onClick={() => onSelect(topic.id)}>
+      <button
+        type="button"
+        className={`topic-item-select ripple-btn ${hasChildren ? 'has-expander' : ''}`}
+        onClick={() => onSelect(topic.id)}
+        aria-label={topic.name}
+        title={topic.name}
+        data-sidebar-tooltip={topic.name}
+      >
         <span className="topic-item-icon" aria-hidden="true">{topic.name.charAt(0)}</span>
         <span className="topic-item-name">{topic.name}</span>
         <span className="topic-item-pct">

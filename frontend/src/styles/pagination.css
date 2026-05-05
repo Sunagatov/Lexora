@@ -138,9 +138,9 @@
 .pagination-mobile .page-size-dropdown {
   flex: 0 0 80px;
   margin-left: 0;
-  height: 30px;
+  height: 34px;
   padding: 0 22px 0 8px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.76rem;
 }
 
@@ -162,5 +162,22 @@
 
 @media (max-width: 860px) {
   .pagination-desktop { display: none; }
-  .pagination-mobile  { display: flex; }
+  .pagination-mobile  {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .page-nav-mobile {
+    min-width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .page-label {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: 0.84rem;
+  }
 }

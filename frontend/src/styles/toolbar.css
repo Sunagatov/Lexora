@@ -119,6 +119,10 @@
   margin-left: 4px;
 }
 
+.toolbar-reset-btn.is-inactive {
+  opacity: 0.52;
+}
+
 .toolbar-progress-copy {
   display: flex;
   flex-direction: column;
@@ -263,12 +267,14 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  z-index: 30;
+  z-index: 50;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   padding: 6px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .dropdown-option {
@@ -410,6 +416,37 @@
   border-top: 1px solid var(--border);
 }
 
+.toolbar-filter-panel-header {
+  display: none;
+}
+
+.toolbar-filter-panel-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toolbar-filter-panel-title {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.toolbar-filter-panel-subtitle {
+  font-size: 0.76rem;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.toolbar-filter-panel-close {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .toolbar-filter-group {
   display: flex;
   align-items: flex-start;
@@ -461,6 +498,10 @@
   background: var(--accent-dark);
   border-color: var(--accent-dark);
   color: #fff;
+}
+
+.toolbar-filter-panel-actions {
+  display: none;
 }
 
 @media (max-width: 1100px) {

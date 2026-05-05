@@ -39,6 +39,18 @@
   color-scheme: dark;
 }
 
+@media (max-width: 860px) {
+  :root {
+    --mobile-space-xs: 4px;
+    --mobile-space-sm: 8px;
+    --mobile-space-md: 12px;
+    --mobile-space-lg: 16px;
+    --mobile-space-xl: 20px;
+    --mobile-touch-target: 44px;
+    --mobile-safe-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @keyframes progress-shimmer {
   0% { background-position: -1000px 0; }
   100% { background-position: 1000px 0; }
@@ -68,6 +80,7 @@ body {
   line-height: 1.5;
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
 }
 
 :root[color-scheme="dark"] body {
@@ -82,6 +95,35 @@ button, input, select, textarea { font: inherit; }
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .fab:hover,
+  .word-card:hover,
+  .topic-item:hover,
+  .sidebar-footer-btn:hover,
+  .dropdown-trigger:hover,
+  .toolbar-chip:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+
+  button:active,
+  .btn:active,
+  .ripple-btn:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .card {

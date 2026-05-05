@@ -50,7 +50,14 @@ export function TopicSidebarHeader({
       </div>
 
       <div className="sidebar-smart-review-wrap">
-        <button type="button" className={`sidebar-smart-review-btn ripple-btn ${isSmartReview ? 'active' : ''}`} onClick={onSelectSmartReview}>
+        <button
+          type="button"
+          className={`sidebar-smart-review-btn ripple-btn ${isSmartReview ? 'active' : ''}`}
+          onClick={onSelectSmartReview}
+          aria-label="Daily Word Mix"
+          title="Daily Word Mix"
+          data-sidebar-tooltip="Daily Word Mix"
+        >
           <span className="sidebar-smart-review-title">
             <span className="sidebar-smart-review-emoji" aria-hidden="true">✨</span>
             <span className="sidebar-smart-review-text"> Daily Word Mix</span>

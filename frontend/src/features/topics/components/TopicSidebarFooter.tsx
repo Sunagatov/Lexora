@@ -16,6 +16,8 @@ type Props = {
   createPending: boolean
   workbookBusy: boolean
   importInputRef: RefObject<HTMLInputElement | null>
+  statsActive: boolean
+  trashActive: boolean
   onNewTopicNameChange: (value: string) => void
   onNewTopicParentIdChange: (value: number | '') => void
   onCreate: () => void
@@ -30,7 +32,7 @@ type Props = {
 
 export function TopicSidebarFooter({
   addingTopic, topicError, newTopicName, newTopicParentId, topicOptions, createPending,
-  workbookBusy, importInputRef, onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
+  workbookBusy, importInputRef, statsActive, trashActive, onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
   onCancel, onStartAdd, onOpenStats, onOpenTrash, onExport, onImportClick, onImportChange,
 }: Props) {
   return (
@@ -82,25 +84,55 @@ export function TopicSidebarFooter({
           {topicError && <div className="sidebar-new-topic-error">{topicError}</div>}
         </div>
       ) : (
-        <button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd}>
+        <button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd} aria-label="Create topic">
           <span className="sidebar-add-topic-plus">+</span>
           <span className="sidebar-add-topic-text"> New topic</span>
         </button>
       )}
       <div className="sidebar-footer-actions-grid">
-        <button type="button" className="sidebar-footer-btn" title="Statistics" onClick={onOpenStats}>
+        <button
+          type="button"
+          className={`sidebar-footer-btn sidebar-footer-btn-primary${statsActive ? ' is-active' : ''}`}
+          title="Statistics"
+          aria-label="Statistics"
+          data-sidebar-tooltip="Statistics"
+          onClick={onOpenStats}
+        >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="8" width="3" height="7" rx="0.5"/><rect x="6.5" y="4" width="3" height="11" rx="0.5"/><rect x="12" y="1" width="3" height="14" rx="0.5"/></svg>
           <span className="sidebar-footer-btn-label">Stats</span>
         </button>
-        <button type="button" className="sidebar-footer-btn" title="Trash" onClick={onOpenTrash}>
+        <button
+          type="button"
+          className={`sidebar-footer-btn sidebar-footer-btn-primary${trashActive ? ' is-active' : ''}`}
+          title="Trash"
+          aria-label="Trash"
+          data-sidebar-tooltip="Trash"
+          onClick={onOpenTrash}
+        >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12"/><path d="M5 4V2.5A1.5 1.5 0 0 1 6.5 1h3A1.5 1.5 0 0 1 11 2.5V4"/><path d="M3.5 4l.7 9.8a1.5 1.5 0 0 0 1.5 1.2h4.6a1.5 1.5 0 0 0 1.5-1.2L12.5 4"/></svg>
           <span className="sidebar-footer-btn-label">Trash</span>
         </button>
-        <button type="button" className="sidebar-footer-btn" title="Export Excel workbook" disabled={workbookBusy} onClick={onExport}>
+        <button
+          type="button"
+          className="sidebar-footer-btn sidebar-footer-btn-secondary"
+          title="Export Excel workbook"
+          aria-label="Export Excel workbook"
+          data-sidebar-tooltip="Export workbook"
+          disabled={workbookBusy}
+          onClick={onExport}
+        >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v8"/><path d="M4.5 6.5 8 10l3.5-3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
           <span className="sidebar-footer-btn-label">Export</span>
         </button>
-        <button type="button" className="sidebar-footer-btn" title="Import Excel workbook" disabled={workbookBusy} onClick={onImportClick}>
+        <button
+          type="button"
+          className="sidebar-footer-btn sidebar-footer-btn-secondary"
+          title="Import Excel workbook"
+          aria-label="Import Excel workbook"
+          data-sidebar-tooltip={workbookBusy ? 'Importing workbook' : 'Import workbook'}
+          disabled={workbookBusy}
+          onClick={onImportClick}
+        >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10V2"/><path d="M4.5 5.5 8 2l3.5 3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
           <span className="sidebar-footer-btn-label">{workbookBusy ? 'Importing…' : 'Import'}</span>
         </button>

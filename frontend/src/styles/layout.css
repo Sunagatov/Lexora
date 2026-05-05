@@ -24,6 +24,11 @@
   gap: 20px;
 }
 
+.study-breadcrumb-bar {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
 /* Sticky header + toolbar */
 .sticky-controls {
   position: sticky;

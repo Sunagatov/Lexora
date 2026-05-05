@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {routes} from '@/app/routes'
@@ -152,6 +152,7 @@ export function TopicSidebar({
   isCollapsed = false, onToggleCollapsed,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
+  const location = useLocation()
   const [posSortOpen, setPosSortOpen] = useState(false)
   const [topicsSortOpen, setTopicsSortOpen] = useState(false)
   const posSortRef = useRef<HTMLButtonElement>(null)
@@ -366,6 +367,8 @@ export function TopicSidebar({
         createPending={createTopicMutation.isPending}
         workbookBusy={workbookBusy}
         importInputRef={importInputRef}
+        statsActive={location.pathname === routes.stats}
+        trashActive={location.pathname === routes.trash}
         onNewTopicNameChange={changeNewTopicName}
         onNewTopicParentIdChange={setNewTopicParentId}
         onCreate={() => createTopicMutation.mutate()}

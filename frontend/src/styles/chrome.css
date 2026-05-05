@@ -212,12 +212,58 @@
 
 /* ── Word page footer mobile ────────────────────────────── */
 @media (max-width: 860px) {
-  .app-header-left {
+  .app-header {
+    padding: 0 12px;
+    height: 52px;
     gap: 10px;
+  }
+
+  .app-header-left {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .app-header-brand {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .app-header-nav-link {
+    margin-left: 0;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.74rem;
+    max-width: 84px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .app-header-breadcrumb {
     display: none;
+  }
+
+  .app-header-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .app-header-theme-toggle,
+  .app-header-burger {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .app-header-logout {
+    padding: 8px 10px;
+    font-size: 0.74rem;
   }
 
   .word-page-footer {
@@ -226,5 +272,30 @@
 
   .word-page-nav-btn {
     max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0 10px;
+  }
+
+  .app-header-left {
+    gap: 6px;
+  }
+
+  .app-header-brand {
+    font-size: 0.95rem;
+  }
+
+  .app-header-nav-link {
+    font-size: 0.7rem;
+    max-width: 72px;
+    padding: 5px 7px;
+  }
+
+  .app-header-logout {
+    padding: 7px 9px;
+    font-size: 0.7rem;
   }
 }
