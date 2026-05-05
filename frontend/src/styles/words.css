@@ -34,9 +34,17 @@
 /* Desktop table */
 .word-table-wrap {
   background: var(--surface);
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: 0 2px 12px rgba(99, 102, 241, 0.07), 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+:root[color-scheme="dark"] .word-table-wrap {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+:root[color-scheme="dark"] .word-row:hover {
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
 }
 
 .word-table {
@@ -54,9 +62,9 @@
 
 .word-table td {
   padding: 14px 20px;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.07);
+  border-bottom: 1px solid var(--border);
   vertical-align: middle;
-  background: #ffffff;
+  background: var(--surface);
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -65,7 +73,7 @@
 }
 
 .word-row:hover td {
-  background: #f8f9ff;
+  background: var(--surface-2);
 }
 
 .word-row:last-child td {

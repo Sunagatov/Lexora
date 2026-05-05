@@ -44,6 +44,11 @@
   gap: 6px;
 }
 
+:root[color-scheme="dark"] .sticky-controls {
+  background: rgba(10, 15, 31, 0.88);
+  border-bottom-color: var(--border);
+}
+
 .card.topic-header-card {
   display: flex;
   flex-direction: row;
