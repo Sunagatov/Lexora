@@ -105,7 +105,6 @@ describe('useQuickAdd cache invalidation', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
-    expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
   })
 
   it('invalidates topics and stats after creating a topic', async () => {

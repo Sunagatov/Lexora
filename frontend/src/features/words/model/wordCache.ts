@@ -7,7 +7,6 @@ const WORD_DEPENDENT_QUERY_KEYS = [
   queryKeys.words,
   queryKeys.topicSidebar,
   queryKeys.stats,
-  queryKeys.smartReview,
 ] as const
 
 export function patchWordLevel(

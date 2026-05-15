@@ -5,7 +5,7 @@ import {queryKeys} from '@/app/queryKeys'
 export function useSmartReview(enabled = true) {
   const queryClient = useQueryClient()
 
-  const query = useQuery({queryKey: queryKeys.smartReview, queryFn: fetchSmartReview, enabled})
+  const query = useQuery({queryKey: queryKeys.smartReview, queryFn: fetchSmartReview, enabled, staleTime: 60_000})
 
   const completeMutation = useMutation({
     mutationFn: completeSmartReviewItem,

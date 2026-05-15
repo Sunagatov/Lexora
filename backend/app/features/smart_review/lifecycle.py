@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
@@ -100,3 +100,39 @@ def load_active_queue(db) -> StudyQueue | None:
             .order_by(StudyQueue.generated_at.desc())
         ),
     )
+
+
+def load_active_queue_lightweight(db) -> StudyQueue | None:
+    """Load active queue without eager-loading items/words (for regeneration checks)."""
+    now = datetime.now(timezone.utc)
+    return cast(
+        StudyQueue | None,
+        db.scalar(
+            select(StudyQueue)
+            .where(StudyQueue.is_active.is_(True))
+            .where(StudyQueue.expires_at > now)
+            .order_by(StudyQueue.generated_at.desc())
+        ),
+    )
+
+
+def queue_needs_regeneration_sql(db, queue_id: int, total_count: int) -> bool:
+    """Check if any queue item references a deleted/inactive word, or if items were removed."""
+    item_count = db.scalar(
+        select(func.count()).select_from(StudyQueueItem).where(StudyQueueItem.queue_id == queue_id)
+    )
+    if item_count != total_count:
+        return True
+
+    stmt = (
+        select(StudyQueueItem.id)
+        .outerjoin(Word, StudyQueueItem.word_id == Word.id)
+        .where(StudyQueueItem.queue_id == queue_id)
+        .where(
+            (Word.id.is_(None))
+            | (Word.deleted_at.is_not(None))
+            | (Word.is_active.is_(False))
+        )
+        .limit(1)
+    )
+    return db.scalar(stmt) is not None

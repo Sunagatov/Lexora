@@ -144,7 +144,7 @@ describe('WordPage — cache invalidation after save', () => {
     vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
   })
 
-  it('invalidates words, stats, and smartReview after save', async () => {
+  it('invalidates words and stats after save', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
@@ -171,7 +171,6 @@ describe('WordPage — cache invalidation after save', () => {
       const keys = invalidateSpy.mock.calls.map((c) => (c[0] as {queryKey: unknown}).queryKey)
       expect(keys).toContainEqual(queryKeys.words)
       expect(keys).toContainEqual(queryKeys.stats)
-      expect(keys).toContainEqual(queryKeys.smartReview)
     })
   })
 })
@@ -184,7 +183,7 @@ describe('WordPage — cache invalidation after delete', () => {
     vi.mocked(wordsApi.deleteWord).mockResolvedValue(undefined)
   })
 
-  it('invalidates words, stats, smartReview, and trashWords after delete', async () => {
+  it('invalidates words, stats, and trashWords after delete', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
@@ -224,7 +223,6 @@ describe('WordPage — cache invalidation after delete', () => {
       const keys = invalidateSpy.mock.calls.map((c) => (c[0] as {queryKey: unknown}).queryKey)
       expect(keys).toContainEqual(queryKeys.words)
       expect(keys).toContainEqual(queryKeys.stats)
-      expect(keys).toContainEqual(queryKeys.smartReview)
       expect(keys).toContainEqual(queryKeys.trashWords)
     })
   })

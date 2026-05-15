@@ -166,6 +166,7 @@ def test_get_or_create_active_queue_returns_none_when_feature_disabled(monkeypat
 def test_get_or_create_active_queue_returns_existing_incomplete_queue(monkeypatch) -> None:
     active_word = SimpleNamespace(deleted_at=None, is_active=True)
     queue = SimpleNamespace(
+        id=1,
         is_active=True,
         completed_count=1,
         total_count=3,
@@ -181,6 +182,7 @@ def test_get_or_create_active_queue_returns_existing_incomplete_queue(monkeypatc
     generate = MagicMock()
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
     monkeypatch.setattr(smart_review_service, "generate_queue", generate)
+    monkeypatch.setattr(smart_review_service.lifecycle, "queue_needs_regeneration_sql", lambda db_arg, qid, tc: False)
 
     result = smart_review_service.get_or_create_active_queue(db)
 
@@ -191,6 +193,7 @@ def test_get_or_create_active_queue_returns_existing_incomplete_queue(monkeypatc
 def test_get_or_create_active_queue_regenerates_when_existing_queue_is_complete(monkeypatch) -> None:
     active_word = SimpleNamespace(deleted_at=None, is_active=True)
     queue = SimpleNamespace(
+        id=1,
         is_active=True,
         completed_count=3,
         total_count=3,
@@ -203,6 +206,7 @@ def test_get_or_create_active_queue_regenerates_when_existing_queue_is_complete(
 
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
     monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+    monkeypatch.setattr(smart_review_service.lifecycle, "queue_needs_regeneration_sql", lambda db_arg, qid, tc: False)
 
     result = smart_review_service.get_or_create_active_queue(db)
 
@@ -377,6 +381,7 @@ def test_complete_queue_item_raises_when_linked_word_is_deleted() -> None:
 
 def test_get_or_create_active_queue_regenerates_when_existing_queue_contains_deleted_word(monkeypatch) -> None:
     queue = SimpleNamespace(
+        id=1,
         is_active=True,
         completed_count=0,
         total_count=1,
@@ -389,6 +394,7 @@ def test_get_or_create_active_queue_regenerates_when_existing_queue_contains_del
 
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
     monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+    monkeypatch.setattr(smart_review_service.lifecycle, "queue_needs_regeneration_sql", lambda db_arg, qid, tc: True)
 
     result = smart_review_service.get_or_create_active_queue(db)
 
@@ -397,6 +403,7 @@ def test_get_or_create_active_queue_regenerates_when_existing_queue_contains_del
 
 def test_get_or_create_active_queue_regenerates_when_item_count_drifted(monkeypatch) -> None:
     queue = SimpleNamespace(
+        id=1,
         is_active=True,
         completed_count=0,
         total_count=2,
@@ -409,6 +416,7 @@ def test_get_or_create_active_queue_regenerates_when_item_count_drifted(monkeypa
 
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
     monkeypatch.setattr(smart_review_service, "generate_queue", lambda db_arg: regenerated)
+    monkeypatch.setattr(smart_review_service.lifecycle, "queue_needs_regeneration_sql", lambda db_arg, qid, tc: True)
 
     result = smart_review_service.get_or_create_active_queue(db)
 

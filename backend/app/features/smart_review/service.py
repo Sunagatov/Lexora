@@ -57,7 +57,7 @@ def generate_queue(db: Session) -> StudyQueue:
 def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     if not settings.smart_review_enabled:
         return None
-    queue: StudyQueue | None = cast(StudyQueue | None, lifecycle.load_active_queue(db))
+    queue: StudyQueue | None = cast(StudyQueue | None, lifecycle.load_active_queue_lightweight(db))
     if queue is not None:
         if _should_regenerate_queue(db, queue):
             return generate_queue(db)
@@ -79,6 +79,6 @@ def _should_regenerate_queue(db: Session, queue: StudyQueue) -> bool:
     if queue.total_count == 0:
         cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=settings.smart_review_cooldown_days)
         return selection.has_any_candidates(db, level_buckets=_level_buckets(), excluded_ids=cooldown_ids)
-    if lifecycle.queue_needs_regeneration(queue):
+    if lifecycle.queue_needs_regeneration_sql(db, queue.id, queue.total_count):
         return True
     return queue.completed_count >= queue.total_count

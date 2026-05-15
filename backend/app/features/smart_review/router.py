@@ -22,6 +22,11 @@ def _load_queue(db: Session, queue_id: int) -> StudyQueue | None:
             word_loader.selectinload(Word.topics),
             word_loader.selectinload(Word.translation_items),
             word_loader.selectinload(Word.example_items),
+            word_loader.selectinload(Word.synonym_items),
+            word_loader.selectinload(Word.antonym_items),
+            word_loader.selectinload(Word.collocation_items),
+            word_loader.selectinload(Word.confusable_items),
+            word_loader.selectinload(Word.verb_form),
         )
     )
 

@@ -61,10 +61,9 @@ export function useStudyState() {
   const totalWords = sidebarStats.total_words
   const topicWordCount = topicWords.length
   const filteredWordCount = filter.filteredWords.length
-  const isLoading =
-    topicsQuery.isLoading ||
-    sidebarStatsQuery.isLoading ||
-    (isSmartReview && smartReview.isLoading)
+  const isLoading = isSmartReview
+    ? smartReview.isLoading
+    : topicsQuery.isLoading
   const isWordsLoading = wordsQuery.isLoading
 
   return {

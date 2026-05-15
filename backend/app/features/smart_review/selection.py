@@ -102,6 +102,7 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int]) -> 
         .where(Word.deleted_at.is_(None))
         .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
+        .limit(50)
     )
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
