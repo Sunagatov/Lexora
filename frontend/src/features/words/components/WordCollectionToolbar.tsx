@@ -216,7 +216,26 @@ export function WordCollectionToolbar({
             <div className="toolbar-progress-seg level-5" style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}} />
           )}
         </div>
-        <span className="toolbar-progress-value">{masteredPct}%</span>
+        <div className="toolbar-progress-legend">
+          {ACTIVE_LEVELS.map((l) => {
+            const pct = Math.round((levelSummary[l] / total) * 100)
+            if (pct === 0) return null
+            return (
+              <span key={l} className="toolbar-progress-legend-item">
+                <span className={`toolbar-progress-dot level-${l}`} />
+                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[l]}</span>
+                <span className="toolbar-progress-legend-pct">{pct}%</span>
+              </span>
+            )
+          })}
+          {!!levelSummary[PARKED_LEVEL] && (
+            <span className="toolbar-progress-legend-item">
+              <span className="toolbar-progress-dot level-5" />
+              <span className="toolbar-progress-legend-label">{LEVEL_LABELS[5]}</span>
+              <span className="toolbar-progress-legend-pct">{Math.round((levelSummary[PARKED_LEVEL] / total) * 100)}%</span>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Desktop controls row */}
@@ -270,10 +289,6 @@ export function WordCollectionToolbar({
           Reset
         </button>
         <div className="toolbar-progress" aria-label={`Topic progress, ${masteredPct}% mastered`}>
-          <div className="toolbar-progress-copy">
-            <span className="toolbar-progress-label">Progress</span>
-            <span className="toolbar-progress-value">{masteredPct}% mastered</span>
-          </div>
           <div className="toolbar-progress-bar">
             {ACTIVE_LEVELS.map((l) => {
               const pct = (levelSummary[l] / total) * 100
@@ -285,6 +300,26 @@ export function WordCollectionToolbar({
                 className="toolbar-progress-seg level-5"
                 style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}}
               />
+            )}
+          </div>
+          <div className="toolbar-progress-legend">
+            {ACTIVE_LEVELS.map((l) => {
+              const pct = Math.round((levelSummary[l] / total) * 100)
+              if (pct === 0) return null
+              return (
+                <span key={l} className="toolbar-progress-legend-item">
+                  <span className={`toolbar-progress-dot level-${l}`} />
+                  <span className="toolbar-progress-legend-label">{LEVEL_LABELS[l]}</span>
+                  <span className="toolbar-progress-legend-pct">{pct}%</span>
+                </span>
+              )
+            })}
+            {!!levelSummary[PARKED_LEVEL] && (
+              <span className="toolbar-progress-legend-item">
+                <span className="toolbar-progress-dot level-5" />
+                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[5]}</span>
+                <span className="toolbar-progress-legend-pct">{Math.round((levelSummary[PARKED_LEVEL] / total) * 100)}%</span>
+              </span>
             )}
           </div>
         </div>
