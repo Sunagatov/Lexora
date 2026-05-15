@@ -187,6 +187,12 @@
   color: var(--text);
 }
 
+.toolbar-progress-legend-count {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
 /* Search input */
 .search-input {
   width: 100%;

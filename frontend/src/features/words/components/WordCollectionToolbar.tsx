@@ -225,6 +225,7 @@ export function WordCollectionToolbar({
                 <span className={`toolbar-progress-dot level-${l}`} />
                 <span className="toolbar-progress-legend-label">{LEVEL_LABELS[l]}</span>
                 <span className="toolbar-progress-legend-pct">{pct}%</span>
+                <span className="toolbar-progress-legend-count">{levelSummary[l]}</span>
               </span>
             )
           })}
@@ -233,6 +234,7 @@ export function WordCollectionToolbar({
               <span className="toolbar-progress-dot level-5" />
               <span className="toolbar-progress-legend-label">{LEVEL_LABELS[5]}</span>
               <span className="toolbar-progress-legend-pct">{Math.round((levelSummary[PARKED_LEVEL] / total) * 100)}%</span>
+              <span className="toolbar-progress-legend-count">{levelSummary[PARKED_LEVEL]}</span>
             </span>
           )}
         </div>
