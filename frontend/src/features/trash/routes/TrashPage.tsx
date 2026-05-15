@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {routes} from '@/app/routes'
@@ -5,6 +6,7 @@ import {useTrashPageState} from '@/features/trash/hooks/useTrashPageState'
 
 export function TrashPage() {
   const navigate = useNavigate()
+  const [speakingId, setSpeakingId] = useState<number | null>(null)
   const {
     retentionDays,
     words,
@@ -23,6 +25,17 @@ export function TrashPage() {
     restoreSingleWord,
     daysLeft,
   } = useTrashPageState()
+
+  function speak(id: number, term: string) {
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(term)
+    u.lang = 'en-GB'
+    u.rate = 0.92
+    u.onstart = () => setSpeakingId(id)
+    u.onend = () => setSpeakingId(null)
+    u.onerror = () => setSpeakingId(null)
+    window.speechSynthesis.speak(u)
+  }
 
   return (
     <div className="trash-page">
@@ -72,7 +85,19 @@ export function TrashPage() {
             {words.map((word) => (
               <div key={word.id} className="trash-item">
                 <div className="trash-item-info">
-                  <span className="trash-item-name">{word.term}</span>
+                  <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                    <span className="trash-item-name">{word.term}</span>
+                    <button type="button"
+                      className={`wdp-speak-btn ripple-btn${speakingId === word.id ? ' is-speaking' : ''}`}
+                      style={{marginLeft: 0}}
+                      onClick={() => speak(word.id, word.term)}
+                      aria-label={`Pronounce ${word.term}`}>
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h3l4-3v10l-4-3H3z"/>
+                        {speakingId === word.id ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/> : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
+                      </svg>
+                    </button>
+                  </span>
                   <span className="trash-item-meta">{word.translation_entries.join(', ')}</span>
                   <span className="trash-item-days">{daysLeft(word.deleted_at)} days left</span>
                   {restoreWordError?.id === word.id && (

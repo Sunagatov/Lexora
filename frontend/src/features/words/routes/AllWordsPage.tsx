@@ -50,6 +50,7 @@ export function AllWordsPage() {
   const [openLevelId, setOpenLevelId] = useState<number | null>(null)
   const [flipUp, setFlipUp]       = useState(false)
   const [pendingWordId, setPendingWordId] = useState<number | null>(null)
+  const [speakingId, setSpeakingId] = useState<number | null>(null)
 
   const topicMap = useMemo(() => new Map(topics.map(t => [t.id, t])), [topics])
 
@@ -117,6 +118,17 @@ export function AllWordsPage() {
       await batchUpdateWords({word_ids: [wordId], knowledge_level: newLevel})
       await loadWords()
     } finally { setPendingWordId(null) }
+  }
+
+  function speak(id: number, term: string) {
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(term)
+    u.lang = 'en-GB'
+    u.rate = 0.92
+    u.onstart = () => setSpeakingId(id)
+    u.onend = () => setSpeakingId(null)
+    u.onerror = () => setSpeakingId(null)
+    window.speechSynthesis.speak(u)
   }
 
   function resetFilters() { setSp({}, {replace: true}) }
@@ -199,7 +211,21 @@ export function AllWordsPage() {
                         aria-label={`Select ${word.term}`} />
                     </td>
                     <td className="word-cell-word">
-                      <Link className="word-term word-term-link" to={routes.word(word.id)}>{word.term}</Link>
+                      <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <Link className="word-term word-term-link" to={routes.word(word.id)} style={{display: 'inline', flex: 'none'}}>{word.term}</Link>
+                        <button type="button"
+                          className={`wdp-speak-btn ripple-btn${speakingId === word.id ? ' is-speaking' : ''}`}
+                          style={{marginLeft: 0}}
+                          onClick={() => speak(word.id, word.term)}
+                          aria-label={`Pronounce ${word.term}`}>
+                          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h3l4-3v10l-4-3H3z"/>
+                            {speakingId === word.id
+                              ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/>
+                              : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
+                          </svg>
+                        </button>
+                      </span>
                       {wordTopics.length > 0 && (
                         <div className="word-chips" style={{marginTop: 4}}>
                           {wordTopics.map(t => (

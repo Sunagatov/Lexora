@@ -20,6 +20,18 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [flipUp,     setFlipUp]     = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [speakingId, setSpeakingId] = useState<number | null>(null)
+
+  function speak(id: number, term: string) {
+    window.speechSynthesis.cancel()
+    const u = new SpeechSynthesisUtterance(term)
+    u.lang = 'en-GB'
+    u.rate = 0.92
+    u.onstart = () => setSpeakingId(id)
+    u.onend = () => setSpeakingId(null)
+    u.onerror = () => setSpeakingId(null)
+    window.speechSynthesis.speak(u)
+  }
 
   return (
     <div className="word-table-wrap">
@@ -43,15 +55,27 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                   onClick={onWordSelect ? () => onWordSelect(word.id) : undefined}
                 >
                   <td className="word-cell-word">
+                    <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
                     {onWordSelect ? (
-                      <span className="word-term word-term-link">
+                      <span className="word-term word-term-link" style={{display: 'inline', flex: 'none'}}>
                         {word.term}
                       </span>
                     ) : (
-                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}}>
+                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}} style={{display: 'inline', flex: 'none'}}>
                         {word.term}
                       </Link>
                     )}
+                    <button type="button"
+                      className={`wdp-speak-btn ripple-btn${speakingId === word.id ? ' is-speaking' : ''}`}
+                      style={{marginLeft: 0}}
+                      onClick={(e) => { e.stopPropagation(); speak(word.id, word.term) }}
+                      aria-label={`Pronounce ${word.term}`}>
+                      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h3l4-3v10l-4-3H3z"/>
+                        {speakingId === word.id ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/> : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
+                      </svg>
+                    </button>
+                    </span>
                   </td>
                   <td className="word-cell-details">
                     <WordSummaryContent word={word} />
