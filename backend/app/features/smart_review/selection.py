@@ -105,12 +105,14 @@ def empty_topic_counts() -> dict[int, int]:
 
 
 def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], needed: int = 50) -> list[Word]:
+    from sqlalchemy.sql.expression import func as sa_func
     stmt = (
         select(Word)
         .options(selectinload(Word.topics))
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
-        .order_by(Word.updated_at.asc())
+        .order_by(sa_func.random())
+        .limit(needed * 5)
     )
     if level == 1:
         stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
