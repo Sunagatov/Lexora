@@ -114,18 +114,21 @@
   background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
   --card-gradient-1: rgba(5, 150, 105, 0.22);
   --card-gradient-2: rgba(34, 197, 94, 0.18);
+  color: #064e3b;
 }
 
 .stats-hero-card[data-card="streak"] {
   background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%);
   --card-gradient-1: rgba(250, 204, 21, 0.25);
   --card-gradient-2: rgba(217, 119, 6, 0.18);
+  color: #78350f;
 }
 
 .stats-hero-card[data-card="time"] {
   background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%);
   --card-gradient-1: rgba(249, 115, 115, 0.2);
   --card-gradient-2: rgba(219, 39, 119, 0.18);
+  color: #831843;
 }
 
 .stats-hero-card-icon {

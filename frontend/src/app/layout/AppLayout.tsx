@@ -38,7 +38,7 @@ export function AppLayout() {
 
       <button
         type="button"
-        className={`fab ${drawerOpen ? 'fab-hidden' : ''}`}
+        className={`fab ${drawerOpen || location.pathname === routes.stats ? 'fab-hidden' : ''}`}
         aria-label="Add word"
         onClick={() => setQuickAddOpen(true)}
       >
