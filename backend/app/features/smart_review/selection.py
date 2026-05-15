@@ -140,10 +140,13 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], nee
         .options(selectinload(Word.topics))
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
-        .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
         .limit(max(needed * 3, 100))
     )
+    if level == 1:
+        stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
+    else:
+        stmt = stmt.where(Word.knowledge_level == level)
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
     return list(db.scalars(stmt).all())
@@ -154,9 +157,12 @@ def _has_smart_review_candidate(db, *, level: int, excluded_ids: set[int]) -> bo
         select(Word.id)
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
-        .where(Word.knowledge_level == level)
         .limit(1)
     )
+    if level == 1:
+        stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
+    else:
+        stmt = stmt.where(Word.knowledge_level == level)
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
     return db.scalar(stmt) is not None

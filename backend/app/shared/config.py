@@ -29,9 +29,9 @@ class Settings(BaseSettings):
 
     smart_review_enabled: bool = True
     smart_review_queue_size: int = 200
-    smart_review_weak: int = 50
-    smart_review_basic: int = 35
-    smart_review_okay: int = 15
+    smart_review_weak: int = 100
+    smart_review_basic: int = 0
+    smart_review_okay: int = 0
     smart_review_strong: int = 0
     smart_review_mastered: int = 0
     smart_review_cefr_a1: int = 10
