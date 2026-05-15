@@ -114,10 +114,7 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], nee
         .order_by(sa_func.random())
         .limit(needed * 5)
     )
-    if level == 1:
-        stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
-    else:
-        stmt = stmt.where(Word.knowledge_level == level)
+    stmt = stmt.where(Word.knowledge_level == level)
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
     return list(db.scalars(stmt).all())
@@ -130,10 +127,7 @@ def _has_smart_review_candidate(db, *, level: int, excluded_ids: set[int]) -> bo
         .where(Word.deleted_at.is_(None))
         .limit(1)
     )
-    if level == 1:
-        stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
-    else:
-        stmt = stmt.where(Word.knowledge_level == level)
+    stmt = stmt.where(Word.knowledge_level == level)
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))
     return db.scalar(stmt) is not None

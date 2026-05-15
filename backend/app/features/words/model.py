@@ -188,7 +188,7 @@ class Word(Base):
     register: Mapped[str | None] = mapped_column(String(20), nullable=True)
     countability: Mapped[str | None] = mapped_column(String(20), nullable=True)
     frequency_rank: Mapped[int | None] = mapped_column(Integer(), nullable=True)
-    knowledge_level: Mapped[int | None] = mapped_column(Integer(), nullable=True)
+    knowledge_level: Mapped[int | None] = mapped_column(Integer(), nullable=True, server_default=text("1"))
     pattern: Mapped[str | None] = mapped_column(Text(), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text(), nullable=True)
     source: Mapped[str] = mapped_column(String(10), nullable=False, server_default=text("'manual'"))
