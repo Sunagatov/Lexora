@@ -363,6 +363,26 @@
     cursor: pointer;
   }
 
+  .toolbar-mobile-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px 4px;
+  }
+
+  .toolbar-mobile-progress .toolbar-progress-bar {
+    flex: 1;
+    height: 6px;
+  }
+
+  .toolbar-mobile-progress .toolbar-progress-value {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-2);
+    min-width: 30px;
+    text-align: right;
+  }
+
 
   .toolbar-reset-btn {
     width: auto;

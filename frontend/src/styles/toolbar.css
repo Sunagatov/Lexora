@@ -78,6 +78,10 @@
   display: none;
 }
 
+.toolbar-mobile-progress {
+  display: none;
+}
+
 .toolbar-mobile-select {
   display: none;
 }

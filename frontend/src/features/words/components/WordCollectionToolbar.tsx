@@ -204,6 +204,21 @@ export function WordCollectionToolbar({
         </button>
       </div>
 
+      {/* Mobile progress */}
+      <div className="toolbar-mobile-progress">
+        <div className="toolbar-progress-bar">
+          {ACTIVE_LEVELS.map((l) => {
+            const pct = (levelSummary[l] / total) * 100
+            if (pct === 0) return null
+            return <div key={l} className={`toolbar-progress-seg level-${l}`} style={{width: `${pct}%`}} />
+          })}
+          {!!levelSummary[PARKED_LEVEL] && (
+            <div className="toolbar-progress-seg level-5" style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}} />
+          )}
+        </div>
+        <span className="toolbar-progress-value">{masteredPct}%</span>
+      </div>
+
       {/* Desktop controls row */}
       <div className="toolbar-controls-row">
         <button type="button"
