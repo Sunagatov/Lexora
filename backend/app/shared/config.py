@@ -39,9 +39,9 @@ class Settings(BaseSettings):
     smart_review_cefr_b1: int = 30
     smart_review_cefr_b2: int = 25
     smart_review_cefr_c1: int = 10
-    smart_review_cefr_c2: int = 5
+    smart_review_cefr_c2: int = 10
     smart_review_cooldown_days: int = 1
-    smart_review_max_per_topic: int = 5
+    smart_review_max_per_topic: int = 20
     smart_review_queue_ttl_hours: int = 72  # queue lives 3 days — only regenerates when complete
 
     @property

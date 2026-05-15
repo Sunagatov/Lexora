@@ -41,40 +41,10 @@ def pick_for_level(
     random.shuffle(candidates)
 
     if cefr_weights:
-        total_weight = sum(cefr_weights.values()) or 1
-        cefr_targets: dict[str, int] = {
-            cefr: max(1, round(needed * w / total_weight))
-            for cefr, w in cefr_weights.items() if w > 0
-        }
-        cefr_counts: dict[str, int] = defaultdict(int)
-
-        # Pick CEFR-targeted words first
-        picked: list = []
-        deferred: list = []
-        for word in candidates:
-            if len(picked) >= needed:
-                break
-            first_topic_id = min((topic.id for topic in word.topics), default=0)
-            if topic_counts[first_topic_id] >= max_per_topic:
-                continue
-            cefr = word.cefr_level or ""
-            if cefr in cefr_targets and cefr_counts[cefr] < cefr_targets[cefr]:
-                picked.append(word)
-                topic_counts[first_topic_id] += 1
-                cefr_counts[cefr] += 1
-            else:
-                deferred.append(word)
-
-        # Fill remaining from deferred
-        for word in deferred:
-            if len(picked) >= needed:
-                break
-            first_topic_id = min((topic.id for topic in word.topics), default=0)
-            if topic_counts[first_topic_id] >= max_per_topic:
-                continue
-            picked.append(word)
-            topic_counts[first_topic_id] += 1
-        return picked
+        # Sort candidates so higher-weighted CEFR levels come first (soft preference)
+        def cefr_priority(word):
+            return -(cefr_weights.get(word.cefr_level or "", 0))
+        candidates.sort(key=cefr_priority)
 
     picked: list = []
     for word in candidates:
@@ -141,7 +111,6 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], nee
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
         .order_by(Word.updated_at.asc())
-        .limit(max(needed * 3, 100))
     )
     if level == 1:
         stmt = stmt.where((Word.knowledge_level == 1) | (Word.knowledge_level.is_(None)))
