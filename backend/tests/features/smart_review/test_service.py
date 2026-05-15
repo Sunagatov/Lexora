@@ -227,14 +227,15 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     monkeypatch.setattr(smart_review_service, "deactivate_all_queues", deactivate)
     monkeypatch.setattr(smart_review_service.random, "shuffle", lambda items: None)
 
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_1_count", 1)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_2_count", 1)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_3_count", 0)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_4_count", 0)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_5_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_size", 2)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_weak", 50)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_basic", 50)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_okay", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_strong", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_mastered", 0)
     monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_ttl_hours", 24)
 
-    def fake_pick(db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic):
+    def fake_pick(db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic, cefr_weights=None):
         if level == 1:
             return [word1]
         if level == 2:
@@ -272,16 +273,17 @@ def test_generate_queue_writes_audit_log(monkeypatch, caplog) -> None:
     )
     monkeypatch.setattr(smart_review_service, "deactivate_all_queues", lambda db_arg: None)
     monkeypatch.setattr(smart_review_service.random, "shuffle", lambda items: None)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_1_count", 1)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_2_count", 0)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_3_count", 0)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_4_count", 0)
-    monkeypatch.setattr(smart_review_service.settings, "smart_review_level_5_count", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_size", 1)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_weak", 100)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_basic", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_okay", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_strong", 0)
+    monkeypatch.setattr(smart_review_service.settings, "smart_review_mastered", 0)
     monkeypatch.setattr(smart_review_service.settings, "smart_review_queue_ttl_hours", 24)
     monkeypatch.setattr(
         smart_review_service.selection,
         "pick_for_level_retry_excluded",
-        lambda db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic: [word1] if level == 1 else [],
+        lambda db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic, cefr_weights=None: [word1] if level == 1 else [],
     )
 
     with caplog.at_level(logging.INFO, logger="audit"):

@@ -2,20 +2,13 @@ function SmartReviewSkeleton() {
   return (
     <>
       <div className="sticky-controls">
-        <div className="card topic-header-card topic-header-card-desktop">
-          <div className="topic-header-main">
-            <div className="sk" style={{height: 18, width: 160, marginBottom: 6}} />
-            <div className="sk" style={{height: 13, width: '75%'}} />
+        <div className="smart-review-header">
+          <div className="smart-review-header-left">
+            <div className="sk" style={{height: 14, width: 120, borderRadius: 4}} />
+            <div className="sk" style={{height: 6, width: 140, borderRadius: 999}} />
+            <div className="sk" style={{height: 12, width: 36, borderRadius: 4}} />
           </div>
-          <div className="smart-review-progress">
-            <div className="smart-review-progress-bar">
-              <div className="sk" style={{height: '100%', width: '100%', borderRadius: 999}} />
-            </div>
-            <div className="smart-review-progress-footer">
-              <div className="sk" style={{height: 12, width: 100}} />
-              <div className="sk" style={{height: 28, width: 76, borderRadius: 8}} />
-            </div>
-          </div>
+          <div className="sk" style={{height: 26, width: 64, borderRadius: 8}} />
         </div>
       </div>
       <div className="main-inner">
@@ -45,7 +38,6 @@ import {WordCollectionView} from '@/features/words/components/WordCollectionView
 import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
-import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean}
@@ -110,40 +102,25 @@ export function SmartReviewView({queue, isLoading}: Props) {
   return (
     <div className="study-topic-panel">
       <div className="sticky-controls">
-        <div className="card topic-header-card topic-header-card-desktop smart-review-stage-card">
-          <div className="topic-header-main smart-review-stage-copy">
-            <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Daily Word Mix', isActive: true}]} />
-            <div className="smart-review-title-row">
-              <div className="topic-header-title">✨ Daily Word Mix</div>
-              <span className={`smart-review-status-pill ${isComplete ? 'is-complete' : ''}`}>
-                {isComplete ? 'Complete' : `${progress}% done`}
-              </span>
+        <div className="smart-review-header">
+          <div className="smart-review-header-left">
+            <span className="smart-review-header-title">✨ Daily Word Mix</span>
+            <div className="smart-review-header-bar">
+              <div className="smart-review-header-bar-fill" style={{width: `${progress}%`}} />
             </div>
-            <div className="smart-review-subtitle">
-              {isComplete
-                ? 'All done! Get a new set when you\'re ready.'
-                : `${remaining} word${remaining !== 1 ? 's' : ''} left in this session — progress is saved`
-              }
-            </div>
+            <span className="smart-review-header-stat">
+              {queue.completed_count}/{queue.total_count}
+            </span>
+            {isComplete && <span className="smart-review-header-done">✓</span>}
           </div>
-          <div className="smart-review-progress smart-review-progress-modern">
-            <div className="smart-review-progress-bar">
-              <div className="smart-review-progress-fill" style={{width: `${progress}%`}} />
-            </div>
-            <div className="smart-review-progress-footer">
-              <span className="smart-review-progress-label">
-                {queue.completed_count}/{queue.total_count} reviewed
-              </span>
-              <button
-                type="button"
-                className="smart-review-refresh-btn ripple-btn"
-                onClick={() => refresh()}
-                disabled={isRefreshing}
-              >
-                {isRefreshing ? 'Loading…' : isComplete ? '✨ New session' : '↺ New set'}
-              </button>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="smart-review-header-btn ripple-btn"
+            onClick={() => refresh()}
+            disabled={isRefreshing}
+          >
+            {isRefreshing ? '…' : isComplete ? '✨ New' : '↺ New set'}
+          </button>
         </div>
       </div>
 

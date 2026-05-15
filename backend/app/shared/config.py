@@ -28,14 +28,52 @@ class Settings(BaseSettings):
     api_key: str = Field(default="")
 
     smart_review_enabled: bool = True
-    smart_review_level_1_count: int = 5
-    smart_review_level_2_count: int = 5
-    smart_review_level_3_count: int = 5
-    smart_review_level_4_count: int = 5
-    smart_review_level_5_count: int = 0
+    smart_review_queue_size: int = 200
+    smart_review_weak: int = 50
+    smart_review_basic: int = 35
+    smart_review_okay: int = 15
+    smart_review_strong: int = 0
+    smart_review_mastered: int = 0
+    smart_review_cefr_a1: int = 10
+    smart_review_cefr_a2: int = 20
+    smart_review_cefr_b1: int = 30
+    smart_review_cefr_b2: int = 25
+    smart_review_cefr_c1: int = 10
+    smart_review_cefr_c2: int = 5
     smart_review_cooldown_days: int = 1
     smart_review_max_per_topic: int = 5
     smart_review_queue_ttl_hours: int = 72  # queue lives 3 days — only regenerates when complete
+
+    @property
+    def smart_review_level_1_count(self) -> int:
+        return round(self.smart_review_queue_size * self.smart_review_weak / 100)
+
+    @property
+    def smart_review_level_2_count(self) -> int:
+        return round(self.smart_review_queue_size * self.smart_review_basic / 100)
+
+    @property
+    def smart_review_level_3_count(self) -> int:
+        return round(self.smart_review_queue_size * self.smart_review_okay / 100)
+
+    @property
+    def smart_review_level_4_count(self) -> int:
+        return round(self.smart_review_queue_size * self.smart_review_strong / 100)
+
+    @property
+    def smart_review_level_5_count(self) -> int:
+        return round(self.smart_review_queue_size * self.smart_review_mastered / 100)
+
+    @property
+    def smart_review_cefr_weights(self) -> dict[str, int]:
+        return {
+            "A1": self.smart_review_cefr_a1,
+            "A2": self.smart_review_cefr_a2,
+            "B1": self.smart_review_cefr_b1,
+            "B2": self.smart_review_cefr_b2,
+            "C1": self.smart_review_cefr_c1,
+            "C2": self.smart_review_cefr_c2,
+        }
 
     trash_retention_days: int = 30
 

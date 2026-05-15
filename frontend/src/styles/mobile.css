@@ -580,61 +580,23 @@
     background: rgba(26, 32, 44, 0.94);
   }
 
-  /* Compact Daily Word Mix card on mobile */
-  .smart-review-stage-card {
-    padding: 8px 12px;
-    gap: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .smart-review-stage-card .smart-review-stage-copy {
-    flex: 1;
-    min-width: 0;
-    gap: 0;
-  }
-
-  .smart-review-stage-card .smart-review-stage-copy .breadcrumb {
-    display: none;
-  }
-
-  .smart-review-stage-card .topic-header-title {
-    font-size: 0.82rem;
-  }
-
-  .smart-review-subtitle {
-    display: none;
-  }
-
-  .smart-review-status-pill {
-    display: none;
-  }
-
-  .smart-review-stage-card .smart-review-progress {
-    margin: 0;
-    flex-shrink: 0;
-    gap: 0;
-  }
-
-  .smart-review-stage-card .smart-review-progress-bar {
-    display: none;
-  }
-
-  .smart-review-progress-footer {
-    font-size: 0.72rem;
+  /* Compact Daily Word Mix header on mobile */
+  .smart-review-header {
+    padding: 6px 10px;
     gap: 8px;
   }
 
-  .smart-review-progress-label {
-    color: var(--text-3);
+  .smart-review-header-title {
+    font-size: 0.78rem;
   }
 
-  .smart-review-refresh-btn {
-    font-size: 0.72rem;
-    padding: 4px 10px;
-    min-height: 0;
-    border-radius: 8px;
+  .smart-review-header-bar {
+    max-width: 100px;
+  }
+
+  .smart-review-header-btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
   }
 
 }

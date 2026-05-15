@@ -33,11 +33,48 @@ def pick_for_level(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
     max_per_topic: int,
+    cefr_weights: dict[str, int] | None = None,
 ) -> list:
     if needed <= 0:
         return []
-    candidates = _list_smart_review_candidates(db, level=level, excluded_ids=excluded_ids)
+    candidates = _list_smart_review_candidates(db, level=level, excluded_ids=excluded_ids, needed=needed)
     random.shuffle(candidates)
+
+    if cefr_weights:
+        total_weight = sum(cefr_weights.values()) or 1
+        cefr_targets: dict[str, int] = {
+            cefr: max(1, round(needed * w / total_weight))
+            for cefr, w in cefr_weights.items() if w > 0
+        }
+        cefr_counts: dict[str, int] = defaultdict(int)
+
+        # Pick CEFR-targeted words first
+        picked: list = []
+        deferred: list = []
+        for word in candidates:
+            if len(picked) >= needed:
+                break
+            first_topic_id = min((topic.id for topic in word.topics), default=0)
+            if topic_counts[first_topic_id] >= max_per_topic:
+                continue
+            cefr = word.cefr_level or ""
+            if cefr in cefr_targets and cefr_counts[cefr] < cefr_targets[cefr]:
+                picked.append(word)
+                topic_counts[first_topic_id] += 1
+                cefr_counts[cefr] += 1
+            else:
+                deferred.append(word)
+
+        # Fill remaining from deferred
+        for word in deferred:
+            if len(picked) >= needed:
+                break
+            first_topic_id = min((topic.id for topic in word.topics), default=0)
+            if topic_counts[first_topic_id] >= max_per_topic:
+                continue
+            picked.append(word)
+            topic_counts[first_topic_id] += 1
+        return picked
 
     picked: list = []
     for word in candidates:
@@ -59,6 +96,7 @@ def pick_for_level_retry_excluded(
     excluded_ids: set[int],
     topic_counts: dict[int, int],
     max_per_topic: int,
+    cefr_weights: dict[str, int] | None = None,
 ) -> list:
     picked = pick_for_level(
         db,
@@ -67,6 +105,7 @@ def pick_for_level_retry_excluded(
         excluded_ids=excluded_ids,
         topic_counts=topic_counts,
         max_per_topic=max_per_topic,
+        cefr_weights=cefr_weights,
     )
     shortfall = needed - len(picked)
     if shortfall > 0:
@@ -77,6 +116,7 @@ def pick_for_level_retry_excluded(
             excluded_ids=excluded_ids | {word.id for word in picked},
             topic_counts=topic_counts,
             max_per_topic=max_per_topic,
+            cefr_weights=cefr_weights,
         )
     return picked
 
@@ -94,7 +134,7 @@ def empty_topic_counts() -> dict[int, int]:
     return defaultdict(int)
 
 
-def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int]) -> list[Word]:
+def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], needed: int = 50) -> list[Word]:
     stmt = (
         select(Word)
         .options(selectinload(Word.topics))
@@ -102,7 +142,7 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int]) -> 
         .where(Word.deleted_at.is_(None))
         .where(Word.knowledge_level == level)
         .order_by(Word.updated_at.asc())
-        .limit(50)
+        .limit(max(needed * 3, 100))
     )
     if excluded_ids:
         stmt = stmt.where(Word.id.not_in(excluded_ids))

@@ -38,6 +38,7 @@ def generate_queue(db: Session) -> StudyQueue:
             excluded_ids=cooldown_ids | {word.id for word in selected},
             topic_counts=topic_counts,
             max_per_topic=settings.smart_review_max_per_topic,
+            cefr_weights=settings.smart_review_cefr_weights,
         )
         selected.extend(words)
 
