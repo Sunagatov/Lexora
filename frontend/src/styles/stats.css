@@ -1055,3 +1055,78 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
     min-width: 390px;
   }
 }
+
+/* ── Dark mode ────────────────────────────────────────────────────────────── */
+
+:root[color-scheme="dark"] .stats-card {
+  background: var(--surface-2);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+:root[color-scheme="dark"] .stats-card .stats-card-value { color: var(--text); }
+:root[color-scheme="dark"] .stats-card .stats-card-label { color: var(--text-2); }
+:root[color-scheme="dark"] .stats-card .stats-card-sub { color: var(--text-3); }
+
+:root[color-scheme="dark"] .stats-card-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[color-scheme="dark"] .stats-card-tone-indigo .stats-card-icon { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
+:root[color-scheme="dark"] .stats-card-tone-sky .stats-card-icon { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
+:root[color-scheme="dark"] .stats-card-tone-emerald .stats-card-icon { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+:root[color-scheme="dark"] .stats-card-tone-violet .stats-card-icon { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+:root[color-scheme="dark"] .stats-card-tone-amber .stats-card-icon { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+:root[color-scheme="dark"] .stats-card-tone-rose .stats-card-icon { background: rgba(244, 63, 94, 0.15); color: #fda4af; }
+:root[color-scheme="dark"] .stats-card-tone-slate .stats-card-icon { background: rgba(148, 163, 184, 0.12); color: #94a3b8; }
+
+:root[color-scheme="dark"] .stats-trend-good { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+:root[color-scheme="dark"] .stats-trend-bad { background: rgba(244, 63, 94, 0.15); color: #fda4af; }
+:root[color-scheme="dark"] .stats-trend-neutral { background: rgba(148, 163, 184, 0.12); color: #94a3b8; }
+:root[color-scheme="dark"] .stats-trend-down.stats-trend-good,
+:root[color-scheme="dark"] .stats-trend-up.stats-trend-bad { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+
+:root[color-scheme="dark"] .stats-section-icon {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+:root[color-scheme="dark"] .stats-enrichment-hero {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+:root[color-scheme="dark"] .stats-enrichment-hero-pct { color: var(--text); }
+:root[color-scheme="dark"] .stats-enrichment-hero-label { color: var(--text); }
+:root[color-scheme="dark"] .stats-enrichment-hero-sub { color: var(--text-2); }
+
+:root[color-scheme="dark"] .stats-enrichment-card {
+  background: var(--surface-2);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[color-scheme="dark"] .stats-profile-donut-block {
+  background: var(--surface-2);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[color-scheme="dark"] .stats-hero-card[data-card="strong"] {
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+}
+
+:root[color-scheme="dark"] .stats-hero-card[data-card="streak"] {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fcd34d;
+}
+
+:root[color-scheme="dark"] .stats-hero-card[data-card="time"] {
+  background: rgba(236, 72, 153, 0.12);
+  color: #f9a8d4;
+}
+
+:root[color-scheme="dark"] .stats-dist-bar {
+  background: var(--surface-2);
+  border-color: rgba(255, 255, 255, 0.08);
+}
