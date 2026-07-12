@@ -12,6 +12,16 @@ Lexora is a personal English vocabulary learning application. This repository ow
 - Never copy long current-state summaries into agent-specific adapters.
 - Secrets are not documentation. Do not read, print, normalize, or copy secret values.
 
+## Vault Context
+
+The sibling `Vault` checkout is the private operations and knowledge-base repo
+shared across these pet projects. Use it only when a task needs
+production/runtime facts: deployment flow, Docker Compose on the host, systemd or
+host setup, SOPS-managed secrets, backups/restores, observability, reverse proxy,
+infra inventory, or cross-project operational decisions. Start with Vault's
+`AGENTS.md` and follow its routing docs instead of asking where production,
+secrets, monitoring, or server-state information lives.
+
 ## Hard Safety Rules
 
 - Do not change application behavior for documentation-only tasks.

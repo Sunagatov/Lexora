@@ -116,8 +116,8 @@ Updating `wordTypes.ts` is not enough — every component, model, presenter, tes
 The import script runs locally but connects to the prod Supabase DB via env vars:
 ```bash
 set -a
-source /Users/zufar/IdeaProjects/Vault/apps/lexora/backend/.env.prod
-source /Users/zufar/IdeaProjects/Vault/apps/lexora/backend/.env.local-prod-resources
+source Vault/apps/lexora/backend/.env.prod
+source Vault/apps/lexora/backend/.env.local-prod-resources
 set +a
 python3 -m app.scripts.import_vocabulary_jsonl <file.jsonl>
 ```
@@ -177,8 +177,8 @@ The bulk import creates flat topics from `topic_name`. Parent topics must be cre
 - **Word-topic links:** 4,414 (384 words appear in 2+ topics)
 - **Topics:** 8 parent topics, 88 subtopics (Animals has 18, rest have 10 each)
 - **Migration head:** `20260502_0006`
-- **Backend container:** `lexora-backend` on `root@116.203.197.65`
-- **Frontend container:** `lexora-frontend` on same server
+- **Backend container:** `lexora-backend` on the configured production host
+- **Frontend container:** `lexora-frontend` on the configured production host
 - **Backend image:** `zufarexplainedit/lexora-backend:latest` (linux/arm64)
 - **Frontend image:** `zufarexplainedit/lexora-frontend:latest` (linux/arm64)
 
