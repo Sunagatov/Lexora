@@ -3,6 +3,7 @@ from app.shared.config import Settings
 
 def test_database_url_builds_expected_psycopg_url() -> None:
     settings = Settings(
+        _env_file=None,
         app_password="test-password",
         secret_key="test-secret",
         api_key="test-api-key",
@@ -18,8 +19,11 @@ def test_database_url_builds_expected_psycopg_url() -> None:
     )
 
 
-def test_logging_defaults_match_backend_expectations() -> None:
+def test_logging_defaults_match_backend_expectations(monkeypatch) -> None:
+    for name in ("LOG_LEVEL", "AUDIT_LOG_LEVEL", "LOG_FORMAT"):
+        monkeypatch.delenv(name, raising=False)
     settings = Settings(
+        _env_file=None,
         app_password="test-password",
         secret_key="test-secret",
         api_key="test-api-key",

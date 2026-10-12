@@ -1,6 +1,7 @@
 import {LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import type {Word} from '@/features/words/types/wordTypes'
+import {formatIpa} from '@/features/words/model/wordPresenter'
 
 type Props = {
   word: Word
@@ -36,7 +37,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       {word.pronunciation_ipa && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Pronunciation</h3>
-          <span className="wpv-ipa-badge">/{word.pronunciation_ipa}/</span>
+          <span className="wpv-ipa-badge">{formatIpa(word.pronunciation_ipa)}</span>
         </section>
       )}
 

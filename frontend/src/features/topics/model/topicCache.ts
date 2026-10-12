@@ -5,6 +5,7 @@ import type {Topic} from '@/features/topics/types/topicTypes'
 const TOPIC_DEPENDENT_QUERY_KEYS = [
   queryKeys.topics,
   queryKeys.words,
+  queryKeys.wordList,
   queryKeys.topicSidebar,
   queryKeys.stats,
   queryKeys.smartReview,

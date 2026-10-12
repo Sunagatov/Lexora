@@ -79,12 +79,17 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
     onSuccess: () => {
+      setConfirming(false)
       removeWordFromLists(queryClient, numericWordId)
       invalidateWordDependencies(queryClient, [queryKeys.trashWords])
       const destinationTopicSlug = word
         ? (buildWordLocationState(word, topics, fromTopicSlug)?.fromTopicSlug ?? null)
         : null
       options.onDeleteSuccess?.(destinationTopicSlug)
+    },
+    onError: () => {
+      setConfirming(false)
+      setSaveError('Failed to delete. Please try again.')
     },
   })
 
@@ -149,7 +154,8 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   }
 
   function handleDelete() {
-    setConfirming(false)
+    if (deleteMutation.isPending) return
+    setSaveError(null)
     deleteMutation.mutate()
   }
 
@@ -161,7 +167,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     try {
       const r: EnrichResult = await enrichWord(termVal)
       setDraft((d) => {
-        if (!d) return d
+        if (!d || d.term.trim() !== termVal || draftWordIdRef.current !== numericWordId) return d
         return {
           ...d,
           definition: d.definition || r.definition || '',

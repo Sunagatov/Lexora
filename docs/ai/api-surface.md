@@ -82,6 +82,9 @@ Export query params include `lean`, `needs_examples_only`, `page`, and `page_siz
 - `POST /api/trash/topics/{topic_id}/restore` — restore deleted topic.
 - `DELETE /api/trash/purge?force={bool}` — hard-delete expired trash, or all trash with force.
 
+Topic restoration returns `409` when an active topic already has the same name.
+The deleted topic and its words remain in Trash on conflict.
+
 ## Stats
 
 - `GET /api/stats` — aggregate stats.

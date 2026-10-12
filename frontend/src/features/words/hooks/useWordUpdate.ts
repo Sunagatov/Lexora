@@ -1,8 +1,9 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
-import {invalidateWordDependencies, patchWordLevel} from '@/features/words/model/wordCache'
+import {invalidateWordDependencies, patchWordLevel, replaceWordInLists} from '@/features/words/model/wordCache'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRESS_SOURCE) {
@@ -14,18 +15,36 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
 
     onMutate: async ({wordId, level}) => {
       onMutate()
-      await queryClient.cancelQueries({queryKey: queryKeys.words})
+      await Promise.all([
+        queryClient.cancelQueries({queryKey: queryKeys.words}),
+        queryClient.cancelQueries({queryKey: queryKeys.smartReview}),
+      ])
       const prevWordQueries = queryClient.getQueriesData<Word[]>({queryKey: queryKeys.words})
+      const prevQueue = queryClient.getQueryData<StudyQueue>(queryKeys.smartReview)
+      const prevReviewWord = prevQueue?.items.find((item) => item.word_id === wordId)?.word
       patchWordLevel(queryClient, wordId, level)
-      return {prevWordQueries}
+      return {prevWordQueries, prevQueueId: prevQueue?.id, prevReviewWord}
     },
 
-    onError: (_e, _v, ctx) => {
+    onError: (_e, {wordId}, ctx) => {
       for (const [key, data] of ctx?.prevWordQueries ?? []) {
         queryClient.setQueryData(key, data)
       }
-      invalidateWordDependencies(queryClient)
+      const prevWord = ctx?.prevReviewWord
+      if (prevWord) {
+        queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, (queue) => {
+          if (!queue || queue.id !== ctx.prevQueueId) return queue
+          return {
+            ...queue,
+            items: queue.items.map((item) => item.word_id === wordId
+              ? {...item, word: {...item.word, knowledge_level: prevWord.knowledge_level}}
+              : item),
+          }
+        })
+      }
     },
+
+    onSuccess: (updated) => replaceWordInLists(queryClient, updated),
 
     onSettled: () => {
       invalidateWordDependencies(queryClient)

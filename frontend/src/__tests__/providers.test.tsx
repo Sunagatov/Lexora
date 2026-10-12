@@ -1,6 +1,6 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {fireEvent} from '@testing-library/react'
-import {useMutation} from '@tanstack/react-query'
+import {useMutation, useQuery} from '@tanstack/react-query'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import type {PropsWithChildren} from 'react'
 import {Providers} from '@/app/providers'
@@ -42,6 +42,11 @@ function makeStorage() {
 
 function Child() {
   return <div>protected app</div>
+}
+
+function FailedQueryChild({queryFn}: {queryFn: () => Promise<never>}) {
+  const query = useQuery({queryKey: ['failed-request-test'], queryFn, retryDelay: 0})
+  return <div>{query.isError ? 'Request failed' : 'Loading request'}</div>
 }
 
 function MutationChild() {
@@ -148,5 +153,12 @@ describe('Providers auth bootstrap gating', () => {
       expect(window.location.pathname).toBe(routes.login)
     })
     expect(dispatchSpy).toHaveBeenCalledWith(expect.any(PopStateEvent))
+  })
+
+  it('stops retrying failed requests and allows the error state to render', async () => {
+    const queryFn = vi.fn().mockRejectedValue(new Error('Network unavailable'))
+    renderProviders(<FailedQueryChild queryFn={queryFn} />)
+    expect(await screen.findByText('Request failed')).toBeTruthy()
+    expect(queryFn).toHaveBeenCalledTimes(3)
   })
 })

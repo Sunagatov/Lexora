@@ -5,6 +5,7 @@ import {queryKeys} from '@/app/queryKeys'
 
 const WORD_DEPENDENT_QUERY_KEYS = [
   queryKeys.words,
+  queryKeys.wordList,
   queryKeys.topicSidebar,
   queryKeys.stats,
 ] as const

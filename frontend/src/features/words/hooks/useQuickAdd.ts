@@ -27,6 +27,7 @@ function sortQuickAddTopics(topics: Topic[]): Topic[] {
 export function useQuickAdd() {
   const queryClient = useQueryClient()
   const termRef = useRef<HTMLInputElement>(null)
+  const enrichmentVersion = useRef(0)
 
   const [term, setTerm] = useState('')
   const [translation, setTranslation] = useState('')
@@ -133,21 +134,25 @@ export function useQuickAdd() {
     }
 
     resetMarkers()
+    const version = ++enrichmentVersion.current
     setEnriching(true)
     setFeedback(null)
 
     try {
       const result = await enrichWord(trimmedTerm)
+      if (version !== enrichmentVersion.current) return
       setEnrichResult(result)
       setEnrichDone(true)
 
-      if (result.translation_entries.length > 0 && !translation.trim()) {
-        setTranslation(result.translation_entries[0])
+      if (result.translation_entries.length > 0) {
+        setTranslation(current => current.trim() ? current : result.translation_entries[0])
       }
     } catch {
-      setFeedback({ok: false, msg: 'Enrichment failed — you can still save manually.'})
+      if (version === enrichmentVersion.current) {
+        setFeedback({ok: false, msg: 'Enrichment failed — you can still save manually.'})
+      }
     } finally {
-      setEnriching(false)
+      if (version === enrichmentVersion.current) setEnriching(false)
     }
   }
 
@@ -187,7 +192,12 @@ export function useQuickAdd() {
 
   return {
     termRef,
-    term, setTerm,
+    term, setTerm: (value: string) => {
+      enrichmentVersion.current++
+      setTerm(value)
+      resetMarkers()
+      setEnriching(false)
+    },
     translation, setTranslation: (v: string) => { setTranslation(v); resetMarkers() },
     topicId, setTopicId: (id: number) => { setTopicId(id) },
     newTopic, setNewTopic,

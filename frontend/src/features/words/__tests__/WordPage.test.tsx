@@ -1,11 +1,11 @@
-import {render, screen, fireEvent, waitFor} from '@testing-library/react'
+import {act, render, screen, fireEvent, waitFor} from '@testing-library/react'
 import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {WordPage} from '@/features/words/routes/WordPage'
 import {queryKeys} from '@/app/queryKeys'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import type {Word} from '@/features/words/types/wordTypes'
+import type {Word, EnrichResult} from '@/features/words/types/wordTypes'
 import * as wordsApi from '@/features/words/api/wordsApi'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 import * as publicConfig from '@/shared/config/usePublicConfig'
@@ -19,6 +19,7 @@ vi.mock('@/features/words/api/wordsApi', () => ({
   quickAddWord: vi.fn(),
   restoreWord: vi.fn(),
   fetchTrashWords: vi.fn(),
+  enrichWord: vi.fn(),
 }))
 
 vi.mock('@/features/topics/api/topicsApi', () => ({
@@ -126,6 +127,9 @@ describe('WordPage — draft reset on word navigation', () => {
       expect(screen.getByDisplayValue('alpha')).toBeTruthy()
     })
 
+    expect(screen.getByLabelText('Term')).toBe(screen.getByDisplayValue('alpha'))
+    expect(screen.getByLabelText('Translations (one per line)')).toBeTruthy()
+
     void router.navigate('/words/2/edit')
 
     await waitFor(() => {
@@ -133,6 +137,24 @@ describe('WordPage — draft reset on word navigation', () => {
     })
 
     expect(screen.queryByDisplayValue('alpha')).toBeNull()
+  })
+
+  it('does not attach enrichment for the old term to a changed edit draft', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    let resolveEnrichment!: (value: EnrichResult) => void
+    const pending = new Promise<EnrichResult>(resolve => { resolveEnrichment = resolve })
+    vi.mocked(wordsApi.enrichWord).mockReturnValueOnce(pending)
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const router = buildRouter('/words/1/edit')
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByLabelText('Term')
+    fireEvent.click(screen.getByRole('button', {name: '✨ Enrich with AI'}))
+    fireEvent.change(screen.getByLabelText('Term'), {target: {value: 'bravo'}})
+    await act(async () => {
+      resolveEnrichment({definition: 'alpha definition'} as EnrichResult)
+      await pending
+    })
+    expect((screen.getByLabelText('Definition') as HTMLTextAreaElement).value).toBe('')
   })
 })
 
@@ -254,6 +276,34 @@ describe('WordPage — cache invalidation after delete', () => {
         screen.getByText('"alpha" will be moved to Trash and permanently deleted after 45 days.'),
       ).toBeTruthy()
     })
+  })
+
+  it('shows a failed deletion and keeps the word on the edit screen', async () => {
+    vi.mocked(wordsApi.deleteWord).mockRejectedValueOnce(new Error('Network down'))
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const router = buildRouter('/words/1/edit')
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(await screen.findByRole('button', {name: 'Delete'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'}))
+    expect((await screen.findByRole('alert')).textContent).toContain('Failed to delete')
+    expect(router.state.location.pathname).toBe('/words/1/edit')
+    expect(screen.getByDisplayValue('alpha')).toBeTruthy()
+  })
+
+  it('keeps deletion confirmation disabled until the request finishes', async () => {
+    let resolveDelete!: () => void
+    vi.mocked(wordsApi.deleteWord).mockImplementationOnce(() => new Promise(resolve => {
+      resolveDelete = resolve
+    }))
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const router = buildRouter('/words/1/edit')
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(await screen.findByRole('button', {name: 'Delete'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'}))
+    await waitFor(() => {
+      expect((screen.getByRole('button', {name: 'Move to Trash'}) as HTMLButtonElement).disabled).toBe(true)
+    })
+    await act(async () => { resolveDelete() })
   })
 })
 

@@ -16,6 +16,10 @@ if str(BACKEND_DIR) not in sys.path:
 os.environ.setdefault("APP_PASSWORD", "test-password")
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
 os.environ.setdefault("API_KEY", "test-api-key")
+# Test collection imports the DB module; never probe a configured remote database.
+os.environ["POSTGRES_HOST"] = "127.0.0.1"
+os.environ["POSTGRES_PORT"] = "1"
+os.environ["APP_DEBUG"] = "true"
 
 
 @pytest.fixture

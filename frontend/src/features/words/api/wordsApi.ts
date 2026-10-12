@@ -10,8 +10,14 @@ export const fetchWords = async (params: {topicId?: number; search?: string} = {
   if (params.search?.trim()) q.set('search', params.search.trim())
   q.set('page_size', '100')
   const qs = q.toString()
-  const res = await request<{words: Word[]}>(`/api/words${qs ? `?${qs}` : ''}`)
-  return res.words
+  const res = await request<WordListResponse>(`/api/words?${qs}`)
+  const words = [...res.words]
+  for (let page = 2; page <= res.total_pages; page++) {
+    q.set('page', String(page))
+    const next = await request<WordListResponse>(`/api/words?${q.toString()}`)
+    words.push(...next.words)
+  }
+  return words
 }
 
 export const fetchWord                = (id: number)                                                    => request<Word>(`/api/words/${id}`)

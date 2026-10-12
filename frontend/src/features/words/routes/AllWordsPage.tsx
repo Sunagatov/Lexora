@@ -1,6 +1,7 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
+import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {Link, useNavigate, useSearchParams} from 'react-router-dom'
-import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
+import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {fetchWordList, batchUpdateWords} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
@@ -12,6 +13,9 @@ import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
 import {SkeletonTable} from '@/shared/components/Skeletons'
+import {queryKeys} from '@/app/queryKeys'
+import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
+import {invalidateWordDependencies} from '@/features/words/model/wordCache'
 
 type PosValue = (typeof POS_VALUES)[number]
 type CefrLevel = (typeof CEFR_LEVELS)[number]
@@ -29,6 +33,7 @@ function numParam(sp: URLSearchParams, key: string, fallback: number): number {
 
 export function AllWordsPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [sp, setSp] = useSearchParams()
   const search       = param(sp, 'search')
   const pos          = param(sp, 'pos') as PosValue | ''
@@ -38,11 +43,7 @@ export function AllWordsPage() {
   const page         = numParam(sp, 'page', 1)
   const pageSize     = numParam(sp, 'pageSize', DEFAULT_PAGE_SIZE)
 
-  const [words, setWords]         = useState<Word[]>([])
-  const [total, setTotal]         = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
-  const [topics, setTopics]       = useState<Topic[]>([])
-  const [loading, setLoading]     = useState(true)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [selected, setSelected]   = useState<Set<number>>(new Set())
   const [bulkLevel, setBulkLevel] = useState('')
   const [bulkTopic, setBulkTopic] = useState('')
@@ -52,6 +53,8 @@ export function AllWordsPage() {
   const [pendingWordId, setPendingWordId] = useState<number | null>(null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
+  const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
+  const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
   const topicMap = useMemo(() => new Map(topics.map(t => [t.id, t])), [topics])
 
   function setParam(key: string, value: string) {
@@ -64,26 +67,26 @@ export function AllWordsPage() {
     }, {replace: true})
   }
 
-  const loadWords = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await fetchWordList({
-        search: search || undefined,
-        pos: pos || undefined,
-        cefr: cefr || undefined,
-        level: level ? Number(level) : undefined,
-        completeness: completeness || undefined,
-        page, pageSize,
-      })
-      setWords(res.words)
-      setTotal(res.total)
-      setTotalPages(res.total_pages)
-    } finally { setLoading(false) }
-  }, [search, pos, cefr, level, completeness, page, pageSize])
+  const wordsQuery = useQuery({
+    queryKey: [...queryKeys.wordList, {search, pos, cefr, level, completeness, page, pageSize}],
+    queryFn: () => fetchWordList({
+      search: search || undefined,
+      pos: pos || undefined,
+      cefr: cefr || undefined,
+      level: level ? Number(level) : undefined,
+      completeness: completeness || undefined,
+      page, pageSize,
+    }),
+  })
+  const words = useMemo(() => wordsQuery.data?.words ?? [], [wordsQuery.data])
+  const total = wordsQuery.data?.total ?? 0
+  const totalPages = wordsQuery.data?.total_pages ?? 0
+  const loading = wordsQuery.isLoading
+  const loadError = wordsQuery.isError ? 'Failed to load words. Please try again.'
+    : topicsQuery.isError ? 'Failed to load topics. Please try again.' : null
 
-  useEffect(() => { loadWords() }, [loadWords])
-  useEffect(() => { fetchTopics().then(setTopics) }, [])
   useEffect(() => { setSelected(new Set()) }, [words])
+  useEffect(() => { setActionError(null) }, [search, pos, cefr, level, completeness, page, pageSize])
 
   const toggleSelect = (id: number) => setSelected(prev => {
     const next = new Set(prev)
@@ -103,20 +106,28 @@ export function AllWordsPage() {
     if (bulkTopic) payload.add_topic_ids = [Number(bulkTopic)]
     if (!payload.knowledge_level && !payload.add_topic_ids) return
     setBulkPending(true)
+    setActionError(null)
     try {
       await batchUpdateWords(payload)
       setBulkLevel('')
       setBulkTopic('')
       setSelected(new Set())
-      await loadWords()
+      invalidateWordDependencies(queryClient, [queryKeys.smartReview, ...payload.word_ids.map(queryKeys.word)])
+    } catch (error) {
+      redirectIfUnauthorized(error)
+      setActionError('Failed to update selected words. Please try again.')
     } finally { setBulkPending(false) }
   }
 
   async function handleLevelChange(wordId: number, newLevel: WordKnowledgeLevel) {
     setPendingWordId(wordId)
+    setActionError(null)
     try {
       await batchUpdateWords({word_ids: [wordId], knowledge_level: newLevel})
-      await loadWords()
+      invalidateWordDependencies(queryClient, [queryKeys.smartReview, queryKeys.word(wordId)])
+    } catch (error) {
+      redirectIfUnauthorized(error)
+      setActionError('Failed to update word. Please try again.')
     } finally { setPendingWordId(null) }
   }
 
@@ -170,10 +181,20 @@ export function AllWordsPage() {
         <span className="toolbar-range">{total} word{total !== 1 ? 's' : ''}</span>
       </div>
 
+      {(loadError || actionError) && (
+        <div role="alert" className="wp-save-error">
+          {loadError || actionError}
+          {loadError && <button type="button" className="btn btn-ghost" onClick={() => {
+            void wordsQuery.refetch()
+            void topicsQuery.refetch()
+          }}>Retry</button>}
+        </div>
+      )}
+
       {/* Table */}
       {loading ? (
         <SkeletonTable rows={6} />
-      ) : words.length === 0 ? (
+      ) : loadError ? null : words.length === 0 ? (
         <EmptyState
           icon={hasFilters ? '🔍' : '📚'}
           title={hasFilters ? 'No words match these filters' : 'No words yet'}
@@ -281,7 +302,7 @@ export function AllWordsPage() {
             <option value="">Set level…</option>
             {LEVELS.map(l => <option key={l} value={String(l)}>{LEVEL_LABELS[l]}</option>)}
           </select>
-          <select value={bulkTopic} onChange={e => setBulkTopic(e.target.value)} aria-label="Move to topic">
+          <select value={bulkTopic} onChange={e => setBulkTopic(e.target.value)} aria-label="Add to topic">
             <option value="">Add to topic…</option>
             {topics.map(t => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
           </select>

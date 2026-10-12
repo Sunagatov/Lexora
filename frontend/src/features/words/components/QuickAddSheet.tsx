@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent} from 'react'
+import {useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 import {Toast} from '@/shared/components/Toast'
@@ -6,6 +6,7 @@ import {Toast} from '@/shared/components/Toast'
 type Props = {onClose: () => void}
 
 export function QuickAddSheet({onClose}: Props) {
+  const fieldId = useId()
   const q = useQuickAdd()
   const sheetRef = useRef<HTMLDivElement>(null)
   const [toastFeedback, setToastFeedback] = useState<{ok: boolean; msg: string} | null>(null)
@@ -63,6 +64,7 @@ export function QuickAddSheet({onClose}: Props) {
             <div className="quick-add-term-row">
               <div className="input-group quick-add-input-group">
                 <input
+                  id={`${fieldId}-term`}
                   ref={q.termRef}
                   className="quick-add-input"
                   placeholder=" "
@@ -79,7 +81,7 @@ export function QuickAddSheet({onClose}: Props) {
                     }
                   }}
                 />
-                <label className="input-label">Word or phrase</label>
+                <label className="input-label" htmlFor={`${fieldId}-term`}>Word or phrase</label>
               </div>
               <button type="button"
                 className={`quick-add-enrich-btn ripple-btn${q.enriching ? ' is-loading' : ''}`}
@@ -103,6 +105,7 @@ export function QuickAddSheet({onClose}: Props) {
             </div>
             <div className="input-group">
               <input
+                id={`${fieldId}-translation`}
                 className={`quick-add-input${enriched ? ' is-ai-complete is-success' : ''}`}
                 placeholder=" "
                 value={q.translation}
@@ -114,7 +117,7 @@ export function QuickAddSheet({onClose}: Props) {
                   }
                 }}
               />
-              <label className="input-label">Translation</label>
+              <label className="input-label" htmlFor={`${fieldId}-translation`}>Translation</label>
             </div>
           </div>
 

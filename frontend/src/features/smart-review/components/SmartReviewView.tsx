@@ -62,6 +62,11 @@ export function SmartReviewView({queue, isLoading}: Props) {
   }, [completedCount, panelWordId, queueId])
 
   const filter = useWordFilter(words, {defaultPageSize})
+  useEffect(() => {
+    if (panelWordId !== null && !filter.pageWords.some(word => word.id === panelWordId)) {
+      setPanelWordId(null)
+    }
+  }, [panelWordId, filter.pageWords])
   const update = useWordUpdate(
     () => filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
     'smart_review',

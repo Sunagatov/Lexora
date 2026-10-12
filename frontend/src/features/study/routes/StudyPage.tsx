@@ -48,6 +48,9 @@ export function StudyPage() {
     () => s.pageWords.find((word) => word.id === panelWordId) ?? null,
     [panelWordId, s.pageWords],
   )
+  useEffect(() => {
+    if (panelWordId !== null && !selectedWord && !s.isWordsLoading) setPanelWordId(null)
+  }, [panelWordId, selectedWord, s.isWordsLoading])
   const topicBreadcrumbs = useMemo(
     () => buildTopicBreadcrumbs(s.topics, s.selectedTopic),
     [s.topics, s.selectedTopic],

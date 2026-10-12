@@ -242,6 +242,7 @@ def test_restore_topic_rejects_restoring_child_when_parent_is_deleted(make_topic
 
 def test_restore_topic_validates_words_before_restoring(monkeypatch, make_topic, make_word) -> None:
     db = MagicMock()
+    db.scalar.return_value = None
     topic = make_topic(id=5, deleted_at=object())
     deleted_word = make_word(id=10, term="plane", deleted_at=object(), deleted_via_topic_id=5, topics=[topic])
     topic.words = [deleted_word]
@@ -255,3 +256,15 @@ def test_restore_topic_validates_words_before_restoring(monkeypatch, make_topic,
 
     assert result is persisted
     validate.assert_called_once_with(db, deleted_word, restoring_topic_ids={5})
+
+
+def test_restore_topic_rejects_duplicate_active_name(make_topic) -> None:
+    db = MagicMock()
+    topic = make_topic(id=5, name="Travel", slug="old-travel", deleted_at=object())
+    db.scalar.return_value = make_topic(id=9, name="Travel", slug="travel")
+
+    with pytest.raises(topic_service.TopicNameConflictError):
+        topic_service.restore_topic(db, topic)
+
+    assert topic.deleted_at is not None
+    db.commit.assert_not_called()

@@ -143,6 +143,7 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
     _assert_topic_parent_can_be_restored(db, topic)
+    assert_active_topic_name_available(db, topic.name, exclude_topic_id=topic.id)
     if restore_words:
         for word in topic.words:
             if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:

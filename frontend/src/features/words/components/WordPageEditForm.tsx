@@ -1,5 +1,5 @@
-import {useState} from 'react'
-import type {ReactNode} from 'react'
+import {Children, cloneElement, useId, useState} from 'react'
+import type {ReactElement, ReactNode} from 'react'
 import type {EditState} from '@/features/words/model/wordForm'
 import type {Topic} from '@/features/topics/types/topicTypes'
 
@@ -218,7 +218,7 @@ export function WordPageEditForm({
       </div>
 
       <div className="word-page-edit-actions">
-        {saveError && <div className="wp-save-error">{saveError}</div>}
+        {saveError && <div className="wp-save-error" role="alert">{saveError}</div>}
         <div className="word-page-edit-actions-row">
           <button type="button" className="wp-btn-delete" onClick={onDelete}>Delete</button>
           <div className="word-page-edit-actions-right">
@@ -234,10 +234,14 @@ export function WordPageEditForm({
 }
 
 function FormField({label, children}: {label: string; children: ReactNode}) {
+  const id = useId()
+  const controls = Children.toArray(children)
+  // Every field starts with its input/select; Topics has additional controls.
+  controls[0] = cloneElement(controls[0] as ReactElement<{id: string}>, {id})
   return (
     <div className="wp-field">
-      <label className="wp-label">{label}</label>
-      {children}
+      <label className="wp-label" htmlFor={id}>{label}</label>
+      {controls}
     </div>
   )
 }

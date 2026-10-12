@@ -57,6 +57,8 @@ def build_engine() -> Engine:
         _probe_engine(postgres_engine)
         return postgres_engine
     except OperationalError as exc:
+        if not settings.app_debug:
+            raise
         logger.warning(
             "database_fallback_activated",
             extra={
@@ -85,17 +87,6 @@ def _sqlite_schema_has_drift(candidate: Engine) -> bool:
     return False
 
 
-def _reset_sqlite_fallback_database() -> None:
-    global engine
-
-    sqlite_path = _sqlite_database_path()
-    engine.dispose()
-    if sqlite_path.exists():
-        sqlite_path.unlink()
-    engine = _build_sqlite_engine()
-    SessionLocal.configure(bind=engine)
-
-
 def ensure_database_schema() -> None:
     if not USING_SQLITE_FALLBACK:
         return
@@ -108,14 +99,10 @@ def ensure_database_schema() -> None:
         if _sqlite_schema_ready:
             return
         if _sqlite_schema_has_drift(engine):
-            logger.warning(
-                "sqlite_fallback_schema_reset",
-                extra={
-                    "event": "sqlite_fallback_schema_reset",
-                    "reason": "schema_drift",
-                },
+            raise RuntimeError(
+                "Local SQLite schema is outdated. Data has been preserved; "
+                "back up and migrate the database before restarting."
             )
-            _reset_sqlite_fallback_database()
         Base.metadata.create_all(bind=engine)
         _sqlite_schema_ready = True
 

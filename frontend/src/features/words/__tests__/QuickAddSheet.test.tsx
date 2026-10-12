@@ -44,8 +44,9 @@ describe('QuickAddSheet', () => {
 
     render(<QuickAddSheet onClose={vi.fn()} />)
 
-    fireEvent.keyDown(screen.getByPlaceholderText('e.g. ephemeral'), {key: 'Enter'})
-    fireEvent.keyDown(screen.getByPlaceholderText('e.g. недолговечный'), {key: 'Enter'})
+    const inputs = screen.getAllByRole('textbox')
+    fireEvent.keyDown(inputs[0], {key: 'Enter'})
+    fireEvent.keyDown(inputs[1], {key: 'Enter'})
 
     const q = vi.mocked(quickAddHook.useQuickAdd).mock.results[0].value as ReturnType<typeof mockQuickAdd>
     expect(q.save).not.toHaveBeenCalled()

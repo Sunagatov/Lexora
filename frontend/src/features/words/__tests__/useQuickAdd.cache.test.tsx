@@ -5,7 +5,7 @@ import type {ReactNode} from 'react'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 import {queryKeys} from '@/app/queryKeys'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import type {Word} from '@/features/words/types/wordTypes'
+import type {Word, EnrichResult} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import * as topicsApi from '@/features/topics/api/topicsApi'
 import * as wordsApi from '@/features/words/api/wordsApi'
@@ -70,6 +70,27 @@ function wrapper(queryClient: QueryClient) {
 describe('useQuickAdd cache invalidation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('ignores enrichment that arrives after the user changes the term', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    let resolveEnrichment!: (value: EnrichResult) => void
+    vi.mocked(wordsApi.enrichWord).mockImplementationOnce(() => new Promise(resolve => {
+      resolveEnrichment = resolve
+    }))
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
+    act(() => { result.current.setTerm('alpha') })
+    let pending!: Promise<void>
+    act(() => { pending = result.current.enrich() })
+    act(() => { result.current.setTerm('bravo') })
+    await act(async () => {
+      resolveEnrichment({translation_entries: ['alpha translation'], definition: 'alpha definition'} as EnrichResult)
+      await pending
+    })
+    expect(result.current.term).toBe('bravo')
+    expect(result.current.translation).toBe('')
+    expect(result.current.enrichResult).toBeNull()
   })
 
   it('invalidates words, stats, and smart review after saving a word', async () => {

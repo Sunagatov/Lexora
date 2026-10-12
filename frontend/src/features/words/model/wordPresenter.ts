@@ -28,3 +28,10 @@ export function smartPreview(word: Word): {label: string; text: string} | null {
 export function truncate(text: string, max: number): string {
   return text.length > max ? text.slice(0, max) + '…' : text
 }
+
+export function formatIpa(value: string): string {
+  const ipa = value.trim()
+  if (ipa.startsWith('[') && ipa.endsWith(']')) return ipa
+  const sounds = ipa.replace(/^\/+|\/+$/g, '').trim()
+  return sounds ? `/${sounds}/` : ''
+}

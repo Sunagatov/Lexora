@@ -6,6 +6,7 @@ import {SmartReviewView} from '@/features/smart-review/components/SmartReviewVie
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
+import {MemoryRouter} from 'react-router-dom'
 
 vi.mock('@/features/smart-review/hooks/useSmartReview')
 vi.mock('@/features/words/hooks/useWordUpdate')
@@ -137,7 +138,7 @@ describe('SmartReviewView', () => {
 
   it('uses the desktop default page size on wide screens', () => {
     mockMatchMedia(false)
-    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
     expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 40})
   })
@@ -145,7 +146,7 @@ describe('SmartReviewView', () => {
   it('uses the mobile default page size on narrow screens', () => {
     mockMatchMedia(true)
 
-    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
     expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 20})
   })
@@ -153,7 +154,7 @@ describe('SmartReviewView', () => {
   it('does not complete the queue item when the level update fails', async () => {
     updateLevelAsync.mockRejectedValueOnce(new Error('network'))
 
-    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
     fireEvent.click(screen.getByRole('button', {name: 'review first'}))
 
     await waitFor(() => {
@@ -165,7 +166,7 @@ describe('SmartReviewView', () => {
   it('completes the queue item only after a successful level update', async () => {
     updateLevelAsync.mockResolvedValueOnce({} as never)
 
-    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />)
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
     fireEvent.click(screen.getByRole('button', {name: 'review first'}))
 
     await waitFor(() => {
@@ -185,7 +186,7 @@ describe('SmartReviewView', () => {
       isRefreshing: false,
     } as never)
 
-    render(<SmartReviewView queue={queue} isLoading={false} />)
+    render(<SmartReviewView queue={queue} isLoading={false} />, {wrapper: MemoryRouter})
     fireEvent.click(screen.getByRole('button', {name: 'review first'}))
 
     await waitFor(() => {

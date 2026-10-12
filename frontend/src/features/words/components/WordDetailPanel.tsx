@@ -7,7 +7,7 @@ import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import {WordPageView} from '@/features/words/components/WordPageView'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
-import {truncate} from '@/features/words/model/wordPresenter'
+import {formatIpa, truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
 import {SkeletonList} from '@/shared/components/Skeletons'
 
@@ -174,7 +174,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
               <h2 className="wdp-term">{word.term}</h2>
               {word.pronunciation_ipa && (
                 <button type="button" className="wdp-ipa" onClick={handleSpeak} title="Pronounce">
-                  /{word.pronunciation_ipa}/
+                  {formatIpa(word.pronunciation_ipa)}
                 </button>
               )}
             </div>

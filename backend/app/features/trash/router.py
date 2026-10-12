@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.features.topics.exceptions import InvalidTopicParentError
+from app.features.topics.exceptions import InvalidTopicParentError, TopicNameConflictError
 from app.features.topics.schemas import TopicResponse
 from app.features.trash.service import (
     DeletedTopicNotFoundError,
@@ -51,6 +51,8 @@ def restore_topic_route(topic_id: int, restore_words: bool = False, db: Session 
         return TopicResponse.model_validate(restore_topic_from_trash(db, topic_id, restore_words=restore_words))
     except DeletedTopicNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deleted topic not found")
+    except TopicNameConflictError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.detail)
     except InvalidTopicParentError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.detail)
     except DuplicateWordInTopicError as e:

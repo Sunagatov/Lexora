@@ -21,7 +21,7 @@ describe('ConfirmModal', () => {
     )
 
     expect((screen.getByRole('button', {name: 'Cancel'}) as HTMLButtonElement).disabled).toBe(true)
-    expect((screen.getByRole('button', {name: 'Working…'}) as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByRole('button', {name: 'Delete'}) as HTMLButtonElement).disabled).toBe(true)
 
     fireEvent.click(screen.getByText('This cannot be undone.').closest('.modal-overlay') as Element)
     fireEvent.keyDown(document, {key: 'Escape'})

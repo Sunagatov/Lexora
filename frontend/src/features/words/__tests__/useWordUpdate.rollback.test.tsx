@@ -1,10 +1,11 @@
-import {renderHook, waitFor} from '@testing-library/react'
+import {act, renderHook, waitFor} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {ReactNode} from 'react'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import * as api from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import type {Word} from '@/features/words/types/wordTypes'
+import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 vi.mock('@/features/words/api/wordsApi')
@@ -140,5 +141,38 @@ describe('useWordUpdate rollback', () => {
 
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.topicSidebar})
     expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.stats})
+  })
+
+  it('restores the Daily Word Mix level when saving fails', async () => {
+    const word = makeWord(1, 'run', 2)
+    const queue: StudyQueue = {
+      id: 10, generated_at: word.created_at, expires_at: word.created_at,
+      is_active: true, total_count: 1, completed_count: 0,
+      items: [{id: 101, word_id: 1, position: 0, is_completed: false, completed_at: null, word}],
+    }
+    queryClient.setQueryData(queryKeys.smartReview, queue)
+    let rejectSave!: (error: Error) => void
+    vi.mocked(api.updateWordKnowledgeLevel).mockImplementationOnce(
+      () => new Promise((_resolve, reject) => { rejectSave = reject }),
+    )
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    let save!: Promise<Word>
+    act(() => { save = result.current.updateLevelAsync(1, 3) })
+    const failedSave = save.catch(() => undefined)
+    await waitFor(() => {
+      expect(queryClient.getQueryData<StudyQueue>(queryKeys.smartReview)?.items[0].word.knowledge_level).toBe(3)
+    })
+    await act(async () => { rejectSave(new Error('Network error')); await failedSave })
+    expect(queryClient.getQueryData(queryKeys.smartReview)).toEqual(queue)
+  })
+
+  it('updates a cached word detail after saving the level', async () => {
+    const word = makeWord(1, 'run', 2)
+    const updated = {...word, knowledge_level: 3 as const}
+    queryClient.setQueryData(queryKeys.word(1), word)
+    vi.mocked(api.updateWordKnowledgeLevel).mockResolvedValueOnce(updated)
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    await act(async () => { await result.current.updateLevelAsync(1, 3) })
+    expect(queryClient.getQueryData(queryKeys.word(1))).toEqual(updated)
   })
 })

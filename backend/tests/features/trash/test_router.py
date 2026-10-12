@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.features.trash import router as trash_router
 from app.features.topics.model import Topic
-from app.features.topics.service import InvalidTopicParentError
+from app.features.topics.service import InvalidTopicParentError, TopicNameConflictError
 
 
 def test_restore_word_route_raises_404_when_deleted_word_is_missing(monkeypatch) -> None:
@@ -138,3 +138,14 @@ def test_purge_expired_forwards_force_flag(monkeypatch) -> None:
     trash_router.purge_expired(db=db, force=True)
 
     purge.assert_called_once_with(db, force=True)
+
+
+def test_restore_topic_route_raises_409_on_duplicate_topic_name(monkeypatch) -> None:
+    monkeypatch.setattr(
+        trash_router, "restore_topic_from_trash",
+        MagicMock(side_effect=TopicNameConflictError("Active topic name 'Travel' already exists")),
+    )
+    with pytest.raises(HTTPException) as exc_info:
+        trash_router.restore_topic_route(5, db=MagicMock())
+    assert exc_info.value.status_code == 409
+    assert "Travel" in exc_info.value.detail
