@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState, type ReactNode} from 'react'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
@@ -17,6 +17,9 @@ import {
 import type {Topic} from '@/features/topics/types/topicTypes'
 
 type Props = {
+  collectionTitle?: string
+  collectionAction?: ReactNode
+  collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
   levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
@@ -32,6 +35,7 @@ type Props = {
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
   progressLabel?: string
+  progressReady?: boolean
 }
 
 const SearchIcon = () => (
@@ -69,19 +73,18 @@ function toggleValue<T>(values: T[], value: T): T[] {
 }
 
 export function WordCollectionToolbar({
+  collectionTitle = 'All words', collectionAction, collectionProgress,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
-  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress',
+  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressReady = true,
   thenSortBy = null, setThenSortBy, topicFilter = [], setTopicFilter, topics = [], onLearningSort,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(() => wordSearch !== '')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
   const [topicSearch, setTopicSearch] = useState('')
-  const desktopSearchRef = useRef<HTMLInputElement>(null)
-  const mobileSearchRef = useRef<HTMLInputElement>(null)
-  const desktopSortDropdownRef = useRef<HTMLDivElement>(null)
-  const mobileSortDropdownRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
+  const sortDropdownRef = useRef<HTMLDivElement>(null)
 
   const levels = selectedValues(levelFilter)
   const positions = selectedValues(posFilter)
@@ -90,9 +93,7 @@ export function WordCollectionToolbar({
   const searchActive = wordSearch.trim() !== ''
   const activeFilterCount = levels.length + positions.length + cefrs.length + topicFilter.length + (completeness !== 'all' ? 1 : 0)
   const hasActiveFilters = activeFilterCount > 0
-  const hasAnyActiveControls = searchActive || hasActiveFilters || sortBy !== 'level-asc' || thenSortBy !== 'cefr-asc'
   const total = topicTotalCount || 1
-  const masteredPct = Math.round((levelSummary[4] / total) * 100)
 
   function handleSortChange(v: SortOption) {
     setSortBy(v)
@@ -104,8 +105,7 @@ export function WordCollectionToolbar({
 
   useEffect(() => {
     if (searchOpen) {
-      desktopSearchRef.current?.focus({preventScroll: true})
-      mobileSearchRef.current?.focus({preventScroll: true})
+      searchRef.current?.focus({preventScroll: true})
     }
   }, [searchOpen])
 
@@ -124,9 +124,7 @@ export function WordCollectionToolbar({
     if (!sortOpen) return
     const onPointerDown = (event: MouseEvent) => {
       const target = event.target as Node
-      const insideDesktop = !!desktopSortDropdownRef.current?.contains(target)
-      const insideMobile = !!mobileSortDropdownRef.current?.contains(target)
-      if (!insideDesktop && !insideMobile) {
+      if (!sortDropdownRef.current?.contains(target)) {
         setSortOpen(false)
       }
     }
@@ -135,6 +133,14 @@ export function WordCollectionToolbar({
   }, [sortOpen])
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'
+  const formatCount = (count: number) => count.toLocaleString('en-GB')
+  const countLabel = searchActive || hasActiveFilters
+    ? `${formatCount(filteredCount)} of ${formatCount(topicTotalCount)}`
+    : formatCount(topicTotalCount)
+  const sortLabel = sortBy === 'level-asc' && thenSortBy === 'cefr-asc'
+    ? 'Weak → A1'
+    : `${SORT_LABELS[sortBy]}${thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''}`
+  const activeLevels = [...ACTIVE_LEVELS, PARKED_LEVEL].filter(level => levelSummary[level] > 0)
   const sortOptions = WORD_SORT_OPTIONS
   const appliedFilters = [
     ...levels.map(value => ({key: `level-${value}`, label: LEVEL_LABELS[value], remove: () => setLevelFilter(selectionValue(levels.filter(level => level !== value)) ?? 'all')})),
@@ -147,203 +153,71 @@ export function WordCollectionToolbar({
 
   return (
     <div className="card toolbar-card">
-      {/* Search row — desktop */}
-      {searchOpen && (
-        <div className="toolbar-search-row toolbar-search-row-desktop">
-          <input ref={desktopSearchRef} className="search-input" type="text"
-            placeholder="Search word, translation, definition, example, notes…"
-            value={wordSearch} onChange={(e) => setWordSearch(e.target.value)} />
-          <button type="button" className="btn btn-ghost toolbar-search-close-btn" onClick={closeSearch} aria-label="Close search"><CloseIcon /></button>
+      <div className="toolbar-heading-row">
+        <div className="toolbar-list-heading">
+          <h1>{collectionTitle}</h1>
+          <span className="toolbar-list-count" aria-label={`${filteredCount} matching words out of ${topicTotalCount}`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
         </div>
-      )}
-
-      {/* Search row — mobile */}
-      {searchOpen && (
-        <div className="toolbar-mobile-search-row">
-          <div className="toolbar-mobile-search-wrap">
-            <input ref={mobileSearchRef} className="search-input toolbar-mobile-search" type="text"
-              placeholder="Search words…" value={wordSearch} onChange={(e) => setWordSearch(e.target.value)} />
-            {wordSearch.trim() && (
-              <button type="button" className="toolbar-mobile-clear" aria-label="Clear search" onClick={() => setWordSearch('')}><CloseIcon /></button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Mobile row */}
-      <div className="toolbar-mobile-row">
         <button type="button"
           className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
-          onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search"><SearchIcon /></button>
-        <div
-          ref={mobileSortDropdownRef}
-          className={`dropdown toolbar-sort-dropdown toolbar-mobile-select-wrap ${sortOpen ? 'dropdown-open' : ''}`}
-        >
-          <button
-            type="button"
-            className="dropdown-trigger toolbar-sort-trigger toolbar-sort-trigger-mobile"
-            onClick={() => setSortOpen((open) => !open)}
-            aria-haspopup="listbox"
-            aria-expanded={sortOpen}
-            aria-label="Sort words"
-          >
-            <span className="dropdown-trigger-label">{SORT_LABELS[effectiveSortBy]}</span>
-            <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
-          </button>
-          {sortOpen && (
-            <div className="dropdown-menu toolbar-sort-menu" role="listbox" aria-label="Sort options">
-              {sortOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  role="option"
-                  aria-selected={effectiveSortBy === option}
-                  className={`dropdown-option ${effectiveSortBy === option ? 'dropdown-option-active' : ''}`}
-                  onClick={() => handleSortChange(option)}
-                >
-                  <span className="dropdown-option-label">{SORT_LABELS[option]}</span>
-                  {effectiveSortBy === option ? <span className="dropdown-check">✓</span> : null}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <button type="button"
-          className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
-          onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
-          ☰{activeFilterCount > 0 && <span className="toolbar-filter-badge">{activeFilterCount}</span>}
-        </button>
+          onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search" aria-expanded={searchOpen}><SearchIcon /></button>
       </div>
-
-      {/* Mobile progress */}
-      <div className="toolbar-mobile-progress">
-        <div className="toolbar-progress-bar">
-          {ACTIVE_LEVELS.map((l) => {
-            const pct = (levelSummary[l] / total) * 100
-            if (pct === 0) return null
-            return <div key={l} className={`toolbar-progress-seg level-${l}`} style={{width: `${pct}%`}} />
-          })}
-          {!!levelSummary[PARKED_LEVEL] && (
-            <div className="toolbar-progress-seg level-5" style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}} />
-          )}
-        </div>
-        <div className="toolbar-progress-legend">
-          {ACTIVE_LEVELS.map((l) => {
-            const pct = Math.round((levelSummary[l] / total) * 100)
-            if (pct === 0) return null
-            return (
-              <span key={l} className="toolbar-progress-legend-item">
-                <span className={`toolbar-progress-dot level-${l}`} />
-                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[l]}</span>
-                <span className="toolbar-progress-legend-pct">{pct}%</span>
-                <span className="toolbar-progress-legend-count">{levelSummary[l]}</span>
-              </span>
-            )
-          })}
-          {!!levelSummary[PARKED_LEVEL] && (
-            <span className="toolbar-progress-legend-item">
-              <span className="toolbar-progress-dot level-5" />
-              <span className="toolbar-progress-legend-label">{LEVEL_LABELS[5]}</span>
-              <span className="toolbar-progress-legend-pct">{Math.round((levelSummary[PARKED_LEVEL] / total) * 100)}%</span>
-              <span className="toolbar-progress-legend-count">{levelSummary[PARKED_LEVEL]}</span>
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Desktop controls row */}
-      <div className="toolbar-controls-row">
-        <button type="button"
-          className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
-          onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search"><SearchIcon /></button>
-        <div
-          ref={desktopSortDropdownRef}
-          className={`dropdown toolbar-sort-dropdown toolbar-control-sort ${sortOpen ? 'dropdown-open' : ''}`}
-        >
-          <button
-            type="button"
-            className="dropdown-trigger toolbar-sort-trigger"
-            onClick={() => setSortOpen((open) => !open)}
-            aria-haspopup="listbox"
-            aria-expanded={sortOpen}
-            aria-label="Sort words"
-          >
-            <span className="dropdown-trigger-label">{SORT_LABELS[effectiveSortBy]}</span>
-            <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
-          </button>
-          {sortOpen && (
-            <div className="dropdown-menu toolbar-sort-menu" role="listbox" aria-label="Sort options">
-              {sortOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  role="option"
-                  aria-selected={effectiveSortBy === option}
-                  className={`dropdown-option ${effectiveSortBy === option ? 'dropdown-option-active' : ''}`}
-                  onClick={() => handleSortChange(option)}
-                >
-                  <span className="dropdown-option-label">{SORT_LABELS[option]}</span>
-                  {effectiveSortBy === option ? <span className="dropdown-check">✓</span> : null}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <button type="button"
-          className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
-          onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters">
-          Filters{activeFilterCount > 0 && <span className="toolbar-filter-badge">{activeFilterCount}</span>}
-        </button>
-        <button
-          type="button"
-          className={`btn btn-ghost toolbar-reset-btn${hasAnyActiveControls ? '' : ' is-inactive'}`}
-          onClick={onReset}
-        >
-          Reset
-        </button>
-        <div className="toolbar-progress" aria-label={`${progressLabel}, ${masteredPct}% mastered`}>
-          <div className="toolbar-progress-bar">
-            {ACTIVE_LEVELS.map((l) => {
-              const pct = (levelSummary[l] / total) * 100
-              if (pct === 0) return null
-              return <div key={l} className={`toolbar-progress-seg level-${l}`} style={{width: `${pct}%`}} />
-            })}
-            {!!levelSummary[PARKED_LEVEL] && (
-              <div
-                className="toolbar-progress-seg level-5"
-                style={{width: `${(levelSummary[PARKED_LEVEL] / total) * 100}%`}}
-              />
-            )}
-          </div>
-          <div className="toolbar-progress-legend">
-            {ACTIVE_LEVELS.map((l) => {
-              const pct = Math.round((levelSummary[l] / total) * 100)
-              if (pct === 0) return null
-              return (
-                <span key={l} className="toolbar-progress-legend-item">
-                  <span className={`toolbar-progress-dot level-${l}`} />
-                  <span className="toolbar-progress-legend-label">{LEVEL_LABELS[l]}</span>
-                  <span className="toolbar-progress-legend-pct">{pct}%</span>
-                </span>
-              )
-            })}
-            {!!levelSummary[PARKED_LEVEL] && (
-              <span className="toolbar-progress-legend-item">
-                <span className="toolbar-progress-dot level-5" />
-                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[5]}</span>
-                <span className="toolbar-progress-legend-pct">{Math.round((levelSummary[PARKED_LEVEL] / total) * 100)}%</span>
-              </span>
-            )}
-          </div>
-        </div>
-        <span className="toolbar-range">{showingLabel} of {filteredCount}</span>
-      </div>
-
-      <div className="toolbar-sort-summary">{SORT_LABELS[sortBy]}{thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''} · {filteredCount} matching words</div>
-      {appliedFilters.length > 0 && <div className="toolbar-applied-filters" aria-label="Applied filters">
-        {appliedFilters.map(filter => <button key={filter.key} type="button" className="toolbar-chip toolbar-chip-active" onClick={filter.remove} aria-label={`Remove ${filter.label} filter`}>{filter.label} ×</button>)}
-        <button type="button" className="btn btn-ghost" onClick={onReset}>Clear all</button>
+      {searchOpen && <div className="toolbar-search-row">
+        <input ref={searchRef} className="search-input" type="search" aria-label="Search words"
+          placeholder="Search words, translations, examples…"
+          value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
+        {searchActive && <button type="button" className="btn btn-ghost toolbar-search-close-btn" onClick={() => setWordSearch('')} aria-label="Clear search"><CloseIcon /></button>}
       </div>}
+
+      {collectionProgress}
+      {progressReady && <div className="toolbar-knowledge-progress">
+        <div className="toolbar-progress-bar" role="progressbar" aria-label={progressLabel}
+          aria-valuemin={0} aria-valuemax={topicTotalCount || 1} aria-valuenow={levelSummary[4]}
+          aria-valuetext={`${levelSummary[4]} strong words out of ${topicTotalCount}`}>
+          {activeLevels.map(level => <div key={level} className={`toolbar-progress-seg level-${level}`} style={{width: `${levelSummary[level] / total * 100}%`}} />)}
+        </div>
+        <details className="toolbar-progress-details">
+          <summary aria-label="Show word counts">
+            <span className="toolbar-progress-legend">
+              {activeLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
+                <span className={`toolbar-progress-dot level-${level}`} />
+                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[level]}</span>
+                <span className="toolbar-progress-legend-pct">{Math.round(levelSummary[level] / total * 100)}%</span>
+              </span>)}
+            </span>
+            <SelectChevron />
+          </summary>
+          <div className="toolbar-progress-counts">
+            {activeLevels.map(level => <span key={level}>{LEVEL_LABELS[level]}: {formatCount(levelSummary[level])}</span>)}
+          </div>
+        </details>
+      </div>}
+
+      <div className="toolbar-actions-row">
+        <div ref={sortDropdownRef} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
+          <button type="button" className="dropdown-trigger toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
+            aria-haspopup="listbox" aria-expanded={sortOpen} aria-label="Sort words" title={sortLabel}>
+            <span aria-hidden="true">↕</span>
+            <span className="dropdown-trigger-label">{sortLabel}</span>
+            <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
+          </button>
+          {sortOpen && <div className="dropdown-menu toolbar-sort-menu" role="listbox" aria-label="Sort options">
+            {sortOptions.map(option => <button key={option} type="button" role="option" aria-selected={effectiveSortBy === option}
+              className={`dropdown-option ${effectiveSortBy === option ? 'dropdown-option-active' : ''}`} onClick={() => handleSortChange(option)}>
+              <span className="dropdown-option-label">{SORT_LABELS[option]}</span>
+              {effectiveSortBy === option ? <span className="dropdown-check">✓</span> : null}
+            </button>)}
+          </div>}
+        </div>
+        <button type="button" className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
+          onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters" aria-expanded={filtersOpen}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <path d="M2 4h12M2 12h12"/><circle cx="6" cy="4" r="2" fill="var(--surface-2)"/><circle cx="10" cy="12" r="2" fill="var(--surface-2)"/>
+          </svg>
+          Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
+        </button>
+        {collectionAction}
+      </div>
 
       {/* Filter chips panel */}
       {filtersOpen && (
@@ -357,6 +231,11 @@ export function WordCollectionToolbar({
               <CloseIcon />
             </button>
           </div>
+          <div className="toolbar-sort-summary">{SORT_LABELS[sortBy]}{thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''} · {filteredCount} matching words</div>
+          {appliedFilters.length > 0 && <div className="toolbar-applied-filters" aria-label="Applied filters">
+            {appliedFilters.map(filter => <button key={filter.key} type="button" className="toolbar-chip toolbar-chip-active" onClick={filter.remove} aria-label={`Remove ${filter.label} filter`}>{filter.label} ×</button>)}
+            <button type="button" className="btn btn-ghost" onClick={onReset}>Clear all</button>
+          </div>}
           {setThenSortBy && <div className="toolbar-advanced-sort">
             <label>Sort by<select className="toolbar-control" aria-label="Primary sort" value={sortBy} onChange={event => setSortBy(event.target.value as SortOption)}>
               {sortOptions.map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'English level: ' : ''}{SORT_LABELS[value]}</option>)}

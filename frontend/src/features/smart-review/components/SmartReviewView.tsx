@@ -107,31 +107,19 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
 
   return (
     <div className="study-topic-panel">
-      <div className="sticky-controls">
-        <div className="smart-review-header">
-          <div className="smart-review-header-left">
-            <span className="smart-review-header-title">✨ Daily Word Mix</span>
-            <div className="smart-review-header-bar">
-              <div className="smart-review-header-bar-fill" style={{width: `${progress}%`}} />
-            </div>
-            <span className="smart-review-header-stat">
-              {queue.completed_count}/{queue.total_count}
-            </span>
-            {isComplete && <span className="smart-review-header-done">✓</span>}
-          </div>
-          <button
-            type="button"
-            className="smart-review-header-btn ripple-btn"
-            onClick={() => refresh()}
-            disabled={isRefreshing}
-          >
-            {isRefreshing ? '…' : isComplete ? '✨ New' : '↺ New set'}
-          </button>
-        </div>
-      </div>
-
       <div className={splitClassName}>
         <WordCollectionView
+          collectionTitle="Daily Word Mix"
+          collectionAction={<button type="button" className="btn btn-ghost toolbar-mix-refresh" onClick={() => refresh()} disabled={isRefreshing}>
+            {isRefreshing ? '…' : isComplete ? '✨ New' : '↺ New set'}
+          </button>}
+          collectionProgress={<div className="toolbar-mix-progress">
+            <span>Reviewed {queue.completed_count}/{queue.total_count}{isComplete ? ' ✓' : ''}</span>
+            <div className="smart-review-header-bar" role="progressbar" aria-label="Daily Word Mix completion" aria-valuemin={0} aria-valuemax={queue.total_count || 1} aria-valuenow={queue.completed_count}>
+              <div className="smart-review-header-bar-fill" style={{width: `${progress}%`}} />
+            </div>
+          </div>}
+          progressLabel="Daily Word Mix knowledge"
           wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
           sortBy={filter.sortBy} setSortBy={filter.setSortBy}
           thenSortBy={filter.thenSortBy} setThenSortBy={filter.setThenSortBy}

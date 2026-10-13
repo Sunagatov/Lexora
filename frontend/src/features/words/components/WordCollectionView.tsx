@@ -12,6 +12,7 @@ function WordTableSkeleton() {
   )
 }
 
+import type {ReactNode} from 'react'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilter, Selection} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
@@ -22,6 +23,9 @@ import {WordCardList} from '@/features/words/components/WordCardList'
 import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 
 type Props = {
+  collectionTitle?: string
+  collectionAction?: ReactNode
+  collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
   levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
@@ -37,6 +41,7 @@ type Props = {
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
   progressLabel?: string
+  progressReady?: boolean
   pageWords: Word[]
   page: number; totalPages: number
   pageSize: number; setPageSize: (n: number) => void
@@ -51,10 +56,11 @@ type Props = {
 }
 
 export function WordCollectionView({
+  collectionTitle, collectionAction, collectionProgress,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
-  pageStart, pageEnd, levelSummary, progressLabel,
+  pageStart, pageEnd, levelSummary, progressLabel, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, onUpdate, fromTopicSlug,
@@ -73,6 +79,7 @@ export function WordCollectionView({
       <div className="word-collection-scroll">
         <div className="sticky-controls">
           <WordCollectionToolbar
+            collectionTitle={collectionTitle} collectionAction={collectionAction} collectionProgress={collectionProgress}
             wordSearch={wordSearch} setWordSearch={setWordSearch}
             sortBy={sortBy} setSortBy={setSortBy}
             levelFilter={levelFilter} setLevelFilter={setLevelFilter}
@@ -84,6 +91,7 @@ export function WordCollectionView({
             filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
             levelSummary={levelSummary}
             progressLabel={progressLabel}
+            progressReady={progressReady}
             thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
             topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
             onLearningSort={onLearningSort}

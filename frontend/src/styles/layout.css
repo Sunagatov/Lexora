@@ -249,20 +249,6 @@
 }
 
 /* ── Word collection split pane ─────────────────────────── */
-.vocabulary-header {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  margin: 8px 12px;
-  flex-shrink: 0;
-}
-
-.vocabulary-header h1 { margin: 0; font-size: 1.1rem; }
-.vocabulary-progress { width: 100%; }
-.vocabulary-progress-label { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 0.8rem; color: var(--text-2); }
-.vocabulary-progress-status { width: 100%; color: var(--text-3); font-size: 0.8rem; }
-
 .word-collection-split {
   flex: 1;
   min-height: 0;

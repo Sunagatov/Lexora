@@ -117,9 +117,9 @@ export function AllWordsPage() {
   return (
     <div className="all-words-page">
       <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'All Words', isActive: true}]} />
-      <h1>All Words</h1>
 
       <WordCollectionToolbar
+        collectionTitle="All words"
         wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
         sortBy={s.sortBy} setSortBy={s.setSortBy} thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}
         levelFilter={s.levelFilter} setLevelFilter={s.setLevelFilter}
@@ -133,6 +133,7 @@ export function AllWordsPage() {
         levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 2: s.summaryQuery.data?.level_counts[2] ?? 0,
           3: s.summaryQuery.data?.level_counts[3] ?? 0, 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
         progressLabel="Whole vocabulary progress"
+        progressReady={s.summaryQuery.isSuccess}
       />
 
       {(loadError || actionError) && (

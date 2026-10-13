@@ -117,6 +117,7 @@ export function StudyPage() {
             ) : (
               <div className={`word-collection-split${panelWordId && !isMobile ? ' has-panel' : ''}`}>
                 <WordCollectionView
+                  collectionTitle={`Topic: ${s.selectedTopic?.name ?? 'Loading…'}`}
                   wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
                   sortBy={s.sortBy} setSortBy={s.setSortBy}
                   thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}

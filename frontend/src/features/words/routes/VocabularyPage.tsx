@@ -40,7 +40,6 @@ export function VocabularyPage() {
   const total = s.summaryQuery.data?.total ?? 0
   const counts = s.summaryQuery.data?.level_counts
   const strong = counts?.[4] ?? 0
-  const progress = total > 0 ? Math.round(strong / total * 100) : 0
   const levelSummary = {1: counts?.[1] ?? 0, 2: counts?.[2] ?? 0, 3: counts?.[3] ?? 0, 4: strong, 5: counts?.[5] ?? 0}
   const filteredCount = s.wordsQuery.data?.total ?? 0
   const pageStart = words.length ? (s.page - 1) * s.pageSize + 1 : 0
@@ -78,23 +77,13 @@ export function VocabularyPage() {
       />
       <div className="main-content">
         <div className="study-topic-panel vocabulary-panel">
-          <div className="vocabulary-header card">
-            <h1>My Vocabulary</h1>
-            {s.summaryQuery.isSuccess ? (
-              <div className="vocabulary-progress">
-                <div className="vocabulary-progress-label"><span>Strong words</span><span>{strong} / {total} · {progress}%</span></div>
-                <div className="toolbar-progress-bar" role="progressbar" aria-label="Whole vocabulary knowledge" aria-valuemin={0} aria-valuemax={total || 1} aria-valuenow={strong} aria-valuetext={`${strong} strong words out of ${total}`}>
-                  <div className="toolbar-progress-seg level-4" style={{width: `${total ? strong / total * 100 : 0}%`}} />
-                </div>
-              </div>
-            ) : <span className="vocabulary-progress-status">{s.summaryQuery.isError ? 'Vocabulary progress unavailable' : 'Loading vocabulary progress…'}</span>}
-          </div>
           {(loadError || actionError) && <div role="alert" className="wp-save-error">
             {loadError ? 'Failed to load vocabulary. Please try again.' : actionError}
             {loadError && <button type="button" className="btn btn-ghost" onClick={() => { queries.forEach(query => { void query.refetch() }) }}>Retry</button>}
           </div>}
           {!s.wordsQuery.isError && <div className={`word-collection-split${panelWordId !== null && !isMobile ? ' has-panel' : ''}`}>
             <WordCollectionView
+              collectionTitle="All words"
               wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
               sortBy={s.sortBy} setSortBy={s.setSortBy}
               thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}
@@ -108,6 +97,7 @@ export function VocabularyPage() {
               totalWordsOverall={total} topicTotalCount={total} filteredCount={filteredCount}
               pageStart={pageStart} pageEnd={pageEnd} levelSummary={levelSummary}
               progressLabel="Whole vocabulary progress"
+              progressReady={s.summaryQuery.isSuccess}
               pageWords={words} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} onUpdate={handleUpdate}

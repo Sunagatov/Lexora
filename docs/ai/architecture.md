@@ -61,9 +61,15 @@ Confirmed routes:
 - `/trash`
 - `/stats`
 
-The homepage keeps a compact heading and whole-vocabulary progress. Daily Word Mix
-is available through the topic sidebar (the menu drawer on mobile), without a
-duplicate button in the homepage header. Sorting details remain in the word toolbar.
+Word lists share a compact toolbar on desktop and mobile: collection heading and
+search, collection knowledge progress, then sorting and filtering controls. The
+heading distinguishes All words, the selected topic, and Daily Word Mix, with a
+matching/collection count when filtered. Progress always covers the collection,
+independent of filters; exact knowledge counts expand from the percentage legend.
+Filter chips, reset controls, and detailed sorting appear only in the filter panel.
+The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
+available through the sidebar/menu and keeps its completion progress and New set
+control within the shared toolbar.
 
 ## Request flow
 
