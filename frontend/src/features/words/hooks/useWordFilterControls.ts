@@ -25,13 +25,15 @@ export function useWordFilterControls(options: Options = {}) {
 
   function setParam(key: string, value: string | null, resetPage = true) {
     if (options.syncUrl === false) return
+    // Publish user edits immediately so the next click reads the latest filters.
+    // Automatic page clamping runs in an effect and must stay asynchronous.
     setParams(prev => {
       const next = new URLSearchParams(prev)
       if (value) next.set(key, value)
       else next.delete(key)
       if (resetPage) next.delete('page')
       return next
-    }, {replace: true})
+    }, {replace: true, flushSync: resetPage})
     if (resetPage) options.onControlsChange?.()
   }
   function serialize(value: Selection<string | number> | 'all') {
@@ -42,7 +44,7 @@ export function useWordFilterControls(options: Options = {}) {
       const next = new URLSearchParams(prev)
       next.delete('sort'); next.delete('thenSort'); next.delete('page')
       return next
-    }, {replace: true})
+    }, {replace: true, flushSync: true})
     options.onControlsChange?.()
   }
   return {
@@ -57,6 +59,6 @@ export function useWordFilterControls(options: Options = {}) {
     page, setPage: (value: number) => setParam('page', value === 1 ? null : String(value), false),
     pageSize, setPageSize: (value: number) => setParam('pageSize', value === defaultSize ? null : String(value)),
     setLearningSort,
-    resetFilters: () => { setParams({}, {replace: true}); options.onControlsChange?.() },
+    resetFilters: () => { setParams({}, {replace: true, flushSync: true}); options.onControlsChange?.() },
   }
 }

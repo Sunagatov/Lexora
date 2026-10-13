@@ -1,5 +1,5 @@
-import {fireEvent, render, screen} from '@testing-library/react'
-import {MemoryRouter, useLocation} from 'react-router-dom'
+import {act, fireEvent, render, screen} from '@testing-library/react'
+import {createMemoryRouter, MemoryRouter, RouterProvider, useLocation} from 'react-router-dom'
 import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
 import {useWordFilterControls} from '@/features/words/hooks/useWordFilterControls'
 import {fetchWordList} from '@/features/words/api/wordsApi'
@@ -17,6 +17,24 @@ function Probe() {
   </>
 }
 const params = () => new URLSearchParams(screen.getByTestId('url').textContent!)
+
+it('keeps every selection when several controls change before the next render', () => {
+  const router = createMemoryRouter([{path: '/', element: <Probe />}])
+  render(<RouterProvider router={router} />)
+  fireEvent.click(screen.getAllByRole('button', {name: 'Toggle filters'})[0])
+  act(() => {
+    fireEvent.click(screen.getByRole('button', {name: '1 Weak'}))
+    fireEvent.click(screen.getByRole('button', {name: '2 Basic'}))
+    fireEvent.click(screen.getByRole('button', {name: 'A1'}))
+    fireEvent.click(screen.getByRole('button', {name: 'A2'}))
+    fireEvent.change(screen.getByLabelText('Primary sort'), {target: {value: 'cefr-asc'}})
+    fireEvent.change(screen.getByLabelText('Secondary sort'), {target: {value: 'level-desc'}})
+  })
+  expect(params().get('level')).toBe('1,2')
+  expect(params().get('cefr')).toBe('A1,A2')
+  expect(params().get('sort')).toBe('cefr-asc')
+  expect(params().get('thenSort')).toBe('level-desc')
+})
 
 it('combines selections, removes individual chips, and changes sorting without losing filters', () => {
   render(<MemoryRouter initialEntries={['/?page=3']}><Probe /></MemoryRouter>)
