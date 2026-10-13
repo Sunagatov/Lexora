@@ -9,10 +9,12 @@ import {useWordPageState} from '@/features/words/hooks/useWordPageState'
 import {WordPageEditForm} from '@/features/words/components/WordPageEditForm'
 import {WordPageView} from '@/features/words/components/WordPageView'
 import {WordPageFooterNav, WordPageHero, WordPageSkeleton} from '@/features/words/components/WordPageChrome'
+import type {WordLocationState} from '@/features/words/hooks/useWordListNavigation'
 
 export function WordPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const returnTo = (location.state as WordLocationState | null)?.returnTo
   const s = useWordPageState({
     onSaveSuccess: (updated, locationState) => {
       navigate(routes.word(updated.id), {
@@ -21,7 +23,9 @@ export function WordPage() {
       })
     },
     onDeleteSuccess: (destinationTopicSlug) => {
-      navigate(destinationTopicSlug ? routes.topic(destinationTopicSlug) : routes.home, {replace: true})
+      navigate(returnTo ?? (destinationTopicSlug ? routes.topic(destinationTopicSlug) : routes.home), {
+        replace: true, state: {wordListScrollTop: returnTo?.scrollTop},
+      })
     },
   })
   const publicConfigQuery = usePublicConfig()
@@ -82,7 +86,7 @@ export function WordPage() {
         isSpeaking={isSpeaking}
         onBack={() => editing
           ? navigate(routes.word(s.wordId), {replace: true, state: location.state})
-          : navigate(backRoute)}
+          : navigate(returnTo ?? backRoute, {replace: true, state: {wordListScrollTop: returnTo?.scrollTop}})}
         onEdit={() => navigate(routes.editWord(s.wordId), {state: location.state})}
         onSpeak={handleSpeak}
         hasSpeechSynthesis={hasSpeechSynthesis}

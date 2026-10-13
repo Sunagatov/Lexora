@@ -1,9 +1,11 @@
 from io import BytesIO
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from starlette.datastructures import UploadFile
+from pydantic import Field
 
 from app.shared.deps import get_db
 from app.features.topics.exceptions import MissingTopicsError
@@ -11,12 +13,14 @@ from app.features.topics.rules import assert_topics_exist
 from app.features.words.repository import (
     get_all_words, get_word_by_id, create_word, update_word, soft_delete_word,
     bulk_update_words,
+    get_word_knowledge_summary,
 )
 from app.features.words.schemas import (
     BatchUpdateRequest,
     BatchUpdateResponse,
     WordCreate,
     WordListResponse,
+    WordKnowledgeSummary,
     WordResponse,
     WordUpdate,
     WorkbookImportResponse,
@@ -37,6 +41,7 @@ from app.features.words.ai_review import (
 )
 
 router = APIRouter(prefix="/api/words", tags=["words"])
+WordSort = Literal["term-asc", "term-desc", "level-asc", "level-desc", "cefr-asc", "cefr-desc", "newest", "oldest"]
 
 
 @router.get("", response_model=WordListResponse)
@@ -49,11 +54,19 @@ def list_words(
     completeness: str | None = Query(default=None, pattern="^(complete|incomplete)$"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
+    sort: Annotated[WordSort, Query()] = "term-asc",
     db: Session = Depends(get_db),
+    then_sort: Annotated[WordSort | Literal["none"] | None, Query()] = None,
+    levels: Annotated[list[Annotated[int, Field(ge=1, le=5)]] | None, Query()] = None,
+    positions: Annotated[list[Literal["noun", "verb", "adjective", "adverb", "phrase", "preposition", "phrasal verb", "other"]] | None, Query()] = None,
+    cefr_levels: Annotated[list[Literal["A1", "A2", "B1", "B2", "C1", "C2"]] | None, Query()] = None,
+    topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,
 ) -> WordListResponse:
     words, total = get_all_words(
         db, topic_id=topic_id, search=search, pos=pos, cefr=cefr,
         level=level, completeness=completeness, page=page, page_size=page_size,
+        sort=sort, then_sort=then_sort, levels=levels, positions=positions,
+        cefr_levels=cefr_levels, topic_ids=topic_ids,
     )
     total_pages = (total + page_size - 1) // page_size if total > 0 else 0
     return WordListResponse(
@@ -63,6 +76,12 @@ def list_words(
         page_size=page_size,
         total_pages=total_pages,
     )
+
+
+@router.get("/summary", response_model=WordKnowledgeSummary)
+def word_knowledge_summary(db: Annotated[Session, Depends(get_db)]) -> WordKnowledgeSummary:
+    counts = get_word_knowledge_summary(db)
+    return WordKnowledgeSummary(total=sum(counts.values()), level_counts=counts)
 
 
 @router.patch("/batch", response_model=BatchUpdateResponse)

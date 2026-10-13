@@ -6,6 +6,7 @@ import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordD
 import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {smartPreview} from '@/features/words/model/wordPresenter'
+import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
 
 type Props = {
   words: Word[]
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
+  const navigation = useWordListNavigation(fromTopicSlug)
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [flipUp,     setFlipUp]     = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -61,7 +63,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                         {word.term}
                       </span>
                     ) : (
-                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={{fromTopicSlug}} style={{display: 'inline', flex: 'none'}}>
+                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}>
                         {word.term}
                       </Link>
                     )}

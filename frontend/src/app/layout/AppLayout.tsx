@@ -12,7 +12,7 @@ export type AppLayoutOutletContext = {
 }
 
 function isStudyRoute(pathname: string) {
-  return pathname === routes.smartReview || pathname.startsWith('/topics/')
+  return pathname === routes.home || pathname === routes.smartReview || pathname.startsWith('/topics/')
 }
 
 export function AppLayout() {

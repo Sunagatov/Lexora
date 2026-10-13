@@ -1,11 +1,11 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter, useLocation} from 'react-router-dom'
 import {describe, expect, it} from 'vitest'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import type {Word} from '@/features/words/types/wordTypes'
 
-function Probe({words, defaultPageSize}: {words: Word[]; defaultPageSize?: number}) {
-  const filter = useWordFilter(words, {defaultPageSize})
+function Probe({words, defaultPageSize, isLoading}: {words: Word[]; defaultPageSize?: number; isLoading?: boolean}) {
+  const filter = useWordFilter(words, {defaultPageSize, isLoading})
   const location = useLocation()
   return (
     <div
@@ -20,6 +20,20 @@ function Probe({words, defaultPageSize}: {words: Word[]; defaultPageSize?: numbe
 }
 
 describe('useWordFilter URL sync', () => {
+  it('keeps the saved page while a list is loading from a cold cache', async () => {
+    const {rerender} = render(<MemoryRouter initialEntries={['/topics/test?page=3']}>
+      <Probe words={[]} isLoading />
+    </MemoryRouter>)
+    await act(async () => {})
+    expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=3')
+    const words = Array.from({length: 60}, (_, index) => ({id: index + 1, term: `word-${index}`, knowledge_level: 1} as Word))
+    rerender(<MemoryRouter initialEntries={['/topics/test?page=3']}>
+      <Probe words={words} isLoading={false} defaultPageSize={20} />
+    </MemoryRouter>)
+    await waitFor(() => expect(screen.getByTestId('search').getAttribute('data-search')).toBe('?page=3'))
+    expect(screen.getByTestId('search').getAttribute('data-total-pages')).toBe('3')
+  })
+
   it('clamps an out-of-range page param back into the URL', async () => {
     render(
       <MemoryRouter initialEntries={[{pathname: '/', search: '?page=5'}]}>

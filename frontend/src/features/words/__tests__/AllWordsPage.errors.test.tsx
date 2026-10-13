@@ -1,7 +1,7 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {AllWordsPage} from '@/features/words/routes/AllWordsPage'
-import {fetchWordList, batchUpdateWords} from '@/features/words/api/wordsApi'
+import {fetchWordList, fetchWordKnowledgeSummary, batchUpdateWords} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
 import type {Word} from '@/features/words/types/wordTypes'
 import type {WordListResponse} from '@/features/words/api/wordsApi'
@@ -35,6 +35,7 @@ beforeEach(() => {
   queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   vi.mocked(fetchTopics).mockResolvedValue([])
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha]))
+  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {2: 1}})
 })
 
 it('keeps the latest search results when an older request finishes later', async () => {
@@ -44,9 +45,10 @@ it('keeps the latest search results when an older request finishes later', async
     ? oldRequest : Promise.resolve(page(params?.search === 'bravo' ? [bravo] : [alpha])))
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
-  fireEvent.change(screen.getByPlaceholderText('Search words…'), {target: {value: 'alpha'}})
+  fireEvent.click(screen.getAllByRole('button', {name: 'Toggle search'})[0])
+  fireEvent.change(screen.getByPlaceholderText('Search word, translation, definition, example, notes…'), {target: {value: 'alpha'}})
   await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({search: 'alpha'})))
-  fireEvent.change(screen.getByPlaceholderText('Search words…'), {target: {value: 'bravo'}})
+  fireEvent.change(screen.getByPlaceholderText('Search word, translation, definition, example, notes…'), {target: {value: 'bravo'}})
   await screen.findByRole('link', {name: 'bravo'})
   await act(async () => { resolveOld(page([alpha])); await oldRequest })
   expect(screen.getByRole('link', {name: 'bravo'})).toBeTruthy()

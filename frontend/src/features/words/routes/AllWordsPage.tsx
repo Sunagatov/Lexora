@@ -1,48 +1,34 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
-import {Link, useNavigate, useSearchParams} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import {fetchWordList, batchUpdateWords} from '@/features/words/api/wordsApi'
+import {batchUpdateWords} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
 import {routes} from '@/app/routes'
-import {LEVEL_LABELS, LEVELS, CEFR_LEVELS, POS_VALUES, levelClass} from '@/features/words/model/wordDomain'
+import {LEVEL_LABELS, LEVELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
-import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
+import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
+import {WordCardList} from '@/features/words/components/WordCardList'
+import {WordPagination} from '@/features/words/components/WordPagination'
+import {useVocabulary} from '@/features/words/hooks/useVocabulary'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
 import {SkeletonTable} from '@/shared/components/Skeletons'
 import {queryKeys} from '@/app/queryKeys'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {invalidateWordDependencies} from '@/features/words/model/wordCache'
-
-type PosValue = (typeof POS_VALUES)[number]
-type CefrLevel = (typeof CEFR_LEVELS)[number]
-
-const POS_LABELS: Record<PosValue, string> = {
-  noun: 'Noun', verb: 'Verb', adjective: 'Adj', adverb: 'Adv',
-  phrase: 'Phrase', preposition: 'Prep', 'phrasal verb': 'Phr. verb', other: 'Other',
-}
-
-function param(sp: URLSearchParams, key: string): string { return sp.get(key) ?? '' }
-function numParam(sp: URLSearchParams, key: string, fallback: number): number {
-  const n = parseInt(sp.get(key) ?? '', 10)
-  return Number.isFinite(n) && n >= 1 ? n : fallback
-}
+import {useWordListNavigation, useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 
 export function AllWordsPage() {
+  const navigation = useWordListNavigation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [sp, setSp] = useSearchParams()
-  const search       = param(sp, 'search')
-  const pos          = param(sp, 'pos') as PosValue | ''
-  const cefr         = param(sp, 'cefr') as CefrLevel | ''
-  const level        = param(sp, 'level')
-  const completeness = param(sp, 'completeness')
-  const page         = numParam(sp, 'page', 1)
-  const pageSize     = numParam(sp, 'pageSize', DEFAULT_PAGE_SIZE)
-
+  const s = useVocabulary()
+  const {wordSearch: search, posFilter: pos, cefrFilter: cefr, levelFilter: level, completeness, page, pageSize, wordsQuery} = s
+  const isMobile = useIsMobile(768)
   const [actionError, setActionError] = useState<string | null>(null)
   const [selected, setSelected]   = useState<Set<number>>(new Set())
   const [bulkLevel, setBulkLevel] = useState('')
@@ -57,36 +43,18 @@ export function AllWordsPage() {
   const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
   const topicMap = useMemo(() => new Map(topics.map(t => [t.id, t])), [topics])
 
-  function setParam(key: string, value: string) {
-    setSp(prev => {
-      const next = new URLSearchParams(prev)
-      if (!value) next.delete(key)
-      else next.set(key, value)
-      if (key !== 'page') next.delete('page')
-      return next
-    }, {replace: true})
-  }
-
-  const wordsQuery = useQuery({
-    queryKey: [...queryKeys.wordList, {search, pos, cefr, level, completeness, page, pageSize}],
-    queryFn: () => fetchWordList({
-      search: search || undefined,
-      pos: pos || undefined,
-      cefr: cefr || undefined,
-      level: level ? Number(level) : undefined,
-      completeness: completeness || undefined,
-      page, pageSize,
-    }),
-  })
   const words = useMemo(() => wordsQuery.data?.words ?? [], [wordsQuery.data])
   const total = wordsQuery.data?.total ?? 0
   const totalPages = wordsQuery.data?.total_pages ?? 0
   const loading = wordsQuery.isLoading
+  useWordListScrollRestore(loading)
   const loadError = wordsQuery.isError ? 'Failed to load words. Please try again.'
-    : topicsQuery.isError ? 'Failed to load topics. Please try again.' : null
+    : topicsQuery.isError ? 'Failed to load topics. Please try again.'
+    : s.summaryQuery.isError ? 'Failed to load vocabulary progress. Please try again.' : null
 
   useEffect(() => { setSelected(new Set()) }, [words])
-  useEffect(() => { setActionError(null) }, [search, pos, cefr, level, completeness, page, pageSize])
+  const viewKey = JSON.stringify([search, pos, cefr, level, completeness, page, pageSize, s.sortBy, s.thenSortBy, s.topicFilter])
+  useEffect(() => { setActionError(null) }, [viewKey])
 
   const toggleSelect = (id: number) => setSelected(prev => {
     const next = new Set(prev)
@@ -142,44 +110,30 @@ export function AllWordsPage() {
     window.speechSynthesis.speak(u)
   }
 
-  function resetFilters() { setSp({}, {replace: true}) }
+  function resetFilters() { s.resetFilters() }
 
-  const hasFilters = !!(search || pos || cefr || level || completeness)
+  const hasFilters = !!(search || pos || cefr || level !== 'all' || completeness !== 'all' || s.topicFilter.length)
 
   return (
     <div className="all-words-page">
       <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'All Words', isActive: true}]} />
       <h1>All Words</h1>
 
-      {/* Toolbar */}
-      <div className="all-words-toolbar">
-        <input className="search-input" type="text" placeholder="Search words…"
-          value={search} onChange={e => setParam('search', e.target.value)} />
-
-        <select className="toolbar-control" value={pos} onChange={e => setParam('pos', e.target.value)} aria-label="Filter by POS">
-          <option value="">All POS</option>
-          {POS_VALUES.map(p => <option key={p} value={p}>{POS_LABELS[p]}</option>)}
-        </select>
-
-        <select className="toolbar-control" value={cefr} onChange={e => setParam('cefr', e.target.value)} aria-label="Filter by CEFR">
-          <option value="">All CEFR</option>
-          {CEFR_LEVELS.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-
-        <select className="toolbar-control" value={level} onChange={e => setParam('level', e.target.value)} aria-label="Filter by level">
-          <option value="">All levels</option>
-          {LEVELS.map(l => <option key={l} value={String(l)}>{LEVEL_LABELS[l]}</option>)}
-        </select>
-
-        <select className="toolbar-control" value={completeness} onChange={e => setParam('completeness', e.target.value)} aria-label="Filter by completeness">
-          <option value="">All</option>
-          <option value="complete">✓ Complete</option>
-          <option value="incomplete">⚠ Incomplete</option>
-        </select>
-
-        {hasFilters && <button type="button" className="btn btn-ghost" onClick={resetFilters}>Reset</button>}
-        <span className="toolbar-range">{total} word{total !== 1 ? 's' : ''}</span>
-      </div>
+      <WordCollectionToolbar
+        wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
+        sortBy={s.sortBy} setSortBy={s.setSortBy} thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}
+        levelFilter={s.levelFilter} setLevelFilter={s.setLevelFilter}
+        posFilter={s.posFilter} setPosFilter={s.setPosFilter}
+        cefrFilter={s.cefrFilter} setCefrFilter={s.setCefrFilter}
+        topicFilter={s.topicFilter} setTopicFilter={s.setTopicFilter} topics={topics}
+        completeness={s.completeness} setCompleteness={s.setCompleteness}
+        onLearningSort={s.setLearningSort} onReset={resetFilters}
+        totalWordsOverall={s.summaryQuery.data?.total ?? 0} topicTotalCount={s.summaryQuery.data?.total ?? 0}
+        filteredCount={total} pageStart={words.length ? (page - 1) * pageSize + 1 : 0} pageEnd={words.length ? (page - 1) * pageSize + words.length : 0}
+        levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 2: s.summaryQuery.data?.level_counts[2] ?? 0,
+          3: s.summaryQuery.data?.level_counts[3] ?? 0, 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
+        progressLabel="Whole vocabulary progress"
+      />
 
       {(loadError || actionError) && (
         <div role="alert" className="wp-save-error">
@@ -187,6 +141,7 @@ export function AllWordsPage() {
           {loadError && <button type="button" className="btn btn-ghost" onClick={() => {
             void wordsQuery.refetch()
             void topicsQuery.refetch()
+            void s.summaryQuery.refetch()
           }}>Retry</button>}
         </div>
       )}
@@ -203,6 +158,7 @@ export function AllWordsPage() {
           actions={hasFilters ? [{label: 'Reset filters', onClick: resetFilters, variant: 'secondary'}] : [{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
         />
       ) : (
+        <>
         <div className="word-table-wrap">
           <table className="word-table" aria-label="All words table">
             <thead>
@@ -233,7 +189,7 @@ export function AllWordsPage() {
                     </td>
                     <td className="word-cell-word">
                       <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-                        <Link className="word-term word-term-link" to={routes.word(word.id)} style={{display: 'inline', flex: 'none'}}>{word.term}</Link>
+                        <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}>{word.term}</Link>
                         <button type="button"
                           className={`wdp-speak-btn ripple-btn${speakingId === word.id ? ' is-speaking' : ''}`}
                           style={{marginLeft: 0}}
@@ -281,18 +237,11 @@ export function AllWordsPage() {
             </tbody>
           </table>
         </div>
+        {isMobile && <WordCardList words={words} pendingWordId={pendingWordId} onUpdate={handleLevelChange} />}
+        </>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="all-words-pagination">
-          <button type="button" className="btn btn-ghost" disabled={page <= 1}
-            onClick={() => setParam('page', String(page - 1))}>← Prev</button>
-          <span>Page {page} of {totalPages}</span>
-          <button type="button" className="btn btn-ghost" disabled={page >= totalPages}
-            onClick={() => setParam('page', String(page + 1))}>Next →</button>
-        </div>
-      )}
+      <WordPagination page={page} totalPages={totalPages} pageSize={pageSize} onPage={s.setPage} onPageSize={s.setPageSize} />
 
       {/* Bulk action bar */}
       {selected.size > 0 && (

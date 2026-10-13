@@ -85,14 +85,17 @@ function makeWord(id: number, term: string, topicIds: number[] = [1]): Word {
 const word1 = makeWord(1, 'alpha')
 const word2 = makeWord(2, 'beta')
 
-function buildRouter(initialPath: string) {
+function buildRouter(initialPath: string, state?: Record<string, unknown>) {
   return createMemoryRouter(
     [
       {path: '/words/:wordId', element: <WordPage />},
       {path: '/words/:wordId/edit', element: <WordPage />},
       {path: '/topics/:topicSlug', element: <div>topic page</div>},
+      {path: '/', element: <div>vocabulary page</div>},
+      {path: '/smart-review', element: <div>daily mix page</div>},
+      {path: '/words', element: <div>all words page</div>},
     ],
-    {initialEntries: [initialPath]},
+    {initialEntries: [{pathname: initialPath, state}]},
   )
 }
 
@@ -105,6 +108,33 @@ describe('WordPage — draft reset on word navigation', () => {
     vi.mocked(wordsApi.fetchWords).mockResolvedValue([word1, word2])
     vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
     vi.mocked(wordsApi.deleteWord).mockResolvedValue(undefined)
+  })
+
+  it.each(['/', '/smart-review', '/topics/alpha-topic', '/words'])('returns to the exact filtered list at %s', async pathname => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    const search = '?search=alpha&level=2&cefr=A1&sort=term-desc&page=3&pageSize=50'
+    const router = buildRouter('/words/1', {fromTopicSlug: 'alpha-topic', returnTo: {pathname, search, scrollTop: 420}})
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(await screen.findByRole('button', {name: 'Back'}))
+    await waitFor(() => expect(router.state.location.pathname).toBe(pathname))
+    expect(router.state.location.search).toBe(search)
+    expect(router.state.location.state?.wordListScrollTop).toBe(420)
+  })
+
+  it('keeps the original list after editing and saving', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    const returnTo = {pathname: '/smart-review', search: '?level=2&page=2', scrollTop: 300}
+    const router = buildRouter('/words/1', {returnTo})
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(await screen.findByRole('button', {name: 'Edit'}))
+    fireEvent.click(await screen.findByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/words/1'))
+    expect(router.state.location.state.returnTo).toEqual(returnTo)
+    fireEvent.click(await screen.findByRole('button', {name: 'Back'}))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/smart-review'))
+    expect(router.state.location.search).toBe('?level=2&page=2')
   })
 
   it('resets edit draft when navigating from word 1 edit to word 2 edit', async () => {

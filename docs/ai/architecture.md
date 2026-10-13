@@ -51,8 +51,10 @@ Frontend bootstraps React and uses a browser router.
 
 Confirmed routes:
 
+- `/` — My Vocabulary homepage
 - `/login`
 - `/smart-review`
+- `/words` — bulk vocabulary view
 - `/topics/:topicSlug`
 - `/words/:wordId`
 - `/words/:wordId/edit`

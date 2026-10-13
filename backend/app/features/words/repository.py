@@ -49,29 +49,39 @@ def get_all_words(
     completeness: str | None = None,
     page: int | None = None,
     page_size: int | None = None,
+    sort: str = "term-asc",
+    then_sort: str | None = None,
+    levels: list[int] | None = None,
+    positions: list[str] | None = None,
+    cefr_levels: list[str] | None = None,
+    topic_ids: list[int] | None = None,
 ) -> list[Word] | tuple[list[Word], int]:
     stmt = active_words_stmt()
-    if topic_id is not None:
+    if topic_id is not None or topic_ids:
         from app.features.topics.api import get_active_subtree_topic_ids
-        topic_ids = get_active_subtree_topic_ids(db, topic_id)
-        stmt = words_for_topics_stmt(topic_ids)
+        if topic_id is not None:
+            stmt = words_for_topics_stmt(get_active_subtree_topic_ids(db, topic_id))
+        if topic_ids:
+            selected_ids = {child_id for selected_id in topic_ids for child_id in get_active_subtree_topic_ids(db, selected_id)}
+            selected = words_for_topics_stmt(list(selected_ids))
+            stmt = stmt.where(Word.id.in_(selected.with_only_columns(Word.id)))
     if search:
         stmt = apply_word_search(stmt, search)
-    if pos:
-        stmt = apply_pos_filter(stmt, pos)
-    if cefr:
-        stmt = apply_cefr_filter(stmt, cefr)
-    if level is not None:
-        stmt = apply_level_filter(stmt, level)
+    if pos or positions:
+        stmt = apply_pos_filter(stmt, [*(positions or []), *([pos] if pos else [])])
+    if cefr or cefr_levels:
+        stmt = apply_cefr_filter(stmt, [*(cefr_levels or []), *([cefr] if cefr else [])])
+    if level is not None or levels:
+        stmt = apply_level_filter(stmt, [*(levels or []), *([level] if level is not None else [])])
     if completeness:
         stmt = apply_completeness_filter(stmt, completeness)
 
     if page is not None and page_size is not None:
         total = db.scalar(count_stmt(stmt)) or 0
-        stmt = ordered_word_stmt(paginate_stmt(stmt, page, page_size))
+        stmt = paginate_stmt(ordered_word_stmt(stmt, sort, then_sort), page, page_size)
         return list(db.scalars(stmt).all()), total
 
-    stmt = ordered_word_stmt(stmt)
+    stmt = ordered_word_stmt(stmt, sort, then_sort)
     return list(db.scalars(stmt).all())
 
 
@@ -108,6 +118,15 @@ def hard_delete_words_by_ids(db: Session, word_ids: list[int]) -> int:
 
 def count_active_words(db: Session) -> int:
     return int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None))) or 0)
+
+
+def get_word_knowledge_summary(db: Session) -> dict[int, int]:
+    rows = db.execute(
+        select(Word.knowledge_level, func.count())
+        .where(Word.deleted_at.is_(None))
+        .group_by(Word.knowledge_level)
+    ).all()
+    return {int(level or 0): int(count) for level, count in rows}
 
 
 def list_active_word_topic_levels(db: Session) -> list[tuple[int, int | None, int]]:

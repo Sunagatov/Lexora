@@ -2,7 +2,7 @@ import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
 import type {Word, WordKnowledgeLevel, WorkbookImportResponse, EnrichResult} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
-import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
+import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
 
 export const fetchWords = async (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()
@@ -82,24 +82,35 @@ export async function exportWordsWorkbook(): Promise<void> {
 }
 
 export type WordListParams = {
-  search?: string; topicId?: number; pos?: string; cefr?: string;
-  level?: number; completeness?: string; page?: number; pageSize?: number;
+  search?: string; topicId?: number; topicIds?: number[]; pos?: string | string[]; cefr?: string | string[];
+  level?: number | number[]; completeness?: string; page?: number; pageSize?: number;
+  sort?: SortOption;
+  thenSort?: SortOption | null;
 }
 
 export type WordListResponse = {
   words: Word[]; total: number; page: number; page_size: number; total_pages: number;
 }
 
+export type WordKnowledgeSummary = {total: number; level_counts: Record<number, number>}
+export const fetchWordKnowledgeSummary = () => request<WordKnowledgeSummary>('/api/words/summary')
+
 export const fetchWordList = (params: WordListParams = {}): Promise<WordListResponse> => {
   const q = new URLSearchParams()
   if (params.search?.trim()) q.set('search', params.search.trim())
   if (params.topicId) q.set('topic_id', String(params.topicId))
-  if (params.pos) q.set('pos', params.pos)
-  if (params.cefr) q.set('cefr', params.cefr)
-  if (params.level) q.set('level', String(params.level))
+  for (const id of params.topicIds ?? []) q.append('topic_ids', String(id))
+  if (Array.isArray(params.pos)) params.pos.forEach(value => q.append('positions', value))
+  else if (params.pos) q.set('pos', params.pos)
+  if (Array.isArray(params.cefr)) params.cefr.forEach(value => q.append('cefr_levels', value))
+  else if (params.cefr) q.set('cefr', params.cefr)
+  if (Array.isArray(params.level)) params.level.forEach(value => q.append('levels', String(value)))
+  else if (params.level) q.set('level', String(params.level))
   if (params.completeness) q.set('completeness', params.completeness)
   if (params.page) q.set('page', String(params.page))
   if (params.pageSize) q.set('page_size', String(params.pageSize))
+  if (params.sort) q.set('sort', params.sort)
+  if (params.thenSort !== undefined) q.set('then_sort', params.thenSort ?? 'none')
   const qs = q.toString()
   return request<WordListResponse>(`/api/words${qs ? `?${qs}` : ''}`)
 }

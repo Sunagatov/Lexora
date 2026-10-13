@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchWord} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
@@ -10,6 +10,7 @@ import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {formatIpa, truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
 import {SkeletonList} from '@/shared/components/Skeletons'
+import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
 
 const CEFR_HERO_CLASS: Record<string, string> = {
   A1: 'wdp-chip-cefr-a', A2: 'wdp-chip-cefr-a',
@@ -33,7 +34,7 @@ function getMainTranslation(word: Word): string {
 }
 
 export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNavigate}: Props) {
-  const navigate = useNavigate()
+  const navigation = useWordListNavigation(fromTopicSlug)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
 
@@ -121,11 +122,11 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
         <div className="wdp-actions">
           {word && (
             <button type="button" className="wdp-edit-btn ripple-btn"
-              onClick={() => navigate(routes.editWord(wordId), {state: {fromTopicSlug}})}>
+              onClick={event => navigation.openWord(event, wordId, true)}>
               Edit
             </button>
           )}
-          <Link className="wdp-icon-btn" to={routes.word(wordId)} state={{fromTopicSlug}} title="Open full page">
+          <Link className="wdp-icon-btn" to={routes.word(wordId)} state={navigation.state} onClick={event => navigation.openWord(event, wordId)} title="Open full page">
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2H2v10h10V8"/><path d="M9 2h3v3"/><path d="M7 7l5-5"/>
             </svg>

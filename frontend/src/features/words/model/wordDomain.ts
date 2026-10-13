@@ -21,6 +21,30 @@ export const POS_VALUES = ['noun', 'verb', 'adjective', 'adverb', 'phrase', 'pre
 export type PosValue = (typeof POS_VALUES)[number]
 
 export type CompletenessFilter = 'all' | 'complete' | 'incomplete'
+export type Selection<T> = T | T[] | null
+export type KnowledgeFilter = 'all' | WordKnowledgeLevel | WordKnowledgeLevel[]
+
+export function selectedValues<T>(value: Selection<T> | 'all'): T[] {
+  return value === null || value === 'all' ? [] : Array.isArray(value) ? value : [value]
+}
+
+export function selectionValue<T>(values: T[]): Selection<T> {
+  return values.length === 0 ? null : values.length === 1 ? values[0] : values
+}
+
+export function parseSelection<T extends string | number>(raw: string | null, allowed: readonly T[]): Selection<T> {
+  const values = (raw ?? '').split(',')
+  return selectionValue(allowed.filter(value => values.includes(String(value))))
+}
+
+export function sortField(sort: SortOption): string {
+  return sort === 'newest' || sort === 'oldest' ? 'date' : sort.split('-')[0]
+}
+
+export function parseSecondarySort(raw: string | null, primary: SortOption): SortOption | null {
+  const secondary = raw === 'none' ? null : WORD_SORT_OPTIONS.includes(raw as SortOption) ? raw as SortOption : 'cefr-asc'
+  return secondary && sortField(secondary) !== sortField(primary) ? secondary : null
+}
 
 export const LEVEL_LABELS: Record<number, string> = {
   1: 'Weak', 2: 'Basic', 3: 'Okay', 4: 'Strong', 5: 'Parked',
@@ -73,11 +97,13 @@ function isComplete(w: Word): boolean {
 
 export type FilterOptions = {
   search: string
-  levelFilter: 'all' | WordKnowledgeLevel
-  posFilter: PosValue | null
-  cefrFilter: CefrLevel | null
+  levelFilter: KnowledgeFilter
+  posFilter: Selection<PosValue>
+  cefrFilter: Selection<CefrLevel>
   completeness: CompletenessFilter
   sortBy: SortOption
+  thenSortBy?: SortOption | null
+  topicIds?: number[]
   frozenIds: number[] | null
 }
 
@@ -85,14 +111,19 @@ export function filterAndSort(
   words: Word[],
   opts: FilterOptions,
 ): Word[] {
-  const {search, levelFilter, posFilter, cefrFilter, completeness, sortBy, frozenIds} = opts
+  const {search, levelFilter, posFilter, cefrFilter, completeness, sortBy, frozenIds, topicIds = []} = opts
+  const thenSortBy = opts.thenSortBy === undefined ? parseSecondarySort(null, sortBy) : opts.thenSortBy
+  const levels = selectedValues(levelFilter)
+  const positions = selectedValues(posFilter)
+  const cefrs = selectedValues(cefrFilter)
   const needle = search.toLowerCase().trim()
   const frozenSet = frozenIds ? new Set(frozenIds) : null
 
   const result = words.filter((w) => {
-    if (levelFilter !== 'all' && w.knowledge_level !== levelFilter && !frozenSet?.has(w.id)) return false
-    if (posFilter && w.part_of_speech !== posFilter && !frozenSet?.has(w.id)) return false
-    if (cefrFilter && w.cefr_level !== cefrFilter && !frozenSet?.has(w.id)) return false
+    if (levels.length && !levels.includes(w.knowledge_level as WordKnowledgeLevel) && !frozenSet?.has(w.id)) return false
+    if (positions.length && !positions.includes(w.part_of_speech as PosValue) && !frozenSet?.has(w.id)) return false
+    if (cefrs.length && !cefrs.includes(w.cefr_level as CefrLevel) && !frozenSet?.has(w.id)) return false
+    if (topicIds.length && !w.topic_ids.some(id => topicIds.includes(id))) return false
     if (completeness === 'complete' && !isComplete(w)) return false
     if (completeness === 'incomplete' && isComplete(w)) return false
     if (!needle) return true
@@ -100,8 +131,8 @@ export function filterAndSort(
       .some((v) => v?.toLowerCase().trim().includes(needle))
   })
 
-  result.sort((a, b) => {
-    switch (sortBy) {
+  function compare(a: Word, b: Word, sort: SortOption): number {
+    switch (sort) {
       case 'term-asc':   return a.term.localeCompare(b.term)
       case 'term-desc':  return b.term.localeCompare(a.term)
       case 'level-asc':  return sortKey(a.knowledge_level) - sortKey(b.knowledge_level)
@@ -113,11 +144,17 @@ export function filterAndSort(
         return da - db
       }
       case 'cefr-asc':   return cefrKey(a.cefr_level) - cefrKey(b.cefr_level)
-      case 'cefr-desc':  return cefrKey(b.cefr_level) - cefrKey(a.cefr_level)
+      case 'cefr-desc': {
+        const ka = cefrKey(a.cefr_level), kb = cefrKey(b.cefr_level)
+        return ka === 99 || kb === 99 ? ka - kb : kb - ka
+      }
       case 'newest':     return b.created_at.localeCompare(a.created_at)
       case 'oldest':     return a.created_at.localeCompare(b.created_at)
     }
-  })
+  }
+  result.sort((a, b) => compare(a, b, sortBy)
+    || (thenSortBy ? compare(a, b, thenSortBy) : 0)
+    || a.term.localeCompare(b.term) || a.id - b.id)
 
   if (!frozenIds) return result
 

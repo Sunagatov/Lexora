@@ -250,6 +250,11 @@ class BulkImportResponse(BaseModel):
     skipped_terms: list[str]
 
 
+class WordKnowledgeSummary(BaseModel):
+    total: int
+    level_counts: dict[int, int]
+
+
 class WordListResponse(BaseModel):
     words: list[WordResponse]
     total: int

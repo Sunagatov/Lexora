@@ -82,7 +82,7 @@ export function StudyPage() {
 
       <div className="main-content">
         {s.isSmartReview ? (
-          <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} />
+          <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} topics={s.topics} />
         ) : (
           <div className="study-topic-panel">
             <div className="main-inner study-breadcrumb-bar" style={{paddingBottom: 0}}>
@@ -119,6 +119,9 @@ export function StudyPage() {
                 <WordCollectionView
                   wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
                   sortBy={s.sortBy} setSortBy={s.setSortBy}
+                  thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}
+                  topicFilter={s.topicFilter} setTopicFilter={s.setTopicFilter} topics={s.topics}
+                  onLearningSort={s.setLearningSort}
                   levelFilter={s.levelFilter} setLevelFilter={s.setLevelFilter}
                   posFilter={s.posFilter} setPosFilter={s.setPosFilter}
                   cefrFilter={s.cefrFilter} setCefrFilter={s.setCefrFilter}

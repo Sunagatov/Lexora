@@ -3,6 +3,7 @@ export const queryKeys = {
   topicSidebar: ['topic-sidebar']                as const,
   words:        ['words']                         as const,
   wordList:     ['word-list']                     as const,
+  wordSummary:  ['word-summary']                  as const,
   topicWords:   (id: number) => ['words', id]     as const,
   word:         (id: number) => ['word', id]      as const,
   trashWords:   ['trash-words']                   as const,

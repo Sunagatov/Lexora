@@ -6,6 +6,7 @@ const TOPIC_DEPENDENT_QUERY_KEYS = [
   queryKeys.topics,
   queryKeys.words,
   queryKeys.wordList,
+  queryKeys.wordSummary,
   queryKeys.topicSidebar,
   queryKeys.stats,
   queryKeys.smartReview,

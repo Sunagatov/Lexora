@@ -54,7 +54,7 @@ export function useStudyState() {
 
   const topicWords = wordsQuery.data ?? []
 
-  const filter = useWordFilter(topicWords, {defaultPageSize, syncUrl: !isSmartReview})
+  const filter = useWordFilter(topicWords, {defaultPageSize, topics, syncUrl: !isSmartReview, isLoading: topicsQuery.isLoading || wordsQuery.isLoading})
   const update = useWordUpdate(() =>
     filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
   )
@@ -79,6 +79,9 @@ export function useStudyState() {
     cefrFilter: filter.cefrFilter, setCefrFilter: filter.setCefrFilter,
     completeness: filter.completeness, setCompleteness: filter.setCompleteness,
     sortBy: filter.sortBy, setSortBy: filter.setSortBy,
+    thenSortBy: filter.thenSortBy, setThenSortBy: filter.setThenSortBy,
+    topicFilter: filter.topicFilter, setTopicFilter: filter.setTopicFilter,
+    setLearningSort: filter.setLearningSort,
     levelSummary: filter.levelSummary, filteredWords: filter.filteredWords,
     pageWords: filter.pageWords, page: filter.page, totalPages: filter.totalPages,
     setPage: filter.setPage, pageSize: filter.pageSize, setPageSize: filter.setPageSize,

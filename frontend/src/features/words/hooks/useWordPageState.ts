@@ -9,9 +9,10 @@ import {queryKeys} from '@/app/queryKeys'
 import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
 import {invalidateWordDependencies, removeWordFromLists, replaceWordInLists} from '@/features/words/model/wordCache'
+import type {WordLocationState} from '@/features/words/hooks/useWordListNavigation'
 
 type UseWordPageStateOptions = {
-  onSaveSuccess?: (updated: Word, locationState?: {fromTopicSlug: string}) => void
+  onSaveSuccess?: (updated: Word, locationState?: WordLocationState) => void
   onDeleteSuccess?: (destinationTopicSlug: string | null) => void
 }
 
@@ -59,7 +60,10 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     onSuccess: (updated) => {
       replaceWordInLists(queryClient, updated)
       invalidateWordDependencies(queryClient)
-      options.onSaveSuccess?.(updated, buildWordLocationState(updated, topics, fromTopicSlug))
+      options.onSaveSuccess?.(updated, {
+        ...(location.state as WordLocationState | null),
+        ...buildWordLocationState(updated, topics, fromTopicSlug),
+      })
 
       setDraft(null)
       setSaveError(null)

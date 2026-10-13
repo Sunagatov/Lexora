@@ -39,10 +39,11 @@ import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {EmptyState} from '@/shared/components/EmptyState'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
-type Props = {queue: StudyQueue | null; isLoading: boolean}
+type Props = {queue: StudyQueue | null; isLoading: boolean; topics?: Topic[]}
 
-export function SmartReviewView({queue, isLoading}: Props) {
+export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const navigate = useNavigate()
   const {completeItem, refresh, isRefreshing} = useSmartReview(false)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
@@ -61,7 +62,7 @@ export function SmartReviewView({queue, isLoading}: Props) {
     return () => window.clearTimeout(timer)
   }, [completedCount, panelWordId, queueId])
 
-  const filter = useWordFilter(words, {defaultPageSize})
+  const filter = useWordFilter(words, {defaultPageSize, isLoading, topics})
   useEffect(() => {
     if (panelWordId !== null && !filter.pageWords.some(word => word.id === panelWordId)) {
       setPanelWordId(null)
@@ -133,6 +134,9 @@ export function SmartReviewView({queue, isLoading}: Props) {
         <WordCollectionView
           wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
           sortBy={filter.sortBy} setSortBy={filter.setSortBy}
+          thenSortBy={filter.thenSortBy} setThenSortBy={filter.setThenSortBy}
+          topicFilter={filter.topicFilter} setTopicFilter={filter.setTopicFilter} topics={topics}
+          onLearningSort={filter.setLearningSort}
           levelFilter={filter.levelFilter} setLevelFilter={filter.setLevelFilter}
           posFilter={filter.posFilter} setPosFilter={filter.setPosFilter}
           cefrFilter={filter.cefrFilter} setCefrFilter={filter.setCefrFilter}

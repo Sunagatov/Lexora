@@ -43,7 +43,16 @@ Obvious errors from router code include `400` for invalid topic data, `404` for 
 
 ## Words
 
-- `GET /api/words` — list words; supports optional `topic_id` and `search`.
+- `GET /api/words` — paginated list with optional `topic_id`, `search`, `pos`, `cefr`, `level`, `completeness`, and `sort` (term/level/CEFR ascending or descending, newest, oldest). Default API sort remains `term-asc`; `level-asc` orders by knowledge, then A1–C2, term, and ID before pagination. Parked/unrated words follow levels 1–4. Search includes term, translation, definition, example, pattern, notes, and verb forms.
+- `GET /api/words/summary` — whole-library `total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Level key `0` represents unrated words.
+
+`GET /api/words` also accepts repeated `levels`, `positions`, `cefr_levels`, and
+`topic_ids` parameters. Values within a group are ORed; groups are ANDed.
+Selected topics include their active descendants and intersect a scoped
+`topic_id` when present. Legacy scalar filters remain supported. `then_sort`
+selects a secondary sort using the same values as `sort`, or `none`; alphabetical
+term and ID provide stable tie-breaks before pagination. Invalid repeated filter
+values or sorting choices return `422`.
 - `GET /api/words/export/xlsx` — export workbook.
 - `POST /api/words/import/xlsx` — import workbook upload.
 - `GET /api/words/export/ai-review` — export a topic page for AI review.

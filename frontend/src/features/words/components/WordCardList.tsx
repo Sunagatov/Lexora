@@ -5,6 +5,7 @@ import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
+import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
 
 type Props = {
   words: Word[]
@@ -22,6 +23,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   const [openLevel, setOpenLevel] = useState(false)
   const [flipUp, setFlipUp] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const navigation = useWordListNavigation(fromTopicSlug)
 
   function speak(e: React.MouseEvent) {
     e.preventDefault()
@@ -40,7 +42,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
 
   return (
     <article className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}`}>
-      <Link className="word-card-body-tap" to={routes.word(word.id)} state={{fromTopicSlug}}>
+      <Link className="word-card-body-tap" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
         <div className="word-card-grid">
           <div className="word-card-left">
             <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>

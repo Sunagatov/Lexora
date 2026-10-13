@@ -140,7 +140,7 @@ describe('SmartReviewView', () => {
     mockMatchMedia(false)
     render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
-    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 40})
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 40}))
   })
 
   it('uses the mobile default page size on narrow screens', () => {
@@ -148,7 +148,7 @@ describe('SmartReviewView', () => {
 
     render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
-    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), {defaultPageSize: 20})
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 20}))
   })
 
   it('does not complete the queue item when the level update fails', async () => {

@@ -13,23 +13,30 @@ function WordTableSkeleton() {
 }
 
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
-import type {SortOption, CefrLevel, PosValue, CompletenessFilter} from '@/features/words/model/wordDomain'
+import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilter, Selection} from '@/features/words/model/wordDomain'
+import type {Topic} from '@/features/topics/types/topicTypes'
 import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
 import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
+import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 
 type Props = {
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
-  levelFilter: 'all' | WordKnowledgeLevel; setLevelFilter: (v: 'all' | WordKnowledgeLevel) => void
-  posFilter: PosValue | null; setPosFilter: (v: PosValue | null) => void
-  cefrFilter: CefrLevel | null; setCefrFilter: (v: CefrLevel | null) => void
+  levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
+  posFilter: Selection<PosValue>; setPosFilter: (v: Selection<PosValue>) => void
+  cefrFilter: Selection<CefrLevel>; setCefrFilter: (v: Selection<CefrLevel>) => void
+  thenSortBy?: SortOption | null; setThenSortBy?: (v: SortOption | null) => void
+  topicFilter?: number[]; setTopicFilter?: (v: number[]) => void
+  topics?: Topic[]
+  onLearningSort?: () => void
   completeness: CompletenessFilter; setCompleteness: (v: CompletenessFilter) => void
   onReset: () => void
   totalWordsOverall: number; topicTotalCount: number; filteredCount: number
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
+  progressLabel?: string
   pageWords: Word[]
   page: number; totalPages: number
   pageSize: number; setPageSize: (n: number) => void
@@ -47,13 +54,15 @@ export function WordCollectionView({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
-  pageStart, pageEnd, levelSummary,
+  pageStart, pageEnd, levelSummary, progressLabel,
+  thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, onUpdate, fromTopicSlug,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
   onWordSelect, selectedWordId,
 }: Props) {
+  useWordListScrollRestore(isLoading)
   function handlePage(p: number) {
     setPage(p)
     document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'smooth'})
@@ -74,6 +83,10 @@ export function WordCollectionView({
             totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
             filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
             levelSummary={levelSummary}
+            progressLabel={progressLabel}
+            thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
+            topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
+            onLearningSort={onLearningSort}
           />
           {pageWords.length > 0 && (
             <div className="word-list-header" aria-hidden="true">

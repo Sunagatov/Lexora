@@ -3,30 +3,35 @@ import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
   CEFR_LEVELS,
-  CEFR_SORT_OPTIONS,
-  DATE_SORT_OPTIONS,
   LEVEL_LABELS,
-  LEVEL_SORT_OPTIONS,
   PARKED_LEVEL,
   POS_VALUES,
-  TERM_SORT_OPTIONS,
+  WORD_SORT_OPTIONS,
+  selectedValues, selectionValue, sortField,
+  type KnowledgeFilter, type Selection,
   type CefrLevel,
   type CompletenessFilter,
   type PosValue,
   type SortOption,
 } from '@/features/words/model/wordDomain'
+import type {Topic} from '@/features/topics/types/topicTypes'
 
 type Props = {
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
-  levelFilter: 'all' | WordKnowledgeLevel; setLevelFilter: (v: 'all' | WordKnowledgeLevel) => void
-  posFilter: PosValue | null; setPosFilter: (v: PosValue | null) => void
-  cefrFilter: CefrLevel | null; setCefrFilter: (v: CefrLevel | null) => void
+  levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
+  posFilter: Selection<PosValue>; setPosFilter: (v: Selection<PosValue>) => void
+  cefrFilter: Selection<CefrLevel>; setCefrFilter: (v: Selection<CefrLevel>) => void
+  thenSortBy?: SortOption | null; setThenSortBy?: (v: SortOption | null) => void
+  topicFilter?: number[]; setTopicFilter?: (v: number[]) => void
+  topics?: Topic[]
+  onLearningSort?: () => void
   completeness: CompletenessFilter; setCompleteness: (v: CompletenessFilter) => void
   onReset: () => void
   totalWordsOverall: number; topicTotalCount: number; filteredCount: number
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
+  progressLabel?: string
 }
 
 const SearchIcon = () => (
@@ -48,9 +53,9 @@ const SelectChevron = () => (
 )
 
 const SORT_LABELS: Record<SortOption, string> = {
-  'level-asc': 'Level ↑', 'level-desc': 'Level ↓',
+  'level-asc': 'Weak first', 'level-desc': 'Strong first',
   'term-asc': 'A → Z', 'term-desc': 'Z → A',
-  'cefr-asc': 'CEFR ↑', 'cefr-desc': 'CEFR ↓',
+  'cefr-asc': 'A1 first', 'cefr-desc': 'C2 first',
   'newest': 'Newest', 'oldest': 'Oldest',
 }
 
@@ -59,37 +64,37 @@ const POS_LABELS: Record<PosValue, string> = {
   phrase: 'Phrase', preposition: 'Prep', 'phrasal verb': 'Phr. verb', other: 'Other',
 }
 
-const FALLBACK_TERM_SORT = TERM_SORT_OPTIONS[0]
-const LEVEL_SORT_SET = new Set<SortOption>(LEVEL_SORT_OPTIONS)
-
-function isLevelSortOption(value: SortOption): value is (typeof LEVEL_SORT_OPTIONS)[number] {
-  return LEVEL_SORT_SET.has(value)
+function toggleValue<T>(values: T[], value: T): T[] {
+  return values.includes(value) ? values.filter(item => item !== value) : [...values, value]
 }
 
 export function WordCollectionToolbar({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
-  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary,
+  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress',
+  thenSortBy = null, setThenSortBy, topicFilter = [], setTopicFilter, topics = [], onLearningSort,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(() => wordSearch !== '')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
+  const [topicSearch, setTopicSearch] = useState('')
   const desktopSearchRef = useRef<HTMLInputElement>(null)
   const mobileSearchRef = useRef<HTMLInputElement>(null)
   const desktopSortDropdownRef = useRef<HTMLDivElement>(null)
   const mobileSortDropdownRef = useRef<HTMLDivElement>(null)
 
-  const levelActive = levelFilter !== 'all'
-  const effectiveSortBy: SortOption = levelActive && isLevelSortOption(sortBy) ? FALLBACK_TERM_SORT : sortBy
+  const levels = selectedValues(levelFilter)
+  const positions = selectedValues(posFilter)
+  const cefrs = selectedValues(cefrFilter)
+  const effectiveSortBy = sortBy
   const searchActive = wordSearch.trim() !== ''
-  const hasActiveFilters = levelFilter !== 'all' || posFilter !== null || cefrFilter !== null || completeness !== 'all'
-  const hasAnyActiveControls = searchActive || hasActiveFilters
-  const activeFilterCount = (levelFilter !== 'all' ? 1 : 0) + (posFilter ? 1 : 0) + (cefrFilter ? 1 : 0) + (completeness !== 'all' ? 1 : 0)
+  const activeFilterCount = levels.length + positions.length + cefrs.length + topicFilter.length + (completeness !== 'all' ? 1 : 0)
+  const hasActiveFilters = activeFilterCount > 0
+  const hasAnyActiveControls = searchActive || hasActiveFilters || sortBy !== 'level-asc' || thenSortBy !== 'cefr-asc'
   const total = topicTotalCount || 1
   const masteredPct = Math.round((levelSummary[4] / total) * 100)
 
   function handleSortChange(v: SortOption) {
-    if (levelActive && isLevelSortOption(v)) { setSortBy(FALLBACK_TERM_SORT); return }
     setSortBy(v)
     setSortOpen(false)
   }
@@ -98,7 +103,10 @@ export function WordCollectionToolbar({
   function closeSearch() { setSearchOpen(false) }
 
   useEffect(() => {
-    if (searchOpen) { desktopSearchRef.current?.focus(); mobileSearchRef.current?.focus() }
+    if (searchOpen) {
+      desktopSearchRef.current?.focus({preventScroll: true})
+      mobileSearchRef.current?.focus({preventScroll: true})
+    }
   }, [searchOpen])
 
   useEffect(() => {
@@ -127,12 +135,15 @@ export function WordCollectionToolbar({
   }, [sortOpen])
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'
-  const sortOptions = [
-    ...(!levelActive ? LEVEL_SORT_OPTIONS : []),
-    ...TERM_SORT_OPTIONS,
-    ...CEFR_SORT_OPTIONS,
-    ...DATE_SORT_OPTIONS,
-  ] as SortOption[]
+  const sortOptions = WORD_SORT_OPTIONS
+  const appliedFilters = [
+    ...levels.map(value => ({key: `level-${value}`, label: LEVEL_LABELS[value], remove: () => setLevelFilter(selectionValue(levels.filter(level => level !== value)) ?? 'all')})),
+    ...cefrs.map(value => ({key: `cefr-${value}`, label: value, remove: () => setCefrFilter(selectionValue(cefrs.filter(cefr => cefr !== value)))})),
+    ...positions.map(value => ({key: `pos-${value}`, label: POS_LABELS[value], remove: () => setPosFilter(selectionValue(positions.filter(pos => pos !== value)))})),
+    ...topicFilter.map(id => ({key: `topic-${id}`, label: topics.find(topic => topic.id === id)?.name ?? `Topic ${id}`, remove: () => setTopicFilter?.(topicFilter.filter(topicId => topicId !== id))})),
+    ...(completeness !== 'all' ? [{key: 'completeness', label: completeness === 'complete' ? 'Complete' : 'Incomplete', remove: () => setCompleteness('all')}] : []),
+    ...(searchActive ? [{key: 'search', label: `Search: ${wordSearch}`, remove: () => setWordSearch('')}] : []),
+  ]
 
   return (
     <div className="card toolbar-card">
@@ -290,7 +301,7 @@ export function WordCollectionToolbar({
         >
           Reset
         </button>
-        <div className="toolbar-progress" aria-label={`Topic progress, ${masteredPct}% mastered`}>
+        <div className="toolbar-progress" aria-label={`${progressLabel}, ${masteredPct}% mastered`}>
           <div className="toolbar-progress-bar">
             {ACTIVE_LEVELS.map((l) => {
               const pct = (levelSummary[l] / total) * 100
@@ -328,24 +339,41 @@ export function WordCollectionToolbar({
         <span className="toolbar-range">{showingLabel} of {filteredCount}</span>
       </div>
 
+      <div className="toolbar-sort-summary">{SORT_LABELS[sortBy]}{thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''} · {filteredCount} matching words</div>
+      {appliedFilters.length > 0 && <div className="toolbar-applied-filters" aria-label="Applied filters">
+        {appliedFilters.map(filter => <button key={filter.key} type="button" className="toolbar-chip toolbar-chip-active" onClick={filter.remove} aria-label={`Remove ${filter.label} filter`}>{filter.label} ×</button>)}
+        <button type="button" className="btn btn-ghost" onClick={onReset}>Clear all</button>
+      </div>}
+
       {/* Filter chips panel */}
       {filtersOpen && (
           <div className="toolbar-filter-panel">
           <div className="toolbar-filter-panel-header">
             <div className="toolbar-filter-panel-copy">
-              <span className="toolbar-filter-panel-title">Filters</span>
-              <span className="toolbar-filter-panel-subtitle">{activeFilterCount > 0 ? `${activeFilterCount} active` : 'Refine this topic view'}</span>
+              <span className="toolbar-filter-panel-title">Filters & sorting</span>
+              <span className="toolbar-filter-panel-subtitle">{activeFilterCount > 0 ? `${activeFilterCount} selected` : 'Refine this word list'}</span>
             </div>
             <button type="button" className="btn btn-ghost toolbar-filter-panel-close" onClick={() => setFiltersOpen(false)} aria-label="Close filters">
               <CloseIcon />
             </button>
           </div>
+          {setThenSortBy && <div className="toolbar-advanced-sort">
+            <label>Sort by<select className="toolbar-control" aria-label="Primary sort" value={sortBy} onChange={event => setSortBy(event.target.value as SortOption)}>
+              {sortOptions.map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'English level: ' : ''}{SORT_LABELS[value]}</option>)}
+            </select></label>
+            <label>Then by<select className="toolbar-control" aria-label="Secondary sort" value={thenSortBy ?? 'none'} onChange={event => setThenSortBy(event.target.value === 'none' ? null : event.target.value as SortOption)}>
+              <option value="none">Alphabetical tie-break only</option>
+              {sortOptions.filter(value => sortField(value) !== sortField(sortBy)).map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'English level: ' : ''}{SORT_LABELS[value]}</option>)}
+            </select></label>
+            {onLearningSort && <button type="button" className="btn btn-ghost toolbar-learning-preset" onClick={onLearningSort}>Weak words, easiest first</button>}
+          </div>}
+          <p className="toolbar-filter-help">Choose any values within a group. Words must match every selected group.</p>
           <div className="toolbar-filter-group">
             <span className="toolbar-filter-label">Knowledge level</span>
             <div className="toolbar-chips">
               <button
                 type="button"
-                className={`toolbar-chip ${levelFilter === 'all' ? 'toolbar-chip-active' : ''}`}
+                  className={`toolbar-chip ${levels.length === 0 ? 'toolbar-chip-active' : ''}`}
                 onClick={() => setLevelFilter('all')}
               >
                 All levels
@@ -354,16 +382,18 @@ export function WordCollectionToolbar({
                 <button
                   key={level}
                   type="button"
-                  className={`toolbar-chip ${levelFilter === level ? 'toolbar-chip-active' : ''}`}
-                  onClick={() => setLevelFilter(level)}
+                  className={`toolbar-chip ${levels.includes(level) ? 'toolbar-chip-active' : ''}`}
+                  aria-pressed={levels.includes(level)}
+                  onClick={() => setLevelFilter(selectionValue(toggleValue(levels, level)) ?? 'all')}
                 >
                   {level} {LEVEL_LABELS[level]}
                 </button>
               ))}
               <button
                 type="button"
-                className={`toolbar-chip ${levelFilter === PARKED_LEVEL ? 'toolbar-chip-active' : ''}`}
-                onClick={() => setLevelFilter(PARKED_LEVEL)}
+                className={`toolbar-chip ${levels.includes(PARKED_LEVEL) ? 'toolbar-chip-active' : ''}`}
+                aria-pressed={levels.includes(PARKED_LEVEL)}
+                onClick={() => setLevelFilter(selectionValue(toggleValue(levels, PARKED_LEVEL)) ?? 'all')}
               >
                 {LEVEL_LABELS[PARKED_LEVEL]}
               </button>
@@ -374,8 +404,9 @@ export function WordCollectionToolbar({
             <div className="toolbar-chips">
               {POS_VALUES.map((pos) => (
                 <button key={pos} type="button"
-                  className={`toolbar-chip ${posFilter === pos ? 'toolbar-chip-active' : ''}`}
-                  onClick={() => setPosFilter(posFilter === pos ? null : pos)}>
+                  className={`toolbar-chip ${positions.includes(pos) ? 'toolbar-chip-active' : ''}`}
+                  aria-pressed={positions.includes(pos)}
+                  onClick={() => setPosFilter(selectionValue(toggleValue(positions, pos)))}>
                   {POS_LABELS[pos]}
                 </button>
               ))}
@@ -386,8 +417,9 @@ export function WordCollectionToolbar({
             <div className="toolbar-chips">
               {CEFR_LEVELS.map((lvl) => (
                 <button key={lvl} type="button"
-                  className={`toolbar-chip ${cefrFilter === lvl ? 'toolbar-chip-active' : ''}`}
-                  onClick={() => setCefrFilter(cefrFilter === lvl ? null : lvl)}>
+                  className={`toolbar-chip ${cefrs.includes(lvl) ? 'toolbar-chip-active' : ''}`}
+                  aria-pressed={cefrs.includes(lvl)}
+                  onClick={() => setCefrFilter(selectionValue(toggleValue(cefrs, lvl)))}>
                   {lvl}
                 </button>
               ))}
@@ -405,6 +437,19 @@ export function WordCollectionToolbar({
               ))}
             </div>
           </div>
+          {setTopicFilter && topics.length > 0 && <div className="toolbar-filter-group">
+            <span className="toolbar-filter-label">Topics</span>
+            <details className="toolbar-topic-filter">
+              <summary>{topicFilter.length ? `${topicFilter.length} topics selected` : 'All topics'}</summary>
+              <input className="search-input" aria-label="Search topics in filters" placeholder="Find a topic…" value={topicSearch} onChange={event => setTopicSearch(event.target.value)} />
+              <div className="toolbar-topic-options">
+                {topics.filter(topic => topic.name.toLowerCase().includes(topicSearch.trim().toLowerCase())).map(topic => <label key={topic.id}>
+                  <input type="checkbox" aria-label={`Topic: ${topic.name}`} checked={topicFilter.includes(topic.id)} onChange={() => setTopicFilter(toggleValue(topicFilter, topic.id))} />{topic.name}
+                </label>)}
+              </div>
+              {topicFilter.length > 0 && <button type="button" className="btn btn-ghost" onClick={() => setTopicFilter([])}>All topics</button>}
+            </details>
+          </div>}
           <div className="toolbar-filter-panel-actions">
             <button type="button" className="btn btn-ghost toolbar-filter-reset" onClick={onReset}>Reset</button>
             <button type="button" className="btn btn-primary toolbar-filter-apply" onClick={() => setFiltersOpen(false)}>Done</button>

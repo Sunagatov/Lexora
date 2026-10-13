@@ -93,6 +93,30 @@ describe('filterAndSort', () => {
     const result = filterAndSort(words, {...defaultOpts, frozenIds: [3, 1, 2]})
     expect(result.map((w) => w.id)).toEqual([3, 1, 2])
   })
+
+  it('combines filter groups while allowing multiple values within each group', () => {
+    const entries = [
+      makeWord({id: 1, term: 'weak a1', knowledge_level: 1, cefr_level: 'A1', part_of_speech: 'noun'}),
+      makeWord({id: 2, term: 'basic a2', knowledge_level: 2, cefr_level: 'A2', part_of_speech: 'verb'}),
+      makeWord({id: 3, term: 'strong a1', knowledge_level: 4, cefr_level: 'A1', part_of_speech: 'noun'}),
+      makeWord({id: 4, term: 'weak b1', knowledge_level: 1, cefr_level: 'B1', part_of_speech: 'noun'}),
+      makeWord({id: 5, term: 'other topic', knowledge_level: 1, cefr_level: 'A1', part_of_speech: 'noun', topic_ids: [9]}),
+    ]
+    expect(filterAndSort(entries, {...defaultOpts, levelFilter: [1, 2], cefrFilter: ['A1', 'A2'], posFilter: ['noun', 'verb'], topicIds: [1]}).map(word => word.id)).toEqual([2, 1])
+  })
+
+  it('applies ordered sort priorities and keeps missing CEFR values last', () => {
+    const entries = [
+      makeWord({id: 1, term: 'alpha', knowledge_level: 4, cefr_level: 'A1'}),
+      makeWord({id: 2, term: 'bravo', knowledge_level: 1, cefr_level: 'A2'}),
+      makeWord({id: 3, term: 'zulu', knowledge_level: 1, cefr_level: 'A1'}),
+      makeWord({id: 4, term: 'charlie', knowledge_level: 2, cefr_level: 'A1'}),
+      makeWord({id: 5, term: 'unknown', knowledge_level: 1, cefr_level: null}),
+    ]
+    expect(filterAndSort(entries, {...defaultOpts, sortBy: 'level-asc', thenSortBy: 'cefr-asc'}).map(word => word.id)).toEqual([3, 2, 5, 4, 1])
+    expect(filterAndSort(entries, {...defaultOpts, sortBy: 'cefr-asc', thenSortBy: 'level-asc'}).map(word => word.id)).toEqual([3, 4, 1, 2, 5])
+    expect(filterAndSort(entries, {...defaultOpts, sortBy: 'level-asc', thenSortBy: 'cefr-desc'}).map(word => word.id)).toEqual([2, 3, 5, 4, 1])
+  })
 })
 
 describe('smartPreview', () => {
