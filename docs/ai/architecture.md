@@ -61,8 +61,9 @@ Confirmed routes:
 - `/trash`
 - `/stats`
 
-Word lists share a compact toolbar on desktop and mobile: collection heading and
-search, collection knowledge progress, then sorting and filtering controls. The
+Word lists share a compact toolbar on desktop and mobile: collection heading,
+collection knowledge progress, then sorting, filtering, and search controls. Search
+sits immediately after Filters and opens its input below the control row. The
 heading distinguishes All words, the selected topic, and Daily Word Mix, with a
 matching/collection count when filtered. Progress always covers the collection,
 independent of filters; exact knowledge counts expand from the percentage legend.

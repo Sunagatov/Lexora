@@ -73,8 +73,8 @@
 
 .page-btn:hover:not(:disabled) {
   background: var(--accent-light);
-  color: var(--accent-dark);
-  border-color: #c7d2fe;
+  color: var(--text);
+  border-color: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }

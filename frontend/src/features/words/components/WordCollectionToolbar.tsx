@@ -159,16 +159,7 @@ export function WordCollectionToolbar({
           <h1>{collectionTitle}</h1>
           <span className="toolbar-list-count" aria-label={`${filteredCount} matching words out of ${topicTotalCount}`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
         </div>
-        <button type="button"
-          className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
-          onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search" aria-expanded={searchOpen}><SearchIcon /></button>
       </div>
-      {searchOpen && <div className="toolbar-search-row">
-        <input ref={searchRef} className="search-input" type="search" aria-label="Search words"
-          placeholder="Search words, translations, examples…"
-          value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
-        {searchActive && <button type="button" className="btn btn-ghost toolbar-search-close-btn" onClick={() => setWordSearch('')} aria-label="Clear search"><CloseIcon /></button>}
-      </div>}
 
       {collectionProgress}
       {progressReady && <div className="toolbar-knowledge-progress">
@@ -198,7 +189,9 @@ export function WordCollectionToolbar({
         <div ref={sortDropdownRef} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
           <button type="button" className="dropdown-trigger toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
             aria-haspopup="listbox" aria-expanded={sortOpen} aria-label="Sort words" title={sortLabel}>
-            <span aria-hidden="true">↕</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 13V3m-3 3 3-3 3 3m3-3v10m-3-3 3 3 3-3" />
+            </svg>
             <span className="dropdown-trigger-label">{sortLabel}</span>
             <span className={`dropdown-trigger-icon toolbar-sort-trigger-icon ${sortOpen ? 'is-open' : ''}`}><SelectChevron /></span>
           </button>
@@ -210,15 +203,27 @@ export function WordCollectionToolbar({
             </button>)}
           </div>}
         </div>
-        <button type="button" className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
-          onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters" aria-expanded={filtersOpen}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <path d="M2 4h12M2 12h12"/><circle cx="6" cy="4" r="2" fill="var(--surface-2)"/><circle cx="10" cy="12" r="2" fill="var(--surface-2)"/>
-          </svg>
-          Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
-        </button>
+        <div className="toolbar-actions-tools">
+          <button type="button" className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
+            onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters" aria-expanded={filtersOpen}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M2 4h12M2 12h12"/><circle cx="6" cy="4" r="2" fill="var(--surface-2)"/><circle cx="10" cy="12" r="2" fill="var(--surface-2)"/>
+            </svg>
+            Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
+          </button>
+          <button type="button"
+            className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
+            onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search" aria-expanded={searchOpen}><SearchIcon /></button>
+        </div>
         {collectionAction}
       </div>
+
+      {searchOpen && <div className="toolbar-search-row">
+        <input ref={searchRef} className="search-input" type="search" aria-label="Search words"
+          placeholder="Search words, translations, examples…"
+          value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
+        {searchActive && <button type="button" className="btn btn-ghost toolbar-search-close-btn" onClick={() => setWordSearch('')} aria-label="Clear search"><CloseIcon /></button>}
+      </div>}
 
       {/* Filter chips panel */}
       {filtersOpen && (
