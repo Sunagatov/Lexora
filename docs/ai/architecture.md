@@ -61,6 +61,10 @@ Confirmed routes:
 - `/trash`
 - `/stats`
 
+The homepage keeps a compact heading and whole-vocabulary progress. Daily Word Mix
+is available through the topic sidebar (the menu drawer on mobile), without a
+duplicate button in the homepage header. Sorting details remain in the word toolbar.
+
 ## Request flow
 
 ### Normal authenticated request

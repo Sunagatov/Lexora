@@ -79,11 +79,7 @@ export function VocabularyPage() {
       <div className="main-content">
         <div className="study-topic-panel vocabulary-panel">
           <div className="vocabulary-header card">
-            <div className="vocabulary-heading">
-              <h1>My Vocabulary</h1>
-              <span>{s.sortBy === 'level-asc' && s.thenSortBy === 'cefr-asc' ? 'All words · Weak first, then A1–C2' : 'All words'}</span>
-            </div>
-            <button type="button" className="smart-review-header-btn ripple-btn" onClick={openDailyMix}>Daily Word Mix →</button>
+            <h1>My Vocabulary</h1>
             {s.summaryQuery.isSuccess ? (
               <div className="vocabulary-progress">
                 <div className="vocabulary-progress-label"><span>Strong words</span><span>{strong} / {total} · {progress}%</span></div>
