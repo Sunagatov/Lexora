@@ -141,6 +141,7 @@ export function WordCollectionToolbar({
     ? 'Weak → A1'
     : `${SORT_LABELS[sortBy]}${thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''}`
   const activeLevels = [...ACTIVE_LEVELS, PARKED_LEVEL].filter(level => levelSummary[level] > 0)
+  const legendLevels = activeLevels.filter(level => Math.round(levelSummary[level] / total * 100) > 0)
   const sortOptions = WORD_SORT_OPTIONS
   const appliedFilters = [
     ...levels.map(value => ({key: `level-${value}`, label: LEVEL_LABELS[value], remove: () => setLevelFilter(selectionValue(levels.filter(level => level !== value)) ?? 'all')})),
@@ -179,7 +180,7 @@ export function WordCollectionToolbar({
         <details className="toolbar-progress-details">
           <summary aria-label="Show word counts">
             <span className="toolbar-progress-legend">
-              {activeLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
+              {legendLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
                 <span className={`toolbar-progress-dot level-${level}`} />
                 <span className="toolbar-progress-legend-label">{LEVEL_LABELS[level]}</span>
                 <span className="toolbar-progress-legend-pct">{Math.round(levelSummary[level] / total * 100)}%</span>
