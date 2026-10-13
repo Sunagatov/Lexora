@@ -13,7 +13,12 @@ export function useVocabulary() {
     completeness: completeness === 'all' ? undefined : completeness,
     sort: sortBy, thenSort: thenSortBy, page, pageSize,
   }
-  const wordsQuery = useQuery({queryKey: [...queryKeys.wordList, listParams], queryFn: () => fetchWordList(listParams)})
+  const wordsQuery = useQuery({
+    queryKey: [...queryKeys.wordList, listParams], queryFn: () => fetchWordList(listParams),
+    // Keep the current review page stable when returning from a word or another tab.
+    // New controls/pages use a new key and fetch the current server ordering.
+    refetchOnMount: false, refetchOnWindowFocus: false, refetchOnReconnect: false,
+  })
   const summaryQuery = useQuery({queryKey: queryKeys.wordSummary, queryFn: fetchWordKnowledgeSummary})
   const totalPages = Math.max(1, wordsQuery.data?.total_pages ?? 1)
   useEffect(() => {

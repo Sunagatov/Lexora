@@ -34,7 +34,7 @@ export function useWordFilterControls(options: Options = {}) {
       if (resetPage) next.delete('page')
       return next
     }, {replace: true, flushSync: resetPage})
-    if (resetPage) options.onControlsChange?.()
+    options.onControlsChange?.()
   }
   function serialize(value: Selection<string | number> | 'all') {
     return value === null || value === 'all' ? null : String(value)

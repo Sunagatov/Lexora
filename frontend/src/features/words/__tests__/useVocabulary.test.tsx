@@ -1,8 +1,10 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter, useLocation} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
-import {fetchWordList, fetchWordKnowledgeSummary, type WordListResponse} from '@/features/words/api/wordsApi'
+import {fetchWordList, fetchWordKnowledgeSummary, updateWordKnowledgeLevel, type WordListResponse} from '@/features/words/api/wordsApi'
 import {useVocabulary} from '@/features/words/hooks/useVocabulary'
+import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
+import type {Word} from '@/features/words/types/wordTypes'
 import {queryKeys} from '@/app/queryKeys'
 import {invalidateWordDependencies} from '@/features/words/model/wordCache'
 
@@ -10,12 +12,15 @@ vi.mock('@/features/words/api/wordsApi')
 
 function Probe() {
   const s = useVocabulary()
+  const update = useWordUpdate(() => {})
   const location = useLocation()
   return <>
     <span data-testid="state">{JSON.stringify({page: s.page, pageSize: s.pageSize, sort: s.sortBy, total: s.summaryQuery.data?.total, strong: s.summaryQuery.data?.level_counts[4], search: location.search})}</span>
     <button onClick={() => s.setPage(2)}>Next</button>
     <button onClick={() => s.setCefrFilter('A1')}>A1</button>
     <button onClick={s.resetFilters}>Reset</button>
+    <button onClick={() => update.updateLevel(1, 4)}>Mark strong</button>
+    <span data-testid="words">{JSON.stringify(s.wordsQuery.data?.words.map(word => [word.id, word.knowledge_level]))}</span>
   </>
 }
 function setup(entry = '/') {
@@ -35,6 +40,59 @@ it('starts with all words, Weak/CEFR sort, and 50 per page', async () => {
   setup()
   await waitFor(() => expect(state().total).toBe(200))
   expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 1, pageSize: 50, sort: 'level-asc', level: undefined, cefr: undefined}))
+})
+
+it('saves a level and updates progress without dropping or moving the reviewed row', async () => {
+  const alpha = {id: 1, term: 'alpha', knowledge_level: 1} as Word
+  const beta = {id: 2, term: 'beta', knowledge_level: 1} as Word
+  let saved = false
+  vi.mocked(fetchWordList).mockImplementation(async () => ({...page(), words: saved ? [beta] : [alpha, beta]}))
+  vi.mocked(updateWordKnowledgeLevel).mockImplementation(async () => {
+    saved = true
+    return {...alpha, knowledge_level: 4}
+  })
+  vi.mocked(fetchWordKnowledgeSummary).mockImplementation(async () => ({total: 200, level_counts: {1: saved ? 149 : 150, 4: saved ? 51 : 50}}))
+  setup('/?level=1')
+  await waitFor(() => expect(screen.getByTestId('words').textContent).toBe('[[1,1],[2,1]]'))
+  fireEvent.click(screen.getByText('Mark strong'))
+  await waitFor(() => expect(state().strong).toBe(51))
+  expect(screen.getByTestId('words').textContent).toBe('[[1,4],[2,1]]')
+  expect(fetchWordList).toHaveBeenCalledTimes(1)
+  expect(updateWordKnowledgeLevel).toHaveBeenCalledWith(1, 4, expect.any(String))
+  fireEvent.click(screen.getByText('A1'))
+  await waitFor(() => expect(screen.getByTestId('words').textContent).toBe('[[2,1]]'))
+  expect(fetchWordList).toHaveBeenCalledTimes(2)
+})
+
+it('reapplies saved levels when paging and still refreshes the list for ordinary edits', async () => {
+  const alpha = {id: 1, term: 'alpha', knowledge_level: 1} as Word
+  let saved = false
+  vi.mocked(fetchWordList).mockImplementation(async params => ({...page(params?.page), words: saved ? [] : [alpha]}))
+  vi.mocked(updateWordKnowledgeLevel).mockImplementation(async () => {
+    saved = true
+    return {...alpha, knowledge_level: 4}
+  })
+  const client = setup('/?level=1')
+  await waitFor(() => expect(screen.getByTestId('words').textContent).toBe('[[1,1]]'))
+  fireEvent.click(screen.getByText('Mark strong'))
+  await waitFor(() => expect(screen.getByTestId('words').textContent).toBe('[[1,4]]'))
+  expect(fetchWordList).toHaveBeenCalledTimes(1)
+  fireEvent.click(screen.getByText('Next'))
+  await waitFor(() => expect(screen.getByTestId('words').textContent).toBe('[]'))
+  expect(state().page).toBe(2)
+  await act(async () => { invalidateWordDependencies(client) })
+  await waitFor(() => expect(fetchWordList).toHaveBeenCalledTimes(3))
+})
+
+it('keeps inactive review pages for level changes but discards them after other edits', () => {
+  const client = new QueryClient()
+  const key = [...queryKeys.wordList, {page: 1}]
+  client.setQueryData(key, page())
+  invalidateWordDependencies(client, [], {preserveWordPages: true})
+  expect(client.getQueryData(key)).toEqual(page())
+  expect(client.getQueryState(key)?.isInvalidated).toBe(true)
+  invalidateWordDependencies(client)
+  expect(client.getQueryData(key)).toBeUndefined()
 })
 
 it('preserves page 2 while its response is loading', async () => {

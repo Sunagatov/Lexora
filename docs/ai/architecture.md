@@ -68,6 +68,12 @@ heading distinguishes All words, the selected topic, and Daily Word Mix, with a
 matching/collection count when filtered. Progress always covers the collection,
 independent of filters; exact knowledge counts expand from the percentage legend.
 Filter chips, reset controls, and detailed sorting appear only in the filter panel.
+On mobile, Filters opens a native modal bottom sheet with independent scrolling
+and a pinned Done button. Opening/closing it does not move the word list.
+Knowledge saves update badges and collection progress while retaining the current
+page membership/order. Paginated word queries are marked stale without refetching
+for knowledge-only updates, and do not refresh on focus, reconnect, or remount.
+Changing list controls/pages or reloading fetches the current saved ordering.
 The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
 available through the sidebar/menu and keeps its completion progress and New set
 control within the shared toolbar.

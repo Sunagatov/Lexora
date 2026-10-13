@@ -19,7 +19,7 @@ import {EmptyState} from '@/shared/components/EmptyState'
 import {SkeletonTable} from '@/shared/components/Skeletons'
 import {queryKeys} from '@/app/queryKeys'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
-import {invalidateWordDependencies} from '@/features/words/model/wordCache'
+import {invalidateWordDependencies, patchWordLevel} from '@/features/words/model/wordCache'
 import {useWordListNavigation, useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 
 export function AllWordsPage() {
@@ -77,10 +77,15 @@ export function AllWordsPage() {
     setActionError(null)
     try {
       await batchUpdateWords(payload)
+      if (payload.knowledge_level) {
+        for (const id of payload.word_ids) patchWordLevel(queryClient, id, payload.knowledge_level as WordKnowledgeLevel)
+      }
       setBulkLevel('')
       setBulkTopic('')
       setSelected(new Set())
-      invalidateWordDependencies(queryClient, [queryKeys.smartReview, ...payload.word_ids.map(queryKeys.word)])
+      invalidateWordDependencies(queryClient, [queryKeys.smartReview, ...payload.word_ids.map(queryKeys.word)],
+        {preserveWordPages: !!payload.knowledge_level && !payload.add_topic_ids},
+      )
     } catch (error) {
       redirectIfUnauthorized(error)
       setActionError('Failed to update selected words. Please try again.')
@@ -92,7 +97,8 @@ export function AllWordsPage() {
     setActionError(null)
     try {
       await batchUpdateWords({word_ids: [wordId], knowledge_level: newLevel})
-      invalidateWordDependencies(queryClient, [queryKeys.smartReview, queryKeys.word(wordId)])
+      patchWordLevel(queryClient, wordId, newLevel)
+      invalidateWordDependencies(queryClient, [queryKeys.smartReview, queryKeys.word(wordId)], {preserveWordPages: true})
     } catch (error) {
       redirectIfUnauthorized(error)
       setActionError('Failed to update word. Please try again.')

@@ -2,6 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
+import type {WordListResponse} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import {invalidateWordDependencies, patchWordLevel, replaceWordInLists} from '@/features/words/model/wordCache'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
@@ -17,18 +18,26 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
       onMutate()
       await Promise.all([
         queryClient.cancelQueries({queryKey: queryKeys.words}),
+        queryClient.cancelQueries({queryKey: queryKeys.wordList}),
         queryClient.cancelQueries({queryKey: queryKeys.smartReview}),
       ])
       const prevWordQueries = queryClient.getQueriesData<Word[]>({queryKey: queryKeys.words})
+      const prevWordPages = queryClient.getQueriesData<WordListResponse>({queryKey: queryKeys.wordList})
       const prevQueue = queryClient.getQueryData<StudyQueue>(queryKeys.smartReview)
       const prevReviewWord = prevQueue?.items.find((item) => item.word_id === wordId)?.word
       patchWordLevel(queryClient, wordId, level)
-      return {prevWordQueries, prevQueueId: prevQueue?.id, prevReviewWord}
+      return {prevWordQueries, prevWordPages, prevQueueId: prevQueue?.id, prevReviewWord}
     },
 
     onError: (_e, {wordId}, ctx) => {
       for (const [key, data] of ctx?.prevWordQueries ?? []) {
         queryClient.setQueryData(key, data)
+      }
+      for (const [key, previous] of ctx?.prevWordPages ?? []) {
+        const before = previous?.words.find(word => word.id === wordId)
+        if (before) queryClient.setQueryData<WordListResponse>(key, current =>
+          current ? {...current, words: current.words.map(word => word.id === wordId ? before : word)} : previous,
+        )
       }
       const prevWord = ctx?.prevReviewWord
       if (prevWord) {
@@ -47,7 +56,7 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
     onSuccess: (updated) => replaceWordInLists(queryClient, updated),
 
     onSettled: () => {
-      invalidateWordDependencies(queryClient)
+      invalidateWordDependencies(queryClient, [], {preserveWordPages: true})
     },
   })
 

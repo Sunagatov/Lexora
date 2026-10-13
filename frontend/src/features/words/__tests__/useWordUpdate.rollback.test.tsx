@@ -6,6 +6,7 @@ import * as api from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
 import type {Word} from '@/features/words/types/wordTypes'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {WordListResponse} from '@/features/words/api/wordsApi'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 vi.mock('@/features/words/api/wordsApi')
@@ -174,5 +175,23 @@ describe('useWordUpdate rollback', () => {
     const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
     await act(async () => { await result.current.updateLevelAsync(1, 3) })
     expect(queryClient.getQueryData(queryKeys.word(1))).toEqual(updated)
+  })
+
+  it('restores a failed optimistic level in a paginated page without rolling back other saved words', async () => {
+    const first = makeWord(1, 'run', 1)
+    const second = makeWord(2, 'walk', 1)
+    const key = [...queryKeys.wordList, {level: 1, page: 1}]
+    const page: WordListResponse = {words: [first, second], total: 2, page: 1, page_size: 50, total_pages: 1}
+    queryClient.setQueryData(key, page)
+    let rejectSave!: (error: Error) => void
+    vi.mocked(api.updateWordKnowledgeLevel).mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectSave = reject }))
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    let save!: Promise<Word>
+    act(() => { save = result.current.updateLevelAsync(1, 4) })
+    const failed = save.catch(() => undefined)
+    await waitFor(() => expect(queryClient.getQueryData<WordListResponse>(key)?.words[0].knowledge_level).toBe(4))
+    queryClient.setQueryData<WordListResponse>(key, current => ({...current!, words: [current!.words[0], {...second, knowledge_level: 3}]}))
+    await act(async () => { rejectSave(new Error('Save failed')); await failed })
+    expect(queryClient.getQueryData<WordListResponse>(key)?.words.map(word => [word.id, word.knowledge_level])).toEqual([[1, 1], [2, 3]])
   })
 })

@@ -83,6 +83,6 @@ it('refreshes other views after a successful level update', async () => {
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.words})
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.word(1)})
-    expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.wordList})
+    expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.wordList, refetchType: 'none'})
   })
 })

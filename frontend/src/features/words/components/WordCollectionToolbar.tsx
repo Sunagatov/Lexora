@@ -15,6 +15,7 @@ import {
   type SortOption,
 } from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {WordFilterPanel} from '@/features/words/components/WordFilterPanel'
 
 type Props = {
   collectionTitle?: string
@@ -39,7 +40,7 @@ type Props = {
 }
 
 const SearchIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="5.5" cy="5.5" r="4"/><line x1="8.5" y1="8.5" x2="13" y2="13"/>
   </svg>
 )
@@ -112,13 +113,14 @@ export function WordCollectionToolbar({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (filtersOpen) { setFiltersOpen(false); return }
         if (sortOpen) setSortOpen(false)
         if (searchOpen) closeSearch()
       }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [searchOpen, sortOpen])
+  }, [filtersOpen, searchOpen, sortOpen])
 
   useEffect(() => {
     if (!sortOpen) return
@@ -227,7 +229,7 @@ export function WordCollectionToolbar({
 
       {/* Filter chips panel */}
       {filtersOpen && (
-          <div className="toolbar-filter-panel">
+          <WordFilterPanel onClose={() => setFiltersOpen(false)}>
           <div className="toolbar-filter-panel-header">
             <div className="toolbar-filter-panel-copy">
               <span className="toolbar-filter-panel-title">Filters & sorting</span>
@@ -237,6 +239,7 @@ export function WordCollectionToolbar({
               <CloseIcon />
             </button>
           </div>
+          <div className="toolbar-filter-panel-body">
           <div className="toolbar-sort-summary">{SORT_LABELS[sortBy]}{thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''} · {filteredCount} matching words</div>
           {appliedFilters.length > 0 && <div className="toolbar-applied-filters" aria-label="Applied filters">
             {appliedFilters.map(filter => <button key={filter.key} type="button" className="toolbar-chip toolbar-chip-active" onClick={filter.remove} aria-label={`Remove ${filter.label} filter`}>{filter.label} ×</button>)}
@@ -335,11 +338,12 @@ export function WordCollectionToolbar({
               {topicFilter.length > 0 && <button type="button" className="btn btn-ghost" onClick={() => setTopicFilter([])}>All topics</button>}
             </details>
           </div>}
+          </div>
           <div className="toolbar-filter-panel-actions">
             <button type="button" className="btn btn-ghost toolbar-filter-reset" onClick={onReset}>Reset</button>
             <button type="button" className="btn btn-primary toolbar-filter-apply" onClick={() => setFiltersOpen(false)}>Done</button>
           </div>
-          </div>
+          </WordFilterPanel>
       )}
     </div>
   )
