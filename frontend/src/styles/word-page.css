@@ -293,6 +293,8 @@
 }
 
 .word-page-edit-form {
+  min-inline-size: 0;
+  margin: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -301,6 +303,12 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.word-page-back-btn:disabled,
+.wp-btn-delete:disabled {
+  opacity: 0.5;
+  cursor: wait;
 }
 
 .wp-enrich-row {
@@ -449,12 +457,22 @@
 }
 
 .wp-save-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: 0.82rem;
   font-weight: 500;
   color: #c81e1e;
   background: #fef2f2;
   border-radius: var(--radius-sm);
   padding: 7px 12px;
+}
+
+:root[color-scheme="dark"] .wp-save-error {
+  color: #fecaca;
+  background: #450a0a;
+  border: 1px solid #7f1d1d;
 }
 
 .word-page-edit-actions-right {

@@ -20,6 +20,7 @@ export function AppLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const hasDrawer = isStudyRoute(location.pathname)
+  const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname.startsWith('/topics/')
 
   useEffect(() => {
     setDrawerOpen(false)
@@ -38,7 +39,7 @@ export function AppLayout() {
 
       <button
         type="button"
-        className={`fab ${!location.pathname.startsWith('/topics/') || drawerOpen ? 'fab-hidden' : ''}`}
+        className={`fab ${!canAddWord || drawerOpen ? 'fab-hidden' : ''}`}
         aria-label="Add word"
         onClick={() => setQuickAddOpen(true)}
       >

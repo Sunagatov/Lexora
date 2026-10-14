@@ -58,7 +58,7 @@ describe('TopicEditModal', () => {
     const onSave = vi.fn()
     const onCancel = vi.fn()
 
-    const {container} = render(
+    render(
       <TopicEditModal
         topic={topic}
         topics={topics}
@@ -69,10 +69,43 @@ describe('TopicEditModal', () => {
       />,
     )
 
-    fireEvent.click(container.firstElementChild as Element)
-    fireEvent.keyDown(document, {key: 'Escape'})
+    const dialog = screen.getByRole('dialog', {name: 'Edit topic'})
+    fireEvent.click(dialog)
+    fireEvent(dialog, new Event('cancel', {cancelable: true}))
 
     expect(onCancel).not.toHaveBeenCalled()
     expect((screen.getByRole('button', {name: 'Cancel'}) as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByLabelText('Name').matches(':disabled')).toBe(true)
+    expect(screen.getByLabelText('Description').matches(':disabled')).toBe(true)
+  })
+
+  it('preserves an edited draft when topics refetch and keeps it outside the sidebar', () => {
+    const topic = makeTopic(1, 'Travel')
+    const props = {topic, topics: [topic], saving: false, error: null, onSave: vi.fn(), onCancel: vi.fn()}
+    const {container, rerender} = render(<TopicEditModal {...props} />)
+    const dialog = screen.getByRole('dialog', {name: 'Edit topic'})
+    expect(container.contains(dialog)).toBe(false)
+    fireEvent.change(screen.getByLabelText('Name'), {target: {value: 'My travel words'}})
+    rerender(<TopicEditModal {...props} topic={{...topic}} />)
+    expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('My travel words')
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    expect(props.onSave).toHaveBeenCalledWith(expect.objectContaining({name: 'My travel words'}))
+  })
+
+  it('restores scrolling and focus when dismissed', () => {
+    const trigger = document.createElement('button')
+    document.body.append(trigger)
+    trigger.focus()
+    const topic = makeTopic(1, 'Travel')
+    const onCancel = vi.fn()
+    const {unmount} = render(<TopicEditModal topic={topic} topics={[topic]} saving={false} error="Could not save topic" onSave={vi.fn()} onCancel={onCancel} />)
+    expect(screen.getByRole('alert').textContent).toBe('Could not save topic')
+    expect(document.body.style.overflow).toBe('hidden')
+    fireEvent(screen.getByRole('dialog'), new Event('cancel', {cancelable: true}))
+    expect(onCancel).toHaveBeenCalledOnce()
+    unmount()
+    expect(document.body.style.overflow).toBe('')
+    expect(document.activeElement).toBe(trigger)
+    trigger.remove()
   })
 })

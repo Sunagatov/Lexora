@@ -11,6 +11,7 @@ import {formatIpa, truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
 import {SkeletonList} from '@/shared/components/Skeletons'
 import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
+import {ApiError} from '@/shared/api/apiError'
 
 const CEFR_HERO_CLASS: Record<string, string> = {
   A1: 'wdp-chip-cefr-a', A2: 'wdp-chip-cefr-a',
@@ -49,6 +50,8 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
 
   const word = wordQuery.data
   const topics = topicsQuery.data ?? []
+  const wordNotFound = wordQuery.error instanceof ApiError && wordQuery.error.status === 404
+  const loadError = (wordQuery.isError && !wordNotFound) || topicsQuery.isError
 
   const currentIdx = words.findIndex((w) => w.id === wordId)
   const prevWord = currentIdx > 0 ? words[currentIdx - 1] : null
@@ -62,6 +65,8 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
+      if (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"]), dialog, [role="dialog"]')) return
       if (e.key === 'Escape') handleClose()
       if (e.key === 'ArrowLeft' && prevWord) onNavigate(prevWord.id)
       if (e.key === 'ArrowRight' && nextWord) onNavigate(nextWord.id)
@@ -136,6 +141,11 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
 
       {wordQuery.isLoading ? (
         <div className="wdp-loading"><SkeletonList count={4} /></div>
+      ) : loadError ? (
+        <div className="wdp-loading"><div role="alert" className="wp-save-error">
+          Failed to load word details. Please try again.
+          <button type="button" className="btn btn-ghost" onClick={() => { void wordQuery.refetch(); void topicsQuery.refetch() }}>Retry</button>
+        </div></div>
       ) : !word ? (
         <div className="wdp-loading">Word not found.</div>
       ) : (

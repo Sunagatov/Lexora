@@ -78,6 +78,18 @@ The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
 available through the sidebar/menu and keeps its completion progress and New set
 control within the shared toolbar.
 
+The shared Add word action is available on the homepage, bulk vocabulary, and
+topic lists. Its modal preserves drafts after failed saves and prevents duplicate
+submissions. Knowledge pickers render outside list containers so sticky controls
+cannot cover their options; positioning stays within the viewport. Word details,
+Trash, and Daily Word Mix distinguish request failures from missing or empty data
+and offer Retry. Review completion can be retried without saving the word level
+again, and late completion responses cannot replace a newer mix or reduce progress.
+The word editor locks fields during saves and waits for enrichment before saving.
+The topic editor is a native modal outside the sidebar, with scrollable fields and
+visible actions on short screens. Topic refetches preserve its unsaved draft.
+Topic row actions are available on keyboard focus and touch screens as well as hover.
+
 ## Request flow
 
 ### Normal authenticated request

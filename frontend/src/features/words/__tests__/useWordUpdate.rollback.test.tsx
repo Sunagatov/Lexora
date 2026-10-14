@@ -190,8 +190,31 @@ describe('useWordUpdate rollback', () => {
     act(() => { save = result.current.updateLevelAsync(1, 4) })
     const failed = save.catch(() => undefined)
     await waitFor(() => expect(queryClient.getQueryData<WordListResponse>(key)?.words[0].knowledge_level).toBe(4))
-    queryClient.setQueryData<WordListResponse>(key, current => ({...current!, words: [current!.words[0], {...second, knowledge_level: 3}]}))
+    queryClient.setQueryData<WordListResponse>(key, current => ({...current!, words: [{...current!.words[0], notes: 'Edited while saving'}, {...second, knowledge_level: 3}]}))
     await act(async () => { rejectSave(new Error('Save failed')); await failed })
     expect(queryClient.getQueryData<WordListResponse>(key)?.words.map(word => [word.id, word.knowledge_level])).toEqual([[1, 1], [2, 3]])
+    expect(queryClient.getQueryData<WordListResponse>(key)?.words[0].notes).toBe('Edited while saving')
+  })
+
+  it('rolls back only the failed word in topic lists and preserves concurrent edits and deletions', async () => {
+    const first = makeWord(1, 'run', 1)
+    const second = makeWord(2, 'walk', 1)
+    const third = makeWord(3, 'jump', 1)
+    const key = queryKeys.topicWords(1)
+    queryClient.setQueryData(key, [first, second, third])
+    let rejectSave!: (error: Error) => void
+    vi.mocked(api.updateWordKnowledgeLevel).mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectSave = reject }))
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    let save!: Promise<Word>
+    act(() => { save = result.current.updateLevelAsync(1, 4) })
+    const failed = save.catch(() => undefined)
+    await waitFor(() => expect(queryClient.getQueryData<Word[]>(key)?.[0].knowledge_level).toBe(4))
+    queryClient.setQueryData<Word[]>(key, current => [
+      {...current![0], notes: 'Edited while saving'}, {...second, knowledge_level: 3},
+    ])
+    await act(async () => { rejectSave(new Error('Save failed')); await failed })
+    expect(queryClient.getQueryData<Word[]>(key)).toEqual([
+      {...first, notes: 'Edited while saving'}, {...second, knowledge_level: 3},
+    ])
   })
 })

@@ -38,6 +38,15 @@ beforeEach(() => {
   vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {2: 1}})
 })
 
+it('renders word cards at tablet widths where CSS hides the table', async () => {
+  const mediaQuery = window.matchMedia('(max-width: 860px)')
+  vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+    ...mediaQuery, media: query, matches: 820 <= Number(query.match(/max-width: ([0-9]+)px/)?.[1] ?? 0),
+  }))
+  const {container} = render(<AllWordsPage />, {wrapper: Wrapper})
+  await waitFor(() => expect(container.querySelector('.word-card .word-term')?.textContent).toBe('alpha'))
+})
+
 it('keeps the latest search results when an older request finishes later', async () => {
   let resolveOld!: (value: WordListResponse) => void
   const oldRequest = new Promise<WordListResponse>(resolve => { resolveOld = resolve })

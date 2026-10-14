@@ -12,6 +12,7 @@ import {invalidateWordDependencies} from '@/features/words/model/wordCache'
 const INBOX_TOPIC_NAME = 'Inbox'
 const isInboxTopic = (topic: Topic) => topic.name.trim().toLowerCase() === INBOX_TOPIC_NAME.toLowerCase()
 const EMPTY_TOPICS: Topic[] = []
+type QuickAddPayload = Parameters<typeof quickAddWord>[0]
 
 function sortQuickAddTopics(topics: Topic[]): Topic[] {
   const inboxTopics: Topic[] = []
@@ -28,6 +29,7 @@ export function useQuickAdd() {
   const queryClient = useQueryClient()
   const termRef = useRef<HTMLInputElement>(null)
   const enrichmentVersion = useRef(0)
+  const saveInProgress = useRef(false)
 
   const [term, setTerm] = useState('')
   const [translation, setTranslation] = useState('')
@@ -55,10 +57,10 @@ export function useQuickAdd() {
     setEnrichDone(false)
   }
 
-  function buildSavePayload(resolvedTopicId: number) {
-    const base: Record<string, unknown> = {
+  function buildSavePayload(resolvedTopicId: number | null): QuickAddPayload {
+    const base: QuickAddPayload = {
       term: term.trim(),
-      topic_ids: [resolvedTopicId],
+      topic_ids: resolvedTopicId ? [resolvedTopicId] : [],
       translation_entries: [translation.trim()],
       knowledge_level: 1,
     }
@@ -91,21 +93,36 @@ export function useQuickAdd() {
   }
 
   const addWordMutation = useMutation({
-    mutationFn: (resolvedTopicId: number) => quickAddWord(buildSavePayload(resolvedTopicId) as Parameters<typeof quickAddWord>[0]),
-    onSuccess: () => {
+    mutationFn: async (payload: QuickAddPayload) => {
+      let resolvedTopicId = payload.topic_ids[0]
+      if (!resolvedTopicId) {
+        const inboxId = await ensureInboxTopic(topics, (id) => {
+          void queryClient.invalidateQueries({queryKey: queryKeys.topics})
+          void queryClient.invalidateQueries({queryKey: queryKeys.stats})
+          setTopicId(id)
+        })
+        if (!inboxId) throw new ApiError(400, 'Could not create Inbox topic. Please select a topic manually.')
+        resolvedTopicId = inboxId
+      }
+      return quickAddWord({...payload, topic_ids: [resolvedTopicId]})
+    },
+    onSuccess: (_created, payload) => {
       invalidateWordDependencies(queryClient)
-      setFeedback({ok: true, msg: `"${term.trim()}" saved!`})
+      enrichmentVersion.current++
+      setEnriching(false)
+      setFeedback({ok: true, msg: `"${payload.term}" saved!`})
       setTerm('')
       setTranslation('')
       resetMarkers()
       setTimeout(() => { setFeedback(null); focusTermInput() }, 1800)
     },
-    onError: (err: Error) => {
+    onError: (err: Error, payload) => {
       const msg = err instanceof ApiError && err.status === 409
-        ? `"${term.trim()}" already exists in your library`
-        : 'Failed to save. Try again.'
+        ? `"${payload.term}" already exists in your library`
+        : err instanceof ApiError && err.status === 400 ? err.message : 'Failed to save. Try again.'
       setFeedback({ok: false, msg})
     },
+    onSettled: () => { saveInProgress.current = false },
   })
 
   const createTopicMutation = useMutation({
@@ -160,7 +177,7 @@ export function useQuickAdd() {
     const trimmedTerm = term.trim()
     const trimmedTranslation = translation.trim()
 
-    if (addWordMutation.isPending) return
+    if (saveInProgress.current) return
     if (!trimmedTerm) {
       setFeedback({ok: false, msg: 'Word or phrase is required.'})
       focusTermInput()
@@ -172,20 +189,8 @@ export function useQuickAdd() {
     }
     setFeedback(null)
 
-    let resolvedTopicId = topicId
-    if (!resolvedTopicId) {
-      const inboxId = await ensureInboxTopic(topics, (id) => {
-        void queryClient.invalidateQueries({queryKey: queryKeys.topics})
-        void queryClient.invalidateQueries({queryKey: queryKeys.stats})
-        setTopicId(id)
-      })
-      if (!inboxId) {
-        setFeedback({ok: false, msg: 'Could not create Inbox topic. Please select a topic manually.'})
-        return
-      }
-      resolvedTopicId = inboxId
-    }
-    addWordMutation.mutate(resolvedTopicId)
+    saveInProgress.current = true
+    addWordMutation.mutate(buildSavePayload(topicId))
   }
 
   const sortedTopics = useMemo(() => sortQuickAddTopics(topics), [topics])
@@ -198,7 +203,7 @@ export function useQuickAdd() {
       resetMarkers()
       setEnriching(false)
     },
-    translation, setTranslation: (v: string) => { setTranslation(v); resetMarkers() },
+    translation, setTranslation,
     topicId, setTopicId: (id: number) => { setTopicId(id) },
     newTopic, setNewTopic,
     addingTopic, setAddingTopic,

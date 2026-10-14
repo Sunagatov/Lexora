@@ -8,6 +8,7 @@ type HeroProps = {
   topicNames?: string[]
   breadcrumb?: ReactNode
   editing: boolean
+  pending?: boolean
   isSpeaking: boolean
   onBack: () => void
   onEdit: () => void
@@ -72,6 +73,7 @@ export function WordPageHero({
   topicNames,
   breadcrumb,
   editing,
+  pending = false,
   isSpeaking,
   onBack,
   onEdit,
@@ -85,7 +87,7 @@ export function WordPageHero({
     <div className="word-page-hero-wrap">
       {breadcrumb}
       <div className="word-page-topbar">
-        <button type="button" className="word-page-back-btn" onClick={onBack}>
+        <button type="button" className="word-page-back-btn" disabled={pending} onClick={onBack}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <polyline points="9,2 4,7 9,12" />
           </svg>

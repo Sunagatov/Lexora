@@ -106,6 +106,8 @@
 }
 
 .stats-hero-card[data-card="words"] {
+  background: var(--surface);
+  color: var(--text);
   --card-gradient-1: rgba(99, 102, 241, 0.25);
   --card-gradient-2: rgba(14, 165, 233, 0.18);
 }
@@ -1112,17 +1114,17 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 }
 
 :root[color-scheme="dark"] .stats-hero-card[data-card="strong"] {
-  background: rgba(16, 185, 129, 0.12);
+  background: #064e3b;
   color: #6ee7b7;
 }
 
 :root[color-scheme="dark"] .stats-hero-card[data-card="streak"] {
-  background: rgba(245, 158, 11, 0.12);
+  background: #78350f;
   color: #fcd34d;
 }
 
 :root[color-scheme="dark"] .stats-hero-card[data-card="time"] {
-  background: rgba(236, 72, 153, 0.12);
+  background: #831843;
   color: #f9a8d4;
 }
 

@@ -1,6 +1,12 @@
 import {afterEach, vi} from 'vitest'
 import {cleanup} from '@testing-library/react'
 
+// jsdom has the dialog element but does not implement its open/close methods.
+if (!HTMLDialogElement.prototype.showModal) {
+  HTMLDialogElement.prototype.showModal = function () { this.open = true }
+  HTMLDialogElement.prototype.close = function () { this.open = false }
+}
+
 Object.defineProperty(window, 'matchMedia', {
   configurable: true,
   writable: true,

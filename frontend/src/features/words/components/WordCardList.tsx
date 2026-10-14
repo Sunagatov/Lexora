@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
-import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
+import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
 
@@ -21,7 +21,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }) {
   const [openLevel, setOpenLevel] = useState(false)
-  const [flipUp, setFlipUp] = useState(false)
+  const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const navigation = useWordListNavigation(fromTopicSlug)
 
@@ -71,7 +71,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
                   e.preventDefault()
                   e.stopPropagation()
                   if (openLevel) { setOpenLevel(false); return }
-                  setFlipUp(openUpward(e.currentTarget))
+                  setLevelAnchor(e.currentTarget)
                   setOpenLevel(true)
                 }}
               >
@@ -80,10 +80,10 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
                   <polyline points="2,3.5 5,6.5 8,3.5" />
                 </svg>
               </button>
-              {openLevel && (
+              {openLevel && levelAnchor && (
                 <LevelDropdown
                   current={word.knowledge_level as WordKnowledgeLevel | null}
-                  flipUp={flipUp}
+                  anchor={levelAnchor}
                   onSelect={(level) => { onUpdate(word.id, level); setOpenLevel(false) }}
                   onClose={() => setOpenLevel(false)}
                 />

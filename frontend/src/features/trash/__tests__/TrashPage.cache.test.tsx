@@ -84,6 +84,39 @@ describe('TrashPage cache invalidation', () => {
     } as never)
   })
 
+  it('shows loading instead of an empty trash while requests are pending', () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    vi.mocked(wordsApi.fetchTrashWords).mockImplementationOnce(() => new Promise(() => {}))
+    vi.mocked(topicsApi.fetchTrashTopics).mockImplementationOnce(() => new Promise(() => {}))
+    renderTrash(queryClient)
+    expect(screen.getByRole('status').textContent).toBe('Loading Trash…')
+    expect(screen.queryByText('Trash is empty.')).toBeNull()
+  })
+
+  it('shows failed requests and lets the user retry instead of claiming trash is empty', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    vi.mocked(wordsApi.fetchTrashWords).mockRejectedValueOnce(new Error('Network down')).mockResolvedValueOnce([makeWord(1, 'run')])
+    vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([])
+    renderTrash(queryClient)
+    expect((await screen.findByRole('alert')).textContent).toContain('Failed to load Trash')
+    expect(screen.queryByText('Trash is empty.')).toBeNull()
+    fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
+    await screen.findByRole('button', {name: 'Restore'})
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('shows purge failure in the open confirmation so the user can retry', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
+    vi.mocked(wordsApi.fetchTrashWords).mockResolvedValue([makeWord(1, 'run')])
+    vi.mocked(topicsApi.fetchTrashTopics).mockResolvedValue([])
+    vi.mocked(trashApi.purgeTrash).mockRejectedValueOnce(new Error('Network down'))
+    renderTrash(queryClient)
+    fireEvent.click(await screen.findByRole('button', {name: 'Empty Trash'}))
+    fireEvent.click(screen.getAllByRole('button', {name: 'Empty Trash'})[1])
+    await screen.findByText('Failed to empty Trash. Please try again.')
+    expect(screen.getByRole('button', {name: 'Cancel'})).toBeTruthy()
+  })
+
   it('invalidates the dependent caches after restoring a word', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

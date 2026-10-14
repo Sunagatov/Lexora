@@ -4,6 +4,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {WordPage} from '@/features/words/routes/WordPage'
 import {queryKeys} from '@/app/queryKeys'
+import {ApiError} from '@/shared/api/apiError'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import type {Word, EnrichResult} from '@/features/words/types/wordTypes'
 import * as wordsApi from '@/features/words/api/wordsApi'
@@ -110,6 +111,27 @@ describe('WordPage — draft reset on word navigation', () => {
     vi.mocked(wordsApi.deleteWord).mockResolvedValue(undefined)
   })
 
+  it('shows a retryable load error for a network failure instead of claiming the word is missing', async () => {
+    vi.mocked(wordsApi.fetchWord).mockReset().mockRejectedValueOnce(new ApiError(503, 'Unavailable')).mockResolvedValue(word1)
+    const router = buildRouter('/words/1')
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    expect((await screen.findByRole('alert')).textContent).toContain('Failed to load word')
+    expect(screen.queryByText('Word not found.')).toBeNull()
+    fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
+    await screen.findByRole('heading', {name: 'alpha'})
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('keeps an actual HTTP 404 distinct from a network failure', async () => {
+    vi.mocked(wordsApi.fetchWord).mockReset().mockRejectedValue(new ApiError(404, 'Not found'))
+    const router = buildRouter('/words/1')
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByText('Word not found.')
+    expect(screen.queryByRole('button', {name: 'Retry'})).toBeNull()
+  })
+
   it.each(['/', '/smart-review', '/topics/alpha-topic', '/words'])('returns to the exact filtered list at %s', async pathname => {
     vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
     const search = '?search=alpha&level=2&cefr=A1&sort=term-desc&page=3&pageSize=50'
@@ -135,6 +157,33 @@ describe('WordPage — draft reset on word navigation', () => {
     fireEvent.click(await screen.findByRole('button', {name: 'Back'}))
     await waitFor(() => expect(router.state.location.pathname).toBe('/smart-review'))
     expect(router.state.location.search).toBe('?level=2&page=2')
+  })
+
+  it('locks the edit form during save and preserves the draft for retry after failure', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    let rejectSave!: (reason: Error) => void
+    const pending = new Promise<Word>((_resolve, reject) => {rejectSave = reject})
+    vi.mocked(wordsApi.updateWord).mockClear().mockReturnValueOnce(pending).mockResolvedValue(word1)
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    const term = await screen.findByLabelText('Term')
+    fireEvent.change(term, {target: {value: 'revised alpha'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await screen.findByRole('button', {name: 'Saving…'})
+    expect(term.matches(':disabled')).toBe(true)
+    expect(screen.getByLabelText('Translations (one per line)').matches(':disabled')).toBe(true)
+    expect(screen.getByRole('button', {name: 'Cancel'}).matches(':disabled')).toBe(true)
+    expect(screen.getByRole('button', {name: 'Delete'}).matches(':disabled')).toBe(true)
+    expect(screen.getByRole('button', {name: 'Back'}).matches(':disabled')).toBe(true)
+    await act(async () => {rejectSave(new Error('Unavailable')); await pending.catch(() => {})})
+    await screen.findByRole('alert')
+    expect((term as HTMLInputElement).value).toBe('revised alpha')
+    expect(term.matches(':disabled')).toBe(false)
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/words/1'))
+    expect(wordsApi.updateWord).toHaveBeenCalledTimes(2)
+    expect(wordsApi.updateWord).toHaveBeenLastCalledWith(1, expect.objectContaining({term: 'revised alpha'}))
   })
 
   it('resets edit draft when navigating from word 1 edit to word 2 edit', async () => {
@@ -185,6 +234,29 @@ describe('WordPage — draft reset on word navigation', () => {
       await pending
     })
     expect((screen.getByLabelText('Definition') as HTMLTextAreaElement).value).toBe('')
+  })
+
+  it('waits for enrichment before allowing the edited word to be saved', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    vi.mocked(wordsApi.updateWord).mockClear()
+    let resolveEnrichment!: (value: EnrichResult) => void
+    const pending = new Promise<EnrichResult>(resolve => {resolveEnrichment = resolve})
+    vi.mocked(wordsApi.enrichWord).mockReturnValueOnce(pending)
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByLabelText('Term')
+    fireEvent.click(screen.getByRole('button', {name: '✨ Enrich with AI'}))
+    expect(screen.getByRole('button', {name: 'Save'}).matches(':disabled')).toBe(true)
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    expect(wordsApi.updateWord).not.toHaveBeenCalled()
+    await act(async () => {
+      resolveEnrichment({definition: 'Enriched definition', translation_entries: [], example_entries: [], synonym_entries: [], antonym_entries: [], collocation_entries: []} as unknown as EnrichResult)
+      await pending
+    })
+    expect(screen.getByRole('button', {name: 'Save'}).matches(':disabled')).toBe(false)
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, expect.objectContaining({definition: 'Enriched definition'})))
   })
 })
 

@@ -17,9 +17,17 @@ export function QuickAddSheet({onClose}: Props) {
   }, [q.termRef])
 
   useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
+    const app = document.querySelector<HTMLElement>('.app-shell')
+    const previousInert = app?.inert ?? false
+    if (app) app.inert = true
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = previousOverflow }
+    return () => {
+      document.body.style.overflow = previousOverflow
+      if (app) app.inert = previousInert
+      previousFocus?.focus({preventScroll: true})
+    }
   }, [])
 
   useEffect(() => {
@@ -27,16 +35,8 @@ export function QuickAddSheet({onClose}: Props) {
     setToastFeedback(q.feedback)
   }, [q.feedback])
 
-  useEffect(() => {
-    function handleKeyDown(event: globalThis.KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
-
   function handleSheetKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
-    if (e.key === 'Escape') onClose()
+    if (e.key === 'Escape') { e.stopPropagation(); onClose() }
   }
 
   const enriched = q.enrichDone && q.enrichResult
@@ -69,6 +69,7 @@ export function QuickAddSheet({onClose}: Props) {
                   className="quick-add-input"
                   placeholder=" "
                   maxLength={255}
+                  disabled={q.savePending}
                   value={q.term}
                   onChange={(e) => q.setTerm(e.target.value)}
                   onKeyDown={(e) => {
@@ -84,9 +85,10 @@ export function QuickAddSheet({onClose}: Props) {
                 <label className="input-label" htmlFor={`${fieldId}-term`}>Word or phrase</label>
               </div>
               <button type="button"
+                aria-label="Enrich word"
                 className={`quick-add-enrich-btn ripple-btn${q.enriching ? ' is-loading' : ''}`}
                 onClick={q.enrich}
-                disabled={!q.term.trim() || q.enriching}>
+                disabled={!q.term.trim() || q.enriching || q.savePending}>
                 {q.enriching ? '…' : '✨'}
               </button>
             </div>
@@ -109,6 +111,7 @@ export function QuickAddSheet({onClose}: Props) {
                 className={`quick-add-input${enriched ? ' is-ai-complete is-success' : ''}`}
                 placeholder=" "
                 value={q.translation}
+                disabled={q.savePending}
                 onChange={(e) => q.setTranslation(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -123,21 +126,21 @@ export function QuickAddSheet({onClose}: Props) {
 
           {/* Topic — compact single row */}
           <div className="quick-add-field">
-            <label className="quick-add-label">Topic</label>
+            <label className="quick-add-label" htmlFor={`${fieldId}-topic`}>Topic</label>
             {!q.addingTopic ? (
               <div className="quick-add-topic-row">
-                <select className="quick-add-select" value={q.topicId ?? ''}
+                <select id={`${fieldId}-topic`} className="quick-add-select" value={q.topicId ?? ''} disabled={q.savePending}
                   onChange={(e) => q.setTopicId(Number(e.target.value))}>
                   {q.topicsLoading && <option value="">Loading…</option>}
                   {!q.topicsLoading && q.topicId === null && <option value="" disabled>📥 Inbox (default)</option>}
                   {q.sortedTopics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
-                <button type="button" className="quick-add-new-topic-btn ripple-btn" onClick={() => q.setAddingTopic(true)}>+</button>
+                <button type="button" className="quick-add-new-topic-btn ripple-btn" aria-label="Add topic" disabled={q.savePending} onClick={() => q.setAddingTopic(true)}>+</button>
               </div>
             ) : (
               <div className="quick-add-topic-row">
-                <input className="quick-add-input" placeholder="New topic name…" value={q.newTopic}
-                  autoFocus maxLength={200} onChange={(e) => q.setNewTopic(e.target.value)}
+                <input className="quick-add-input" aria-label="New topic name" placeholder="New topic name…" value={q.newTopic}
+                  autoFocus maxLength={200} disabled={q.savePending} onChange={(e) => q.setNewTopic(e.target.value)}
                   onKeyDown={(e) => {
                     e.stopPropagation()
                     if (e.key === 'Enter') {
@@ -148,7 +151,7 @@ export function QuickAddSheet({onClose}: Props) {
                   }}
                 />
                 <button type="button" className="quick-add-translate-btn ripple-btn"
-                  disabled={!q.newTopic.trim() || q.createTopicPending}
+                  disabled={!q.newTopic.trim() || q.createTopicPending || q.savePending}
                   onClick={q.createTopic}>
                   {q.createTopicPending ? '…' : 'Create'}
                 </button>

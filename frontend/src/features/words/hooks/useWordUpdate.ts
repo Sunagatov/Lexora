@@ -30,13 +30,16 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
     },
 
     onError: (_e, {wordId}, ctx) => {
-      for (const [key, data] of ctx?.prevWordQueries ?? []) {
-        queryClient.setQueryData(key, data)
+      for (const [key, previous] of ctx?.prevWordQueries ?? []) {
+        const before = previous?.find(word => word.id === wordId)
+        if (before) queryClient.setQueryData<Word[]>(key, current =>
+          current?.map(word => word.id === wordId ? {...word, knowledge_level: before.knowledge_level} : word),
+        )
       }
       for (const [key, previous] of ctx?.prevWordPages ?? []) {
         const before = previous?.words.find(word => word.id === wordId)
         if (before) queryClient.setQueryData<WordListResponse>(key, current =>
-          current ? {...current, words: current.words.map(word => word.id === wordId ? before : word)} : previous,
+          current ? {...current, words: current.words.map(word => word.id === wordId ? {...word, knowledge_level: before.knowledge_level} : word)} : current,
         )
       }
       const prevWord = ctx?.prevReviewWord

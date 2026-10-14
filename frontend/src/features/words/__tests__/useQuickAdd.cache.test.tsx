@@ -93,6 +93,84 @@ describe('useQuickAdd cache invalidation', () => {
     expect(result.current.enrichResult).toBeNull()
   })
 
+  it('keeps enriched details when the user corrects the translation', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    const enriched: EnrichResult = {...makeWord(10, 'run'), definition: 'Move quickly on foot.', example_entries: ['I run every day.']}
+    vi.mocked(wordsApi.enrichWord).mockResolvedValue(enriched)
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
+    await waitFor(() => expect(result.current.topicId).toBe(1))
+    act(() => result.current.setTerm('run'))
+    await act(async () => { await result.current.enrich() })
+    act(() => result.current.setTranslation('бежать'))
+    await act(async () => { await result.current.save() })
+    await waitFor(() => expect(wordsApi.quickAddWord).toHaveBeenCalledWith(expect.objectContaining({
+      term: 'run', definition: enriched.definition, example_entries: enriched.example_entries,
+      translation_entries: ['бежать', 'run'],
+    })))
+  })
+
+  it('ignores enrichment that finishes after the word was saved manually', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    let resolveEnrich!: (result: EnrichResult) => void
+    vi.mocked(wordsApi.enrichWord).mockImplementationOnce(() => new Promise(resolve => { resolveEnrich = resolve }))
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
+    await waitFor(() => expect(result.current.topicId).toBe(1))
+    act(() => { result.current.setTerm('run'); result.current.setTranslation('бежать') })
+    let enrichment!: Promise<void>
+    act(() => { enrichment = result.current.enrich() })
+    await act(async () => { await result.current.save() })
+    await waitFor(() => expect(result.current.feedback?.ok).toBe(true))
+    await act(async () => { resolveEnrich({...makeWord(10, 'run'), translation_entries: ['бежать']}); await enrichment })
+    expect(result.current.term).toBe('')
+    expect(result.current.translation).toBe('')
+    expect(result.current.enrichResult).toBeNull()
+    expect(result.current.enriching).toBe(false)
+  })
+
+  it('locks saving during automatic Inbox creation and submits the original draft once', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(2, 'Verbs')])
+    let resolveInbox!: (topic: Topic) => void
+    vi.mocked(topicsApi.createTopic).mockImplementationOnce(() => new Promise(resolve => { resolveInbox = resolve }))
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
+    await waitFor(() => expect(result.current.topicsLoading).toBe(false))
+    act(() => { result.current.setTerm('run'); result.current.setTranslation('бежать') })
+    act(() => { void result.current.save() })
+    await waitFor(() => expect(topicsApi.createTopic).toHaveBeenCalledWith('Inbox'))
+    expect(result.current.savePending).toBe(true)
+    expect(result.current.canSave).toBe(false)
+    act(() => { void result.current.save(); result.current.setTerm('walk') })
+    await act(async () => { resolveInbox(makeTopic(1, 'Inbox')) })
+    await waitFor(() => expect(wordsApi.quickAddWord).toHaveBeenCalledWith(expect.objectContaining({term: 'run', topic_ids: [1]})))
+    expect(topicsApi.createTopic).toHaveBeenCalledTimes(1)
+    expect(wordsApi.quickAddWord).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(result.current.feedback?.msg).toBe('"run" saved!'))
+  })
+
+  it('keeps the draft and permits retry when automatic Inbox creation fails', async () => {
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([])
+    vi.mocked(topicsApi.createTopic).mockRejectedValueOnce(new Error('Network down')).mockResolvedValueOnce(makeTopic(1, 'Inbox'))
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'run'))
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(queryClient)})
+    await waitFor(() => expect(result.current.topicsLoading).toBe(false))
+    act(() => { result.current.setTerm('run'); result.current.setTranslation('бежать') })
+    await act(async () => { await result.current.save() })
+    await waitFor(() => expect(result.current.feedback?.msg).toBe('Could not create Inbox topic. Please select a topic manually.'))
+    expect(result.current.term).toBe('run')
+    expect(result.current.translation).toBe('бежать')
+    expect(result.current.canSave).toBe(true)
+    expect(wordsApi.quickAddWord).not.toHaveBeenCalled()
+    await act(async () => { await result.current.save() })
+    await waitFor(() => expect(result.current.feedback?.ok).toBe(true))
+    expect(wordsApi.quickAddWord).toHaveBeenCalledTimes(1)
+  })
+
   it('invalidates words, stats, and smart review after saving a word', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

@@ -8,6 +8,7 @@ export function TrashPage() {
   const navigate = useNavigate()
   const [speakingId, setSpeakingId] = useState<number | null>(null)
   const {
+    isLoading, loadError, retry,
     retentionDays,
     words,
     topics,
@@ -48,7 +49,7 @@ export function TrashPage() {
             Back
           </button>
           {(words.length > 0 || topics.length > 0) && (
-            <button type="button" className="trash-purge-btn" onClick={() => setConfirmPurge(true)}>
+            <button type="button" className="trash-purge-btn" disabled={isLoading || loadError} onClick={() => setConfirmPurge(true)}>
               Empty Trash
             </button>
           )}
@@ -56,6 +57,11 @@ export function TrashPage() {
 
         <h1 className="trash-title">Trash</h1>
         <p className="trash-subtitle">Items are permanently deleted after {retentionDays} days.</p>
+        {isLoading && <p role="status">Loading Trash…</p>}
+        {loadError && <div role="alert" className="wp-save-error">
+          Failed to load Trash. Please try again.
+          <button type="button" className="btn btn-ghost" onClick={retry}>Retry</button>
+        </div>}
 
         {topics.length > 0 && (
           <section className="trash-section">
@@ -117,13 +123,14 @@ export function TrashPage() {
           </section>
         )}
 
-        {words.length === 0 && topics.length === 0 && <div className="trash-empty">Trash is empty.</div>}
+        {!isLoading && !loadError && words.length === 0 && topics.length === 0 && <div className="trash-empty">Trash is empty.</div>}
       </div>
 
       {confirmPurge && (
         <ConfirmModal
           title="Empty Trash?"
           message="This will permanently delete everything in Trash right now. This cannot be undone."
+          error={purgeMutation.isError ? 'Failed to empty Trash. Please try again.' : null}
           confirmLabel="Empty Trash"
           danger
           pending={purgeMutation.isPending}

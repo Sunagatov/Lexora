@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
 import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordDomain'
-import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
+import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {smartPreview} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
@@ -20,7 +20,7 @@ type Props = {
 export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const navigation = useWordListNavigation(fromTopicSlug)
   const [openId,     setOpenId]     = useState<number | null>(null)
-  const [flipUp,     setFlipUp]     = useState(false)
+  const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
@@ -87,7 +87,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}
                           disabled={pendingWordId === word.id}
-                          onClick={(e) => { e.stopPropagation(); if (isOpen) { setOpenId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenId(word.id) }}
+                          onClick={(e) => { e.stopPropagation(); if (isOpen) { setOpenId(null); return } setLevelAnchor(e.currentTarget); setOpenId(word.id) }}
                         >
                           {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -97,7 +97,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                         <span className="level-badge-tip">{LEVEL_TIPS[word.knowledge_level ?? 0]}</span>
                       </div>
                       {isOpen && (
-                        <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} flipUp={flipUp}
+                        <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
                           onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
                           onClose={() => setOpenId(null)} />
                       )}

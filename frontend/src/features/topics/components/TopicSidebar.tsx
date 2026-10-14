@@ -396,6 +396,7 @@ export function TopicSidebar({
 
       {editTopicId !== null && editingTopic && (
         <TopicEditModal
+          key={editingTopic.id}
           topic={editingTopic}
           topics={topics}
           saving={updateTopicMutation.isPending}

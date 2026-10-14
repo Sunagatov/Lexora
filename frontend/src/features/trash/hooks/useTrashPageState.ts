@@ -84,6 +84,9 @@ export function useTrashPageState() {
   }
 
   return {
+    isLoading: wordsQuery.isLoading || topicsQuery.isLoading,
+    loadError: wordsQuery.isError || topicsQuery.isError,
+    retry: () => { void wordsQuery.refetch(); void topicsQuery.refetch() },
     retentionDays,
     words,
     topics,

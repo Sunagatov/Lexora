@@ -749,9 +749,9 @@
 
 .enrich-preview {
   padding: 10px 12px;
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-2);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(99, 102, 241, 0.12);
+  border: 1px solid var(--border);
   font-size: 0.82rem;
   line-height: 1.45;
   display: flex;
@@ -767,8 +767,8 @@
   display: inline-block;
   padding: 1px 7px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
-  color: var(--accent-dark);
+  background: var(--accent-light);
+  color: var(--text);
   font-size: 0.75rem;
   font-weight: 500;
 }

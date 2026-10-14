@@ -393,6 +393,47 @@
 }
 
 /* ── Topic row actions (pin + delete) ────────────────────────────────────── */
+.topic-edit-dialog {
+  width: min(400px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  overflow: hidden;
+}
+
+.topic-edit-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.topic-edit-dialog .modal {
+  max-height: calc(100dvh - 32px);
+}
+
+.topic-edit-dialog .modal-title,
+.topic-edit-dialog .modal-actions {
+  flex-shrink: 0;
+}
+
+.topic-edit-fields {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.topic-edit-fields fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 .topic-item-actions {
   flex-shrink: 0;
   display: none;
@@ -401,7 +442,17 @@
   padding-right: 6px;
 }
 
-.topic-item:hover .topic-item-actions { display: flex; }
+.topic-item:hover .topic-item-actions,
+.topic-item:focus-within .topic-item-actions { display: flex; }
+
+@media (hover: none) {
+  .topic-item-actions { display: flex; }
+  .topic-item-actions button {
+    min-width: 32px;
+    min-height: 36px;
+    justify-content: center;
+  }
+}
 
 .topic-item-pin,
 .topic-item-edit,

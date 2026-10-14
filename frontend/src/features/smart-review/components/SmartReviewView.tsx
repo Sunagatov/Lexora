@@ -45,7 +45,9 @@ type Props = {queue: StudyQueue | null; isLoading: boolean; topics?: Topic[]}
 
 export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const navigate = useNavigate()
-  const {completeItem, refresh, isRefreshing} = useSmartReview(false)
+  const review = useSmartReview(false)
+  const {completeItem, refresh, isRefreshing} = review
+  const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = useResponsivePageSize(20, 40)
   const isMobile = useIsMobile(768)
@@ -54,7 +56,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const queueId = queue?.id ?? null
   const completedCount = queue?.completed_count ?? 0
 
-  useEffect(() => { setPanelWordId(null) }, [queueId])
+  useEffect(() => { setPanelWordId(null); setFailedLevel(null) }, [queueId])
   useEffect(() => {
     if (queueId === null) return
     setIsTransitioning(true)
@@ -74,9 +76,11 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   )
 
   async function handleUpdate(wordId: number, level: WordKnowledgeLevel) {
+    setFailedLevel(null)
     try {
       await update.updateLevelAsync(wordId, level)
     } catch {
+      setFailedLevel({wordId, level})
       return
     }
     if (queue) {
@@ -92,9 +96,12 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
         <EmptyState
           icon="✨"
           title="Daily Word Mix unavailable"
-          description="Your smart review queue is empty or still being prepared. Try generating a new session."
-          variant="info"
-          actions={[{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
+          description={review.loadError ? 'Could not load your word mix. Please try again.' : 'No word mix is available yet. Generate a new set to start reviewing.'}
+          variant={review.loadError ? 'error' : 'info'}
+          actions={[
+            {label: review.loadError ? 'Retry' : 'Generate new set', onClick: review.loadError ? review.retry : () => refresh()},
+            {label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'},
+          ]}
         />
       </div>
     )
@@ -107,6 +114,14 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
 
   return (
     <div className="study-topic-panel">
+      {failedLevel && <div role="alert" className="wp-save-error">
+        Failed to save word level. Please try again.
+        <button type="button" className="btn btn-ghost" onClick={() => handleUpdate(failedLevel.wordId, failedLevel.level)}>Retry</button>
+      </div>}
+      {review.actionError && <div role="alert" className="wp-save-error">
+        {review.actionError}
+        <button type="button" className="btn btn-ghost" onClick={review.retryAction}>Retry</button>
+      </div>}
       <div className={splitClassName}>
         <WordCollectionView
           collectionTitle="Daily Word Mix"

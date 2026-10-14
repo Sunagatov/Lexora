@@ -60,17 +60,17 @@ describe('WordCardList', () => {
       {initialEntries: ['/']},
     )
 
-    const {container} = render(<RouterProvider router={router} />)
+    render(<RouterProvider router={router} />)
 
     fireEvent.click(screen.getByRole('button', {name: /basic/i}))
 
-    const overlay = container.querySelector('.level-dropdown-overlay')
+    const overlay = document.querySelector('.level-dropdown-overlay')
     expect(overlay).not.toBeNull()
 
     fireEvent.click(overlay!)
 
     expect(screen.getByText('alpha')).toBeTruthy()
     expect(screen.queryByText('word detail page')).toBeNull()
-    expect(container.querySelector('.level-dropdown-overlay')).toBeNull()
+    expect(document.querySelector('.level-dropdown-overlay')).toBeNull()
   })
 })

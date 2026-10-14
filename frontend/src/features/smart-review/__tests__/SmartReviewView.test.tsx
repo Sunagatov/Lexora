@@ -143,6 +143,15 @@ describe('SmartReviewView', () => {
     expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 40}))
   })
 
+  it('offers a Retry action when the initial word mix request fails', () => {
+    const retry = vi.fn()
+    vi.mocked(useSmartReview).mockReturnValue({loadError: true, retry} as never)
+    render(<SmartReviewView queue={null} isLoading={false} />, {wrapper: MemoryRouter})
+    expect(screen.getByText('Could not load your word mix. Please try again.')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
+    expect(retry).toHaveBeenCalledOnce()
+  })
+
   it('uses the mobile default page size on narrow screens', () => {
     mockMatchMedia(true)
 
@@ -161,6 +170,11 @@ describe('SmartReviewView', () => {
       expect(updateLevelAsync).toHaveBeenCalledWith(11, 3)
     })
     expect(completeItem).not.toHaveBeenCalled()
+    expect((await screen.findByRole('alert')).textContent).toContain('Failed to save word level')
+    updateLevelAsync.mockResolvedValueOnce({} as never)
+    fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
+    await waitFor(() => expect(completeItem).toHaveBeenCalledWith(101))
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 
   it('completes the queue item only after a successful level update', async () => {

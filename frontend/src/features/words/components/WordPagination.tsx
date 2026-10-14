@@ -44,6 +44,7 @@ export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}:
               type="button"
               key={t}
               className={`page-btn ${t === safePage ? 'page-btn-active' : ''}`}
+              aria-current={t === safePage ? 'page' : undefined}
               disabled={isStaticPagination}
               onClick={() => onPage(t)}
             >
@@ -65,6 +66,7 @@ export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}:
         <button
           type="button"
           className="page-btn page-nav-mobile"
+          aria-label="Previous page"
           disabled={isStaticPagination || safePage === 1}
           onClick={() => onPage(safePage - 1)}
         >
@@ -74,6 +76,7 @@ export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}:
         <button
           type="button"
           className="page-btn page-nav-mobile"
+          aria-label="Next page"
           disabled={isStaticPagination || safePage === safeTotalPages}
           onClick={() => onPage(safePage + 1)}
         >

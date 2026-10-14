@@ -113,6 +113,7 @@ export function WordCollectionToolbar({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (filtersOpen || sortOpen || searchOpen) e.preventDefault()
         if (filtersOpen) { setFiltersOpen(false); return }
         if (sortOpen) setSortOpen(false)
         if (searchOpen) closeSearch()

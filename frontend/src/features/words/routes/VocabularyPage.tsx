@@ -102,7 +102,7 @@ export function VocabularyPage() {
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
               isLoading={s.wordsQuery.isLoading}
-              emptyMessage={hasFilters ? 'No words match the current filters.' : 'No words yet. Add a word in a topic to start your library.'}
+              emptyMessage={hasFilters ? 'No words match the current filters.' : 'No words yet. Use Add word to start your library.'}
               onWordSelect={isMobile ? undefined : setPanelWordId} selectedWordId={panelWordId}
             />
             {panelWordId !== null && !isMobile && <WordDetailPanel wordId={panelWordId} words={words} onClose={() => setPanelWordId(null)} onNavigate={setPanelWordId} />}

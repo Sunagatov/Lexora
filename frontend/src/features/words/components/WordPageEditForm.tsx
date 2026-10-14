@@ -54,7 +54,7 @@ export function WordPageEditForm({
 
   return (
     <>
-      <div className="word-page-edit-form">
+      <fieldset className="word-page-edit-form" disabled={savePending} aria-label="Edit word">
         {onEnrich && (
           <div className="wp-enrich-row">
             <button type="button" className="btn btn-secondary btn-sm ripple-btn" disabled={enrichPending || !draft.term.trim()} onClick={onEnrich}>
@@ -215,15 +215,15 @@ export function WordPageEditForm({
         <FormField label="Notes">
           <textarea className="wp-input wp-textarea" rows={3} value={draft.notes} onChange={(event) => onFieldChange('notes', event.target.value)} />
         </FormField>
-      </div>
+      </fieldset>
 
       <div className="word-page-edit-actions">
         {saveError && <div className="wp-save-error" role="alert">{saveError}</div>}
         <div className="word-page-edit-actions-row">
-          <button type="button" className="wp-btn-delete" onClick={onDelete}>Delete</button>
+          <button type="button" className="wp-btn-delete" disabled={savePending} onClick={onDelete}>Delete</button>
           <div className="word-page-edit-actions-right">
-            <button type="button" className="btn btn-secondary btn-sm ripple-btn" onClick={onCancel}>Cancel</button>
-            <button type="button" className="btn btn-primary btn-sm ripple-btn" disabled={savePending} onClick={onSave}>
+            <button type="button" className="btn btn-secondary btn-sm ripple-btn" disabled={savePending} onClick={onCancel}>Cancel</button>
+            <button type="button" className="btn btn-primary btn-sm ripple-btn" disabled={savePending || enrichPending} onClick={onSave}>
               {savePending ? 'Saving…' : 'Save'}
             </button>
           </div>

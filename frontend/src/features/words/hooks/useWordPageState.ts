@@ -131,7 +131,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   }
 
   function save() {
-    if (!draft || !word) return
+    if (!draft || !word || saveMutation.isPending || deleteMutation.isPending || enrichPending) return
 
     setSaveError(null)
 
@@ -225,6 +225,13 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     handleDelete,
     handleEnrich,
     fromTopicSlug,
+    loadError: (wordQuery.isError && !(wordQuery.error instanceof ApiError && wordQuery.error.status === 404))
+      || topicsQuery.isError || topicWordsQuery.isError,
+    retry: () => {
+      void wordQuery.refetch()
+      void topicsQuery.refetch()
+      if (topic) void topicWordsQuery.refetch()
+    },
     isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || (!!topic && topicWordsQuery.isLoading)),
   }
 }

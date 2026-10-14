@@ -41,6 +41,14 @@ export function WordPage() {
 
   if (s.isInvalidWordId) return <NotFoundPage />
   if (s.isLoading) return <WordPageSkeleton />
+  if (s.loadError) return <div className="word-page"><div className="word-page-inner">
+    <button type="button" className="word-page-back-btn" onClick={() => navigate(returnTo ?? routes.home,
+      {replace: true, state: {wordListScrollTop: returnTo?.scrollTop}})}>← Back</button>
+    <div role="alert" className="wp-save-error">
+      Failed to load word. Please try again.
+      <button type="button" className="btn btn-ghost" onClick={s.retry}>Retry</button>
+    </div>
+  </div></div>
   if (!s.word) return <div className="word-page-loading">Word not found.</div>
 
   const {word, topics, topic, draft, set, editing} = s
@@ -83,6 +91,7 @@ export function WordPage() {
           />
         }
         editing={editing}
+        pending={s.savePending || s.deletePending}
         isSpeaking={isSpeaking}
         onBack={() => editing
           ? navigate(routes.word(s.wordId), {replace: true, state: location.state})

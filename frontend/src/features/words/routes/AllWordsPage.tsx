@@ -7,7 +7,7 @@ import {batchUpdateWords} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
 import {routes} from '@/app/routes'
 import {LEVEL_LABELS, LEVELS, levelClass} from '@/features/words/model/wordDomain'
-import {LevelDropdown, openUpward} from '@/features/words/components/LevelDropdown'
+import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
 import {WordCardList} from '@/features/words/components/WordCardList'
@@ -28,14 +28,14 @@ export function AllWordsPage() {
   const queryClient = useQueryClient()
   const s = useVocabulary()
   const {wordSearch: search, posFilter: pos, cefrFilter: cefr, levelFilter: level, completeness, page, pageSize, wordsQuery} = s
-  const isMobile = useIsMobile(768)
+  const isMobile = useIsMobile()
   const [actionError, setActionError] = useState<string | null>(null)
   const [selected, setSelected]   = useState<Set<number>>(new Set())
   const [bulkLevel, setBulkLevel] = useState('')
   const [bulkTopic, setBulkTopic] = useState('')
   const [bulkPending, setBulkPending] = useState(false)
   const [openLevelId, setOpenLevelId] = useState<number | null>(null)
-  const [flipUp, setFlipUp]       = useState(false)
+  const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [pendingWordId, setPendingWordId] = useState<number | null>(null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
@@ -226,13 +226,13 @@ export function AllWordsPage() {
                         <div className="level-badge-wrap">
                           <button type="button" className={`level-badge level-badge-btn ${lc}`}
                             disabled={pendingWordId === word.id}
-                            onClick={e => { e.stopPropagation(); if (isOpen) { setOpenLevelId(null); return } setFlipUp(openUpward(e.currentTarget)); setOpenLevelId(word.id) }}>
+                            onClick={e => { e.stopPropagation(); if (isOpen) { setOpenLevelId(null); return } setLevelAnchor(e.currentTarget); setOpenLevelId(word.id) }}>
                             {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="2,3.5 5,6.5 8,3.5" /></svg>
                           </button>
                         </div>
                         {isOpen && (
-                          <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} flipUp={flipUp}
+                          <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
                             onSelect={l => { handleLevelChange(word.id, l); setOpenLevelId(null) }}
                             onClose={() => setOpenLevelId(null)} />
                         )}
