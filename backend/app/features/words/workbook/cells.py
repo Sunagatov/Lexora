@@ -81,14 +81,43 @@ def _split_translation_cell(value: str | None) -> list[str]:
     return [text]
 
 
+def _ordered_unique(values: list[str]) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        value = value.strip()
+        if value and value.casefold() not in seen:
+            seen.add(value.casefold())
+            result.append(value)
+    return result
+
+
 def _split_examples_cell(value: str | None) -> list[str]:
-    if value is None:
-        return []
-    text = value.strip()
-    if not text:
-        return []
-    parts = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    return [part.strip() for part in parts if part and part.strip()]
+    """Store each labelled EN/RU pair as one example, preserving their association."""
+    lines = [line.strip() for line in (value or '').splitlines() if line.strip()]
+    if not any(re.match(r'^(EN|RU):', line, re.IGNORECASE) for line in lines):
+        if any(re.search('[А-Яа-яЁё]', line) and not re.search('[A-Za-z]', line) for line in lines):
+            raise InvalidWorkbookError('Unlabelled Russian example; use EN: / RU: pairs')
+        return _ordered_unique(lines)
+    result: list[str] = []
+    english: str | None = None
+    for line in lines:
+        match = re.match(r'^(EN|RU):\s*(.+)$', line, re.IGNORECASE)
+        if not match:
+            raise InvalidWorkbookError('Examples must use non-empty EN: / RU: lines consistently')
+        language, sentence = match.groups()
+        if language.upper() == 'EN':
+            if english:
+                result.append('EN: ' + english)
+            english = sentence
+        else:
+            if english is None:
+                raise InvalidWorkbookError('RU example has no preceding EN example')
+            result.append(f'EN: {english}\nRU: {sentence}')
+            english = None
+    if english:
+        result.append('EN: ' + english)
+    return _ordered_unique(result)
 
 
 def _normalize_countability(value: str | None) -> str | None:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -19,12 +19,13 @@ os.environ.setdefault("API_KEY", "test-api-key")
 # Test collection imports the DB module; never probe a configured remote database.
 os.environ["POSTGRES_HOST"] = "127.0.0.1"
 os.environ["POSTGRES_PORT"] = "1"
+os.environ["PGCONNECT_TIMEOUT"] = "2"
 os.environ["APP_DEBUG"] = "true"
 
 
 @pytest.fixture
 def fixed_now() -> datetime:
-    return datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
+    return datetime(2026, 1, 1, 12, 0, tzinfo=UTC)
 
 
 @pytest.fixture
