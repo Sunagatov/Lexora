@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+  <clipPath id="flag"><path d="M0 0h60v30H0z" /></clipPath>
+  <clipPath id="diagonals"><path d="M30 15H60V30zM30 15V30H0zM30 15H0V0zM30 15V0H60z" /></clipPath>
+  <g clip-path="url(#flag)">
+    <path d="M0 0h60v30H0z" fill="#012169" />
+    <path d="m0 0 60 30M60 0 0 30" stroke="#fff" stroke-width="6" />
+    <path d="m0 0 60 30M60 0 0 30" stroke="#c8102e" stroke-width="4" clip-path="url(#diagonals)" />
+    <path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10" />
+    <path d="M30 0v30M0 15h60" stroke="#c8102e" stroke-width="6" />
+  </g>
+</svg>
