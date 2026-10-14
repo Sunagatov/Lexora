@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.features.words.constants import CEFR_LEVELS, REGISTER_VALUES, WORD_TERM_MAX_LEN
 from app.features.words.workbook.cells import (
     _read_optional_int,
     _read_str,
     _validate_countability,
     _validate_max_length,
 )
-from app.features.words.constants import WORD_TERM_MAX_LEN
 from app.features.words.workbook.format import InvalidWorkbookError
 
 
@@ -46,6 +46,11 @@ def _read_row_data(ws, row_idx: int, header_map: dict[str, int]) -> WorkbookRowD
     knowledge_value = _read_optional_int(ws, row_idx, header_map.get("knowledge_level"), "knowledge", ws.title)
     if knowledge_value is not None and knowledge_value not in {1, 2, 3, 4, 5}:
         raise InvalidWorkbookError(f"{ws.title}, row {row_idx}: knowledge must be between 1 and 5")
+    cefr = _read_str(ws, row_idx, header_map.get('cefr_level'))
+    register = _read_str(ws, row_idx, header_map.get('register'))
+    for label, value, allowed in (('CEFR', cefr, CEFR_LEVELS), ('register', register, REGISTER_VALUES)):
+        if value is not None and value not in allowed:
+            raise InvalidWorkbookError(f'{ws.title}, row {row_idx}: invalid {label}')
 
     return WorkbookRowData(
         term=term,
@@ -59,8 +64,8 @@ def _read_row_data(ws, row_idx: int, header_map: dict[str, int]) -> WorkbookRowD
         ),
         part_of_speech_text=_read_str(ws, row_idx, header_map.get("part_of_speech")),
         definition=_read_str(ws, row_idx, header_map.get("definition")),
-        cefr_level=_read_str(ws, row_idx, header_map.get("cefr_level")),
-        register=_read_str(ws, row_idx, header_map.get("register")),
+        cefr_level=cefr,
+        register=register,
         notes=_read_str(ws, row_idx, header_map.get("notes")),
     )
 
@@ -76,6 +81,8 @@ def _row_fingerprint(
     part_of_speech: str | None,
     definition: str | None,
     notes: str | None,
+    cefr_level: str | None = None,
+    register: str | None = None,
 ) -> tuple[object, ...]:
     return (
         term.strip(),
@@ -87,4 +94,6 @@ def _row_fingerprint(
         (part_of_speech or "").strip().lower(),
         (definition or "").strip(),
         (notes or "").strip(),
+        cefr_level,
+        register,
     )

@@ -1,13 +1,20 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
+
+from sqlalchemy import select
 
 from app.features.words.constants import PROGRESS_SOURCE_XLSX_IMPORT
+from app.features.words.model import PartsOfSpeech
 from app.features.words.workbook.cells import _split_examples_cell, _split_translation_cell
 from app.features.words.workbook.format import InvalidWorkbookError
 from app.features.words.workbook.import_rows import _row_fingerprint
-from app.features.words.workbook.import_rules import _normalize_part_of_speech, _validate_part_of_speech
+from app.features.words.workbook.import_rules import (
+    _normalize_part_of_speech,
+    _validate_part_of_speech,
+)
 
 
 @dataclass(frozen=True)
@@ -65,7 +72,7 @@ def update_existing_word_from_row(
     effective_knowledge_level = row.knowledge_value if context.flags.has_knowledge else existing.knowledge_level
     effective_countability = row.countability if context.flags.has_countability else existing.countability
     effective_pattern = row.pattern if context.flags.has_pattern else existing.pattern
-    effective_examples_text = row.examples_text if context.flags.has_examples else None
+    effective_examples_text = row.examples_text or '\n'.join(item.value for item in existing.example_items)
     effective_pos_name = existing.part_of_speech.name if existing.part_of_speech else None
     effective_part_of_speech = _normalize_part_of_speech(
         _validate_part_of_speech(row.part_of_speech_text, context.sheet_name, row_idx)
@@ -76,6 +83,8 @@ def update_existing_word_from_row(
     )
     effective_definition = row.definition if context.flags.has_definition else existing.definition
     effective_notes = row.notes if context.flags.has_notes else existing.notes
+    effective_cefr = row.cefr_level or existing.cefr_level
+    effective_register = row.register or existing.register
 
     fingerprint = _row_fingerprint(
         term=row.term,
@@ -87,6 +96,8 @@ def update_existing_word_from_row(
         part_of_speech=effective_part_of_speech,
         definition=effective_definition,
         notes=effective_notes,
+        cefr_level=effective_cefr,
+        register=effective_register,
     )
     _track_existing_word_fingerprint(
         existing_id=int(existing.id),
@@ -101,14 +112,22 @@ def update_existing_word_from_row(
     existing.pattern = effective_pattern
     existing.definition = effective_definition
     existing.notes = effective_notes
+    existing.cefr_level = effective_cefr
+    existing.register = effective_register
+    if effective_part_of_speech:
+        existing.part_of_speech = _resolve_part_of_speech(db, effective_part_of_speech)
 
-    context.ops.sync_word_multivalue_fields(
-        existing,
-        row.translations_text,
-        _split_translation_cell(row.translations_text),
-        effective_examples_text,
-        _split_examples_cell(effective_examples_text),
-    )
+    translations = _split_translation_cell(row.translations_text)
+    examples = _split_examples_cell(effective_examples_text)
+    if translations != [item.value for item in existing.translation_items] or examples != [item.value for item in existing.example_items]:
+        if existing.translation_items or existing.example_items:
+            existing.translation_items = []
+            existing.example_items = []
+            # Position uniqueness requires deleting old entries before inserting replacements.
+            db.flush()
+        context.ops.sync_word_multivalue_fields(
+            existing, row.translations_text, translations, effective_examples_text, examples,
+        )
 
     if existing.knowledge_level != old_level and existing.knowledge_level is not None:
         context.ops.record_level_change(
@@ -144,6 +163,9 @@ def create_new_word_from_row(
         countability=row.countability if context.flags.has_countability else None,
         pattern=row.pattern if context.flags.has_pattern else None,
         definition=row.definition if context.flags.has_definition else None,
+        part_of_speech=_resolve_part_of_speech(db, part_of_speech) if part_of_speech else None,
+        cefr_level=row.cefr_level,
+        register=row.register,
         notes=row.notes if context.flags.has_notes else None,
         is_active=True,
         source="import",
@@ -159,6 +181,13 @@ def create_new_word_from_row(
 
     db.add(word)
     db.flush()
+
+
+def _resolve_part_of_speech(db, name: str):
+    result = db.scalar(select(PartsOfSpeech).where(PartsOfSpeech.name == name))
+    if result is None:
+        raise InvalidWorkbookError(f'Unknown database part of speech: {name}')
+    return result
 
 
 def _track_existing_word_fingerprint(

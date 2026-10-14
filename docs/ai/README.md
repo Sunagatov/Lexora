@@ -17,6 +17,8 @@
 
 Specialized AI/product docs:
 
+- `workbook-synchronization.md` owns content-only Word ID synchronization, conflict review, progress preservation, and recovery.
+
 - `ai-curation-workflow.md` owns the canonical current AI curation workflow and v2 payload shape.
 - `ai-curation.md` is a compact reference/pointer, not a duplicate workflow.
 - `example-style-guide.md` supports examples writing style.
