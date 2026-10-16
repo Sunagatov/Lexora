@@ -771,6 +771,7 @@
 }
 
 .word-translation-focus {
+  overflow-wrap: anywhere;
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;

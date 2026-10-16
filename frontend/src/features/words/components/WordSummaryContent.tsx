@@ -7,7 +7,7 @@ export function WordSummaryContent({word}: Props) {
   const chips = lexicalChips(word)
   const cefr = chips.find((c) => c.type === 'cefr')
   const pos  = chips.find((c) => c.type === 'pos')
-  const translation = word.translation_entries[0]
+  const translation = word.translation_entries.join(' · ')
 
   return (
     <div className="word-summary-row">

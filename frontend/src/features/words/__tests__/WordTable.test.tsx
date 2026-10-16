@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {WordTable} from '@/features/words/components/WordTable'
@@ -42,6 +42,17 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordTable', () => {
+  it('shows every saved translation in the desktop word list', () => {
+    const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
+    render(
+      <MemoryRouter>
+        <WordTable words={[makeWord(1, 'cold', {translation_entries: translations})]} pendingWordId={null} onUpdate={vi.fn()} />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText(translations.join(' · '))).toBeTruthy()
+  })
+
   const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
   beforeEach(() => {

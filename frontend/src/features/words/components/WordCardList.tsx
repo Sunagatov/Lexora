@@ -39,6 +39,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   }
 
   const lc = levelClass(word.knowledge_level)
+  const translation = word.translation_entries.join(' · ')
 
   return (
     <article className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}`}>
@@ -58,7 +59,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
                 </svg>
               </button>
             </span>
-            {word.translation_entries[0] && <span className="word-translation-focus">{word.translation_entries[0]}</span>}
+            {translation && <span className="word-translation-focus">{translation}</span>}
           </div>
           <div className="word-card-right">
             {(() => { const chips = lexicalChips(word); const cefr = chips.find(c => c.type === 'cefr'); const pos = chips.find(c => c.type === 'pos'); return (cefr || pos) ? <div className="word-summary-badges">{cefr && <span className={`header-badge header-badge-cefr header-badge-cefr-${cefr.label.toLowerCase()}`}>{cefr.label}</span>}{pos && <span className="header-badge header-badge-pos">{pos.label}</span>}</div> : null })()}

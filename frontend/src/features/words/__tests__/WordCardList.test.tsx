@@ -42,6 +42,18 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordCardList', () => {
+  it('shows every saved translation in the mobile word list', () => {
+    const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
+    const router = createMemoryRouter([{
+      path: '/',
+      element: <WordCardList words={[makeWord(1, 'cold', {translation_entries: translations})]} pendingWordId={null} onUpdate={vi.fn()} />,
+    }])
+
+    render(<RouterProvider router={router} />)
+
+    expect(screen.getByText(translations.join(' · '))).toBeTruthy()
+  })
+
   it('closes the level dropdown without navigating to the word page', () => {
     const router = createMemoryRouter(
       [
