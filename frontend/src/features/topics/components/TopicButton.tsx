@@ -1,6 +1,7 @@
 import type {CSSProperties} from 'react'
 
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {TopicActionsMenu} from '@/features/topics/components/TopicActionsMenu'
 
 export type TopicButtonActionProps = {
   onSelect: (id: number) => void
@@ -119,6 +120,7 @@ export function TopicButton({
           </svg>
         </button>
       </div>
+      <TopicActionsMenu topic={topic} isPinned={isPinned} onPin={onPin} onEdit={onEdit} onDelete={onDelete} />
       {progress !== undefined && (
         <span className="topic-progress-bar" aria-hidden="true">
           <span className="topic-progress-fill" style={{width: `${progress}%`}} />

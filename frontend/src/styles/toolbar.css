@@ -29,13 +29,6 @@
 .word-list-control .dropdown-trigger-label { font-size: inherit; }
 .toolbar-knowledge-progress { min-width: 0; }
 .toolbar-knowledge-progress .toolbar-progress-bar { height: 6px; }
-.toolbar-progress-details { margin-top: 6px; }
-.toolbar-progress-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 28px; cursor: pointer; list-style: none; color: var(--text-3); }
-.toolbar-progress-details > summary::-webkit-details-marker { display: none; }
-.toolbar-progress-details > summary .toolbar-progress-legend { margin: 0; gap: 4px 10px; }
-.toolbar-progress-details > summary > svg { flex-shrink: 0; }
-.toolbar-progress-details[open] > summary > svg { transform: rotate(180deg); }
-.toolbar-progress-counts { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.75rem; color: var(--text-2); padding: 4px 0; }
 .toolbar-mix-progress { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: var(--text-2); }
 .toolbar-mix-progress .smart-review-header-bar { flex: 1; width: auto; max-width: none; }
 .toolbar-actions-row .toolbar-mix-refresh { height: 40px; font-size: 0.8rem; border-radius: 10px; }

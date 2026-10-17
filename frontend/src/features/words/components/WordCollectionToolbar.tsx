@@ -168,25 +168,17 @@ export function WordCollectionToolbar({
       {collectionProgress}
       {progressReady && <div className="toolbar-knowledge-progress">
         <div className="toolbar-progress-bar" role="progressbar" aria-label={progressLabel}
-          aria-valuemin={0} aria-valuemax={topicTotalCount || 1} aria-valuenow={levelSummary[4]}
-          aria-valuetext={`${levelSummary[4]} strong words out of ${topicTotalCount}`}>
+          aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number((levelSummary[4] / total * 100).toFixed(2))}
+          aria-valuetext={`${(levelSummary[4] / total * 100).toFixed(2)}% strong`}>
           {activeLevels.map(level => <div key={level} className={`toolbar-progress-seg level-${level}`} style={{width: `${levelSummary[level] / total * 100}%`}} />)}
         </div>
-        <details className="toolbar-progress-details">
-          <summary aria-label="Show word counts">
-            <span className="toolbar-progress-legend">
-              {legendLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
-                <span className={`toolbar-progress-dot level-${level}`} />
-                <span className="toolbar-progress-legend-label">{LEVEL_LABELS[level]}</span>
-                <span className="toolbar-progress-legend-pct">{(levelSummary[level] / total * 100).toFixed(2)}%</span>
-              </span>)}
-            </span>
-            <SelectChevron />
-          </summary>
-          <div className="toolbar-progress-counts">
-            {activeLevels.map(level => <span key={level}>{LEVEL_LABELS[level]}: {formatCount(levelSummary[level])}</span>)}
-          </div>
-        </details>
+        <div className="toolbar-progress-legend">
+          {legendLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
+            <span className={`toolbar-progress-dot level-${level}`} />
+            <span className="toolbar-progress-legend-label">{LEVEL_LABELS[level]}</span>
+            <span className="toolbar-progress-legend-pct">{(levelSummary[level] / total * 100).toFixed(2)}%</span>
+          </span>)}
+        </div>
       </div>}
 
       <div className="toolbar-actions-row">

@@ -68,7 +68,13 @@ export function StudySidebarShell({
     <>
       <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
       <div
+        id="mobile-topic-drawer"
+        inert={!drawerOpen}
+        aria-hidden={!drawerOpen}
         className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}
+        onKeyDown={event => {
+          if (event.key === 'Escape' && !event.defaultPrevented) setDrawerOpen(false)
+        }}
         style={drawerOpen && swipeOffset !== 0 ? {transform: `translateX(${swipeOffset}px)`} : undefined}
         onTouchStart={handleDrawerTouchStart}
         onTouchMove={handleDrawerTouchMove}

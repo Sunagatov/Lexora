@@ -29,7 +29,8 @@ export function AppLayout() {
   return (
     <div className="app-shell">
       <UsageTracker />
-      <AppHeader hasDrawer={hasDrawer} onOpenDrawer={hasDrawer ? () => setDrawerOpen(true) : undefined} />
+      <AppHeader hasDrawer={hasDrawer} drawerOpen={drawerOpen}
+        onOpenDrawer={hasDrawer ? () => setDrawerOpen(open => !open) : undefined} />
       <div className="app-body">
         <div key={location.pathname} className="page-enter">
           <Outlet context={{drawerOpen, setDrawerOpen} satisfies AppLayoutOutletContext} />

@@ -58,20 +58,39 @@
   bottom: 0;
   padding-top: calc(52px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  width: min(320px, 84vw);
+  width: 100%;
   background: var(--sidebar-bg);
   z-index: 26;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: 24px 0 60px rgba(2, 6, 23, 0.34);
 }
 
 .mobile-drawer.open {
   transform: translateX(0);
 }
+
+.mobile-drawer .topic-item .topic-item-actions { display: none; }
+.mobile-drawer .topic-actions-trigger { display: flex; }
+.mobile-drawer .topic-item:hover { transform: none; }
+.mobile-drawer .topic-item-select {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 8px;
+  padding: 10px 6px;
+}
+.mobile-drawer .topic-item-name {
+  grid-column: 1 / -1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+.mobile-drawer .topic-item-pct { width: auto; text-align: left; }
+.mobile-drawer .topic-count { justify-self: start; height: 20px; }
+.mobile-drawer .topic-subtopics-scroll { max-height: none; overflow: visible; }
 
 /* Ensure sidebar content fits in mobile drawer */
 .mobile-drawer .sidebar-topic-list {
@@ -124,6 +143,10 @@
 
 .mobile-drawer .sidebar-trash-btn:hover {
   color: #f87171;
+}
+
+@media (min-width: 861px) {
+  .mobile-drawer, .mobile-drawer-overlay { display: none; }
 }
 
 @media (max-width: 860px) {
