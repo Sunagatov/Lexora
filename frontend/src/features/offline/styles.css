@@ -23,7 +23,5 @@
 .word-card-body-tap { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; }
 .swipe-feedback { position: absolute; top: 10px; right: 12px; padding: 5px 8px; pointer-events: none; border: 2px solid currentColor; border-radius: 6px; font-size: 13px; font-weight: 700; color: white; background: #0c6848; transform: rotate(-8deg); z-index: 4; }
 .swipe-parked .swipe-feedback { right: auto; left: 12px; background: #424d60; transform: rotate(8deg); }
-.swipe-undo { position: fixed; bottom: calc(66px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 150; width: max-content; max-width: calc(100vw - 32px); padding: 10px 14px; border: 1px solid #73708e; border-radius: 12px; background: #26243a; color: #f0eef9; font-size: 13px; box-shadow: 0 4px 20px #0006; }
-.swipe-undo button { color: #c4bcff; background: transparent; border: 0; font: inherit; font-weight: 700; margin-left: 12px; padding: 5px; cursor: pointer; }
 @media (max-width: 860px) { .word-card { touch-action: pan-y pinch-zoom; position: relative; } }
 @media (prefers-reduced-motion: reduce) { .word-card { transition: none; } .word-card.swipe-dragging { transform: translateX(var(--swipe-x)); } .swipe-feedback { transform: none; } }

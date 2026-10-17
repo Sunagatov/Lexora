@@ -48,6 +48,7 @@ type Props = {
   pageSize: number; setPageSize: (n: number) => void
   setPage: (p: number) => void
   pendingWordId: number | null
+  pendingWordIds?: ReadonlySet<number>
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
   fromTopicSlug?: string
   isLoading?: boolean
@@ -64,7 +65,7 @@ export function WordCollectionView({
   pageStart, pageEnd, levelSummary, progressLabel, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, page, totalPages, pageSize, setPageSize, setPage,
-  pendingWordId, onUpdate, fromTopicSlug,
+  pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
   onWordSelect, selectedWordId,
@@ -73,6 +74,10 @@ export function WordCollectionView({
   function handlePage(p: number) {
     setPage(p)
     document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'smooth'})
+  }
+  function handlePageSize(size: number) {
+    setPageSize(size)
+    document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'instant'})
   }
 
   return (
@@ -112,8 +117,8 @@ export function WordCollectionView({
             <div className="empty-state word-collection-empty-state">{emptyMessage}</div>
           ) : (
             <>
-              <WordTable words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
-              <WordCardList words={pageWords} pendingWordId={pendingWordId} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+              <WordTable words={pageWords} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
+              <WordCardList words={pageWords} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
             </>
           )}
         </div>
@@ -122,7 +127,7 @@ export function WordCollectionView({
       <div className="pagination-bar">
         <WordPagination
           page={page} totalPages={totalPages}
-          pageSize={pageSize} onPageSize={setPageSize}
+          pageSize={pageSize} onPageSize={handlePageSize}
           onPage={handlePage}
         />
       </div>

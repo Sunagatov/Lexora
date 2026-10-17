@@ -15,8 +15,10 @@ function Probe() {
   const update = useWordUpdate(() => {})
   const location = useLocation()
   return <>
-    <span data-testid="state">{JSON.stringify({page: s.page, pageSize: s.pageSize, sort: s.sortBy, total: s.summaryQuery.data?.total, strong: s.summaryQuery.data?.level_counts[4], search: location.search})}</span>
+    <span data-testid="state">{JSON.stringify({page: s.page, totalPages: s.totalPages, error: s.wordsQuery.isError, pageSize: s.pageSize, sort: s.sortBy, total: s.summaryQuery.data?.total, strong: s.summaryQuery.data?.level_counts[4], search: location.search})}</span>
     <button onClick={() => s.setPage(2)}>Next</button>
+    <button onClick={() => s.setPage(1)}>Previous</button>
+    <button onClick={() => s.setPageSize(100)}>100 per page</button>
     <button onClick={() => s.setCefrFilter('A1')}>A1</button>
     <button onClick={s.resetFilters}>Reset</button>
     <button onClick={() => update.updateLevel(1, 4)}>Mark strong</button>
@@ -109,6 +111,7 @@ it('preserves page 2 while its response is loading', async () => {
   fireEvent.click(screen.getByText('Next'))
   await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 2})))
   expect(state().page).toBe(2)
+  expect(state().totalPages).toBe(4)
   await act(async () => { resolve(page(2)); await pending })
   expect(state().page).toBe(2)
 })
@@ -122,6 +125,25 @@ it('resets the page when filtering, keeps global progress, and resets to default
   expect(fetchWordKnowledgeSummary).toHaveBeenCalledTimes(1)
   fireEvent.click(screen.getByText('Reset'))
   await waitFor(() => expect(state()).toMatchObject({page: 1, pageSize: 50, sort: 'level-asc', search: ''}))
+})
+
+it('keeps Previous available when the next page fails to load', async () => {
+  vi.mocked(fetchWordList).mockImplementation(params => params?.page === 2 ? Promise.reject(new Error('Server unavailable')) : Promise.resolve(page()))
+  setup()
+  await waitFor(() => expect(state().totalPages).toBe(4))
+  fireEvent.click(screen.getByText('Next'))
+  await waitFor(() => expect(state().error).toBe(true))
+  expect(state()).toMatchObject({page: 2, totalPages: 4})
+  fireEvent.click(screen.getByText('Previous'))
+  await waitFor(() => expect(state()).toMatchObject({page: 1, error: false, totalPages: 4}))
+})
+
+it('returns to page one when changing page size', async () => {
+  setup('/?page=3')
+  await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 3})))
+  fireEvent.click(screen.getByText('100 per page'))
+  await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 1, pageSize: 100})))
+  expect(state().page).toBe(1)
 })
 
 it('invalidates the whole-library summary after word changes', () => {

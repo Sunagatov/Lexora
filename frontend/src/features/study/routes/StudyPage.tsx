@@ -124,7 +124,7 @@ export function StudyPage() {
                   levelSummary={s.levelSummary}
                   pageWords={s.pageWords} page={s.page} totalPages={s.totalPages}
                   pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
-                  pendingWordId={s.pendingWordId} onUpdate={s.updateLevel}
+                  pendingWordId={s.pendingWordId} pendingWordIds={s.pendingWordIds} onUpdate={s.updateLevel}
                   fromTopicSlug={s.selectedTopic?.slug}
                   isLoading={s.isWordsLoading}
                   onWordSelect={isMobile ? undefined : setPanelWordId}

@@ -11,13 +11,14 @@ import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigatio
 type Props = {
   words: Word[]
   pendingWordId: number | null
+  pendingWordIds?: ReadonlySet<number>
   fromTopicSlug?: string
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
   onWordSelect?: (id: number) => void
   selectedWordId?: number | null
 }
 
-export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
+export function WordTable({words, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const navigation = useWordListNavigation(fromTopicSlug)
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
@@ -86,7 +87,7 @@ export function WordTable({words, pendingWordId, fromTopicSlug, onUpdate, onWord
                     <div className="word-level-wrap">
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}
-                          disabled={pendingWordId === word.id}
+                          disabled={pendingWordIds?.has(word.id) || pendingWordId === word.id}
                           onClick={(e) => { e.stopPropagation(); if (isOpen) { setOpenId(null); return } setLevelAnchor(e.currentTarget); setOpenId(word.id) }}
                         >
                           {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}

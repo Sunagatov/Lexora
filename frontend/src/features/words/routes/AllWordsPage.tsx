@@ -43,10 +43,10 @@ export function AllWordsPage() {
   const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
   const topicMap = useMemo(() => new Map(topics.map(t => [t.id, t])), [topics])
 
-  const words = useMemo(() => wordsQuery.data?.words ?? [], [wordsQuery.data])
+  const words = useMemo(() => wordsQuery.isPlaceholderData ? [] : wordsQuery.data?.words ?? [], [wordsQuery.data, wordsQuery.isPlaceholderData])
   const total = wordsQuery.data?.total ?? 0
-  const totalPages = wordsQuery.data?.total_pages ?? 0
-  const loading = wordsQuery.isLoading
+  const totalPages = s.totalPages
+  const loading = wordsQuery.isLoading || wordsQuery.isPlaceholderData
   useWordListScrollRestore(loading)
   const loadError = wordsQuery.isError ? 'Failed to load words. Please try again.'
     : topicsQuery.isError ? 'Failed to load topics. Please try again.'

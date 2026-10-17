@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {describe, expect, it, vi} from 'vitest'
 import {WordCardList} from '@/features/words/components/WordCardList'
@@ -42,8 +42,49 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
   }
 }
 
+function swipeCard(card: HTMLElement, end = 195) {
+  card.setPointerCapture = vi.fn()
+  for (const [type, x] of [['pointerdown', 100], ['pointermove', end], ['pointerup', end]] as const) {
+    const event = new Event(type, {bubbles: true})
+    Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: 100})
+    fireEvent(card, event)
+  }
+}
+
 describe('WordCardList', () => {
-  it('offers Undo after a touch swipe without opening the word detail route', () => {
+  it('saves overlapping swipes in either direction without showing an Undo popup', async () => {
+    let finishFirst!: (value: boolean) => void, finishSecond!: (value: boolean) => void
+    const onUpdate = vi.fn()
+      .mockImplementationOnce(() => new Promise(resolve => { finishFirst = resolve }))
+      .mockImplementationOnce(() => new Promise(resolve => { finishSecond = resolve }))
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient'), makeWord(2, 'calm')]} pendingWordId={null} onUpdate={onUpdate} />}])
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    const cards = document.querySelectorAll('article')
+    act(() => { swipeCard(cards[0]); swipeCard(cards[1], 25) })
+    await act(async () => { finishSecond(true) })
+    expect(screen.queryByRole('status')).toBeNull()
+    await act(async () => { finishFirst(true) })
+    expect(onUpdate.mock.calls).toEqual([[1, 4], [2, 5]])
+    expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+  it('does not claim a failed swipe was saved or offer Undo for it', async () => {
+    const onUpdate = vi.fn().mockResolvedValue(false)
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient')]} pendingWordId={null} onUpdate={onUpdate} />}])
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    const card = document.querySelector('article')!
+    card.setPointerCapture = vi.fn()
+    await act(async () => {
+      for (const [type, x] of [['pointerdown', 100], ['pointermove', 195], ['pointerup', 195]] as const) {
+        const event = new Event(type, {bubbles: true})
+        Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: 100})
+        fireEvent(card, event)
+      }
+    })
+    expect(onUpdate).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
+  })
+  it('saves a touch swipe without opening the word detail route or showing Undo', async () => {
     window.matchMedia = vi.fn().mockReturnValue({matches: true})
     const onUpdate = vi.fn()
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient')]} pendingWordId={null} onUpdate={onUpdate} />}])
@@ -59,11 +100,11 @@ describe('WordCardList', () => {
         expect(card.classList.contains('swipe-dragging')).toBe(true)
       }
     }
+    await act(async () => {})
     expect(onUpdate).toHaveBeenCalledExactlyOnceWith(1, 4)
     expect(card.style.getPropertyValue('--swipe-x')).toBe('0px')
     expect(router.state.location.pathname).toBe('/')
-    fireEvent.click(screen.getByRole('button', {name: 'Undo'}))
-    expect(onUpdate).toHaveBeenLastCalledWith(1, 3)
+    expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
   })
   it('shows every saved translation in the mobile word list', () => {
     const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
@@ -108,4 +149,41 @@ describe('WordCardList', () => {
     expect(screen.queryByText('word detail page')).toBeNull()
     expect(document.querySelector('.level-dropdown-overlay')).toBeNull()
   })
+})
+
+
+it('does not promise Release for a diagonal drag that will not save', async () => {
+  const onUpdate = vi.fn()
+  const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient')]} pendingWordId={null} onUpdate={onUpdate} />}])
+  render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+  const card = document.querySelector('article')!
+  card.setPointerCapture = vi.fn()
+  for (const [type, x, y] of [['pointerdown', 100, 100], ['pointermove', 120, 102], ['pointermove', 195, 180]] as const) {
+    const event = new Event(type, {bubbles: true})
+    Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: y})
+    fireEvent(card, event)
+  }
+  expect(screen.queryByText(/Release/)).toBeNull()
+  const event = new Event('pointerup', {bubbles: true})
+  Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: 195, clientY: 180})
+  await act(async () => { fireEvent(card, event) })
+  expect(onUpdate).not.toHaveBeenCalled()
+})
+
+
+it('blocks swipes on each pending word while other cards remain usable', async () => {
+  const onUpdate = vi.fn()
+  const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient'), makeWord(2, 'calm')]} pendingWordId={null} pendingWordIds={new Set([1])} onUpdate={onUpdate} />}])
+  render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+  const cards = document.querySelectorAll('article')
+  await act(async () => { swipeCard(cards[0]); swipeCard(cards[1], 25) })
+  expect(onUpdate).toHaveBeenCalledExactlyOnceWith(2, 5)
+})
+
+it('does not save again when swiping to the current knowledge level', async () => {
+  const onUpdate = vi.fn()
+  const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient', {knowledge_level: 4})]} pendingWordId={null} onUpdate={onUpdate} />}])
+  render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+  await act(async () => { swipeCard(document.querySelector('article')!) })
+  expect(onUpdate).not.toHaveBeenCalled()
 })

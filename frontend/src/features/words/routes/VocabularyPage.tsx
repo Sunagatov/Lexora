@@ -36,7 +36,7 @@ export function VocabularyPage() {
   const update = useWordUpdate(() => {})
   const [actionError, setActionError] = useState<string | null>(null)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
-  const words = useMemo(() => s.wordsQuery.data?.words ?? [], [s.wordsQuery.data])
+  const words = useMemo(() => s.wordsQuery.isPlaceholderData ? [] : s.wordsQuery.data?.words ?? [], [s.wordsQuery.data, s.wordsQuery.isPlaceholderData])
   const total = s.summaryQuery.data?.total ?? 0
   const counts = s.summaryQuery.data?.level_counts
   const strong = counts?.[4] ?? 0
@@ -54,8 +54,8 @@ export function VocabularyPage() {
 
   async function handleUpdate(id: number, level: WordKnowledgeLevel) {
     setActionError(null)
-    try { await update.updateLevelAsync(id, level) }
-    catch { setActionError('Failed to update word. Please try again.') }
+    try { await update.updateLevelAsync(id, level); return true }
+    catch { setActionError('Failed to update word. Please try again.'); return false }
   }
 
   function openDailyMix() { setDrawerOpen(false); navigate(routes.smartReview) }
@@ -81,7 +81,7 @@ export function VocabularyPage() {
             {loadError ? 'Failed to load vocabulary. Please try again.' : actionError}
             {loadError && <button type="button" className="btn btn-ghost" onClick={() => { queries.forEach(query => { void query.refetch() }) }}>Retry</button>}
           </div>}
-          {!s.wordsQuery.isError && <div className={`word-collection-split${panelWordId !== null && !isMobile ? ' has-panel' : ''}`}>
+          <div className={`word-collection-split${panelWordId !== null && !isMobile ? ' has-panel' : ''}`}>
             <WordCollectionView
               collectionTitle="All words"
               wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
@@ -100,13 +100,13 @@ export function VocabularyPage() {
               progressReady={s.summaryQuery.isSuccess}
               pageWords={words} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
-              pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
-              isLoading={s.wordsQuery.isLoading}
-              emptyMessage={hasFilters ? 'No words match the current filters.' : 'No words yet. Use Add word to start your library.'}
+              pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}
+              isLoading={s.wordsQuery.isLoading || s.wordsQuery.isPlaceholderData}
+              emptyMessage={s.wordsQuery.isError ? 'Could not load this page. Try the previous page or Retry.' : hasFilters ? 'No words match the current filters.' : 'No words yet. Use Add word to start your library.'}
               onWordSelect={isMobile ? undefined : setPanelWordId} selectedWordId={panelWordId}
             />
             {panelWordId !== null && !isMobile && <WordDetailPanel wordId={panelWordId} words={words} onClose={() => setPanelWordId(null)} onNavigate={setPanelWordId} />}
-          </div>}
+          </div>
         </div>
       </div>
     </>

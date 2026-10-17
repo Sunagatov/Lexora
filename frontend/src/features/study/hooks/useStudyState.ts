@@ -88,7 +88,7 @@ export function useStudyState() {
     pageStart: filter.pageStart, pageEnd: filter.pageEnd, resetFilters: filter.resetFilters,
     overallWordCount: totalWords, topicWordCount,
     filteredWordCount,
-    updateLevel: update.updateLevel, pendingWordId: update.pendingWordId,
+    updateLevel: update.updateLevel, pendingWordId: update.pendingWordId, pendingWordIds: update.pendingWordIds,
     smartQueue: smartReview.queue,
     isLoading,
     isWordsLoading,

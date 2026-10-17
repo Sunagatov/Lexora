@@ -1,4 +1,4 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {useMutation, useMutationState, useQueryClient} from '@tanstack/react-query'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
@@ -7,10 +7,13 @@ import {queryKeys} from '@/app/queryKeys'
 import {invalidateWordDependencies, patchWordLevel, replaceWordInLists} from '@/features/words/model/wordCache'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
+const LEVEL_MUTATION_KEY = ['word-level-update']
+
 export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRESS_SOURCE) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
+    mutationKey: LEVEL_MUTATION_KEY,
     mutationFn: ({wordId, level}: {wordId: number; level: WordKnowledgeLevel}) =>
       updateWordKnowledgeLevel(wordId, level, source),
 
@@ -63,11 +66,17 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
     },
   })
 
+  const pendingIds = useMutationState({
+    filters: {mutationKey: LEVEL_MUTATION_KEY, status: 'pending'},
+    select: item => (item.state.variables as {wordId: number}).wordId,
+  })
+
   return {
     updateLevel: (wordId: number, level: WordKnowledgeLevel) =>
       mutation.mutate({wordId, level}),
     updateLevelAsync: (wordId: number, level: WordKnowledgeLevel) =>
       mutation.mutateAsync({wordId, level}),
     pendingWordId: mutation.isPending ? (mutation.variables?.wordId ?? null) : null,
+    pendingWordIds: new Set(pendingIds),
   }
 }

@@ -27,12 +27,14 @@ export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}:
   )
 
   const tokens: (number | '…')[] = []
-  const add = (n: number) => { if (!tokens.includes(n)) tokens.push(n) }
-  add(1)
-  if (safePage - 2 > 2) tokens.push('…')
-  for (let i = Math.max(2, safePage - 1); i <= Math.min(safeTotalPages - 1, safePage + 1); i++) add(i)
-  if (safePage + 2 < safeTotalPages - 1) tokens.push('…')
-  if (safeTotalPages > 1) add(safeTotalPages)
+  const pages = [...new Set([1, safePage - 1, safePage, safePage + 1, safeTotalPages])]
+    .filter(value => value >= 1 && value <= safeTotalPages).sort((a, b) => a - b)
+  pages.forEach((value, index) => {
+    const previous = pages[index - 1]
+    if (previous !== undefined && value - previous === 2) tokens.push(previous + 1)
+    else if (previous !== undefined && value - previous > 2) tokens.push('…')
+    tokens.push(value)
+  })
 
   return (
     <div className="pagination-shell">

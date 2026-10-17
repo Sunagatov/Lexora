@@ -27,6 +27,22 @@ describe('useWordUpdate rollback', () => {
     return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   }
 
+  it('keeps every saving word pending when a later request finishes first', async () => {
+    let finishFirst!: (word: Word) => void, finishSecond!: (word: Word) => void
+    vi.mocked(api.updateWordKnowledgeLevel)
+      .mockImplementationOnce(() => new Promise(resolve => { finishFirst = resolve }))
+      .mockImplementationOnce(() => new Promise(resolve => { finishSecond = resolve }))
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    let first!: Promise<Word>, second!: Promise<Word>
+    act(() => { first = result.current.updateLevelAsync(1, 4); second = result.current.updateLevelAsync(2, 5) })
+    await waitFor(() => expect(api.updateWordKnowledgeLevel).toHaveBeenCalledTimes(2))
+    expect(result.current.pendingWordIds).toEqual(new Set([1, 2]))
+    await act(async () => { finishSecond(makeWord(2, 'walk', 5)); await second })
+    await waitFor(() => expect(result.current.pendingWordIds).toEqual(new Set([1])))
+    await act(async () => { finishFirst(makeWord(1, 'run', 4)); await first })
+    await waitFor(() => expect(result.current.pendingWordIds.size).toBe(0))
+  })
+
   function makeWord(id: number, term: string, knowledge_level: Word['knowledge_level']): Word {
     return {
       id,
