@@ -15,11 +15,13 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
   return {
     offset,
     onPointerDown(event: PointerEvent<HTMLElement>) {
-      if (disabled || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
+      if (!event.isPrimary) return
+      // A new interaction must work even if a cancelled drag produced no click.
+      suppressClick.current = false
+      if (disabled || (event.pointerType === 'mouse' && event.button !== 0)) return
       if ((event.target as HTMLElement).closest('button, input, select, textarea')) return
       // Leave the browser's screen-edge back gesture available.
       if (event.pointerType === 'touch' && (event.clientX < 24 || event.clientX > window.innerWidth - 24)) return
-      suppressClick.current = false
       start.current = {x: event.clientX, y: event.clientY, id: event.pointerId}
     },
     onPointerMove(event: PointerEvent<HTMLElement>) {

@@ -65,6 +65,12 @@ screen-edge navigation and short/cancelled swipes retain their normal behavior.
 The card follows the pointer with a Strong/Parked label, then returns to its
 position when released. Losing an inner link's implicit touch capture must not
 cancel the card's gesture; only loss of the card's own capture does.
+
+Saved copies remain usable when session checks time out or return server errors;
+explicit authentication failures still require sign-in. Sync network requests run
+outside the local storage lock so browsing and edits stay responsive. Each saved
+replica has an optional local revision token: discard a downloaded snapshot if a
+tab changed the copy during that download, then sync the newer changes first.
 Undo remains available for eight seconds. Visible review pages stay stable after
 knowledge changes; sorting/filtering refreshes on the next explicit navigation.
 

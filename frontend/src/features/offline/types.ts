@@ -18,6 +18,7 @@ export type Replica = Snapshot & {
   savedAt: string
   nextId: number
   changes: Change[]
+  revision?: string
   wordAliases?: Record<number, number>
   topicAliases?: Record<number, number>
   mix?: StudyQueue

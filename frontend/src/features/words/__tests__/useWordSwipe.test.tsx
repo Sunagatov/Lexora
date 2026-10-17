@@ -104,3 +104,19 @@ it('keeps taps, vertical movement and interactive controls available', () => {
   })
   expect(swipe).not.toHaveBeenCalled()
 })
+
+it('does not swallow the next button tap after a cancelled drag', () => {
+  const onSwipe = vi.fn(), click = vi.fn()
+  function Card() { const {offset, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card"><span>word {offset}</span><button onClick={click}>Level</button></article> }
+  render(<Card />)
+  const card = screen.getByTestId('card'), button = screen.getByRole('button')
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 100, 100)
+  touch(card, 'pointermove', 195, 105)
+  touch(card, 'pointercancel', 195, 105)
+  touch(button, 'pointerdown', 195, 105)
+  touch(button, 'pointerup', 195, 105)
+  fireEvent.click(button)
+  expect(onSwipe).not.toHaveBeenCalled()
+  expect(click).toHaveBeenCalledOnce()
+})

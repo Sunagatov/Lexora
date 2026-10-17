@@ -4,13 +4,17 @@ import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
   adapter: undefined as undefined | ((path: string, init: RequestInit, network: (path: string, init: RequestInit) => Promise<unknown>) => Promise<unknown>),
-  network: vi.fn(), write: vi.fn(),
+  network: vi.fn(), write: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
 }))
 vi.mock('@/shared/api/http', () => ({networkRequest: fake.network, setRequestAdapter: (adapter: typeof fake.adapter) => { fake.adapter = adapter }}))
 vi.mock('../storage', () => ({
   readReplica: async () => structuredClone(fake.replica),
   writeReplica: async (replica: Replica) => { fake.write(); fake.replica = structuredClone(replica) },
-  withOfflineLock: async (work: () => Promise<unknown>) => work(),
+  withOfflineLock: (work: () => Promise<unknown>) => {
+    const result = fake.lock.then(work)
+    fake.lock = result.catch(() => {})
+    return result
+  },
 }))
 
 async function setup() {
@@ -19,7 +23,7 @@ async function setup() {
   vi.stubGlobal('BroadcastChannel', class { onmessage = null; postMessage() {} })
   vi.spyOn(window, 'setInterval').mockReturnValue(1)
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
-  fake.network.mockReset(); fake.write.mockClear()
+  fake.network.mockReset(); fake.write.mockClear(); fake.lock = Promise.resolve()
   fake.replica = {version: 1, words: [], topics: [], changes: [], nextId: -1, savedAt: new Date().toISOString()}
   const {changeItem} = await import('../changes')
   changeItem(fake.replica, 'topic', 'create', -1, {name: 'People'})
@@ -116,4 +120,103 @@ it('keeps the saved copy and edits available when synchronization hits a conflic
   expect(offline.offlineStatus().error).toBe('Changed on the server')
   expect(fake.replica!.changes).toHaveLength(1)
   expect((await request('/api/words/-2') as {knowledge_level: number}).knowledge_level).toBe(4)
+})
+
+it('opens the saved copy during a server outage but still rejects an expired session', async () => {
+  const {request, offline} = await setup()
+  const {ApiError} = await import('@/shared/api/apiError')
+  fake.network.mockRejectedValueOnce(new ApiError(503, 'Service unavailable'))
+  await expect(request('/auth/session')).resolves.toMatchObject({authenticated: true})
+  expect(offline.offlineStatus().offline).toBe(true)
+  expect(fake.network.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal)
+  fake.network.mockRejectedValueOnce(new ApiError(401, 'Not authenticated'))
+  await expect(request('/auth/session')).rejects.toMatchObject({status: 401})
+})
+
+it('keeps local edits responsive during a slow snapshot and never overwrites those edits', async () => {
+  const {request, offline} = await setup()
+  const {remapId} = await import('../changes')
+  remapId(fake.replica!, 'topic', -1, 1)
+  remapId(fake.replica!, 'word', -2, 2)
+  const server = structuredClone(fake.replica!)
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  let snapshotStarted!: () => void, releaseSnapshot!: () => void
+  const started = new Promise<void>(resolve => { snapshotStarted = resolve })
+  const slowSnapshot = new Promise<void>(resolve => { releaseSnapshot = resolve })
+  let firstSnapshot = true
+  fake.network.mockImplementation(async (path: string, init: RequestInit) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/snapshot') {
+      const copy = structuredClone(server)
+      if (firstSnapshot) { firstSnapshot = false; snapshotStarted(); await slowSnapshot }
+      return copy
+    }
+    const edit = JSON.parse(String(init.body))
+    Object.assign(server.words[0], edit.data)
+    return {entity_id: edit.entity_id}
+  })
+  const syncing = offline.syncOffline(true)
+  await started
+  const editing = request('/api/words/2', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  try {
+    const result = await Promise.race([editing, new Promise(resolve => setTimeout(() => resolve('blocked'), 40))])
+    expect(result).toMatchObject({knowledge_level: 4})
+  } finally { releaseSnapshot(); await syncing; await editing }
+  await offline.syncOffline(true)
+  expect(fake.replica!.words[0].knowledge_level).toBe(4)
+  expect(fake.replica!.changes).toHaveLength(0)
+})
+
+it('retains a second local edit made while the first change is uploading', async () => {
+  const {request, offline} = await setup()
+  const {remapId} = await import('../changes')
+  remapId(fake.replica!, 'topic', -1, 1)
+  remapId(fake.replica!, 'word', -2, 2)
+  await request('/api/words/2', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  let uploadStarted!: () => void, releaseUpload!: () => void
+  const started = new Promise<void>(resolve => { uploadStarted = resolve })
+  const slowUpload = new Promise<void>(resolve => { releaseUpload = resolve })
+  const beforeLevels: number[] = []
+  fake.network.mockImplementation(async (path: string, init: RequestInit) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/snapshot') return structuredClone(fake.replica)
+    const edit = JSON.parse(String(init.body))
+    beforeLevels.push(edit.before.knowledge_level)
+    if (beforeLevels.length === 1) { uploadStarted(); await slowUpload }
+    return {entity_id: edit.entity_id}
+  })
+  const syncing = offline.syncOffline()
+  await started
+  const editing = request('/api/words/2', {method: 'PUT', body: JSON.stringify({knowledge_level: 5})})
+  try {
+    await expect(Promise.race([editing, new Promise(resolve => setTimeout(() => resolve('blocked'), 40))])).resolves.toMatchObject({knowledge_level: 5})
+  } finally { releaseUpload(); await syncing; await editing }
+  expect(beforeLevels).toEqual([1, 4])
+  expect(fake.replica!.words[0].knowledge_level).toBe(5)
+  expect(fake.replica!.changes).toHaveLength(0)
+})
+
+it('preserves a newly completed practice item while refreshing the saved vocabulary', async () => {
+  const {request, offline} = await setup()
+  const mix = await request('/api/smart-review') as StudyQueue
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  let snapshotStarted!: () => void, releaseSnapshot!: () => void
+  const started = new Promise<void>(resolve => { snapshotStarted = resolve })
+  const slowSnapshot = new Promise<void>(resolve => { releaseSnapshot = resolve })
+  let snapshots = 0
+  fake.network.mockImplementation(async (path: string) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    const snapshot = {version: 1, words: structuredClone(fake.replica!.words), topics: structuredClone(fake.replica!.topics)}
+    if (++snapshots === 1) { snapshotStarted(); await slowSnapshot }
+    return snapshot
+  })
+  const syncing = offline.syncOffline(true)
+  await started
+  const completing = request(`/api/smart-review/items/${mix.items[0].id}/complete`, {method: 'POST'})
+  try {
+    await expect(Promise.race([completing, new Promise(resolve => setTimeout(() => resolve('blocked'), 40))])).resolves.toMatchObject({completed_count: 1})
+  } finally { releaseSnapshot(); await syncing; await completing }
+  expect(fake.replica!.mix!.completed_count).toBe(1)
+  expect(snapshots).toBe(2)
 })

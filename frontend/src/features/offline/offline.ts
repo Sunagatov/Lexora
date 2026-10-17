@@ -23,9 +23,16 @@ function report(replica?: Replica) {
 }
 
 async function persist(replica?: Replica, resetLists = false) {
-  await writeReplica(replica)
-  report(replica)
+  const saved = replica ? {...replica, revision: crypto.randomUUID()} : undefined
+  await writeReplica(saved)
+  report(saved)
   channel?.postMessage({resetLists})
+}
+
+function isNetworkFailure(error: unknown) {
+  return error instanceof TypeError
+    || (error instanceof DOMException && ['TimeoutError', 'AbortError'].includes(error.name))
+    || (error instanceof ApiError && error.status >= 500)
 }
 
 function newMix(replica: Replica): StudyQueue {
@@ -145,9 +152,9 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
           }
           return {authenticated: false, csrf_token: ''}
         }
-        try { return await network(path, init) }
+        try { return await network(path, {...init, signal: init.signal ?? AbortSignal.timeout(10_000)}) }
         catch (error) {
-          if (!(error instanceof ApiError) && status.saved) { notify({offline: true}); return {authenticated: true, csrf_token: ''} }
+          if (isNetworkFailure(error) && status.saved) { notify({offline: true}); return {authenticated: true, csrf_token: ''} }
           throw error
         }
       }
@@ -229,26 +236,38 @@ export function syncOffline(forceRefresh = false): Promise<void> {
       // Refresh CSRF after a new sign-in; do not sync against an expired session.
       const session = await networkRequest<{csrf_token: string}>('/auth/session', {signal: AbortSignal.timeout(15_000)})
       localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, session.csrf_token)
-      let more = true
-      while (more) more = await withOfflineLock(async () => {
-        const replica = await readReplica()
-        if (!replica) return false
+      while (true) {
+        const replica = await withOfflineLock(readReplica)
+        if (!replica) break
         if (replica.changes.length) {
           const change = replica.changes[0]
           const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {method: 'POST', body: JSON.stringify(change), signal: AbortSignal.timeout(20_000)})
-          replica.changes.shift()
-          if (change.action === 'create') remapId(replica, change.entity, change.entity_id, result.entity_id)
-          await persist(replica)
-          return true
+          await withOfflineLock(async () => {
+            const latest = await readReplica()
+            // Another tab may have already recorded the same server receipt.
+            if (latest?.changes[0]?.id !== change.id) return
+            latest.changes.shift()
+            if (change.action === 'create') remapId(latest, change.entity, change.entity_id, result.entity_id)
+            await persist(latest)
+          })
+          continue
         }
+        // Network waits must not hold the storage lock needed by local edits.
         const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {signal: AbortSignal.timeout(60_000)})
-        await persist({...replica, ...snapshot, savedAt: new Date().toISOString()})
-        return false
-      })
+        const refreshed = await withOfflineLock(async () => {
+          const latest = await readReplica()
+          if (!latest) return true
+          // Discard an outdated download if any tab edited the copy meanwhile.
+          if (latest.changes.length || latest.revision !== replica.revision) return false
+          await persist({...latest, ...snapshot, savedAt: new Date().toISOString()})
+          return true
+        })
+        if (refreshed) break
+      }
       notify({offline: false})
       refreshQueries(forceRefresh)
     } catch (error) {
-      const networkFailure = error instanceof TypeError || (error instanceof DOMException && ['TimeoutError', 'AbortError'].includes(error.name))
+      const networkFailure = isNetworkFailure(error)
       const message = error instanceof ApiError && error.status === 401 ? 'Sign in again to sync. Your offline changes are saved.'
         : error instanceof ApiError ? error.message : error instanceof Error ? error.message : 'Could not sync. Your local changes are preserved.'
       notify({error: networkFailure ? undefined : message, offline: networkFailure})
