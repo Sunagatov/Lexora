@@ -1,3 +1,4 @@
+import {offlineStatus} from '@/features/offline/offline'
 import {useState, useMemo, useEffect, useRef} from 'react'
 import {useParams, useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
@@ -29,7 +30,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const [enrichPending, setEnrichPending] = useState(false)
 
   const numericWordId = Number(wordId)
-  const isValidWordId = Number.isInteger(numericWordId) && numericWordId > 0
+  const isValidWordId = Number.isInteger(numericWordId) && (numericWordId > 0 || (numericWordId < 0 && offlineStatus().saved))
 
   const wordQuery = useQuery({
     queryKey: isValidWordId ? queryKeys.word(numericWordId) : ['word', 'invalid', wordId ?? 'missing'],
@@ -137,7 +138,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
 
     const termVal = draft.term.trim()
     const transVal = draft.translations.trim()
-    const topicIds = draft.topic_ids.map(Number).filter((n) => n > 0)
+    const topicIds = draft.topic_ids.map(Number).filter((n) => Number.isInteger(n) && n !== 0)
 
     if (!termVal) {
       setSaveError('Term cannot be empty.')

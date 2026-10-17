@@ -15,7 +15,7 @@ export function useWordFilterControls(options: Options = {}) {
   const rawSort = params.get('sort') as SortOption
   const sortBy = WORD_SORT_OPTIONS.includes(rawSort) ? rawSort : 'level-asc'
   const thenSortBy = parseSecondarySort(params.get('thenSort'), sortBy)
-  const topicFilter = [...new Set((params.get('topics') ?? '').split(',').map(Number).filter(id => Number.isInteger(id) && id > 0))]
+  const topicFilter = [...new Set((params.get('topics') ?? '').split(',').map(Number).filter(id => Number.isInteger(id) && id !== 0))]
   const rawCompleteness = params.get('completeness')
   const completeness: CompletenessFilter = rawCompleteness === 'complete' || rawCompleteness === 'incomplete' ? rawCompleteness : 'all'
   const rawPage = Number(params.get('page'))

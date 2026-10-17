@@ -1,6 +1,6 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {fireEvent} from '@testing-library/react'
-import {useMutation, useQuery} from '@tanstack/react-query'
+import {onlineManager, useMutation, useQuery} from '@tanstack/react-query'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import type {PropsWithChildren} from 'react'
 import {Providers} from '@/app/providers'
@@ -79,7 +79,25 @@ describe('Providers auth bootstrap gating', () => {
   })
 
   afterEach(() => {
+    onlineManager.setOnline(true)
     vi.unstubAllGlobals()
+  })
+
+  it('runs local queries and mutations in airplane mode instead of pausing them', async () => {
+    onlineManager.setOnline(false)
+    const read = vi.fn().mockResolvedValue('Saved word')
+    const write = vi.fn().mockResolvedValue('Saved edit')
+    function OfflineChild() {
+      const query = useQuery({queryKey: ['airplane-local-read'], queryFn: read})
+      const mutation = useMutation<string, Error, void>({mutationFn: () => write()})
+      return <><span>{query.data}</span><button onClick={() => mutation.mutate()}>Save offline edit</button><span>{mutation.data}</span></>
+    }
+    renderProviders(<OfflineChild />)
+    expect(await screen.findByText('Saved word')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', {name: 'Save offline edit'}))
+    expect(await screen.findByText('Saved edit')).toBeTruthy()
+    expect(read).toHaveBeenCalledOnce()
+    expect(write).toHaveBeenCalledOnce()
   })
 
   it('waits for bootstrapSession before rendering children when csrf token is missing', async () => {
@@ -94,7 +112,7 @@ describe('Providers auth bootstrap gating', () => {
     renderProviders(<Child />)
 
     expect(screen.queryByText('protected app')).toBeNull()
-    expect(authApi.bootstrapSession).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(authApi.bootstrapSession).toHaveBeenCalledTimes(1))
 
     expect(bootstrapControl.resolve).toBeTypeOf('function')
     bootstrapControl.resolve?.(true)
@@ -117,7 +135,7 @@ describe('Providers auth bootstrap gating', () => {
     renderProviders(<Child />)
 
     expect(screen.queryByText('protected app')).toBeNull()
-    expect(authApi.bootstrapSession).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(authApi.bootstrapSession).toHaveBeenCalledTimes(1))
 
     bootstrapControl.resolve?.(true)
 

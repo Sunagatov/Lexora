@@ -16,6 +16,54 @@ Protected router groups:
 - `/api/trash`
 - `/api/stats`
 - `/api/ai-curation`
+- `/api/offline`
+
+## Offline Copy And Synchronization
+
+- `GET /api/offline/snapshot` returns version 1 of the complete word/topic copy,
+  including Trash, all topic relationships and public retention settings.
+- `POST /api/offline/changes` applies one word/topic create, update, soft-delete
+  or restore. Requires a UUID operation ID, entity type, action, entity ID,
+  data and previous values. Creates use a temporary negative ID; the response
+  supplies the real server ID for dependent edits.
+- Updates compare previous values for every edited field (and deletion state).
+  Deletion/restoration compares the complete item. Topic deletion/restoration
+  also checks its affected words, so newer server edits are not silently lost.
+  Conflicts return `409` and leave local edits queued. Invalid payloads return `422`.
+- Content, learning history and an idempotency receipt commit together. Retrying
+  the same UUID and payload returns the original result; reusing the UUID for a
+  different payload is rejected. Migration `20261017_0012` adds the receipt table.
+  Preserve receipts during image rollback; deleting them loses retry protection.
+- Both endpoints keep normal session and CSRF protection. Offline data never
+  supplies authentication to the server. A fresh sign-in may be needed to sync.
+
+The frontend's Save offline control beside New topic explicitly saves the complete
+copy in IndexedDB. Word/topic CRUD, Trash restoration, filters, pagination and
+knowledge ratings use that copy and a durable outbox. Temporary IDs and dependent
+topic links are remapped after acknowledged creates. Web Locks serialize writes
+across tabs; a BroadcastChannel refreshes other tabs. A failed download/write must
+not replace pending edits. Sign-out removes the local copy, with confirmation if
+changes are unsynced; offline sign-out also schedules server logout on reconnection.
+
+The service worker caches only the built app shell and static assets, never auth
+or API responses. Navigations try the network before the cached shell, preserving
+normal release freshness. HTTPS (or localhost), IndexedDB, service workers and
+Web Locks are required. Browser storage can be evicted; the offline dialog offers
+a JSON backup of the replica and pending operations. It is not an Excel import.
+
+Saving first copies the current Daily Word Mix, including its progress. In saved
+mode, New set generates a stable device-local random set of up to 200 active,
+non-Parked words; its completion state stays on that device. Word ratings
+still sync to the server with normal progress events. AI enrichment, server Excel
+import/export, historical stats and permanent Trash purge require internet.
+Speech uses the device's installed voices. New app builds cache a versioned shell;
+offline use keeps the last downloaded build until an online reload.
+
+On mobile word cards, a deliberate horizontal touch swipe of at least 72px marks
+Strong on the right and Parked on the left. Vertical scroll, interactive buttons,
+screen-edge navigation and short/cancelled swipes retain their normal behavior.
+Undo remains available for eight seconds. Visible review pages stay stable after
+knowledge changes; sorting/filtering refreshes on the next explicit navigation.
 
 ## Auth
 

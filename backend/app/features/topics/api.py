@@ -21,6 +21,9 @@ from app.features.topics.repository import (
     soft_delete_topic as soft_delete_topic,
 )
 from app.features.topics.service import (
+    create_topic as create_topic,
+    delete_topic as delete_topic_checked,
+    update_topic as update_topic,
     create_topic_draft as create_topic_draft,
     create_topic_from_values as create_topic_from_values,
     restore_topic as restore_topic,

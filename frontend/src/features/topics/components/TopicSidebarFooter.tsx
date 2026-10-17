@@ -1,5 +1,7 @@
-import type {ChangeEvent, RefObject} from 'react'
+import {useSyncExternalStore, type ChangeEvent, type RefObject} from 'react'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {OfflineButton} from '@/features/offline/OfflineButton'
+import {offlineStatus, subscribeOffline} from '@/features/offline/offline'
 
 const SelectChevron = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -35,6 +37,8 @@ export function TopicSidebarFooter({
   workbookBusy, importInputRef, statsActive, trashActive, onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
   onCancel, onStartAdd, onOpenStats, onOpenTrash, onExport, onImportClick, onImportChange,
 }: Props) {
+  const offline = useSyncExternalStore(subscribeOffline, offlineStatus)
+  const workbookUnavailable = offline.saved && (offline.offline || offline.pending > 0)
   return (
     <div className="sidebar-footer">
       {addingTopic ? (
@@ -84,10 +88,10 @@ export function TopicSidebarFooter({
           {topicError && <div className="sidebar-new-topic-error">{topicError}</div>}
         </div>
       ) : (
-        <button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd} aria-label="Create topic">
+        <div className="sidebar-create-offline-row"><button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd} aria-label="Create topic">
           <span className="sidebar-add-topic-plus">+</span>
           <span className="sidebar-add-topic-text"> New topic</span>
-        </button>
+        </button><OfflineButton /></div>
       )}
       <div className="sidebar-footer-actions-grid">
         <button
@@ -115,10 +119,10 @@ export function TopicSidebarFooter({
         <button
           type="button"
           className="sidebar-footer-btn sidebar-footer-btn-secondary"
-          title="Export Excel workbook"
+          title={workbookUnavailable ? 'Connect and sync before exporting Excel' : 'Export Excel workbook'}
           aria-label="Export Excel workbook"
           data-sidebar-tooltip="Export workbook"
-          disabled={workbookBusy}
+          disabled={workbookBusy || workbookUnavailable}
           onClick={onExport}
         >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v8"/><path d="M4.5 6.5 8 10l3.5-3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
@@ -127,10 +131,10 @@ export function TopicSidebarFooter({
         <button
           type="button"
           className="sidebar-footer-btn sidebar-footer-btn-secondary"
-          title="Import Excel workbook"
+          title={workbookUnavailable ? 'Connect and sync before importing Excel' : 'Import Excel workbook'}
           aria-label="Import Excel workbook"
           data-sidebar-tooltip={workbookBusy ? 'Importing workbook' : 'Import workbook'}
-          disabled={workbookBusy}
+          disabled={workbookBusy || workbookUnavailable}
           onClick={onImportClick}
         >
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10V2"/><path d="M4.5 5.5 8 2l3.5 3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>

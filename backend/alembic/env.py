@@ -12,6 +12,7 @@ from app.features.topics.model import Topic  # noqa: F401
 from app.features.words.model import Word  # noqa: F401
 from app.features.smart_review.model import StudyQueue, StudyQueueItem  # noqa: F401
 from app.features.stats.model import AppUsageEvent  # noqa: F401
+from app.features.offline.model import OfflineReceipt  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

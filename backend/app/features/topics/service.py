@@ -115,7 +115,7 @@ def create_topic_from_values(
     )
 
 
-def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
+def update_topic(db: Session, topic: Topic, payload: TopicUpdate, *, commit: bool = True) -> Topic:
     if payload.name is not None and payload.name != topic.name:
         name_value = cast(str, payload.name)
         assert_active_topic_name_available(db, name_value, exclude_topic_id=topic.id)
@@ -138,17 +138,17 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
     if "parent_topic_id" in payload.model_fields_set:
         assert_topic_parent_valid(db, payload.parent_topic_id, exclude_topic_id=topic.id)
 
-    return persist_topic_update(db, topic, payload)
+    return persist_topic_update(db, topic, payload, commit=commit)
 
 
-def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
+def restore_topic(db: Session, topic: Topic, restore_words: bool = False, *, commit: bool = True) -> Topic:
     _assert_topic_parent_can_be_restored(db, topic)
     assert_active_topic_name_available(db, topic.name, exclude_topic_id=topic.id)
     if restore_words:
         for word in topic.words:
             if word.deleted_at is not None and word.deleted_via_topic_id == topic.id:
                 assert_word_restore_allowed(db, word, restoring_topic_ids={topic.id})
-    return persist_topic_restore(db, topic, restore_words=restore_words)
+    return persist_topic_restore(db, topic, restore_words=restore_words, commit=commit)
 
 
 def _assert_topic_parent_can_be_restored(db: Session, topic: Topic) -> None:
@@ -161,6 +161,6 @@ def _assert_topic_parent_can_be_restored(db: Session, topic: Topic) -> None:
         )
 
 
-def delete_topic(db: Session, topic: Topic, *, delete_words: bool = False) -> Topic:
+def delete_topic(db: Session, topic: Topic, *, delete_words: bool = False, commit: bool = True) -> Topic:
     assert_topic_has_no_active_children(db, topic.id)
-    return soft_delete_topic(db, topic, delete_words=delete_words)
+    return soft_delete_topic(db, topic, delete_words=delete_words, commit=commit)

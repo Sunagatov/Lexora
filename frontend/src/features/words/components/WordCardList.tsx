@@ -1,4 +1,6 @@
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
+import {createPortal} from 'react-dom'
+import {useQueryClient} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
@@ -6,6 +8,9 @@ import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
+import {useWordSwipe} from '@/features/words/hooks/useWordSwipe'
+import {updateWord} from '@/features/words/api/wordsApi'
+import {invalidateWordDependencies, replaceWordInLists} from '@/features/words/model/wordCache'
 
 type Props = {
   words: Word[]
@@ -14,16 +19,18 @@ type Props = {
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
 }
 
-function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
+function WordCard({word, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
   word: Word
   pendingWordId: number | null
   fromTopicSlug?: string
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
+  onSwipe: (word: Word, level: 4 | 5) => void
 }) {
   const [openLevel, setOpenLevel] = useState(false)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const navigation = useWordListNavigation(fromTopicSlug)
+  const {offset, ...swipe} = useWordSwipe(level => onSwipe(word, level), pendingWordId === word.id || openLevel)
 
   function speak(e: React.MouseEvent) {
     e.preventDefault()
@@ -42,7 +49,8 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
   const translation = word.translation_entries.join(' · ')
 
   return (
-    <article className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}`}>
+    <article {...swipe} className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? offset > 0 ? ' swipe-strong' : ' swipe-parked' : ''}`}>
+      {offset !== 0 && <span className="swipe-feedback" style={{opacity: Math.min(Math.abs(offset) / 72, .95)}} aria-hidden="true">{offset > 0 ? 'Strong →' : '← Parked'}{Math.abs(offset) < 72 ? ' · Keep swiping' : ' · Release'}</span>}
       <Link className="word-card-body-tap" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
         <div className="word-card-grid">
           <div className="word-card-left">
@@ -98,6 +106,29 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate}: {
 }
 
 export function WordCardList({words, pendingWordId, fromTopicSlug, onUpdate}: Props) {
+  const queryClient = useQueryClient()
+  const [undo, setUndo] = useState<{word: Word; level: 4 | 5} | null>(null)
+  const [undoError, setUndoError] = useState('')
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(timer.current), [])
+  function swipe(word: Word, level: 4 | 5) {
+    if (word.knowledge_level === level) return
+    onUpdate(word.id, level)
+    setUndo({word: {...word}, level}); setUndoError('')
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setUndo(null), 8000)
+  }
+  async function undoSwipe() {
+    if (!undo) return
+    clearTimeout(timer.current)
+    if (undo.word.knowledge_level !== null) { onUpdate(undo.word.id, undo.word.knowledge_level); setUndo(null); return }
+    try {
+      const restored = await updateWord(undo.word.id, {knowledge_level: null})
+      replaceWordInLists(queryClient, restored)
+      invalidateWordDependencies(queryClient, [], {preserveWordPages: true})
+      setUndo(null)
+    } catch { setUndoError('Could not undo. Please try again.') }
+  }
   return (
     <div className="word-card-list">
       {words.map((word) => (
@@ -107,8 +138,10 @@ export function WordCardList({words, pendingWordId, fromTopicSlug, onUpdate}: Pr
           pendingWordId={pendingWordId}
           fromTopicSlug={fromTopicSlug}
           onUpdate={onUpdate}
+          onSwipe={swipe}
         />
       ))}
+      {undo && createPortal(<div className="swipe-undo" role="status">{undoError || `${undo.word.term}: ${undo.level === 4 ? 'Strong' : 'Parked'}`}<button type="button" disabled={pendingWordId === undo.word.id} onClick={() => { void undoSwipe() }}>Undo</button></div>, document.body)}
     </div>
   )
 }

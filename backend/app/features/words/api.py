@@ -16,5 +16,8 @@ from app.features.words.repository import (
     hard_delete_words_by_ids as hard_delete_words_by_ids,
     list_active_word_topic_levels as list_active_word_topic_levels,
     restore_word as restore_word,
+    soft_delete_word as soft_delete_word,
     update_word as update_word,
 )
+
+from app.features.words.repository_queries import with_word_details as with_word_details

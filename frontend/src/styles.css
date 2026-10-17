@@ -10,3 +10,4 @@
 @import './features/trash/styles.css';
 @import './features/stats/styles.css';
 @import './styles/mobile.css';
+@import './features/offline/styles.css';

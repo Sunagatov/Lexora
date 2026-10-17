@@ -38,7 +38,7 @@ describe('AppHeader logout', () => {
   })
 
   it('calls logout, clears cached data, and navigates to login', async () => {
-    vi.mocked(authApi.logout).mockResolvedValue(undefined)
+    vi.mocked(authApi.logout).mockResolvedValue(true)
 
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

@@ -202,19 +202,19 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     return word
 
 
-def soft_delete_word(db: Session, word: Word) -> Word:
+def soft_delete_word(db: Session, word: Word, *, commit: bool = True) -> Word:
     word.deleted_at = datetime.now(timezone.utc)
     word.deleted_via_topic_id = None
     db.add(word)
-    _finalize_write(db, word, commit=True)
+    _finalize_write(db, word, commit=commit)
     return word
 
 
-def restore_word(db: Session, word: Word) -> Word:
+def restore_word(db: Session, word: Word, *, commit: bool = True) -> Word:
     word.deleted_at = None
     word.deleted_via_topic_id = None
     db.add(word)
-    _finalize_write(db, word, commit=True)
+    _finalize_write(db, word, commit=commit)
     return word
 
 

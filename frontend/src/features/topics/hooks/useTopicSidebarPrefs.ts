@@ -1,5 +1,6 @@
-import {useState} from 'react'
+import {useEffect, useState, useSyncExternalStore} from 'react'
 import type {SortMode} from '@/features/topics/model/topicSort'
+import {offlineStatus, subscribeOffline} from '@/features/offline/offline'
 
 const SORT_MODES: readonly SortMode[] = ['default', 'weakest', 'strongest', 'largest', 'az', 'za'] as const
 
@@ -32,7 +33,7 @@ export function sanitizeIdList(raw: unknown, limit = 5): number[] {
     new Set(
       raw
         .map((value) => Number(value))
-        .filter((value) => Number.isInteger(value) && value > 0),
+        .filter((value) => Number.isInteger(value) && value !== 0),
     ),
   )
 
@@ -77,6 +78,20 @@ export function useTopicSidebarPrefs() {
   const [expandedTopicIds, setExpandedTopicIdsRaw] = useState<number[]>(() =>
     sanitizeIdList(loadUnknown(SIDEBAR_PREF_KEYS.expandedTopics), Number.POSITIVE_INFINITY),
   )
+
+  const aliases = useSyncExternalStore(subscribeOffline, offlineStatus).topicAliases
+  useEffect(() => {
+    if (!aliases) return
+    const remap = (ids: number[], key: string, set: (ids: number[]) => void) => {
+      if (!ids.some(id => aliases[id] !== undefined)) return
+      const mapped = ids.map(id => aliases[id] ?? id)
+      set(mapped)
+      save(key, mapped)
+    }
+    remap(pinnedIds, SIDEBAR_PREF_KEYS.pinned, setPinnedIdsRaw)
+    remap(recentIds, SIDEBAR_PREF_KEYS.recent, setRecentIdsRaw)
+    remap(expandedTopicIds, SIDEBAR_PREF_KEYS.expandedTopics, setExpandedTopicIdsRaw)
+  }, [aliases, pinnedIds, recentIds, expandedTopicIds])
 
   function setPosCollapsed(v: boolean) {
     setPosCollapsedRaw(v)

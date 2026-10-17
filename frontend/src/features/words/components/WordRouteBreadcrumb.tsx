@@ -1,3 +1,4 @@
+import {offlineStatus} from '@/features/offline/offline'
 import {Link, useLocation, useMatch} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {routes} from '@/app/routes'
@@ -13,7 +14,7 @@ export function WordRouteBreadcrumb() {
   const activeMatch = editWordMatch ?? wordMatch
   const wordId = Number(activeMatch?.params.wordId)
   const fromTopicSlug = (location.state as {fromTopicSlug?: string} | null)?.fromTopicSlug
-  const isWordRoute = Number.isInteger(wordId) && wordId > 0
+  const isWordRoute = Number.isInteger(wordId) && (wordId > 0 || (wordId < 0 && offlineStatus().saved))
 
   const {data: word} = useQuery({
     queryKey: isWordRoute ? queryKeys.word(wordId) : ['app-header', 'word', 'inactive'],

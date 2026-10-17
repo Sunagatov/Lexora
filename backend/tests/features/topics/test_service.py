@@ -117,7 +117,7 @@ def test_update_topic_normalizes_new_slug_and_checks_availability(monkeypatch) -
 
     expected = object()
 
-    def fake_persist(db_arg, topic_arg, payload_arg):
+    def fake_persist(db_arg, topic_arg, payload_arg, *, commit=True):
         assert db_arg is db
         assert topic_arg is topic
         assert payload_arg.slug == "new-slug"
@@ -140,7 +140,7 @@ def test_update_topic_skips_slug_check_when_slug_is_unchanged(monkeypatch) -> No
     monkeypatch.setattr(topic_service, "assert_slug_available", slug_check)
 
     expected = object()
-    monkeypatch.setattr(topic_service, "persist_topic_update", lambda *_: expected)
+    monkeypatch.setattr(topic_service, "persist_topic_update", lambda *_, **__: expected)
 
     result = topic_service.update_topic(db, topic, payload)
 
@@ -160,7 +160,7 @@ def test_update_topic_renaming_without_explicit_slug_updates_slug(monkeypatch) -
 
     expected = object()
 
-    def fake_persist(db_arg, topic_arg, payload_arg):
+    def fake_persist(db_arg, topic_arg, payload_arg, *, commit=True):
         assert db_arg is db
         assert topic_arg is topic
         assert payload_arg.slug == "new-name"
@@ -250,7 +250,7 @@ def test_restore_topic_validates_words_before_restoring(monkeypatch, make_topic,
     validate = MagicMock()
     persisted = object()
     monkeypatch.setattr(topic_service, "assert_word_restore_allowed", validate)
-    monkeypatch.setattr(topic_service, "persist_topic_restore", lambda db_arg, topic_arg, restore_words=False: persisted)
+    monkeypatch.setattr(topic_service, "persist_topic_restore", lambda db_arg, topic_arg, restore_words=False, commit=True: persisted)
 
     result = topic_service.restore_topic(db, topic, restore_words=True)
 

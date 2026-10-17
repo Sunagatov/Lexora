@@ -43,8 +43,8 @@ describe('sanitizeIdList', () => {
     expect(sanitizeIdList([2, 2, 3])).toEqual([2, 3])
   })
 
-  it('removes non-positive values', () => {
-    expect(sanitizeIdList([1, -1, 0, 3])).toEqual([1, 3])
+  it('removes zero while retaining temporary offline IDs', () => {
+    expect(sanitizeIdList([1, -1, 0, 3])).toEqual([1, -1, 3])
   })
 
   it('removes non-numeric values', () => {

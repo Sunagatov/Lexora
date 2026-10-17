@@ -1,3 +1,4 @@
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {describe, expect, it, vi} from 'vitest'
@@ -42,6 +43,23 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordCardList', () => {
+  it('offers Undo after a touch swipe without opening the word detail route', () => {
+    window.matchMedia = vi.fn().mockReturnValue({matches: true})
+    const onUpdate = vi.fn()
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient')]} pendingWordId={null} onUpdate={onUpdate} />}])
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    const card = document.querySelector('article')!
+    card.setPointerCapture = vi.fn()
+    for (const [type, x] of [['pointerdown', 100], ['pointermove', 195], ['pointerup', 195]] as const) {
+      const event = new Event(type, {bubbles: true})
+      Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: 100})
+      fireEvent(card, event)
+    }
+    expect(onUpdate).toHaveBeenCalledExactlyOnceWith(1, 4)
+    expect(router.state.location.pathname).toBe('/')
+    fireEvent.click(screen.getByRole('button', {name: 'Undo'}))
+    expect(onUpdate).toHaveBeenLastCalledWith(1, 3)
+  })
   it('shows every saved translation in the mobile word list', () => {
     const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
     const router = createMemoryRouter([{
@@ -49,7 +67,7 @@ describe('WordCardList', () => {
       element: <WordCardList words={[makeWord(1, 'cold', {translation_entries: translations})]} pendingWordId={null} onUpdate={vi.fn()} />,
     }])
 
-    render(<RouterProvider router={router} />)
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
 
     expect(screen.getByText(translations.join(' · '))).toBeTruthy()
   })
@@ -72,7 +90,7 @@ describe('WordCardList', () => {
       {initialEntries: ['/']},
     )
 
-    render(<RouterProvider router={router} />)
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
 
     fireEvent.click(screen.getByRole('button', {name: /okay/i}))
 

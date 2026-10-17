@@ -157,16 +157,19 @@ def hard_delete_topics_by_ids(db, topic_ids: list[int]) -> int:
     return result.rowcount or 0
 
 
-def update_topic(db: Session, topic: Topic, payload: TopicUpdate) -> Topic:
+def update_topic(db: Session, topic: Topic, payload: TopicUpdate, *, commit: bool = True) -> Topic:
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(topic, field, value)
     db.add(topic)
-    db.commit()
-    db.refresh(topic)
+    if commit:
+        db.commit()
+        db.refresh(topic)
+    else:
+        db.flush()
     return topic
 
 
-def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> Topic:
+def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False, *, commit: bool = True) -> Topic:
     now = datetime.now(timezone.utc)
     topic.deleted_at = now
     if delete_words:
@@ -174,12 +177,15 @@ def soft_delete_topic(db: Session, topic: Topic, delete_words: bool = False) -> 
     else:
         soft_delete_exclusive_words(topic, now)
     db.add(topic)
-    db.commit()
-    db.refresh(topic)
+    if commit:
+        db.commit()
+        db.refresh(topic)
+    else:
+        db.flush()
     return topic
 
 
-def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Topic:
+def restore_topic(db: Session, topic: Topic, restore_words: bool = False, *, commit: bool = True) -> Topic:
     topic.deleted_at = None
 
     if restore_words:
@@ -189,8 +195,11 @@ def restore_topic(db: Session, topic: Topic, restore_words: bool = False) -> Top
                 word.deleted_via_topic_id = None
 
     db.add(topic)
-    db.commit()
-    db.refresh(topic)
+    if commit:
+        db.commit()
+        db.refresh(topic)
+    else:
+        db.flush()
     return topic
 
 

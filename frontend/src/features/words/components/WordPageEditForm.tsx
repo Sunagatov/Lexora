@@ -38,7 +38,7 @@ export function WordPageEditForm({
   const filteredTopicOptions = topicSearch.trim()
     ? topicOptions.filter((topic) => topic.name.toLowerCase().includes(topicSearch.trim().toLowerCase()))
     : topicOptions
-  const selectedTopicIds = new Set(draft.topic_ids.map(Number).filter((value) => value > 0))
+  const selectedTopicIds = new Set(draft.topic_ids.map(Number).filter((value) => Number.isInteger(value) && value !== 0))
 
   function updateField(field: keyof EditState, value: string | string[]) {
     onFieldChange(field, value)
@@ -46,7 +46,7 @@ export function WordPageEditForm({
   }
 
   function toggleTopic(topicId: number, checked: boolean) {
-    const current = draft.topic_ids.map(Number).filter((value) => value > 0)
+    const current = draft.topic_ids.map(Number).filter((value) => Number.isInteger(value) && value !== 0)
     const next = checked
       ? Array.from(new Set([...current, topicId])).map(String)
       : current.filter((id) => id !== topicId).map(String)

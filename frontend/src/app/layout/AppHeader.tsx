@@ -3,6 +3,7 @@ import {routes} from '@/app/routes'
 import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 import {useTheme} from '@/shared/hooks/useTheme'
+import {OfflineStatus} from '@/features/offline/OfflineButton'
 
 type Props = {
   hasDrawer?: boolean
@@ -25,6 +26,7 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}:
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
+        <OfflineStatus />
         <button type="button" className="app-header-theme-toggle" onClick={toggle} aria-label="Toggle dark mode">
           {isDark ? '☀️' : '🌙'}
         </button>

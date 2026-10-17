@@ -26,7 +26,17 @@ export function buildRequestHeaders(headersInit?: HeadersInit, body?: BodyInit |
   return headers
 }
 
+type RequestAdapter = (path: string, init: RequestInit, network: typeof networkRequest) => Promise<unknown>
+let requestAdapter: RequestAdapter | undefined
+
+// App composition installs optional transports; shared HTTP has no feature imports.
+export function setRequestAdapter(adapter: RequestAdapter) { requestAdapter = adapter }
+
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  return (requestAdapter ? requestAdapter(path, init, networkRequest) : networkRequest(path, init)) as Promise<T>
+}
+
+export async function networkRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = buildRequestHeaders(init.headers, init.body)
 
   const response = await fetch(buildApiUrl(path), {...init, headers, credentials: 'include'})

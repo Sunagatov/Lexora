@@ -61,7 +61,7 @@ export function toEditState(word: Word): EditState {
 }
 
 export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: boolean): Partial<Word> {
-  const topicIds = Array.from(new Set(draft.topic_ids.map(Number).filter((n) => n > 0)))
+  const topicIds = Array.from(new Set(draft.topic_ids.map(Number).filter((n) => Number.isInteger(n) && n !== 0)))
   const translationEntries = splitMultiline(draft.translations)
   const exampleEntries = splitMultiline(draft.example)
   const synonymEntries = splitMultiline(draft.synonyms)

@@ -14,7 +14,7 @@ export function useLogoutAction() {
 
     setLogoutPending(true)
     try {
-      await logout()
+      if (await logout() === false) return
       queryClient.clear()
       navigate(routes.login, {replace: true})
     } finally {

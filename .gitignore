@@ -38,6 +38,8 @@ postgres-data/
 frontend/*.tsbuildinfo
 frontend/vite.config.js
 frontend/vite.config.d.ts
+frontend/offlinePlugin.js
+frontend/offlinePlugin.d.ts
 /backend/.artifacts/
 /backend/lexora_backend.egg-info/dependency_links.txt
 /backend/lexora_backend.egg-info/PKG-INFO

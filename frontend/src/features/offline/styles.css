@@ -1,0 +1,28 @@
+.sidebar-create-offline-row { display: flex; align-items: center; gap: 8px; }
+.sidebar-create-offline-row .sidebar-add-topic-btn { flex: 1; width: auto; min-width: 0; }
+.sidebar-collapsed .sidebar-create-offline-row { justify-content: center; padding: 6px 0; }
+.sidebar-collapsed .offline-button-label { display: none; }
+.sidebar-collapsed .sidebar-save-offline-btn { width: 40px; height: 40px; padding: 0; font-size: 20px; }
+.sidebar-save-offline-btn, .offline-dialog button {
+  border: 1px solid var(--border); border-radius: 9px;
+  background: var(--surface); color: var(--text);
+  font: inherit; font-size: 13px; padding: 9px 12px; cursor: pointer;
+}
+.offline-dialog { width: min(480px, calc(100vw - 32px)); box-sizing: border-box; max-height: calc(100dvh - 40px); overflow: auto; padding: 22px; border: 1px solid #51576c; border-radius: 16px; background: var(--surface); color: var(--text); }
+.offline-dialog::backdrop { background: #0009; }
+.offline-dialog h2 { margin: 0 0 14px; font-size: 19px; }
+.offline-dialog p { font-size: 14px; line-height: 1.5; }
+.offline-dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.offline-dialog button:disabled { opacity: .55; cursor: wait; }
+.offline-note { opacity: .75; }
+.offline-error { color: #ff9b9b; }
+.offline-status { flex-shrink: 0; border: 1px solid var(--accent); border-radius: 7px; background: var(--accent-light); color: var(--text); font: inherit; font-size: 11px; white-space: nowrap; padding: 4px 6px; cursor: pointer; }
+.word-card.swipe-strong { background: #0c6848; border-color: #44dda1; }
+.word-card.swipe-parked { background: #424d60; border-color: #bac5d6; }
+.word-card.swipe-strong, .word-card.swipe-parked { transition: none; }
+.swipe-feedback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: inherit; font-size: 20px; font-weight: 700; color: white; background: #0c6848ed; z-index: 4; }
+.swipe-parked .swipe-feedback { background: #424d60ed; }
+.swipe-undo { position: fixed; bottom: calc(66px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 150; width: max-content; max-width: calc(100vw - 32px); padding: 10px 14px; border: 1px solid #73708e; border-radius: 12px; background: #26243a; color: #f0eef9; font-size: 13px; box-shadow: 0 4px 20px #0006; }
+.swipe-undo button { color: #c4bcff; background: transparent; border: 0; font: inherit; font-weight: 700; margin-left: 12px; padding: 5px; cursor: pointer; }
+@media (max-width: 860px) { .word-card { touch-action: pan-y pinch-zoom; position: relative; } }
+@media (prefers-reduced-motion: reduce) { .word-card { transition: none; } }
