@@ -57,7 +57,7 @@ function makeWord(overrides: Partial<Word> = {}): Word {
     verb_form: null,
     translation_entries: ['нести'],
     part_of_speech: 'verb',
-    knowledge_level: 2,
+    knowledge_level: 3,
     countability: null,
     pattern: null,
     example_entries: [],

@@ -67,7 +67,7 @@ def _word():
         collocation_entries=[],
         confusable_entries=[],
         notes=None,
-        knowledge_level=2,
+        knowledge_level=3,
         is_active=True,
     )
 

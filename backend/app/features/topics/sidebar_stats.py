@@ -42,7 +42,7 @@ def compute_topic_sidebar_stats(db: Session) -> TopicSidebarStatsResponse:
         }
         for ancestor_id in ancestor_ids:
             counts[ancestor_id] += 1
-            if current_level is not None and 1 <= current_level <= 4:
+            if current_level in (1, 3, 4):
                 level_delta_sum[ancestor_id] += current_level - 1
                 level_count[ancestor_id] += 1
 

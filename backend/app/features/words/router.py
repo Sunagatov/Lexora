@@ -15,6 +15,7 @@ from app.features.words.repository import (
     bulk_update_words,
     get_word_knowledge_summary,
 )
+from app.features.words.constants import KnowledgeLevel
 from app.features.words.schemas import (
     BatchUpdateRequest,
     BatchUpdateResponse,
@@ -50,14 +51,14 @@ def list_words(
     search: str | None = Query(default=None, min_length=1),
     pos: str | None = Query(default=None, min_length=1),
     cefr: str | None = Query(default=None, min_length=1),
-    level: int | None = Query(default=None, ge=1, le=5),
+    level: KnowledgeLevel | None = Query(default=None, ge=1, le=5),
     completeness: str | None = Query(default=None, pattern="^(complete|incomplete)$"),
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=20, ge=1, le=100),
+    page_size: int = Query(default=50, ge=1, le=200),
     sort: Annotated[WordSort, Query()] = "term-asc",
     db: Session = Depends(get_db),
     then_sort: Annotated[WordSort | Literal["none"] | None, Query()] = None,
-    levels: Annotated[list[Annotated[int, Field(ge=1, le=5)]] | None, Query()] = None,
+    levels: Annotated[list[Annotated[KnowledgeLevel, Field(ge=1, le=5)]] | None, Query()] = None,
     positions: Annotated[list[Literal["noun", "verb", "adjective", "adverb", "phrase", "preposition", "phrasal verb", "other"]] | None, Query()] = None,
     cefr_levels: Annotated[list[Literal["A1", "A2", "B1", "B2", "C1", "C2"]] | None, Query()] = None,
     topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,

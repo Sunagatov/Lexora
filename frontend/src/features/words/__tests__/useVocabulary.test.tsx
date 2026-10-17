@@ -42,6 +42,11 @@ it('starts with all words, Weak/CEFR sort, and 50 per page', async () => {
   expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 1, pageSize: 50, sort: 'level-asc', level: undefined, cefr: undefined}))
 })
 
+it.each([[200, 200], [20, 50]])('resolves pageSize=%s to %s', async (requested, expected) => {
+  setup(`/?pageSize=${requested}`)
+  await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({pageSize: expected})))
+})
+
 it('saves a level and updates progress without dropping or moving the reviewed row', async () => {
   const alpha = {id: 1, term: 'alpha', knowledge_level: 1} as Word
   const beta = {id: 2, term: 'beta', knowledge_level: 1} as Word
@@ -109,10 +114,10 @@ it('preserves page 2 while its response is loading', async () => {
 })
 
 it('resets the page when filtering, keeps global progress, and resets to defaults', async () => {
-  setup('/?page=2&pageSize=20&sort=term-desc')
+  setup('/?page=2&pageSize=100&sort=term-desc')
   await waitFor(() => expect(state().total).toBe(200))
   fireEvent.click(screen.getByText('A1'))
-  await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 1, cefr: 'A1', pageSize: 20})))
+  await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({page: 1, cefr: 'A1', pageSize: 100})))
   expect(state().strong).toBe(50)
   expect(fetchWordKnowledgeSummary).toHaveBeenCalledTimes(1)
   fireEvent.click(screen.getByText('Reset'))

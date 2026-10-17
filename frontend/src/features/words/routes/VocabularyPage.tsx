@@ -40,7 +40,7 @@ export function VocabularyPage() {
   const total = s.summaryQuery.data?.total ?? 0
   const counts = s.summaryQuery.data?.level_counts
   const strong = counts?.[4] ?? 0
-  const levelSummary = {1: counts?.[1] ?? 0, 2: counts?.[2] ?? 0, 3: counts?.[3] ?? 0, 4: strong, 5: counts?.[5] ?? 0}
+  const levelSummary = {1: counts?.[1] ?? 0, 3: (counts?.[2] ?? 0) + (counts?.[3] ?? 0), 4: strong, 5: counts?.[5] ?? 0}
   const filteredCount = s.wordsQuery.data?.total ?? 0
   const pageStart = words.length ? (s.page - 1) * s.pageSize + 1 : 0
   const pageEnd = words.length ? pageStart + words.length - 1 : 0

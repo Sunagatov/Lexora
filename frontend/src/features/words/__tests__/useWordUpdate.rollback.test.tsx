@@ -64,7 +64,7 @@ describe('useWordUpdate rollback', () => {
   }
 
   it('restores exact ["words"] key on failed mutation', async () => {
-    const prevData: Word[] = [makeWord(1, 'run', 2)]
+    const prevData: Word[] = [makeWord(1, 'run', 1)]
 
     queryClient.setQueryData(queryKeys.words, prevData)
 
@@ -87,7 +87,7 @@ describe('useWordUpdate rollback', () => {
 
   it('restores topic-scoped ["words", topicId] key on failed mutation', async () => {
     const topicId = 42
-    const prevData: Word[] = [makeWord(1, 'run', 2)]
+    const prevData: Word[] = [makeWord(1, 'run', 1)]
 
     queryClient.setQueryData([...queryKeys.words, topicId], prevData)
 
@@ -105,7 +105,7 @@ describe('useWordUpdate rollback', () => {
   })
 
   it('restores all ["words", ...] query family on failed mutation', async () => {
-    const rootData: Word[] = [makeWord(1, 'run', 2)]
+    const rootData: Word[] = [makeWord(1, 'run', 1)]
     const topic1Data: Word[] = [makeWord(2, 'walk', 3)]
     const topic2Data: Word[] = [makeWord(3, 'jump', 1)]
 
@@ -145,7 +145,7 @@ describe('useWordUpdate rollback', () => {
   })
 
   it('restores the Daily Word Mix level when saving fails', async () => {
-    const word = makeWord(1, 'run', 2)
+    const word = makeWord(1, 'run', 1)
     const queue: StudyQueue = {
       id: 10, generated_at: word.created_at, expires_at: word.created_at,
       is_active: true, total_count: 1, completed_count: 0,
@@ -168,7 +168,7 @@ describe('useWordUpdate rollback', () => {
   })
 
   it('updates a cached word detail after saving the level', async () => {
-    const word = makeWord(1, 'run', 2)
+    const word = makeWord(1, 'run', 1)
     const updated = {...word, knowledge_level: 3 as const}
     queryClient.setQueryData(queryKeys.word(1), word)
     vi.mocked(api.updateWordKnowledgeLevel).mockResolvedValueOnce(updated)

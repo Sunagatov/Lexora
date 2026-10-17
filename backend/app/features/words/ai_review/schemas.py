@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.features.words.constants import (
     CEFR_LEVELS,
     COUNTABILITY_VALUES,
+    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     LANGUAGES,
@@ -107,7 +108,7 @@ class AiReviewImportWord(BaseModel):
     antonym_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     collocation_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     notes: str | None = Field(default=None, max_length=4000)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 

@@ -18,8 +18,8 @@ function makeStats(): StatsResponse {
     level_counts: {
       unset: 10,
       level_1: 15,
-      level_2: 20,
-      level_3: 25,
+      level_2: 0,
+      level_3: 45,
       level_4: 30,
       level_5: 20,
     },

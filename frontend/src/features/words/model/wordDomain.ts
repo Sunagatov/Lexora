@@ -9,9 +9,9 @@ export const CEFR_SORT_OPTIONS = ['cefr-asc', 'cefr-desc'] as const
 export const DATE_SORT_OPTIONS = ['newest', 'oldest'] as const
 export const DEFAULT_WORD_PROGRESS_SOURCE = 'study_list'
 
-export const LEVELS: WordKnowledgeLevel[] = [1, 2, 3, 4, 5]
+export const LEVELS: WordKnowledgeLevel[] = [1, 3, 4, 5]
 
-export const ACTIVE_LEVELS: WordKnowledgeLevel[] = [1, 2, 3, 4]
+export const ACTIVE_LEVELS: WordKnowledgeLevel[] = [1, 3, 4]
 export const PARKED_LEVEL: WordKnowledgeLevel = 5
 
 export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const
@@ -47,35 +47,37 @@ export function parseSecondarySort(raw: string | null, primary: SortOption): Sor
 }
 
 export const LEVEL_LABELS: Record<number, string> = {
-  1: 'Weak', 2: 'Basic', 3: 'Okay', 4: 'Strong', 5: 'Parked',
+  1: 'Weak', 3: 'Okay', 4: 'Strong', 5: 'Parked',
 }
 
 export const LEVEL_TIPS: Record<number, string> = {
   0: 'Unset — not yet rated',
-  1: 'Level 1 — Weak: needs a lot of practice',
-  2: 'Level 2 — Familiar: you recognize it but need more practice',
-  3: 'Level 3 — Okay: you know it, review still helps',
-  4: 'Level 4 — Strong: confident, rarely needs review',
+  1: 'Weak: needs a lot of practice',
+  3: 'Okay: you know it, review still helps',
+  4: 'Strong: confident, rarely needs review',
   5: 'Parked — set aside for later',
 }
 
 export function levelClass(level: number | null): string {
-  return level ? `level-${level}` : 'level-unset'
+  return level ? `level-${level === 2 ? 3 : level}` : 'level-unset'
 }
 
 /** Converts a WordKnowledgeLevel to its string form for form state (null → ''). */
 export function levelToStr(v: WordKnowledgeLevel | null | undefined): string { return v != null ? String(v) : '' }
 
 /** Parses a form string back to a WordKnowledgeLevel ('' → null). */
-export function strToLevel(v: string): WordKnowledgeLevel | null { return v ? Number(v) as WordKnowledgeLevel : null }
+export function strToLevel(v: string): WordKnowledgeLevel | null {
+  const level = Number(v) === 2 ? 3 : Number(v)
+  return LEVELS.includes(level as WordKnowledgeLevel) ? level as WordKnowledgeLevel : null
+}
 
-// Counts all levels 1-5. Level 5 (Parked) is included in the summary data
+// Counts the four knowledge categories. Legacy Basic counts as Okay. Parked is included
 // but excluded from the progress chips at render time (StudyPage shows only ACTIVE_LEVELS).
 export function buildLevelSummary(words: Word[]): Record<WordKnowledgeLevel, number> {
-  const s: Record<WordKnowledgeLevel, number> = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+  const s: Record<WordKnowledgeLevel, number> = {1: 0, 3: 0, 4: 0, 5: 0}
   for (const w of words) {
-    const l = w.knowledge_level
-    if (l && l >= 1 && l <= 5) s[l as WordKnowledgeLevel]++
+    const l = strToLevel(String(w.knowledge_level ?? ''))
+    if (l) s[l]++
   }
   return s
 }

@@ -34,7 +34,7 @@ function setup() {
       levelFilter="all" setLevelFilter={vi.fn()} posFilter={null} setPosFilter={vi.fn()}
       cefrFilter={null} setCefrFilter={vi.fn()} completeness="all" setCompleteness={vi.fn()}
       onReset={vi.fn()} totalWordsOverall={2} topicTotalCount={2} filteredCount={2}
-      pageStart={1} pageEnd={2} levelSummary={{1: 2, 2: 0, 3: 0, 4: 0, 5: 0}}
+      pageStart={1} pageEnd={2} levelSummary={{1: 2, 3: 0, 4: 0, 5: 0}}
     />
     <WordDetailPanel wordId={1} words={[first, second]} onClose={onClose} onNavigate={onNavigate} />
     <textarea aria-label="Notes" />

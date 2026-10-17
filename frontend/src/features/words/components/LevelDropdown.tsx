@@ -75,7 +75,6 @@ export function LevelDropdown({current, anchor, onSelect, onClose}: {
               onSelect(l)
             }}
           >
-            <span className="level-dropdown-num">{l}</span>
             <span>{LEVEL_LABELS[l]}</span>
             {l === current && (
               <svg className="level-dropdown-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">

@@ -9,7 +9,7 @@ import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
-import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
+import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
 
 const EMPTY_SIDEBAR_STATS: TopicSidebarStats = {
   total_words: 0,
@@ -43,7 +43,7 @@ export function useStudyState() {
 
   const topicState  = useTopicState(topics, topicCounts, topicProgress, topicsQuery.status === 'success')
   const smartReview = useSmartReview(isSmartReview)
-  const defaultPageSize = useResponsivePageSize(20, 40)
+  const defaultPageSize = DEFAULT_PAGE_SIZE
 
   // Fetch words scoped to the selected topic from the server.
   const wordsQuery = useQuery({

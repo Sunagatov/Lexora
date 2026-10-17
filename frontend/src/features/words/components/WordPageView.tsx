@@ -87,7 +87,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       {word.knowledge_level && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Knowledge</h3>
-          <span className="wpv-grammar-value">L{word.knowledge_level} — {LEVEL_LABELS[word.knowledge_level]}</span>
+          <span className="wpv-grammar-value">{LEVEL_LABELS[word.knowledge_level]}</span>
         </section>
       )}
 

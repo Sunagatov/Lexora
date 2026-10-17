@@ -22,10 +22,11 @@ function setup() {
 it('opens outside the clipping list, focuses the current level and supports keyboard selection', () => {
   const {container, onSelect, onNavigate} = setup()
   const menu = screen.getByRole('group', {name: 'Knowledge level'})
+  expect(Array.from(menu.querySelectorAll('button')).map(button => button.textContent)).toEqual(['Weak', 'Okay', 'Strong', 'Parked'])
   expect(container.contains(menu)).toBe(false)
-  expect(document.activeElement).toBe(screen.getByRole('button', {name: '3 Okay'}))
+  expect(document.activeElement).toBe(screen.getByRole('button', {name: 'Okay'}))
   fireEvent.keyDown(document.activeElement!, {key: 'ArrowDown'})
-  expect(document.activeElement).toBe(screen.getByRole('button', {name: '4 Strong'}))
+  expect(document.activeElement).toBe(screen.getByRole('button', {name: 'Strong'}))
   fireEvent.click(document.activeElement!)
   expect(onSelect).toHaveBeenCalledWith(4)
   expect(onNavigate).not.toHaveBeenCalled()

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.features.words.constants import CEFR_LEVELS, REGISTER_VALUES, WORD_TERM_MAX_LEN
+from app.features.words.constants import CEFR_LEVELS, REGISTER_VALUES, WORD_TERM_MAX_LEN, normalize_knowledge_level
 from app.features.words.workbook.cells import (
     _read_optional_int,
     _read_str,
@@ -46,6 +46,8 @@ def _read_row_data(ws, row_idx: int, header_map: dict[str, int]) -> WorkbookRowD
     knowledge_value = _read_optional_int(ws, row_idx, header_map.get("knowledge_level"), "knowledge", ws.title)
     if knowledge_value is not None and knowledge_value not in {1, 2, 3, 4, 5}:
         raise InvalidWorkbookError(f"{ws.title}, row {row_idx}: knowledge must be between 1 and 5")
+    if knowledge_value is not None:
+        knowledge_value = normalize_knowledge_level(knowledge_value)
     cefr = _read_str(ws, row_idx, header_map.get('cefr_level'))
     register = _read_str(ws, row_idx, header_map.get('register'))
     for label, value, allowed in (('CEFR', cefr, CEFR_LEVELS), ('register', register, REGISTER_VALUES)):

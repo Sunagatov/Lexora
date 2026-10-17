@@ -136,8 +136,7 @@ export function AllWordsPage() {
         onLearningSort={s.setLearningSort} onReset={resetFilters}
         totalWordsOverall={s.summaryQuery.data?.total ?? 0} topicTotalCount={s.summaryQuery.data?.total ?? 0}
         filteredCount={total} pageStart={words.length ? (page - 1) * pageSize + 1 : 0} pageEnd={words.length ? (page - 1) * pageSize + words.length : 0}
-        levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 2: s.summaryQuery.data?.level_counts[2] ?? 0,
-          3: s.summaryQuery.data?.level_counts[3] ?? 0, 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
+        levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 3: (s.summaryQuery.data?.level_counts[2] ?? 0) + (s.summaryQuery.data?.level_counts[3] ?? 0), 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
         progressLabel="Whole vocabulary progress"
         progressReady={s.summaryQuery.isSuccess}
       />

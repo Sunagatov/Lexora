@@ -28,7 +28,7 @@ describe('buildLevelSummary', () => {
     const s = buildLevelSummary(words)
     expect(s[1]).toBe(2)
     expect(s[3]).toBe(1)
-    expect(s[2]).toBe(0)
+    expect(Object.keys(s)).toEqual(['1', '3', '4', '5'])
   })
 
   it('ignores null knowledge_level', () => {
@@ -41,7 +41,7 @@ describe('filterAndSort', () => {
   const words = [
     makeWord({id: 1, term: 'apple',  knowledge_level: 1, translation_entries: ['яблоко']}),
     makeWord({id: 2, term: 'banana', knowledge_level: 3, translation_entries: ['банан']}),
-    makeWord({id: 3, term: 'cherry', knowledge_level: 2, translation_entries: ['вишня']}),
+    makeWord({id: 3, term: 'cherry', knowledge_level: 4, translation_entries: ['вишня']}),
   ]
 
   const defaultOpts = {search: '', levelFilter: 'all' as const, posFilter: null, cefrFilter: null, completeness: 'all' as const, sortBy: 'term-asc' as const, frozenIds: null}
@@ -80,12 +80,12 @@ describe('filterAndSort', () => {
   it('sorts level-asc: lowest level first', () => {
     const result = filterAndSort(words, {...defaultOpts, sortBy: 'level-asc'})
     expect(result[0].knowledge_level).toBe(1)
-    expect(result[2].knowledge_level).toBe(3)
+    expect(result[2].knowledge_level).toBe(4)
   })
 
   it('sorts level-desc: highest level first', () => {
     const result = filterAndSort(words, {...defaultOpts, sortBy: 'level-desc'})
-    expect(result[0].knowledge_level).toBe(3)
+    expect(result[0].knowledge_level).toBe(4)
     expect(result[2].knowledge_level).toBe(1)
   })
 
@@ -97,12 +97,12 @@ describe('filterAndSort', () => {
   it('combines filter groups while allowing multiple values within each group', () => {
     const entries = [
       makeWord({id: 1, term: 'weak a1', knowledge_level: 1, cefr_level: 'A1', part_of_speech: 'noun'}),
-      makeWord({id: 2, term: 'basic a2', knowledge_level: 2, cefr_level: 'A2', part_of_speech: 'verb'}),
+      makeWord({id: 2, term: 'basic a2', knowledge_level: 3, cefr_level: 'A2', part_of_speech: 'verb'}),
       makeWord({id: 3, term: 'strong a1', knowledge_level: 4, cefr_level: 'A1', part_of_speech: 'noun'}),
       makeWord({id: 4, term: 'weak b1', knowledge_level: 1, cefr_level: 'B1', part_of_speech: 'noun'}),
       makeWord({id: 5, term: 'other topic', knowledge_level: 1, cefr_level: 'A1', part_of_speech: 'noun', topic_ids: [9]}),
     ]
-    expect(filterAndSort(entries, {...defaultOpts, levelFilter: [1, 2], cefrFilter: ['A1', 'A2'], posFilter: ['noun', 'verb'], topicIds: [1]}).map(word => word.id)).toEqual([2, 1])
+    expect(filterAndSort(entries, {...defaultOpts, levelFilter: [1, 3], cefrFilter: ['A1', 'A2'], posFilter: ['noun', 'verb'], topicIds: [1]}).map(word => word.id)).toEqual([2, 1])
   })
 
   it('applies ordered sort priorities and keeps missing CEFR values last', () => {
@@ -110,7 +110,7 @@ describe('filterAndSort', () => {
       makeWord({id: 1, term: 'alpha', knowledge_level: 4, cefr_level: 'A1'}),
       makeWord({id: 2, term: 'bravo', knowledge_level: 1, cefr_level: 'A2'}),
       makeWord({id: 3, term: 'zulu', knowledge_level: 1, cefr_level: 'A1'}),
-      makeWord({id: 4, term: 'charlie', knowledge_level: 2, cefr_level: 'A1'}),
+      makeWord({id: 4, term: 'charlie', knowledge_level: 3, cefr_level: 'A1'}),
       makeWord({id: 5, term: 'unknown', knowledge_level: 1, cefr_level: null}),
     ]
     expect(filterAndSort(entries, {...defaultOpts, sortBy: 'level-asc', thenSortBy: 'cefr-asc'}).map(word => word.id)).toEqual([3, 2, 5, 4, 1])

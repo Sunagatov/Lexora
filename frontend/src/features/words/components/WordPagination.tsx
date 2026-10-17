@@ -8,14 +8,22 @@ export function WordPagination({page, totalPages, onPage, pageSize, onPageSize}:
   const isStaticPagination = safeTotalPages <= 1
 
   const sizeSelect = (
-    <select
-      className="page-size-dropdown"
-      value={String(pageSize)}
-      onChange={(e) => onPageSize(Number(e.target.value))}
-      aria-label="Words per page"
-    >
-      {PAGE_SIZES.map((s) => <option key={s} value={String(s)}>{s} / page</option>)}
-    </select>
+    <label className="dropdown-trigger word-list-control page-size-picker">
+      <span className="dropdown-trigger-label" aria-hidden="true">{pageSize} / page</span>
+      <span className="dropdown-trigger-icon" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 4.5 6 7.5l3-3" />
+        </svg>
+      </span>
+      <select
+        className="page-size-dropdown"
+        value={String(pageSize)}
+        onChange={(e) => onPageSize(Number(e.target.value))}
+        aria-label="Words per page"
+      >
+        {PAGE_SIZES.map((s) => <option key={s} value={String(s)}>{s} / page</option>)}
+      </select>
+    </label>
   )
 
   const tokens: (number | '…')[] = []

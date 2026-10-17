@@ -20,7 +20,7 @@ def _build_queue(make_topic, make_word, fixed_now):
     word = make_word(
         id=10,
         term="plane",
-        knowledge_level=2,
+        knowledge_level=3,
         topics=[topic],
         created_at=fixed_now,
         updated_at=fixed_now,

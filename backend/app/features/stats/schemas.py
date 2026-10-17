@@ -19,7 +19,7 @@ class TopicStat(BaseModel):
     slug: str
     total: int
     progress: int        # 0-100 weighted score
-    weak_count: int      # levels 1-2
+    weak_count: int      # Weak only
     strong_count: int    # levels 3-4
     missing_example: int = 0
     needs_example_enrichment: int = 0

@@ -238,7 +238,6 @@
 
 /* Muted chip colors — scoped so word rows/cards keep their vivid colors */
 .level-chip.level-1 { background: #fef7f7; color: #e05252; border-color: #fecaca; }
-.level-chip.level-2 { background: #f5f9ff; color: #4a80d4; border-color: #bfdbfe; }
 .level-chip.level-3 { background: #f8f5ff; color: #8b5cf6; border-color: #ddd6fe; }
 .level-chip.level-4 { background: #f0fdf8; color: #10b981; border-color: #a7f3d0; }
 

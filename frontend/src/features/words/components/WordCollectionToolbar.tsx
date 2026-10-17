@@ -19,6 +19,7 @@ import {WordFilterPanel} from '@/features/words/components/WordFilterPanel'
 
 type Props = {
   collectionTitle?: string
+  collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
   collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
@@ -74,7 +75,7 @@ function toggleValue<T>(values: T[], value: T): T[] {
 }
 
 export function WordCollectionToolbar({
-  collectionTitle = 'All words', collectionAction, collectionProgress,
+  collectionTitle = 'All words', collectionBreadcrumb, collectionAction, collectionProgress,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressReady = true,
@@ -159,7 +160,7 @@ export function WordCollectionToolbar({
     <div className="card toolbar-card">
       <div className="toolbar-heading-row">
         <div className="toolbar-list-heading">
-          <h1>{collectionTitle}</h1>
+          {collectionBreadcrumb ?? <h1>{collectionTitle}</h1>}
           <span className="toolbar-list-count" aria-label={`${filteredCount} matching words out of ${topicTotalCount}`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
         </div>
       </div>
@@ -190,7 +191,7 @@ export function WordCollectionToolbar({
 
       <div className="toolbar-actions-row">
         <div ref={sortDropdownRef} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
-          <button type="button" className="dropdown-trigger toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
+          <button type="button" className="dropdown-trigger word-list-control toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
             aria-haspopup="listbox" aria-expanded={sortOpen} aria-label="Sort words" title={sortLabel}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 13V3m-3 3 3-3 3 3m3-3v10m-3-3 3 3 3-3" />
@@ -207,7 +208,7 @@ export function WordCollectionToolbar({
           </div>}
         </div>
         <div className="toolbar-actions-tools">
-          <button type="button" className={`btn btn-ghost toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
+          <button type="button" className={`dropdown-trigger word-list-control toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
             onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters" aria-expanded={filtersOpen}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M2 4h12M2 12h12"/><circle cx="6" cy="4" r="2" fill="var(--surface-2)"/><circle cx="10" cy="12" r="2" fill="var(--surface-2)"/>
@@ -215,7 +216,7 @@ export function WordCollectionToolbar({
             Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
           </button>
           <button type="button"
-            className={`btn btn-ghost toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
+            className={`dropdown-trigger word-list-control toolbar-search-toggle ${searchOpen || searchActive ? 'toolbar-search-toggle-active' : ''}`}
             onClick={searchOpen ? closeSearch : openSearch} aria-label="Toggle search" aria-expanded={searchOpen}><SearchIcon /></button>
         </div>
         {collectionAction}
@@ -275,7 +276,7 @@ export function WordCollectionToolbar({
                   aria-pressed={levels.includes(level)}
                   onClick={() => setLevelFilter(selectionValue(toggleValue(levels, level)) ?? 'all')}
                 >
-                  {level} {LEVEL_LABELS[level]}
+                  {LEVEL_LABELS[level]}
                 </button>
               ))}
               <button

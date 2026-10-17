@@ -2,7 +2,6 @@ import type {DailyActivity, StatsResponse, TopicStat, UsageDay} from '@/features
 
 export const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak',
-  level_2: 'Basic',
   level_3: 'Okay',
   level_4: 'Strong',
   level_5: 'Parked',
@@ -11,14 +10,13 @@ export const LEVEL_LABELS: Record<string, string> = {
 
 export const LEVEL_COLORS: Record<string, string> = {
   level_1: '#dc2626',
-  level_2: '#2563eb',
   level_3: '#7c3aed',
   level_4: '#059669',
   level_5: '#cbd5e1',
   unset: '#e2e8f0',
 }
 
-export const LEVEL_KEYS = ['level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'unset'] as const
+export const LEVEL_KEYS = ['level_1', 'level_3', 'level_4', 'level_5', 'unset'] as const
 
 export type ActivityPeriod = 'all' | '365' | '90' | '30' | '7'
 export const ACTIVITY_PERIODS: {value: ActivityPeriod; label: string}[] = [
@@ -259,7 +257,6 @@ export function buildOverviewCards(
   const activitySparkline = sparklineValues(filteredActivity.map((day) => day.net), 12)
   const levelDistributionSparkline = [
     stats.level_counts.level_1,
-    stats.level_counts.level_2,
     stats.level_counts.level_3,
     stats.level_counts.level_4,
     stats.level_counts.level_5,

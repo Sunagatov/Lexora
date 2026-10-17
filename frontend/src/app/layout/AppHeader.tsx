@@ -18,6 +18,7 @@ export function AppHeader({hasDrawer = false, onOpenDrawer}: Props) {
     <header className="app-header">
       <div className="app-header-left">
         <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
+          <img src="/favicon.svg" alt="" width="20" height="10" />
           Lexora
         </button>
         <WordRouteBreadcrumb />

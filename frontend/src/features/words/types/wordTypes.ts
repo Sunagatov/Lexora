@@ -1,4 +1,4 @@
-export type WordKnowledgeLevel = 1 | 2 | 3 | 4 | 5
+export type WordKnowledgeLevel = 1 | 3 | 4 | 5
 
 export type VerbForm = {
   past_simple: string | null

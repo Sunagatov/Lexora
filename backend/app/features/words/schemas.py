@@ -9,6 +9,7 @@ from app.features.words.constants import (
     BULK_WORDS_MAX,
     CEFR_LEVELS,
     COUNTABILITY_VALUES,
+    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     LANGUAGES,
@@ -61,7 +62,7 @@ class WordCreate(BaseModel):
     register: str | None = None
     countability: str | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None
     notes: str | None = None
     is_active: bool = True
@@ -92,7 +93,7 @@ class WordUpdate(BaseModel):
     register: str | None = None
     countability: str | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None
     notes: str | None = None
     is_active: bool | None = None
@@ -224,7 +225,7 @@ class WordInput(BaseModel):
     register: str | None = None
     countability: str | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
-    knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None
     notes: str | None = None
     translation_entries: list[str] | None = None
@@ -265,7 +266,7 @@ class WordListResponse(BaseModel):
 
 class BatchUpdateRequest(BaseModel):
     word_ids: list[int] = Field(min_length=1)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     add_topic_ids: list[int] | None = None
     remove_topic_ids: list[int] | None = None
 

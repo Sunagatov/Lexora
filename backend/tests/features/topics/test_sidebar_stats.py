@@ -27,7 +27,7 @@ def test_compute_topic_sidebar_stats_aggregates_by_topic_tree() -> None:
 
     db.add_all([
         Word(term="alpha", knowledge_level=4, topics=[child]),
-        Word(term="beta", knowledge_level=2, topics=[sibling]),
+        Word(term="beta", knowledge_level=3, topics=[sibling]),
         Word(term="gamma", knowledge_level=1, topics=[child, sibling]),
     ])
     db.commit()
@@ -38,6 +38,6 @@ def test_compute_topic_sidebar_stats_aggregates_by_topic_tree() -> None:
     assert result.topic_counts[parent.id] == 3
     assert result.topic_counts[child.id] == 2
     assert result.topic_counts[sibling.id] == 2
-    assert result.topic_progress[parent.id] == 44
+    assert result.topic_progress[parent.id] == 56
     assert result.topic_progress[child.id] == 50
-    assert result.topic_progress[sibling.id] == 17
+    assert result.topic_progress[sibling.id] == 33

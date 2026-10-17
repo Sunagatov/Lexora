@@ -43,7 +43,22 @@ Obvious errors from router code include `400` for invalid topic data, `404` for 
 
 ## Words
 
-- `GET /api/words` — paginated list with optional `topic_id`, `search`, `pos`, `cefr`, `level`, `completeness`, and `sort` (term/level/CEFR ascending or descending, newest, oldest). Default API sort remains `term-asc`; `level-asc` orders by knowledge, then A1–C2, term, and ID before pagination. Parked/unrated words follow levels 1–4. Search includes term, translation, definition, example, pattern, notes, and verb forms.
+Knowledge categories are `1` Weak, `3` Okay, `4` Strong and `5` Parked (or null
+for unrated). Basic (`2`) is retired. Request payloads, old spreadsheet imports
+and scalar/repeated knowledge filters normalize legacy `2` to Okay (`3`). New
+exports and UI choices offer only the four categories. Stats retain `level_2: 0`
+for compatibility with older clients. The former Basic review quota is added to
+Okay, preserving the configured Daily Word Mix size.
+
+Migration `20261017_0011` updates current ratings (including deleted words) and
+both level fields in existing progress events. It preserves IDs, timestamps,
+sources, topic links and queue completion. A former `2 → 3` event becomes `3 → 3`;
+the record remains, but no longer counts as an improvement between categories.
+Take a full recoverable database backup before applying: schema downgrade cannot
+separate merged ratings. Restore the backup to recover the original distinction.
+Deploy backend/migration and frontend together; keep the old image for rollback.
+
+- `GET /api/words` — paginated list with optional `topic_id`, `search`, `pos`, `cefr`, `level`, `completeness`, and `sort` (term/level/CEFR ascending or descending, newest, oldest). Default API sort remains `term-asc`; `level-asc` orders by knowledge, then A1–C2, term, and ID before pagination. Parked/unrated words follow Weak, Okay and Strong. Search includes term, translation, definition, example, pattern, notes, and verb forms.
 - `GET /api/words/summary` — whole-library `total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Level key `0` represents unrated words.
 
 `GET /api/words` also accepts repeated `levels`, `positions`, `cefr_levels`, and
@@ -53,6 +68,8 @@ Selected topics include their active descendants and intersect a scoped
 selects a secondary sort using the same values as `sort`, or `none`; alphabetical
 term and ID provide stable tie-breaks before pagination. Invalid repeated filter
 values or sorting choices return `422`.
+Word-list pagination defaults to 50 entries and accepts `page_size` from 1 to 200.
+The website offers 50, 100 and 200 entries per page on mobile and desktop.
 - `GET /api/words/export/xlsx` — export workbook.
 - `POST /api/words/import/xlsx` — import workbook upload.
 - `GET /api/words/export/ai-review` — export a topic page for AI review.

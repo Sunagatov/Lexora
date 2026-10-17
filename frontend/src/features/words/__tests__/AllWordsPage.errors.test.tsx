@@ -16,7 +16,7 @@ const alpha: Word = {
   id: 1, term: 'alpha', topic_ids: [], language: 'en', definition: null,
   pronunciation_ipa: null, pronunciation_audio_url: null, image_url: null, cefr_level: null,
   register: null, frequency_rank: null, verb_form: null, translation_entries: ['first'],
-  part_of_speech: 'noun', knowledge_level: 2, countability: null, pattern: null,
+  part_of_speech: 'noun', knowledge_level: 3, countability: null, pattern: null,
   example_entries: [], example_count: 0, example_target_count: 3, example_status: 'missing',
   needs_example_enrichment: true, synonym_entries: [], antonym_entries: [],
   collocation_entries: [], confusable_entries: [], notes: null, is_active: true,
@@ -35,7 +35,7 @@ beforeEach(() => {
   queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   vi.mocked(fetchTopics).mockResolvedValue([])
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha]))
-  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {2: 1}})
+  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {3: 1}})
 })
 
 it('renders word cards at tablet widths where CSS hides the table', async () => {
@@ -75,10 +75,10 @@ it('reports a failed level update and preserves the previous word level', async 
   vi.mocked(batchUpdateWords).mockRejectedValue(new Error('Network down'))
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
-  fireEvent.click(screen.getByRole('button', {name: 'Basic'}))
-  fireEvent.click(screen.getByRole('button', {name: '3 Okay'}))
+  fireEvent.click(screen.getByRole('button', {name: 'Okay'}))
+  fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
   expect((await screen.findByRole('alert')).textContent).toContain('Failed to update word')
-  expect(screen.getByRole('button', {name: 'Basic'})).toBeTruthy()
+  expect(screen.getByRole('button', {name: 'Okay'})).toBeTruthy()
 })
 
 it('refreshes other views after a successful level update', async () => {
@@ -86,8 +86,8 @@ it('refreshes other views after a successful level update', async () => {
   const invalidate = vi.spyOn(queryClient, 'invalidateQueries')
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
-  fireEvent.click(screen.getByRole('button', {name: 'Basic'}))
-  fireEvent.click(screen.getByRole('button', {name: '3 Okay'}))
+  fireEvent.click(screen.getByRole('button', {name: 'Okay'}))
+  fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
   await waitFor(() => {
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.words})
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})

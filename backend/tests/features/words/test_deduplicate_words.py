@@ -87,7 +87,7 @@ def test_build_merge_plan_unions_entries_topics_and_detects_conflicts() -> None:
     first = _word(
         word_id=10,
         term="Wolf",
-        knowledge_level=2,
+        knowledge_level=3,
         updated_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
         topics=[_topic(1)],
         translation_entries=["волк", "хищник"],

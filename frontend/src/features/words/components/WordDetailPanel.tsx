@@ -161,7 +161,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
               )}
               <span className="wdp-chip wdp-chip-level">
                 {word.knowledge_level
-                  ? `L${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}`
+                  ? LEVEL_LABELS[word.knowledge_level]
                   : 'Unrated'}
               </span>
               <button

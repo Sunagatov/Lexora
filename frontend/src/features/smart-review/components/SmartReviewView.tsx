@@ -36,7 +36,7 @@ import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import {WordCollectionView} from '@/features/words/components/WordCollectionView'
 import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
-import {useResponsivePageSize} from '@/shared/hooks/useResponsivePageSize'
+import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {EmptyState} from '@/shared/components/EmptyState'
 import type {Topic} from '@/features/topics/types/topicTypes'
@@ -49,7 +49,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const {completeItem, refresh, isRefreshing} = review
   const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
-  const defaultPageSize = useResponsivePageSize(20, 40)
+  const defaultPageSize = DEFAULT_PAGE_SIZE
   const isMobile = useIsMobile(768)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)

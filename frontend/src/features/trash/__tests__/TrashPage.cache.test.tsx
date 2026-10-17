@@ -33,7 +33,7 @@ function makeWord(id: number, term: string): Word & {deleted_at: string} {
     verb_form: null,
     translation_entries: [term],
     part_of_speech: 'verb',
-    knowledge_level: 2,
+    knowledge_level: 3,
     countability: null,
     pattern: null,
     example_entries: [],

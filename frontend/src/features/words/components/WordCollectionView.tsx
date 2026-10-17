@@ -24,6 +24,7 @@ import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNaviga
 
 type Props = {
   collectionTitle?: string
+  collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
   collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
@@ -56,7 +57,7 @@ type Props = {
 }
 
 export function WordCollectionView({
-  collectionTitle, collectionAction, collectionProgress,
+  collectionTitle, collectionBreadcrumb, collectionAction, collectionProgress,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
@@ -76,34 +77,34 @@ export function WordCollectionView({
 
   return (
     <div className="word-collection-layout">
+      <div className="sticky-controls">
+        <WordCollectionToolbar
+          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction} collectionProgress={collectionProgress}
+          wordSearch={wordSearch} setWordSearch={setWordSearch}
+          sortBy={sortBy} setSortBy={setSortBy}
+          levelFilter={levelFilter} setLevelFilter={setLevelFilter}
+          posFilter={posFilter} setPosFilter={setPosFilter}
+          cefrFilter={cefrFilter} setCefrFilter={setCefrFilter}
+          completeness={completeness} setCompleteness={setCompleteness}
+          onReset={onReset}
+          totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
+          filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
+          levelSummary={levelSummary}
+          progressLabel={progressLabel}
+          progressReady={progressReady}
+          thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
+          topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
+          onLearningSort={onLearningSort}
+        />
+        {pageWords.length > 0 && (
+          <div className="word-list-header" aria-hidden="true">
+            <span className="word-list-header-cell">Word</span>
+            <span className="word-list-header-cell">Translation / details</span>
+            <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
+          </div>
+        )}
+      </div>
       <div className="word-collection-scroll">
-        <div className="sticky-controls">
-          <WordCollectionToolbar
-            collectionTitle={collectionTitle} collectionAction={collectionAction} collectionProgress={collectionProgress}
-            wordSearch={wordSearch} setWordSearch={setWordSearch}
-            sortBy={sortBy} setSortBy={setSortBy}
-            levelFilter={levelFilter} setLevelFilter={setLevelFilter}
-            posFilter={posFilter} setPosFilter={setPosFilter}
-            cefrFilter={cefrFilter} setCefrFilter={setCefrFilter}
-            completeness={completeness} setCompleteness={setCompleteness}
-            onReset={onReset}
-            totalWordsOverall={totalWordsOverall} topicTotalCount={topicTotalCount}
-            filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
-            levelSummary={levelSummary}
-            progressLabel={progressLabel}
-            progressReady={progressReady}
-            thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
-            topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
-            onLearningSort={onLearningSort}
-          />
-          {pageWords.length > 0 && (
-            <div className="word-list-header" aria-hidden="true">
-              <span className="word-list-header-cell">Word</span>
-              <span className="word-list-header-cell">Translation / details</span>
-              <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-            </div>
-          )}
-        </div>
         <div className="main-inner">
           {isLoading && pageWords.length === 0 ? (
             <WordTableSkeleton />

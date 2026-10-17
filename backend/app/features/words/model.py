@@ -172,7 +172,7 @@ class Word(Base):
         CheckConstraint("cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')", name="ck_words_cefr_level"),
         CheckConstraint("register IN ('formal', 'informal', 'neutral', 'slang', 'technical')", name="ck_words_register"),
         CheckConstraint("countability IN ('countable', 'uncountable', 'both', 'plural', 'collective')", name="ck_words_countability"),
-        CheckConstraint("knowledge_level BETWEEN 1 AND 5", name="ck_words_knowledge_level"),
+        CheckConstraint("knowledge_level IN (1, 3, 4, 5)", name="ck_words_knowledge_level"),
         CheckConstraint("frequency_rank >= 1", name="ck_words_frequency_rank"),
     )
 

@@ -97,7 +97,6 @@
 
 .word-page-hero.level-unset { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 64%) padding-box, linear-gradient(135deg, rgba(148, 163, 184, 0.16), rgba(99, 102, 241, 0.1)) border-box; }
 .word-page-hero.level-1 { background: linear-gradient(145deg, #fef2f2 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #fecaca 0%, #dc2626 100%) border-box; }
-.word-page-hero.level-2 { background: linear-gradient(145deg, #eff6ff 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #bfdbfe 0%, #2563eb 100%) border-box; }
 .word-page-hero.level-3 { background: linear-gradient(145deg, #f5f3ff 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #ddd6fe 0%, #7c3aed 100%) border-box; }
 .word-page-hero.level-4 { background: linear-gradient(145deg, #ecfdf5 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #a7f3d0 0%, #059669 100%) border-box; }
 .word-page-hero.level-5 { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 58%) padding-box, linear-gradient(135deg, #cbd5e1 0%, #64748b 100%) border-box; }
@@ -108,7 +107,6 @@
   box-shadow: none;
 }
 :root[color-scheme="dark"] .word-page-hero.level-1 { background: #1c1517; border-color: rgba(220, 38, 38, 0.3); }
-:root[color-scheme="dark"] .word-page-hero.level-2 { background: #151a22; border-color: rgba(37, 99, 235, 0.3); }
 :root[color-scheme="dark"] .word-page-hero.level-3 { background: #1a1520; border-color: rgba(124, 58, 237, 0.3); }
 :root[color-scheme="dark"] .word-page-hero.level-4 { background: #131c17; border-color: rgba(5, 150, 105, 0.3); }
 :root[color-scheme="dark"] .word-page-hero.level-5 { background: #1a1c1e; border-color: rgba(100, 116, 139, 0.3); }
@@ -767,13 +765,11 @@
 
 .wdp-hero.level-unset { background: var(--surface); }
 .wdp-hero.level-1  { background: linear-gradient(150deg, #fee2e2 0%, var(--surface) 68%); }
-.wdp-hero.level-2  { background: linear-gradient(150deg, #dbeafe 0%, var(--surface) 68%); }
 .wdp-hero.level-3  { background: linear-gradient(150deg, #ede9fe 0%, var(--surface) 68%); }
 .wdp-hero.level-4  { background: linear-gradient(150deg, #d1fae5 0%, var(--surface) 68%); }
 .wdp-hero.level-5  { background: var(--surface); }
 
 :root[color-scheme="dark"] .wdp-hero.level-1  { background: linear-gradient(150deg, rgba(220,38,38,0.12) 0%, var(--surface) 68%); }
-:root[color-scheme="dark"] .wdp-hero.level-2  { background: linear-gradient(150deg, rgba(37,99,235,0.12) 0%, var(--surface) 68%); }
 :root[color-scheme="dark"] .wdp-hero.level-3  { background: linear-gradient(150deg, rgba(124,58,237,0.12) 0%, var(--surface) 68%); }
 :root[color-scheme="dark"] .wdp-hero.level-4  { background: linear-gradient(150deg, rgba(5,150,105,0.12) 0%, var(--surface) 68%); }
 
@@ -966,15 +962,7 @@
   cursor: pointer;
 }
 
-.word-row-clickable:hover td {
-  background: rgba(99, 102, 241, 0.03);
-}
-
 /* ── Active word row in the table ── */
-.word-row-panel-active {
-  background: rgba(99, 102, 241, 0.04) !important;
-}
-
 .word-row-panel-active .word-term {
   color: var(--accent);
   font-weight: 700;

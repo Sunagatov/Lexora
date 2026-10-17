@@ -1,11 +1,29 @@
 from __future__ import annotations
 
-from typing import Literal, get_args
+from typing import Annotated, Literal, get_args
+
+from pydantic import AfterValidator
 
 WORD_TERM_MAX_LEN = 255
 
 KNOWLEDGE_LEVEL_MIN = 1
 KNOWLEDGE_LEVEL_MAX = 5
+KNOWLEDGE_LEVELS = (1, 3, 4, 5)
+
+
+def normalize_knowledge_level(level: int) -> int:
+    """Old Basic ratings remain importable, but are stored as Okay."""
+    return 3 if level == 2 else level
+
+
+def validate_knowledge_level(level: int) -> int:
+    level = normalize_knowledge_level(level)
+    if level not in KNOWLEDGE_LEVELS:
+        raise ValueError("Knowledge level must be 1 (Weak), 3 (Okay), 4 (Strong) or 5 (Parked)")
+    return level
+
+
+KnowledgeLevel = Annotated[int, AfterValidator(validate_knowledge_level)]
 
 BULK_WORDS_MAX = 500
 

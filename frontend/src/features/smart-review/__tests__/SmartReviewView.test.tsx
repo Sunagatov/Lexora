@@ -35,7 +35,7 @@ function makeWord(id: number, term: string): Word {
     verb_form: null,
     translation_entries: [term],
     part_of_speech: 'verb',
-    knowledge_level: 2,
+    knowledge_level: 3,
     countability: null,
     pattern: null,
     example_entries: [],
@@ -140,7 +140,7 @@ describe('SmartReviewView', () => {
     mockMatchMedia(false)
     render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
-    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 40}))
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 50}))
   })
 
   it('offers a Retry action when the initial word mix request fails', () => {
@@ -157,7 +157,7 @@ describe('SmartReviewView', () => {
 
     render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
-    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 20}))
+    expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 50}))
   })
 
   it('does not complete the queue item when the level update fails', async () => {

@@ -238,7 +238,7 @@ def test_generate_queue_creates_queue_and_items(monkeypatch) -> None:
     def fake_pick(db_arg, *, level, needed, excluded_ids, topic_counts, max_per_topic, cefr_weights=None):
         if level == 1:
             return [word1]
-        if level == 2:
+        if level == 3:
             return [word2]
         return []
 

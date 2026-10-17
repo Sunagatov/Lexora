@@ -21,6 +21,9 @@
 }
 
 .app-header-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: transparent;
   border: none;
   font-size: 15px;
@@ -108,7 +111,7 @@
   display: none;
   background: transparent;
   border: none;
-  color: var(--header-text-2);
+  color: var(--header-text);
   cursor: pointer;
   padding: 4px;
   line-height: 0;
@@ -215,7 +218,7 @@
 @media (max-width: 860px) {
   .app-header {
     padding: 0 12px;
-    height: 52px;
+    height: 44px;
     gap: 10px;
   }
 
@@ -253,14 +256,16 @@
 
   .app-header-theme-toggle,
   .app-header-burger {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: var(--sidebar-subtle);
   }
+
+  .app-header-burger { background: transparent; }
 
   .app-header-logout {
     padding: 8px 10px;

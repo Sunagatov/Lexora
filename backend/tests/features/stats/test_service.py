@@ -365,7 +365,7 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
         id=1,
         deleted_at=None,
         created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
-        knowledge_level=2,
+        knowledge_level=3,
         part_of_speech_id=1,
         part_of_speech=SimpleNamespace(name="noun"),
         definition="a definition",

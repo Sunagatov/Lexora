@@ -153,7 +153,7 @@ def compute_stats(db: Session) -> StatsResponse:
         level_counts=LevelCounts(
             unset=level_counts[None],
             level_1=level_counts[1],
-            level_2=level_counts[2],
+            level_2=0,  # Compatibility field for older clients; Basic has been retired.
             level_3=level_counts[3],
             level_4=level_counts[4],
             level_5=level_counts[5],

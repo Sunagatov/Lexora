@@ -56,7 +56,7 @@ def _build_retention_stats(
     improved_word_ids: set[int],
     regressed_word_ids: set[int],
 ) -> RetentionSummary:
-    active_words = sum(level_counts[level] for level in (1, 2, 3, 4))
+    active_words = sum(level_counts[level] for level in (1, 3, 4))
     reviewed_words = len(reviewed_word_ids)
     improved_words = len(improved_word_ids)
     regressed_words = len(regressed_word_ids)
@@ -68,7 +68,7 @@ def _build_retention_stats(
         improved_words=improved_words,
         regressed_words=regressed_words,
         strong_words=level_counts[3] + level_counts[4],
-        weak_words=level_counts[1] + level_counts[2],
+        weak_words=level_counts[1],
         parked_words=level_counts[5],
         reviewed_word_share_pct=round((reviewed_words / total_words) * 100) if total_words > 0 else 0,
         improved_word_share_pct=round((improved_words / reviewed_words) * 100) if reviewed_words > 0 else 0,

@@ -69,8 +69,8 @@ def get_or_create_active_queue(db: Session) -> StudyQueue | None:
 def _level_buckets() -> dict[int, int]:
     return {
         1: settings.smart_review_level_1_count,
-        2: settings.smart_review_level_2_count,
-        3: settings.smart_review_level_3_count,
+        # Preserve the total review quota when merging the two former buckets.
+        3: settings.smart_review_level_2_count + settings.smart_review_level_3_count,
         4: settings.smart_review_level_4_count,
         5: settings.smart_review_level_5_count,
     }

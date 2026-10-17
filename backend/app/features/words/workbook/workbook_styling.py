@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime
 
+from app.features.words.constants import KNOWLEDGE_LEVELS
+
 from openpyxl import Workbook
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -56,7 +58,6 @@ THIN_BORDER = Border(
 )
 LEVEL_FILLS = {
     1: PatternFill(fill_type="solid", fgColor="FEE2E2"),
-    2: PatternFill(fill_type="solid", fgColor="FEF3C7"),
     3: PatternFill(fill_type="solid", fgColor="DBEAFE"),
     4: PatternFill(fill_type="solid", fgColor="DCFCE7"),
     5: PatternFill(fill_type="solid", fgColor="E5E7EB"),
@@ -129,7 +130,7 @@ def _add_dynamic_row_colors(ws, last_row: int) -> None:
 
 def _add_validations(workbook: Workbook, ws, last_row: int) -> None:
     knowledge_dv = DataValidation(
-        type="list", formula1=f"={LISTS_SHEET_NAME}!$A$1:$A$5", allow_blank=True
+        type="list", formula1=f"={LISTS_SHEET_NAME}!$A$1:$A${len(KNOWLEDGE_LEVELS)}", allow_blank=True
     )
     countability_dv = DataValidation(
         type="list",
@@ -151,7 +152,7 @@ def _add_validations(workbook: Workbook, ws, last_row: int) -> None:
 
 def _create_lists_sheet(workbook: Workbook) -> None:
     ws = workbook.create_sheet(LISTS_SHEET_NAME)
-    for idx, value in enumerate(["1", "2", "3", "4", "5"], start=1):
+    for idx, value in enumerate([str(level) for level in KNOWLEDGE_LEVELS], start=1):
         ws.cell(row=idx, column=1, value=value)
     for idx, value in enumerate(COUNTABILITY_VALUES, start=1):
         ws.cell(row=idx, column=2, value=value)

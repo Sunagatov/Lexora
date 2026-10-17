@@ -8,7 +8,7 @@ describe('Pagination', () => {
       <WordPagination
         page={1}
         totalPages={1}
-        pageSize={20}
+        pageSize={50}
         onPage={vi.fn()}
         onPageSize={vi.fn()}
       />,

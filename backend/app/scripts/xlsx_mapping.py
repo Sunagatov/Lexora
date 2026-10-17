@@ -6,7 +6,11 @@ from dataclasses import dataclass
 from typing import Any
 
 
+from app.features.words.constants import normalize_knowledge_level
+
 IGNORED_SHEETS = {"Lists", "Start Here"}
+
+# Legacy spreadsheets may contain Basic (2); it is imported as Okay (3).
 SUPPORTED_KNOWLEDGE_LEVELS = {1, 2, 3, 4, 5}
 
 VERB_HEADERS = ("Knowledge", "Word", "Russian translations", "Typical prepositions / patterns", "Examples (EN + RU)")
@@ -63,7 +67,7 @@ def parse_knowledge_level(value: Any, *, sheet_name: str, row_number: int) -> in
     level = int(numeric)
     if level not in SUPPORTED_KNOWLEDGE_LEVELS:
         raise ValueError(f"{sheet_name} row {row_number}: Knowledge must be between 1 and 5")
-    return level
+    return normalize_knowledge_level(level)
 
 
 def row_to_dict(headers: tuple[str, ...], row: tuple[Any, ...]) -> dict[str, Any]:

@@ -112,7 +112,7 @@ export function WordPageHero({
             )}
             <span className="word-page-level-chip">
               {word.knowledge_level
-                ? `Level ${word.knowledge_level} — ${LEVEL_LABELS[word.knowledge_level]}`
+                ? LEVEL_LABELS[word.knowledge_level]
                 : 'Unrated word'}
             </span>
             {topicNames && topicNames.length > 0

@@ -17,6 +17,20 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-3) transparent;
+}
+
+.word-collection-layout > .sticky-controls {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.word-collection-scroll > .main-inner {
+  flex: 0 0 auto;
+  min-height: 100%;
+  overflow: visible;
 }
 
 .word-collection-empty-state {
@@ -116,32 +130,33 @@
   font-size: 0.8rem;
 }
 
-.page-size-dropdown {
+.page-size-picker {
+  position: relative;
   flex: 0 0 110px;
   margin-left: 8px;
-  height: 32px;
-  padding: 0 28px 0 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-2);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
 }
 
-.pagination-mobile .page-size-dropdown {
-  flex: 0 0 80px;
+.page-size-picker:hover { background-color: var(--accent-light); }
+.page-size-picker:focus-within {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.page-size-dropdown {
+  /* Keep the native mobile picker and its 16px input to avoid iOS focus zoom.
+     The compact visible label above supplies the shared toolbar typography. */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pagination-mobile .page-size-picker {
+  flex: 0 0 116px;
   margin-left: 0;
-  height: 34px;
-  padding: 0 22px 0 8px;
-  border-radius: 10px;
-  font-size: 0.76rem;
 }
 
 .pagination-mobile { display: none; }
@@ -169,15 +184,19 @@
   }
 
   .page-nav-mobile {
-    min-width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    min-width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--surface);
+    border-color: rgba(99, 102, 241, 0.12);
+    color: var(--text);
   }
 
   .page-label {
     flex: 1;
     min-width: 0;
     text-align: center;
-    font-size: 0.84rem;
+    font-size: 0.78rem;
+    color: var(--text);
   }
 }

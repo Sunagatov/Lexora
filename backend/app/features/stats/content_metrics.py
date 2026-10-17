@@ -45,7 +45,7 @@ def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview,
     for word in words:
         level_counts[word.knowledge_level] += 1
 
-    active_total = sum(level_counts[level] for level in (1, 2, 3, 4))
+    active_total = sum(level_counts[level] for level in (1, 3, 4))
     okay_pct = round(((level_counts[3] + level_counts[4]) / active_total) * 100) if active_total > 0 else 0
 
     overview = VocabularyOverview(
@@ -127,11 +127,11 @@ def _summarize_topic_progress(words: list[WordStatsSnapshot]) -> tuple[int, int,
 
     for word in words:
         level = word.knowledge_level
-        if level is None or not 1 <= level <= 4:
+        if level not in (1, 3, 4):
             continue
         score_sum += (level - 1) / 3
         active_count += 1
-        if level <= 2:
+        if level == 1:
             weak_count += 1
         else:
             strong_count += 1

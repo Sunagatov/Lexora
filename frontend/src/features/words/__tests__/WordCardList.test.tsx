@@ -20,7 +20,7 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
     verb_form: null,
     translation_entries: ['translation'],
     part_of_speech: null,
-    knowledge_level: 2,
+    knowledge_level: 3,
     countability: null,
     pattern: null,
     example_entries: [],
@@ -74,7 +74,7 @@ describe('WordCardList', () => {
 
     render(<RouterProvider router={router} />)
 
-    fireEvent.click(screen.getByRole('button', {name: /basic/i}))
+    fireEvent.click(screen.getByRole('button', {name: /okay/i}))
 
     const overlay = document.querySelector('.level-dropdown-overlay')
     expect(overlay).not.toBeNull()

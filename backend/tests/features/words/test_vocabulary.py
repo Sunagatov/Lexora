@@ -64,7 +64,7 @@ def test_library_summary_includes_unassigned_and_unrated_but_not_deleted(db):
         Word(term="weak", knowledge_level=1, topics=[topic]),
         Word(term="strong", knowledge_level=4),
         Word(term="parked", knowledge_level=5),
-        Word(term="unrated", knowledge_level=2),
+        Word(term="unrated", knowledge_level=3),
         Word(term="deleted", knowledge_level=4, deleted_at=datetime.now(UTC)),
     ])
     db.commit()
@@ -100,6 +100,11 @@ def test_summary_route_and_sort_validation(db):
         response = client.get("/api/words?sort=level-asc&page_size=50")
         assert response.status_code == 200
         assert response.json()["page_size"] == 50
+        response = client.get("/api/words?page_size=200")
+        assert response.status_code == 200
+        assert response.json()["page_size"] == 200
+        assert client.get("/api/words?page_size=201").status_code == 422
+        assert client.get("/api/words").json()["page_size"] == 50
 
 
 def test_combines_or_within_groups_and_and_between_groups_with_topic_subtrees(db):
@@ -111,13 +116,13 @@ def test_combines_or_within_groups_and_and_between_groups_with_topic_subtrees(db
     db.flush()
     db.add_all([
         Word(term="weak-a1", knowledge_level=1, cefr_level="A1", part_of_speech=noun, topics=[parent, child]),
-        Word(term="basic-a2", knowledge_level=2, cefr_level="A2", part_of_speech=verb, topics=[child]),
+        Word(term="basic-a2", knowledge_level=3, cefr_level="A2", part_of_speech=verb, topics=[child]),
         Word(term="strong-a1", knowledge_level=4, cefr_level="A1", part_of_speech=noun, topics=[child]),
         Word(term="weak-b1", knowledge_level=1, cefr_level="B1", part_of_speech=noun, topics=[parent]),
         Word(term="unrelated", knowledge_level=1, cefr_level="A1", part_of_speech=noun, topics=[other]),
     ])
     db.commit()
-    words, total = get_all_words(db, levels=[1, 2], cefr_levels=["A1", "A2"], positions=["noun", "verb"],
+    words, total = get_all_words(db, levels=[1, 3], cefr_levels=["A1", "A2"], positions=["noun", "verb"],
                                  topic_ids=[parent.id, child.id], sort="level-asc", then_sort="cefr-asc", page=1, page_size=50)
     assert total == 2
     assert [word.term for word in words] == ["weak-a1", "basic-a2"]
@@ -130,7 +135,7 @@ def test_primary_and_secondary_sorts_can_be_reordered_and_reversed(db):
         Word(term="alpha", knowledge_level=4, cefr_level="A1"),
         Word(term="bravo", knowledge_level=1, cefr_level="A2"),
         Word(term="zulu", knowledge_level=1, cefr_level="A1"),
-        Word(term="charlie", knowledge_level=2, cefr_level="A1"),
+        Word(term="charlie", knowledge_level=3, cefr_level="A1"),
     ])
     db.commit()
     def terms(primary, secondary):
@@ -143,7 +148,7 @@ def test_primary_and_secondary_sorts_can_be_reordered_and_reversed(db):
 
 
 def test_repeated_filter_parameters_are_validated_by_the_api(db):
-    db.add_all([Word(term="weak", knowledge_level=1, cefr_level="A1"), Word(term="basic", knowledge_level=2, cefr_level="A2")])
+    db.add_all([Word(term="weak", knowledge_level=1, cefr_level="A1"), Word(term="basic", knowledge_level=3, cefr_level="A2")])
     db.commit()
     app = FastAPI()
     app.include_router(router)
@@ -152,5 +157,10 @@ def test_repeated_filter_parameters_are_validated_by_the_api(db):
         response = client.get("/api/words?levels=1&levels=2&cefr_levels=A1&cefr_levels=A2&sort=level-asc&then_sort=cefr-asc")
         assert response.status_code == 200
         assert response.json()["total"] == 2
+        for query in ("level=2", "levels=2", "levels=2&levels=3"):
+            legacy = client.get("/api/words?" + query)
+            assert legacy.status_code == 200
+            assert legacy.json()["total"] == 1
+            assert legacy.json()["words"][0]["knowledge_level"] == 3
         for invalid in ("levels=6", "cefr_levels=D1", "positions=invalid", "topic_ids=0", "then_sort=invalid"):
             assert client.get("/api/words?" + invalid).status_code == 422

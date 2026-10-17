@@ -173,6 +173,8 @@
     flex-direction: column;
   }
 
+  .main-content:has(.word-collection-layout) { overflow: hidden; }
+
   .main-inner {
     flex: 1;
     padding: 0 12px 112px;
@@ -380,17 +382,15 @@
 
   /* Compact mobile pagination */
   .pagination-bar {
-    position: fixed;
-    bottom: 0;
-    left: 8px;
-    right: 8px;
+    position: relative;
+    margin: 0 8px;
     z-index: 20;
     background: var(--surface);
     border: 1px solid var(--border);
     border-bottom: none;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.12);
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -398,6 +398,8 @@
   .word-collection-scroll {
     padding-bottom: 0;
   }
+
+  .word-collection-scroll > .main-inner { padding-bottom: 12px; }
 
   /* Hide table, show cards */
   .word-table-wrap {

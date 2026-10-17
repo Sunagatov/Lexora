@@ -1,5 +1,6 @@
 import {Children, cloneElement, useId, useState} from 'react'
 import type {ReactElement, ReactNode} from 'react'
+import {LEVELS, LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {EditState} from '@/features/words/model/wordForm'
 import type {Topic} from '@/features/topics/types/topicTypes'
 
@@ -80,11 +81,7 @@ export function WordPageEditForm({
           <FormField label="Knowledge level">
             <select className="wp-input" value={draft.knowledge_level} onChange={(event) => onFieldChange('knowledge_level', event.target.value)}>
               <option value="">— not set —</option>
-              <option value="1">1 — Weak</option>
-              <option value="2">2 — Basic</option>
-              <option value="3">3 — Okay</option>
-              <option value="4">4 — Strong</option>
-              <option value="5">5 — Parked</option>
+              {LEVELS.map(level => <option key={level} value={level}>{LEVEL_LABELS[level]}</option>)}
             </select>
           </FormField>
           <FormField label="Part of speech">

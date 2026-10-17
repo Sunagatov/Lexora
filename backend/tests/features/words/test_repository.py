@@ -94,14 +94,14 @@ def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
         topic_ids=[1, 2],
         term="run",
         translation_entries=["бежать"],
-        knowledge_level=2,
+        knowledge_level=3,
     )
 
     word = word_repository.create_word(db, payload)
 
     assert isinstance(word, DummyWord)
     assert word.term == "run"
-    assert word.knowledge_level == 2
+    assert word.knowledge_level == 3
     assert [topic.id for topic in word.topics] == [1, 2]
 
     args = duplicate_check.call_args.args

@@ -9,7 +9,7 @@ export function useWordFilterControls(options: Options = {}) {
   const [params, setParams] = useSearchParams()
   const defaultSize = options.defaultPageSize ?? DEFAULT_PAGE_SIZE
   const wordSearch = params.get('search') ?? ''
-  const levelFilter: KnowledgeFilter = parseSelection(params.get('level'), LEVELS) ?? 'all'
+  const levelFilter: KnowledgeFilter = parseSelection(params.get('level')?.split(',').map(value => value === '2' ? '3' : value).join(',') ?? null, LEVELS) ?? 'all'
   const posFilter = parseSelection(params.get('pos'), POS_VALUES)
   const cefrFilter = parseSelection(params.get('cefr'), CEFR_LEVELS)
   const rawSort = params.get('sort') as SortOption
@@ -21,7 +21,7 @@ export function useWordFilterControls(options: Options = {}) {
   const rawPage = Number(params.get('page'))
   const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1
   const rawSize = Number(params.get('pageSize'))
-  const pageSize = PAGE_SIZES.includes(rawSize) && rawSize <= 100 ? rawSize : defaultSize
+  const pageSize = PAGE_SIZES.includes(rawSize) ? rawSize : defaultSize
 
   function setParam(key: string, value: string | null, resetPage = true) {
     if (options.syncUrl === false) return

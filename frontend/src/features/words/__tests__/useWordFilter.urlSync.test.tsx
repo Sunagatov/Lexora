@@ -47,7 +47,7 @@ describe('useWordFilter URL sync', () => {
   })
 
   it('normalizes an out-of-range page param to the last page', async () => {
-    const words = Array.from({length: 45}, (_, index) => ({
+    const words = Array.from({length: 145}, (_, index) => ({
       id: index + 1,
       topic_ids: [],
       term: `word-${index + 1}`,

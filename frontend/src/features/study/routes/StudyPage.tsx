@@ -85,26 +85,6 @@ export function StudyPage() {
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} topics={s.topics} />
         ) : (
           <div className="study-topic-panel">
-            <div className="main-inner study-breadcrumb-bar" style={{paddingBottom: 0}}>
-              <Breadcrumb
-                items={[
-                  {label: 'Home', onClick: () => navigate(routes.home)},
-                  ...topicBreadcrumbs.map((topic, index) => {
-                    const isLastTopic = index === topicBreadcrumbs.length - 1
-                    return ({
-                    label: topic.name,
-                    isActive: !selectedWord && isLastTopic,
-                    onClick: !isLastTopic ? () => {
-                      setPanelWordId(null)
-                      s.selectTopic(topic.id)
-                    } : undefined,
-                  })
-                  }),
-                  ...(selectedWord ? [{label: selectedWord.term, isActive: true}] : []),
-                ]}
-              />
-            </div>
-
             {s.selectedTopicId === null ? (
               <div className="main-inner">
                 <EmptyState
@@ -117,7 +97,18 @@ export function StudyPage() {
             ) : (
               <div className={`word-collection-split${panelWordId && !isMobile ? ' has-panel' : ''}`}>
                 <WordCollectionView
-                  collectionTitle={`Topic: ${s.selectedTopic?.name ?? 'Loading…'}`}
+                  collectionTitle={s.selectedTopic?.name ?? 'Loading…'}
+                  collectionBreadcrumb={<Breadcrumb items={[
+                    {label: 'All words', onClick: () => navigate(routes.home)},
+                    ...topicBreadcrumbs.map((topic, index) => ({
+                      label: topic.name,
+                      isActive: index === topicBreadcrumbs.length - 1,
+                      onClick: index < topicBreadcrumbs.length - 1 ? () => {
+                        setPanelWordId(null)
+                        s.selectTopic(topic.id)
+                      } : undefined,
+                    })),
+                  ]} />}
                   wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
                   sortBy={s.sortBy} setSortBy={s.setSortBy}
                   thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}

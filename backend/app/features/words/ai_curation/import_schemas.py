@@ -17,6 +17,7 @@ from app.features.words.ai_curation.schema_support import (
 )
 from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.constants import (
+    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     WORD_TERM_MAX_LEN,
@@ -56,7 +57,7 @@ class _WordPayloadBase(BaseModel):
     countability: str | None = None
     part_of_speech: str | None = None
     notes: str | None = Field(default=None, max_length=4000)
-    knowledge_level: int | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     language: str | None = None
     definition: str | None = None
     cefr_level: str | None = None
@@ -101,7 +102,7 @@ class WordCreateV2(_WordPayloadBase):
     target_topic_refs: list[TopicRef] = Field(min_length=1, max_length=20)
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
     translation_entries: list[JsonEntryField] = Field(min_length=1, max_length=20)
-    knowledge_level: int | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
+    knowledge_level: KnowledgeLevel | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     is_active: bool = True
 
 
