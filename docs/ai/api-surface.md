@@ -59,9 +59,12 @@ import/export, historical stats and permanent Trash purge require internet.
 Speech uses the device's installed voices. New app builds cache a versioned shell;
 offline use keeps the last downloaded build until an online reload.
 
-On mobile word cards, a deliberate horizontal touch swipe of at least 72px marks
+On mobile word cards, a deliberate horizontal swipe or primary mouse drag of at least 72px marks
 Strong on the right and Parked on the left. Vertical scroll, interactive buttons,
 screen-edge navigation and short/cancelled swipes retain their normal behavior.
+The card follows the pointer with a Strong/Parked label, then returns to its
+position when released. Losing an inner link's implicit touch capture must not
+cancel the card's gesture; only loss of the card's own capture does.
 Undo remains available for eight seconds. Visible review pages stay stable after
 knowledge changes; sorting/filtering refreshes on the next explicit navigation.
 

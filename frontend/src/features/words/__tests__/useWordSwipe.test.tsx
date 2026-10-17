@@ -42,6 +42,50 @@ it('requires a deliberate horizontal swipe in either direction', () => {
   expect(swipeDirection(100, 90)).toBeNull()
 })
 
+it('keeps swiping when the inner word link loses its implicit touch capture', () => {
+  const onSwipe = vi.fn()
+  window.matchMedia = vi.fn().mockReturnValue({matches: true})
+  function Card() { const {offset, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card"><a href="/words/1">word {offset}</a></article> }
+  render(<Card />)
+  const card = screen.getByTestId('card'), link = screen.getByRole('link')
+  card.setPointerCapture = vi.fn()
+  touch(link, 'pointerdown', 100, 100)
+  touch(link, 'pointermove', 125, 102)
+  // Real touch browsers transfer capture from the touched child to the card.
+  touch(link, 'lostpointercapture', 125, 102)
+  touch(card, 'pointermove', 195, 105)
+  touch(card, 'pointerup', 195, 105)
+  expect(onSwipe).toHaveBeenCalledExactlyOnceWith(4)
+})
+
+it('also accepts a primary mouse drag on a visible card', () => {
+  const onSwipe = vi.fn()
+  function Card() { const {offset, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card">word {offset}</article> }
+  render(<Card />)
+  const card = screen.getByTestId('card')
+  card.setPointerCapture = vi.fn()
+  for (const [type, x] of [['pointerdown', 200], ['pointermove', 100], ['pointerup', 100]] as const) {
+    const event = new Event(type, {bubbles: true})
+    Object.assign(event, {pointerType: 'mouse', pointerId: 1, button: 0, isPrimary: true, clientX: x, clientY: 100})
+    fireEvent(card, event)
+  }
+  expect(onSwipe).toHaveBeenCalledExactlyOnceWith(5)
+})
+
+it.each(['pointercancel', 'lostpointercapture'])('cancels when the card itself receives %s', type => {
+  const onSwipe = vi.fn()
+  function Card() { const {offset, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card">word {offset}</article> }
+  render(<Card />)
+  const card = screen.getByTestId('card')
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 100, 100)
+  touch(card, 'pointermove', 195, 105)
+  touch(card, type, 195, 105)
+  touch(card, 'pointerup', 195, 105)
+  expect(onSwipe).not.toHaveBeenCalled()
+  expect(screen.getByText('word 0')).toBeTruthy()
+})
+
 it('keeps taps, vertical movement and interactive controls available', () => {
   const swipe = vi.fn(), click = vi.fn()
   window.matchMedia = vi.fn().mockReturnValue({matches: true})

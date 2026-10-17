@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
+import type {CSSProperties} from 'react'
 import {createPortal} from 'react-dom'
 import {useQueryClient} from '@tanstack/react-query'
 import {Link} from 'react-router-dom'
@@ -49,9 +50,11 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
   const translation = word.translation_entries.join(' · ')
 
   return (
-    <article {...swipe} className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? offset > 0 ? ' swipe-strong' : ' swipe-parked' : ''}`}>
+    <article {...swipe}
+      style={{'--swipe-x': `${offset}px`, '--swipe-angle': `${offset / 30}deg`} as CSSProperties}
+      className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? ` swipe-dragging ${offset > 0 ? 'swipe-strong' : 'swipe-parked'}` : ''}`}>
       {offset !== 0 && <span className="swipe-feedback" style={{opacity: Math.min(Math.abs(offset) / 72, .95)}} aria-hidden="true">{offset > 0 ? 'Strong →' : '← Parked'}{Math.abs(offset) < 72 ? ' · Keep swiping' : ' · Release'}</span>}
-      <Link className="word-card-body-tap" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
+      <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
         <div className="word-card-grid">
           <div className="word-card-left">
             <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>

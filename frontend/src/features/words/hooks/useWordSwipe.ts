@@ -15,10 +15,10 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
   return {
     offset,
     onPointerDown(event: PointerEvent<HTMLElement>) {
-      if (disabled || event.pointerType !== 'touch' || !event.isPrimary || !window.matchMedia('(max-width: 860px)').matches) return
+      if (disabled || !event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
       if ((event.target as HTMLElement).closest('button, input, select, textarea')) return
       // Leave the browser's screen-edge back gesture available.
-      if (event.clientX < 24 || event.clientX > window.innerWidth - 24) return
+      if (event.pointerType === 'touch' && (event.clientX < 24 || event.clientX > window.innerWidth - 24)) return
       suppressClick.current = false
       start.current = {x: event.clientX, y: event.clientY, id: event.pointerId}
     },
@@ -36,12 +36,16 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
     onPointerUp(event: PointerEvent<HTMLElement>) {
       const point = start.current
       if (!point || point.id !== event.pointerId) return
-      const level = swipeDirection(event.clientX - point.x, event.clientY - point.y)
+      const level = !disabled && point.horizontal ? swipeDirection(event.clientX - point.x, event.clientY - point.y) : null
       reset()
       if (level) { suppressClick.current = true; onSwipe(level) }
     },
     onPointerCancel: reset,
-    onLostPointerCapture: reset,
+    onLostPointerCapture(event: PointerEvent<HTMLElement>) {
+      // Touch starts on the inner link. Its capture-loss event bubbles when
+      // capture moves to the card; only losing the card's own capture cancels.
+      if (event.target === event.currentTarget && event.pointerId === start.current?.id) reset()
+    },
     onClickCapture(event: React.MouseEvent<HTMLElement>) {
       if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false }
     },

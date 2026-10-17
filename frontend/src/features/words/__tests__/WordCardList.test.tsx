@@ -54,8 +54,13 @@ describe('WordCardList', () => {
       const event = new Event(type, {bubbles: true})
       Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: 100})
       fireEvent(card, event)
+      if (type === 'pointermove') {
+        expect(card.style.getPropertyValue('--swipe-x')).toBe('95px')
+        expect(card.classList.contains('swipe-dragging')).toBe(true)
+      }
     }
     expect(onUpdate).toHaveBeenCalledExactlyOnceWith(1, 4)
+    expect(card.style.getPropertyValue('--swipe-x')).toBe('0px')
     expect(router.state.location.pathname).toBe('/')
     fireEvent.click(screen.getByRole('button', {name: 'Undo'}))
     expect(onUpdate).toHaveBeenLastCalledWith(1, 3)
