@@ -23,7 +23,6 @@ import {invalidateWordDependencies, patchWordLevel} from '@/features/words/model
 import {useWordListNavigation, useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 
 export function AllWordsPage() {
-  const navigation = useWordListNavigation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const s = useVocabulary()
@@ -45,6 +44,8 @@ export function AllWordsPage() {
 
   const words = useMemo(() => wordsQuery.isPlaceholderData ? [] : wordsQuery.data?.words ?? [], [wordsQuery.data, wordsQuery.isPlaceholderData])
   const total = wordsQuery.data?.total ?? 0
+  const wordList = {ids: words.map(word => word.id), offset: (page - 1) * pageSize, total, query: s.listParams}
+  const navigation = useWordListNavigation(undefined, wordList)
   const totalPages = s.totalPages
   const loading = wordsQuery.isLoading || wordsQuery.isPlaceholderData
   useWordListScrollRestore(loading)
@@ -243,7 +244,7 @@ export function AllWordsPage() {
             </tbody>
           </table>
         </div>
-        {isMobile && <WordCardList words={words} pendingWordId={pendingWordId} onUpdate={handleLevelChange} />}
+        {isMobile && <WordCardList words={words} wordList={wordList} pendingWordId={pendingWordId} onUpdate={handleLevelChange} />}
         </>
       )}
 

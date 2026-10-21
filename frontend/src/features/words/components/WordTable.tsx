@@ -6,10 +6,11 @@ import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordD
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {smartPreview} from '@/features/words/model/wordPresenter'
-import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
+import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 
 type Props = {
   words: Word[]
+  wordList?: WordListContext
   pendingWordId: number | null
   pendingWordIds?: ReadonlySet<number>
   fromTopicSlug?: string
@@ -18,8 +19,8 @@ type Props = {
   selectedWordId?: number | null
 }
 
-export function WordTable({words, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
-  const navigation = useWordListNavigation(fromTopicSlug)
+export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
+  const navigation = useWordListNavigation(fromTopicSlug, wordList)
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)

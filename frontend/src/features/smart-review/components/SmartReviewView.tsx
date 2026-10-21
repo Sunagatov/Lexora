@@ -149,7 +149,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
           filteredCount={filter.filteredWords.length}
           pageStart={filter.pageStart} pageEnd={filter.pageEnd}
           levelSummary={filter.levelSummary}
-          pageWords={filter.pageWords} page={filter.page} totalPages={filter.totalPages}
+          pageWords={filter.pageWords} navigationWords={filter.filteredWords} page={filter.page} totalPages={filter.totalPages}
           pageSize={filter.pageSize} setPageSize={filter.setPageSize} setPage={filter.setPage}
           pendingWordId={update.pendingWordId} onUpdate={handleUpdate}
           onWordSelect={isMobile ? undefined : setPanelWordId}

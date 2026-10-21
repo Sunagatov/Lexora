@@ -98,7 +98,7 @@ export function VocabularyPage() {
               pageStart={pageStart} pageEnd={pageEnd} levelSummary={levelSummary}
               progressLabel="Whole vocabulary progress"
               progressReady={s.summaryQuery.isSuccess}
-              pageWords={words} page={s.page} totalPages={s.totalPages}
+              pageWords={words} navigationQuery={s.listParams} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}
               isLoading={s.wordsQuery.isLoading || s.wordsQuery.isPlaceholderData}

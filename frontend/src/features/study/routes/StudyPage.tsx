@@ -122,7 +122,7 @@ export function StudyPage() {
                   totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                   filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}
                   levelSummary={s.levelSummary}
-                  pageWords={s.pageWords} page={s.page} totalPages={s.totalPages}
+                  pageWords={s.pageWords} navigationWords={s.filteredWords} page={s.page} totalPages={s.totalPages}
                   pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
                   pendingWordId={s.pendingWordId} pendingWordIds={s.pendingWordIds} onUpdate={s.updateLevel}
                   fromTopicSlug={s.selectedTopic?.slug}

@@ -14,6 +14,7 @@ import * as publicConfig from '@/shared/config/usePublicConfig'
 vi.mock('@/features/words/api/wordsApi', () => ({
   fetchWord: vi.fn(),
   fetchWords: vi.fn(),
+  fetchWordList: vi.fn(),
   updateWord: vi.fn(),
   deleteWord: vi.fn(),
   updateWordKnowledgeLevel: vi.fn(),
@@ -109,6 +110,25 @@ describe('WordPage — draft reset on word navigation', () => {
     vi.mocked(wordsApi.fetchWords).mockResolvedValue([word1, word2])
     vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
     vi.mocked(wordsApi.deleteWord).mockResolvedValue(undefined)
+  })
+
+  it('keeps the filtered list sequence and return state when moving to the next word', async () => {
+    vi.mocked(wordsApi.fetchWord).mockImplementation(async id => id === 1 ? word1 : word2)
+    const state = {returnTo: {pathname: '/', search: '?level=1&page=2', scrollTop: 844}, wordList: {ids: [1, 2], offset: 50, total: 69}}
+    const router = buildRouter('/words/1', state)
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByRole('heading', {name: 'alpha'})
+    expect(screen.getByText('51 / 69')).toBeTruthy()
+    expect(screen.getByRole('button', {name: 'All words'})).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', {name: 'Next'}))
+    await screen.findByRole('heading', {name: 'beta'})
+    expect(screen.getByText('52 / 69')).toBeTruthy()
+    expect(router.state.location.state).toEqual(state)
+    fireEvent.click(screen.getByRole('button', {name: 'Back'}))
+    await screen.findByText('vocabulary page')
+    expect(router.state.location.search).toBe('?level=1&page=2')
+    expect(router.state.location.state).toEqual({wordListScrollTop: 844})
   })
 
   it('shows a retryable load error for a network failure instead of claiming the word is missing', async () => {

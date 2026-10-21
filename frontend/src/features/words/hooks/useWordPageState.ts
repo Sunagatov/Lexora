@@ -11,6 +11,7 @@ import {type EditState, toEditState, buildSavePayload} from '@/features/words/mo
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
 import {invalidateWordDependencies, removeWordFromLists, replaceWordInLists} from '@/features/words/model/wordCache'
 import type {WordLocationState} from '@/features/words/hooks/useWordListNavigation'
+import {useWordSequence} from '@/features/words/hooks/useWordSequence'
 
 type UseWordPageStateOptions = {
   onSaveSuccess?: (updated: Word, locationState?: WordLocationState) => void
@@ -22,7 +23,9 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const location = useLocation()
   const queryClient = useQueryClient()
   const editing = location.pathname.endsWith('/edit')
-  const fromTopicSlug = (location.state as {fromTopicSlug?: string} | null)?.fromTopicSlug
+  const locationState = location.state as WordLocationState | null
+  const fromTopicSlug = locationState?.fromTopicSlug
+  const wordList = locationState?.wordList
 
   const [draft, setDraft] = useState<EditState | null>(null)
   const [confirming, setConfirming] = useState(false)
@@ -31,6 +34,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
 
   const numericWordId = Number(wordId)
   const isValidWordId = Number.isInteger(numericWordId) && (numericWordId > 0 || (numericWordId < 0 && offlineStatus().saved))
+  const sequence = useWordSequence(numericWordId, wordList)
 
   const wordQuery = useQuery({
     queryKey: isValidWordId ? queryKeys.word(numericWordId) : ['word', 'invalid', wordId ?? 'missing'],
@@ -51,7 +55,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const topicWordsQuery = useQuery({
     queryKey: topic ? queryKeys.topicWords(topic.id) : ['words', 'topic', 'missing'],
     queryFn: () => fetchWords({topicId: topic!.id}),
-    enabled: isValidWordId && !!topic,
+    enabled: isValidWordId && !!topic && !wordList,
   })
 
   const wordIdForEffect = word?.id
@@ -106,9 +110,10 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
       .sort((a, b) => a.term.localeCompare(b.term))
   }, [topicWordsQuery.data, word, topic, topics])
 
-  const currentIdx = topicWords.findIndex((w) => w.id === word?.id)
-  const prevWord = currentIdx > 0 ? topicWords[currentIdx - 1] : null
-  const nextWord = currentIdx >= 0 && currentIdx < topicWords.length - 1 ? topicWords[currentIdx + 1] : null
+  const topicIndex = topicWords.findIndex((w) => w.id === word?.id)
+  const currentIdx = wordList ? sequence.currentIndex : topicIndex
+  const prevWord = topicIndex > 0 ? topicWords[topicIndex - 1] : null
+  const nextWord = topicIndex >= 0 && topicIndex < topicWords.length - 1 ? topicWords[topicIndex + 1] : null
 
   useEffect(() => {
     if (!editing) {
@@ -213,6 +218,14 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     currentIdx,
     prevWord,
     nextWord,
+    prevWordId: wordList ? sequence.previousId : prevWord?.id,
+    nextWordId: wordList ? sequence.nextId : nextWord?.id,
+    navigationTotal: wordList ? sequence.total : topicWords.length,
+    navigationLoading: sequence.loading,
+    navigationError: sequence.error,
+    retryNavigation: sequence.retry,
+    prevLocationState: wordList ? {...locationState, wordList: sequence.previousContext} : location.state,
+    nextLocationState: wordList ? {...locationState, wordList: sequence.nextContext} : location.state,
     draft,
     set,
     save,
@@ -227,12 +240,12 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     handleEnrich,
     fromTopicSlug,
     loadError: (wordQuery.isError && !(wordQuery.error instanceof ApiError && wordQuery.error.status === 404))
-      || topicsQuery.isError || topicWordsQuery.isError,
+      || topicsQuery.isError || (!wordList && topicWordsQuery.isError),
     retry: () => {
       void wordQuery.refetch()
       void topicsQuery.refetch()
-      if (topic) void topicWordsQuery.refetch()
+      if (topic && !wordList) void topicWordsQuery.refetch()
     },
-    isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || (!!topic && topicWordsQuery.isLoading)),
+    isLoading: isValidWordId && (wordQuery.isLoading || topicsQuery.isLoading || (!wordList && !!topic && topicWordsQuery.isLoading)),
   }
 }

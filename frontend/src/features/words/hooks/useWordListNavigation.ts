@@ -2,23 +2,33 @@ import {useLayoutEffect} from 'react'
 import type {MouseEvent} from 'react'
 import {useLocation, useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
+import type {WordListParams} from '@/features/words/api/wordsApi'
+
+export type WordListContext = {
+  ids: number[]
+  offset: number
+  total: number
+  query?: WordListParams
+}
 
 export type WordLocationState = {
   fromTopicSlug?: string
   returnTo?: {pathname: string; search: string; scrollTop?: number}
+  wordList?: WordListContext
 }
 
 function listScrollElement() {
   return document.querySelector('.word-collection-scroll, .all-words-page') ?? document.scrollingElement
 }
 
-export function useWordListNavigation(fromTopicSlug?: string) {
+export function useWordListNavigation(fromTopicSlug?: string, wordList?: WordListContext) {
   const location = useLocation()
   const navigate = useNavigate()
   const returnTo = {pathname: location.pathname, search: location.search}
   const state: WordLocationState = {
     fromTopicSlug,
     returnTo,
+    wordList,
   }
 
   function openWord(event: MouseEvent<HTMLElement>, wordId: number, editing = false) {

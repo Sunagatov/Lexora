@@ -29,5 +29,5 @@ export function useVocabulary() {
   useEffect(() => {
     if (wordsQuery.isSuccess && !wordsQuery.isPlaceholderData && page > totalPages) setPage(totalPages)
   }, [wordsQuery.isSuccess, wordsQuery.isPlaceholderData, page, totalPages, setPage])
-  return {...controls, wordsQuery, summaryQuery, totalPages}
+  return {...controls, listParams, wordsQuery, summaryQuery, totalPages}
 }

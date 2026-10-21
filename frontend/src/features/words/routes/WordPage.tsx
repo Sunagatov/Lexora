@@ -84,7 +84,7 @@ export function WordPage() {
         breadcrumb={
           <Breadcrumb
             items={[
-              {label: 'Home', onClick: () => navigate(routes.home)},
+              {label: 'All words', onClick: () => navigate(routes.home)},
               ...(topic?.name ? [{label: topic.name, onClick: () => navigate(backRoute)}] : []),
               {label: word.term, isActive: true},
             ]}
@@ -102,6 +102,11 @@ export function WordPage() {
       />
 
       <div className="word-page-inner">
+        {!editing && s.navigationLoading && <p role="status">Loading neighbouring words…</p>}
+        {!editing && s.navigationError && <div role="alert" className="wp-save-error">
+          Could not load neighbouring words. Your current word is still available.
+          <button type="button" className="btn btn-ghost" onClick={s.retryNavigation}>Retry</button>
+        </div>}
         {!editing && <WordPageView word={word} topics={topics} hideTranslation hidePOS />}
 
         {editing && draft && (
@@ -127,11 +132,11 @@ export function WordPage() {
       {!editing && (
         <WordPageFooterNav
           currentIndex={s.currentIdx}
-          totalWords={s.topicWords.length}
-          hasPrev={!!s.prevWord}
-          hasNext={!!s.nextWord}
-          onPrev={() => s.prevWord && navigate(routes.word(s.prevWord.id), {state: location.state})}
-          onNext={() => s.nextWord && navigate(routes.word(s.nextWord.id), {state: location.state})}
+          totalWords={s.navigationTotal}
+          hasPrev={!!s.prevWordId}
+          hasNext={!!s.nextWordId}
+          onPrev={() => s.prevWordId && navigate(routes.word(s.prevWordId), {state: s.prevLocationState})}
+          onNext={() => s.nextWordId && navigate(routes.word(s.nextWordId), {state: s.nextLocationState})}
         />
       )}
 

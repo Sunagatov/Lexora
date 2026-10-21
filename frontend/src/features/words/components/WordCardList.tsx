@@ -6,21 +6,23 @@ import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
-import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
+import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {SWIPE_THRESHOLD, useWordSwipe} from '@/features/words/hooks/useWordSwipe'
 
 type UpdateLevel = (wordId: number, level: WordKnowledgeLevel) => void | Promise<boolean | void>
 
 type Props = {
   words: Word[]
+  wordList?: WordListContext
   pendingWordId: number | null
   pendingWordIds?: ReadonlySet<number>
   fromTopicSlug?: string
   onUpdate: UpdateLevel
 }
 
-function WordCard({word, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
+function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
   word: Word
+  wordList?: WordListContext
   pendingWordId: number | null
   fromTopicSlug?: string
   onUpdate: UpdateLevel
@@ -29,7 +31,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
   const [openLevel, setOpenLevel] = useState(false)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
-  const navigation = useWordListNavigation(fromTopicSlug)
+  const navigation = useWordListNavigation(fromTopicSlug, wordList)
   const {offset, ready, ...swipe} = useWordSwipe(level => onSwipe(word, level), pendingWordId === word.id || openLevel)
 
   function speak(e: React.MouseEvent) {
@@ -107,7 +109,7 @@ function WordCard({word, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
   )
 }
 
-export function WordCardList({words, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate}: Props) {
+export function WordCardList({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate}: Props) {
   async function swipe(word: Word, level: 4 | 5) {
     if (word.knowledge_level === level) return
     try { await onUpdate(word.id, level) }
@@ -119,6 +121,7 @@ export function WordCardList({words, pendingWordId, pendingWordIds, fromTopicSlu
         <WordCard
           key={word.id}
           word={word}
+          wordList={wordList}
           pendingWordId={pendingWordIds?.has(word.id) ? word.id : pendingWordId}
           fromTopicSlug={fromTopicSlug}
           onUpdate={onUpdate}

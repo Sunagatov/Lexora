@@ -16,6 +16,7 @@ import type {ReactNode} from 'react'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilter, Selection} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import type {WordListParams} from '@/features/words/api/wordsApi'
 import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
 import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
@@ -44,6 +45,8 @@ type Props = {
   progressLabel?: string
   progressReady?: boolean
   pageWords: Word[]
+  navigationWords?: Word[]
+  navigationQuery?: WordListParams
   page: number; totalPages: number
   pageSize: number; setPageSize: (n: number) => void
   setPage: (p: number) => void
@@ -64,13 +67,19 @@ export function WordCollectionView({
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
   pageStart, pageEnd, levelSummary, progressLabel, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
-  pageWords, page, totalPages, pageSize, setPageSize, setPage,
+  pageWords, navigationWords, navigationQuery, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
   onWordSelect, selectedWordId,
 }: Props) {
   useWordListScrollRestore(isLoading)
+  const wordList = {
+    ids: (navigationWords ?? pageWords).map(word => word.id),
+    offset: navigationWords ? 0 : Math.max(0, pageStart - 1),
+    total: filteredCount,
+    query: navigationQuery,
+  }
   function handlePage(p: number) {
     setPage(p)
     document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'smooth'})
@@ -117,8 +126,8 @@ export function WordCollectionView({
             <div className="empty-state word-collection-empty-state">{emptyMessage}</div>
           ) : (
             <>
-              <WordTable words={pageWords} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
-              <WordCardList words={pageWords} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+              <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
+              <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
             </>
           )}
         </div>

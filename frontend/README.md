@@ -42,3 +42,9 @@ Swipes started while saving also stay on the list without opening word details;
 ordinary taps still work.
 The release position also handles fast flicks without intermediate movement
 events; short drags do not open the word, and reversing direction commits once.
+
+Word details opened from a list keep its filtered order for Prev/Next and its
+original page and scroll position for Back. Server-paged lists load only the
+neighbouring page at a boundary; topics and Daily Word Mix keep their loaded
+filtered sequence. A failed neighbouring-page request can be retried without
+hiding the current word. Direct word links retain topic navigation.
