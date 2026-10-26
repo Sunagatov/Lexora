@@ -65,6 +65,36 @@ def get_all_words(
     cefr_levels: list[str] | None = None,
     topic_ids: list[int] | None = None,
 ) -> list[Word] | tuple[list[Word], int]:
+    stmt = _filtered_word_stmt(db, topic_id=topic_id, search=search, pos=pos, cefr=cefr,
+        level=level, completeness=completeness, levels=levels, positions=positions,
+        cefr_levels=cefr_levels, topic_ids=topic_ids)
+    if page is not None and page_size is not None:
+        total = db.scalar(count_stmt(stmt)) or 0
+        stmt = paginate_stmt(ordered_word_stmt(stmt, sort, then_sort), page, page_size)
+        return list(db.scalars(stmt).all()), total
+
+    return list(db.scalars(ordered_word_stmt(stmt, sort, then_sort)).all())
+
+
+def get_ordered_word_ids(db: Session, *, sort: str = "term-asc", then_sort: str | None = None, **filters) -> list[int]:
+    """Load a navigation snapshot without loading vocabulary content for every word."""
+    stmt = ordered_word_stmt(_filtered_word_stmt(db, **filters), sort, then_sort)
+    return list(db.scalars(stmt.with_only_columns(Word.id)).all())
+
+
+def _filtered_word_stmt(
+    db: Session,
+    topic_id: int | None = None,
+    search: str | None = None,
+    pos: str | None = None,
+    cefr: str | None = None,
+    level: int | None = None,
+    completeness: str | None = None,
+    levels: list[int] | None = None,
+    positions: list[str] | None = None,
+    cefr_levels: list[str] | None = None,
+    topic_ids: list[int] | None = None,
+):
     stmt = active_words_stmt()
     if topic_id is not None or topic_ids:
         from app.features.topics.api import get_active_subtree_topic_ids
@@ -85,13 +115,7 @@ def get_all_words(
     if completeness:
         stmt = apply_completeness_filter(stmt, completeness)
 
-    if page is not None and page_size is not None:
-        total = db.scalar(count_stmt(stmt)) or 0
-        stmt = paginate_stmt(ordered_word_stmt(stmt, sort, then_sort), page, page_size)
-        return list(db.scalars(stmt).all()), total
-
-    stmt = ordered_word_stmt(stmt, sort, then_sort)
-    return list(db.scalars(stmt).all())
+    return stmt
 
 
 def get_word_by_id(db: Session, word_id: int) -> Word | None:

@@ -140,7 +140,7 @@ export function QuickAddSheet({onClose}: Props) {
             ) : (
               <div className="quick-add-topic-row">
                 <input className="quick-add-input" aria-label="New topic name" placeholder="New topic name…" value={q.newTopic}
-                  autoFocus maxLength={200} disabled={q.savePending} onChange={(e) => q.setNewTopic(e.target.value)}
+                  autoFocus maxLength={200} disabled={q.savePending || q.createTopicPending} onChange={(e) => q.setNewTopic(e.target.value)}
                   onKeyDown={(e) => {
                     e.stopPropagation()
                     if (e.key === 'Enter') {
@@ -155,7 +155,7 @@ export function QuickAddSheet({onClose}: Props) {
                   onClick={q.createTopic}>
                   {q.createTopicPending ? '…' : 'Create'}
                 </button>
-                <button type="button" className="quick-add-close" onClick={q.cancelNewTopic} aria-label="Cancel new topic">
+                <button type="button" className="quick-add-close" disabled={q.createTopicPending} onClick={q.cancelNewTopic} aria-label="Cancel new topic">
                   <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                     <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
                   </svg>

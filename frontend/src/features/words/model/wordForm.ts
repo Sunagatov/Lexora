@@ -109,3 +109,11 @@ export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: bool
     pattern: toNullStr(draft.pattern),
   }
 }
+
+export function buildChangedSavePayload(draft: EditState, initial: EditState): Partial<Word> {
+  const payloadFor = (state: EditState) => buildSavePayload(state,
+    state.part_of_speech === 'verb' || state.part_of_speech === 'phrasal verb', state.part_of_speech === 'noun')
+  const before = payloadFor(initial)
+  return Object.fromEntries(Object.entries(payloadFor(draft))
+    .filter(([key, value]) => JSON.stringify(value) !== JSON.stringify(before[key as keyof Word])))
+}

@@ -47,6 +47,7 @@ type Props = {
   pageWords: Word[]
   navigationWords?: Word[]
   navigationQuery?: WordListParams
+  navigationIds?: number[] | null
   page: number; totalPages: number
   pageSize: number; setPageSize: (n: number) => void
   setPage: (p: number) => void
@@ -67,7 +68,7 @@ export function WordCollectionView({
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
   pageStart, pageEnd, levelSummary, progressLabel, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
-  pageWords, navigationWords, navigationQuery, page, totalPages, pageSize, setPageSize, setPage,
+  pageWords, navigationWords, navigationQuery, navigationIds, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
@@ -75,9 +76,9 @@ export function WordCollectionView({
 }: Props) {
   useWordListScrollRestore(isLoading)
   const wordList = {
-    ids: (navigationWords ?? pageWords).map(word => word.id),
-    offset: navigationWords ? 0 : Math.max(0, pageStart - 1),
-    total: filteredCount,
+    ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
+    offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),
+    total: navigationIds?.length ?? filteredCount,
     query: navigationQuery,
   }
   function handlePage(p: number) {

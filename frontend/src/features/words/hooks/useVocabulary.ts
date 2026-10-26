@@ -13,6 +13,7 @@ export function useVocabulary() {
     pos: posFilter ?? undefined, cefr: cefrFilter ?? undefined, topicIds: topicFilter.length ? topicFilter : undefined,
     completeness: completeness === 'all' ? undefined : completeness,
     sort: sortBy, thenSort: thenSortBy, page, pageSize,
+    includeSequence: true,
   }
   const wordsQuery = useQuery({
     queryKey: [...queryKeys.wordList, listParams], queryFn: () => fetchWordList(listParams),

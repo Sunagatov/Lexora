@@ -58,7 +58,7 @@ def _load_active_topics(db: Session) -> list[Topic]:
         list(
             db.scalars(
                 select(Topic)
-                .options(load_only(Topic.id, Topic.name, Topic.slug))
+                .options(load_only(Topic.id, Topic.name, Topic.slug, Topic.parent_topic_id))
                 .where(Topic.deleted_at.is_(None))
             ).all()
         ),

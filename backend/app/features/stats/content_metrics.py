@@ -69,16 +69,25 @@ def _build_topic_stats(
     reviewed_word_ids: set[int],
     regressed_word_ids: set[int],
 ) -> list[TopicStat]:
-    topic_word_ids = _load_topic_word_ids(db, word_map)
+    direct_links = _load_topic_word_ids(db, word_map)
+    parents = {topic.id: topic.parent_topic_id for topic in topics}
+    topic_word_ids: dict[int, set[int]] = defaultdict(set)
+    for topic_id, word_ids in direct_links.items():
+        seen: set[int] = set()
+        current_id = topic_id
+        while current_id in parents and current_id not in seen:
+            seen.add(current_id)
+            topic_word_ids[current_id].update(word_ids)
+            current_id = parents[current_id]
 
     result: list[TopicStat] = []
     for topic in topics:
-        words = [word_map[word_id] for word_id in topic_word_ids.get(topic.id, [])]
+        words = [word_map[word_id] for word_id in topic_word_ids.get(topic.id, set())]
         if not words:
             continue
 
         progress, weak_count, strong_count = _summarize_topic_progress(words)
-        topic_word_id_list = topic_word_ids.get(topic.id, [])
+        topic_word_id_list = topic_word_ids.get(topic.id, set())
         reviewed_count = sum(1 for word_id in topic_word_id_list if word_id in reviewed_word_ids)
         regressed_count = sum(1 for word_id in topic_word_id_list if word_id in regressed_word_ids)
         result.append(

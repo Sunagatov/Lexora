@@ -85,8 +85,8 @@ export function formatDuration(seconds: number): string {
 export function filterByMonths(entries: [string, number][], period: MonthPeriod): [string, number][] {
   if (period === 'all') return entries
   const cutoff = new Date()
-  cutoff.setMonth(cutoff.getMonth() - Number(period) + 1)
   cutoff.setDate(1)
+  cutoff.setMonth(cutoff.getMonth() - Number(period) + 1)
   const key = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}`
   return entries.filter(([month]) => month >= key)
 }

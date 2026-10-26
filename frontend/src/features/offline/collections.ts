@@ -28,6 +28,7 @@ export function listWords(replica: Replica, params: URLSearchParams) {
     words = words.filter(w => w.topic_ids.some(id => ids.includes(id)))
   }
   const topicIds = params.getAll('topic_ids').flatMap(id => subtree(replica, Number(id)))
+  if (params.has('topic_ids') && !topicIds.length) words = []
   const sort = params.get('sort') ?? 'term-asc'
   const options = {
     search: params.get('search') ?? '',
@@ -42,7 +43,8 @@ export function listWords(replica: Replica, params: URLSearchParams) {
   words = filterAndSort(words, options)
   const page = Math.max(1, Number(params.get('page')) || 1)
   const pageSize = Math.min(200, Math.max(1, Number(params.get('page_size')) || 50))
-  return {words: words.slice((page - 1) * pageSize, page * pageSize), total: words.length, page, page_size: pageSize, total_pages: Math.ceil(words.length / pageSize)}
+  return {words: words.slice((page - 1) * pageSize, page * pageSize), total: words.length, page, page_size: pageSize,
+    total_pages: Math.ceil(words.length / pageSize), ordered_ids: params.get('include_sequence') === 'true' ? words.map(word => word.id) : null}
 }
 
 export function sidebarStats(replica: Replica) {

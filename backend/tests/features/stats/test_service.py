@@ -14,7 +14,7 @@ from app.features.words.progress import WordProgressEvent, record_level_change
 
 
 def _topic_stub(**kwargs) -> Topic:
-    return cast(Topic, cast(object, SimpleNamespace(**kwargs)))
+    return cast(Topic, cast(object, SimpleNamespace(**({"parent_topic_id": None} | kwargs))))
 
 
 def _word_stub(**kwargs) -> Word:

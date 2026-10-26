@@ -98,14 +98,16 @@ export function VocabularyPage() {
               pageStart={pageStart} pageEnd={pageEnd} levelSummary={levelSummary}
               progressLabel="Whole vocabulary progress"
               progressReady={s.summaryQuery.isSuccess}
-              pageWords={words} navigationQuery={s.listParams} page={s.page} totalPages={s.totalPages}
+              pageWords={words} navigationQuery={s.listParams} navigationIds={s.wordsQuery.data?.ordered_ids} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}
               isLoading={s.wordsQuery.isLoading || s.wordsQuery.isPlaceholderData}
               emptyMessage={s.wordsQuery.isError ? 'Could not load this page. Try the previous page or Retry.' : hasFilters ? 'No words match the current filters.' : 'No words yet. Use Add word to start your library.'}
               onWordSelect={isMobile ? undefined : setPanelWordId} selectedWordId={panelWordId}
             />
-            {panelWordId !== null && !isMobile && <WordDetailPanel wordId={panelWordId} words={words} onClose={() => setPanelWordId(null)} onNavigate={setPanelWordId} />}
+            {panelWordId !== null && !isMobile && <WordDetailPanel wordId={panelWordId} words={words}
+              wordList={s.wordsQuery.data?.ordered_ids ? {ids: s.wordsQuery.data.ordered_ids, offset: 0, total: s.wordsQuery.data.ordered_ids.length} : undefined}
+              onClose={() => setPanelWordId(null)} onNavigate={setPanelWordId} />}
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import {fetchTopics} from '@/features/topics/api/topicsApi'
 import type {Word, EnrichResult} from '@/features/words/types/wordTypes'
 import {ApiError} from '@/shared/api/apiError'
 import {queryKeys} from '@/app/queryKeys'
-import {type EditState, toEditState, buildSavePayload} from '@/features/words/model/wordForm'
+import {type EditState, toEditState, buildChangedSavePayload} from '@/features/words/model/wordForm'
 import {buildWordLocationState, resolveWordContextTopic, topicContainsWordThroughSubtree} from '@/features/words/model/wordPageContext'
 import {invalidateWordDependencies, removeWordFromLists, replaceWordInLists} from '@/features/words/model/wordCache'
 import type {WordLocationState} from '@/features/words/hooks/useWordListNavigation'
@@ -90,6 +90,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   })
 
   const draftWordIdRef = useRef<number | null>(null)
+  const initialDraft = useRef<EditState | null>(null)
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
@@ -125,6 +126,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     if (!editing) {
       setDraft(null)
       draftWordIdRef.current = null
+      initialDraft.current = null
       setSaveError(null)
       return
     }
@@ -132,7 +134,9 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     if (!wordIdForEffect) return
 
     if (draftWordIdRef.current !== wordIdForEffect) {
-      setDraft(toEditState(word))
+      const initial = toEditState(word)
+      initialDraft.current = initial
+      setDraft(initial)
       draftWordIdRef.current = wordIdForEffect
       setSaveError(null)
     }
@@ -163,10 +167,18 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
       setSaveError('Please select a topic.')
       return
     }
-
-    const isVerb = draft.part_of_speech === 'verb' || draft.part_of_speech === 'phrasal verb'
-    const isNoun = draft.part_of_speech === 'noun'
-    saveMutation.mutate(buildSavePayload(draft, isVerb, isNoun))
+    if (draft.frequency_rank.trim() && (!Number.isSafeInteger(Number(draft.frequency_rank)) || Number(draft.frequency_rank) < 1)) {
+      setSaveError('Frequency rank must be a positive whole number.')
+      return
+    }
+    if (!initialDraft.current) return
+    const payload = buildChangedSavePayload(draft, initialDraft.current)
+    // A no-op save must not enqueue an invalid empty offline operation.
+    if (!Object.keys(payload).length) {
+      options.onSaveSuccess?.(word, locationState ?? undefined)
+      return
+    }
+    saveMutation.mutate(payload)
   }
 
   function handleDelete() {

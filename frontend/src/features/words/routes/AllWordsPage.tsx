@@ -45,7 +45,10 @@ export function AllWordsPage() {
 
   const words = useMemo(() => wordsQuery.isPlaceholderData ? [] : wordsQuery.data?.words ?? [], [wordsQuery.data, wordsQuery.isPlaceholderData])
   const total = wordsQuery.data?.total ?? 0
-  const wordList = {ids: words.map(word => word.id), offset: (page - 1) * pageSize, total, query: s.listParams}
+  const orderedIds = wordsQuery.data?.ordered_ids
+  const wordList = orderedIds
+    ? {ids: orderedIds, offset: 0, total: orderedIds.length}
+    : {ids: words.map(word => word.id), offset: (page - 1) * pageSize, total, query: s.listParams}
   const navigation = useWordListNavigation(undefined, wordList)
   const totalPages = s.totalPages
   const loading = wordsQuery.isLoading || wordsQuery.isPlaceholderData

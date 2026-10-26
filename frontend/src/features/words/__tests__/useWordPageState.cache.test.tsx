@@ -88,6 +88,7 @@ function Harness() {
     <div>
       <div data-testid="draft-state">{s.draft ? 'ready' : 'empty'}</div>
       <div data-testid="save-error">{s.saveError ?? ''}</div>
+      <input aria-label="Definition" value={s.draft?.definition ?? ''} onChange={event => s.set('definition', event.target.value)} />
       <button type="button" onClick={s.save}>save</button>
       <button type="button" onClick={s.handleDelete}>delete</button>
     </div>
@@ -140,6 +141,7 @@ describe('useWordPageState cache invalidation', () => {
       expect(screen.getByTestId('draft-state').textContent).toBe('ready')
     })
 
+    fireEvent.change(screen.getByLabelText('Definition'), {target: {value: 'Revised definition'}})
     fireEvent.click(screen.getByText('save'))
 
     await waitFor(() => {
@@ -206,6 +208,7 @@ describe('useWordPageState cache invalidation', () => {
       expect(screen.getByTestId('draft-state').textContent).toBe('ready')
     })
 
+    fireEvent.change(screen.getByLabelText('Definition'), {target: {value: 'Revised definition'}})
     fireEvent.click(screen.getByText('save'))
 
     await waitFor(() => {

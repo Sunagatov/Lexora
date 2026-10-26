@@ -103,6 +103,48 @@ def test_batch_ratings_record_history_once_per_actual_change(api_client):
     assert stats["retention_summary"]["strong_words"] == 2
 
 
+def test_word_list_returns_lightweight_ordered_ids_with_the_same_filters(api_client):
+    client = api_client
+    parent = topic(client, "Sequence parent")
+    child = topic(client, "Sequence child", parent=parent["id"])
+    first = word(client, [child["id"]], term="alpha", knowledge_level=1, cefr_level="A1")
+    second = word(client, [child["id"]], term="bravo", knowledge_level=1, cefr_level="A1")
+    word(client, [child["id"]], term="charlie", knowledge_level=4, cefr_level="A1")
+    word(client, [child["id"]], term="delta", knowledge_level=1, cefr_level="B1")
+    params = {"topic_ids": parent["id"], "levels": 1, "cefr_levels": "A1", "positions": "noun",
+        "sort": "term-desc", "page_size": 1, "include_sequence": "true"}
+    response = client.get("/api/words", params=params)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["ordered_ids"] == [second["id"], first["id"]]
+    assert len(data["words"]) == 1 and data["words"][0]["id"] == second["id"]
+    assert data["total"] == 2
+    assert client.get("/api/words", params={"page_size": 1}).json()["ordered_ids"] is None
+
+
+def test_parent_statistics_include_descendants_without_counting_shared_words_twice(api_client):
+    client = api_client
+    parent = topic(client, "Parent")
+    child = topic(client, "Child", parent=parent["id"])
+    grandchild = topic(client, "Grandchild", parent=child["id"])
+    first = word(client, [parent["id"], child["id"]], term="first", knowledge_level=1)
+    second = word(client, [grandchild["id"]], term="second", knowledge_level=4)
+    word(client, [child["id"]], term="third", knowledge_level=3)
+    client.put(f"/api/words/{first['id']}", json={"knowledge_level": 4})
+    client.put(f"/api/words/{second['id']}", json={"knowledge_level": 1})
+    sidebar = client.get("/api/topics/sidebar-stats").json()
+    stats = client.get("/api/stats").json()
+    rows = {row["id"]: row for row in stats["topics"]}
+    for item in (parent, child, grandchild):
+        row = rows[item["id"]]
+        assert row["total"] == sidebar["topic_counts"][str(item["id"]) ]
+        assert row["progress"] == sidebar["topic_progress"][str(item["id"]) ]
+    assert rows[parent["id"]]["total"] == 3
+    assert rows[parent["id"]]["reviewed_count"] == 2
+    assert rows[parent["id"]]["regressed_count"] == 1
+    assert rows[parent["id"]]["never_reviewed_count"] == 1
+
+
 @pytest.mark.parametrize("deleted", [False, True])
 def test_batch_rejects_unavailable_topics_without_saving_ratings(api_client, deleted):
     client = api_client

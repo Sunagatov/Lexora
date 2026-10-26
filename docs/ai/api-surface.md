@@ -127,6 +127,18 @@ term and ID provide stable tie-breaks before pagination. Invalid repeated filter
 values or sorting choices return `422`.
 Word-list pagination defaults to 50 entries and accepts `page_size` from 1 to 200.
 The website offers 50, 100 and 200 entries per page on mobile and desktop.
+`include_sequence=true` additionally returns `ordered_ids`: a lightweight snapshot
+of every matching Word ID in the same sort order. Main/bulk list navigation keeps
+this snapshot across rating changes, so Prev/Next cannot skip unseen words when
+live filter membership or sorting changes. Full word content stays paginated.
+Saved offline lists provide the same optional field from their local copy.
+Word edit forms send only fields changed from their initial draft. Untouched
+ratings and content are omitted; no-op saves do not create offline operations.
+The editor and local offline changes reject non-integer/non-positive frequency
+ranks before queuing an operation. Unknown/deleted topic filters match no local
+words, rather than dropping the filter. Quick Add clears AI-filled translations
+when the term changes, preserves manual translations, and waits for requested
+topic creation before enabling Save or accepting keyboard submission.
 - `PATCH /api/words/batch` — atomically changes ratings and/or topic links for
   selected words. Rating changes record normal manual review events; unchanged
   ratings do not add events. Topic IDs must exist outside Trash, and each affected
@@ -186,6 +198,8 @@ The deleted topic and its words remain in Trash on conflict.
 - `POST /api/stats/usage` — record usage event.
 
 Retention `strong_words` counts only Strong (`4`), separately from Okay-or-better.
+Topic statistics include all active descendants, deduplicating words linked to
+multiple descendants or both a parent and a child, as the sidebar does.
 Parking/unparking still records review activity, but does not count as learning
 improvement or regression in daily, retention, topic or efficiency metrics.
 

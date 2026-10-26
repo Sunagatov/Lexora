@@ -291,7 +291,34 @@ describe('WordPage — draft reset on word navigation', () => {
     render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
     fireEvent.change(await screen.findByLabelText('Term'), {target: {value: 'revised alpha'}})
     fireEvent.click(screen.getByRole('button', {name: 'Save'}))
-    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, expect.objectContaining({example_entries: examples})))
+    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, {term: 'revised alpha'}))
+  })
+
+  it('sends only the changed definition after another tab updates the rating', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue({...word1, knowledge_level: 1})
+    vi.mocked(wordsApi.updateWord).mockClear()
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={buildRouter('/words/1/edit')} /></QueryClientProvider>)
+    fireEvent.change(await screen.findByLabelText('Definition'), {target: {value: 'Revised definition'}})
+    act(() => client.setQueryData(queryKeys.word(1), {...word1, knowledge_level: 4}))
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, {definition: 'Revised definition'}))
+  })
+
+  it('does not submit unchanged forms or invalid frequency ranks', async () => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue(word1)
+    vi.mocked(wordsApi.updateWord).mockClear()
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const router = buildRouter('/words/1/edit')
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.change(await screen.findByLabelText('Frequency rank'), {target: {value: '1.5'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    expect((await screen.findByRole('alert')).textContent).toContain('positive whole number')
+    expect(wordsApi.updateWord).not.toHaveBeenCalled()
+    fireEvent.change(screen.getByLabelText('Frequency rank'), {target: {value: ''}})
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/words/1'))
+    expect(wordsApi.updateWord).not.toHaveBeenCalled()
   })
 
   it('does not keep another word locked while an earlier enrichment is pending', async () => {
@@ -370,6 +397,7 @@ describe('WordPage — cache invalidation after save', () => {
       expect(screen.getByDisplayValue('alpha')).toBeTruthy()
     })
 
+    fireEvent.change(screen.getByLabelText('Definition'), {target: {value: 'Revised definition'}})
     fireEvent.click(screen.getByText('Save'))
 
     await waitFor(() => {

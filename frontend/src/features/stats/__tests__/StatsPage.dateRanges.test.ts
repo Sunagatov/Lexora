@@ -1,6 +1,6 @@
 import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest'
 import type {DailyActivity} from '@/features/stats/types/statsTypes'
-import {filterByDays, toLocalDateKey} from '@/features/stats/model/statsPageModel'
+import {filterByDays, filterByMonths, toLocalDateKey} from '@/features/stats/model/statsPageModel'
 
 function makeDays(startIsoDate: string, count: number): DailyActivity[] {
   const start = new Date(`${startIsoDate}T00:00:00Z`)
@@ -55,5 +55,14 @@ describe('StatsPage date windows', () => {
 
   it('formats local calendar dates with zero-padded month and day', () => {
     expect(toLocalDateKey(new Date(2024, 2, 5, 23, 7, 0))).toBe('2024-03-05')
+  })
+
+  it.each([
+    ['2026-03-31T12:00:00Z', '2025-04'],
+    ['2026-05-31T12:00:00Z', '2025-06'],
+    ['2026-10-31T12:00:00Z', '2025-11'],
+  ])('includes the first month of a one-year window on %s', (today, firstMonth) => {
+    vi.setSystemTime(new Date(today))
+    expect(filterByMonths([[firstMonth, 3]], '12')).toEqual([[firstMonth, 3]])
   })
 })

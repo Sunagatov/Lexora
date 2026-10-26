@@ -12,6 +12,24 @@ function setup() {
   return replica
 }
 
+it.each([1.5, 0, -1])('rejects invalid frequency rank %s before changing the word or queue', rank => {
+  const replica = setup()
+  const count = replica.changes.length
+  expect(() => changeItem(replica, 'word', 'update', -2, {frequency_rank: rank})).toThrow('positive whole number')
+  expect(replica.words[0].frequency_rank).toBeNull()
+  expect(replica.changes).toHaveLength(count)
+  changeItem(replica, 'word', 'update', -2, {notes: 'A valid next edit'})
+  expect(replica.changes).toHaveLength(count + 1)
+})
+
+it('returns no words for unavailable topic filters and keeps valid OR alternatives', () => {
+  const replica = setup()
+  expect(listWords(replica, new URLSearchParams('topic_ids=999')).total).toBe(0)
+  expect(listWords(replica, new URLSearchParams('topic_ids=999&topic_ids=-1')).total).toBe(1)
+  changeItem(replica, 'topic', 'delete', -1)
+  expect(listWords(replica, new URLSearchParams('topic_ids=-1')).total).toBe(0)
+})
+
 it('creates a topic and word offline, then remaps dependent queued edits after sync', () => {
   const replica = setup()
   changeItem(replica, 'word', 'update', -2, {knowledge_level: 4})

@@ -8,7 +8,7 @@
   background: var(--surface); color: var(--text);
   font: inherit; font-size: 13px; padding: 9px 12px; cursor: pointer;
 }
-.offline-dialog { width: min(480px, calc(100vw - 32px)); box-sizing: border-box; max-height: calc(100dvh - 40px); overflow: auto; padding: 22px; border: 1px solid #51576c; border-radius: 16px; background: var(--surface); color: var(--text); }
+.offline-dialog { margin: auto; width: min(480px, calc(100vw - 32px)); box-sizing: border-box; max-height: calc(100dvh - 40px); overflow: auto; padding: 22px; border: 1px solid #51576c; border-radius: 16px; background: var(--surface); color: var(--text); }
 .offline-dialog::backdrop { background: #0009; }
 .offline-dialog h2 { margin: 0 0 14px; font-size: 19px; }
 .offline-dialog p { font-size: 14px; line-height: 1.5; }

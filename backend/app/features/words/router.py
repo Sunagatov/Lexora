@@ -22,6 +22,7 @@ from app.features.words.repository import (
     bulk_update_words,
     create_word,
     get_all_words,
+    get_ordered_word_ids,
     get_word_by_id,
     get_word_knowledge_summary,
     soft_delete_word,
@@ -65,13 +66,12 @@ def list_words(
     positions: Annotated[list[Literal["noun", "verb", "adjective", "adverb", "phrase", "preposition", "phrasal verb", "other"]] | None, Query()] = None,
     cefr_levels: Annotated[list[Literal["A1", "A2", "B1", "B2", "C1", "C2"]] | None, Query()] = None,
     topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,
+    include_sequence: bool = False,
 ) -> WordListResponse:
-    words, total = get_all_words(
-        db, topic_id=topic_id, search=search, pos=pos, cefr=cefr,
-        level=level, completeness=completeness, page=page, page_size=page_size,
-        sort=sort, then_sort=then_sort, levels=levels, positions=positions,
-        cefr_levels=cefr_levels, topic_ids=topic_ids,
-    )
+    filters = {"topic_id": topic_id, "search": search, "pos": pos, "cefr": cefr,
+        "level": level, "completeness": completeness, "levels": levels, "positions": positions,
+        "cefr_levels": cefr_levels, "topic_ids": topic_ids}
+    words, total = get_all_words(db, page=page, page_size=page_size, sort=sort, then_sort=then_sort, **filters)
     total_pages = (total + page_size - 1) // page_size if total > 0 else 0
     return WordListResponse(
         words=[WordResponse.from_word(w) for w in words],
@@ -79,6 +79,7 @@ def list_words(
         page=page,
         page_size=page_size,
         total_pages=total_pages,
+        ordered_ids=get_ordered_word_ids(db, sort=sort, then_sort=then_sort, **filters) if include_sequence else None,
     )
 
 

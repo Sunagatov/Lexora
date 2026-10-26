@@ -28,6 +28,15 @@ it('keeps the actual filtered list order rather than sorting a word’s topic', 
   expect(fetchWordList).not.toHaveBeenCalled()
 })
 
+it('reaches unseen words across page boundaries using the original ID snapshot', () => {
+  const ids = Array.from({length: 51}, (_, index) => index + 1)
+  const {result} = renderSequence(50, {ids, offset: 0, total: 51})
+  expect(result.current.nextId).toBe(51)
+  expect(result.current.previousId).toBe(49)
+  expect(result.current.currentIndex).toBe(49)
+  expect(fetchWordList).not.toHaveBeenCalled()
+})
+
 it('crosses to the next page with the same search, filters and sorting', async () => {
   const query = {page: 1, pageSize: 2, search: 'milk', level: [1], pos: 'noun', cefr: 'A1', sort: 'level-asc' as const, thenSort: 'cefr-asc' as const}
   vi.mocked(fetchWordList).mockResolvedValue(page([3], 2))

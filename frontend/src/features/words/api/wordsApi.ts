@@ -86,10 +86,12 @@ export type WordListParams = {
   level?: number | number[]; completeness?: string; page?: number; pageSize?: number;
   sort?: SortOption;
   thenSort?: SortOption | null;
+  includeSequence?: boolean;
 }
 
 export type WordListResponse = {
   words: Word[]; total: number; page: number; page_size: number; total_pages: number;
+  ordered_ids?: number[] | null;
 }
 
 export type WordKnowledgeSummary = {total: number; level_counts: Record<number, number>}
@@ -111,6 +113,7 @@ export const fetchWordList = (params: WordListParams = {}): Promise<WordListResp
   if (params.pageSize) q.set('page_size', String(params.pageSize))
   if (params.sort) q.set('sort', params.sort)
   if (params.thenSort !== undefined) q.set('then_sort', params.thenSort ?? 'none')
+  if (params.includeSequence) q.set('include_sequence', 'true')
   const qs = q.toString()
   return request<WordListResponse>(`/api/words${qs ? `?${qs}` : ''}`)
 }

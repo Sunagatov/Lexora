@@ -30,6 +30,7 @@ export function useQuickAdd() {
   const termRef = useRef<HTMLInputElement>(null)
   const enrichmentVersion = useRef(0)
   const saveInProgress = useRef(false)
+  const autoTranslation = useRef<string | null>(null)
 
   const [term, setTerm] = useState('')
   const [translation, setTranslation] = useState('')
@@ -113,6 +114,7 @@ export function useQuickAdd() {
       setFeedback({ok: true, msg: `"${payload.term}" saved!`})
       setTerm('')
       setTranslation('')
+      autoTranslation.current = null
       resetMarkers()
       setTimeout(() => { setFeedback(null); focusTermInput() }, 1800)
     },
@@ -162,7 +164,11 @@ export function useQuickAdd() {
       setEnrichDone(true)
 
       if (result.translation_entries.length > 0) {
-        setTranslation(current => current.trim() ? current : result.translation_entries[0])
+        setTranslation(current => {
+          if (current.trim()) return current
+          autoTranslation.current = result.translation_entries[0]
+          return autoTranslation.current
+        })
       }
     } catch {
       if (version === enrichmentVersion.current) {
@@ -177,7 +183,7 @@ export function useQuickAdd() {
     const trimmedTerm = term.trim()
     const trimmedTranslation = translation.trim()
 
-    if (saveInProgress.current) return
+    if (saveInProgress.current || addingTopic || createTopicMutation.isPending) return
     if (!trimmedTerm) {
       setFeedback({ok: false, msg: 'Word or phrase is required.'})
       focusTermInput()
@@ -199,11 +205,14 @@ export function useQuickAdd() {
     termRef,
     term, setTerm: (value: string) => {
       enrichmentVersion.current++
+      const previousAutoTranslation = autoTranslation.current
+      if (previousAutoTranslation !== null) setTranslation(current => current === previousAutoTranslation ? '' : current)
+      autoTranslation.current = null
       setTerm(value)
       resetMarkers()
       setEnriching(false)
     },
-    translation, setTranslation,
+    translation, setTranslation: (value: string) => { autoTranslation.current = null; setTranslation(value) },
     topicId, setTopicId: (id: number) => { setTopicId(id) },
     newTopic, setNewTopic,
     addingTopic, setAddingTopic,
@@ -215,12 +224,12 @@ export function useQuickAdd() {
     sortedTopics,
     savePending: addWordMutation.isPending,
     createTopicPending: createTopicMutation.isPending,
-    canSave: term.trim().length > 0 && translation.trim().length > 0 && !addWordMutation.isPending,
+    canSave: term.trim().length > 0 && translation.trim().length > 0 && !addWordMutation.isPending && !addingTopic && !createTopicMutation.isPending,
     save, enrich,
     createTopic: () => {
       if (!newTopic.trim() || createTopicMutation.isPending) return
       createTopicMutation.mutate()
     },
-    cancelNewTopic: () => { setAddingTopic(false); setNewTopic('') },
+    cancelNewTopic: () => { if (!createTopicMutation.isPending) { setAddingTopic(false); setNewTopic('') } },
   }
 }

@@ -10,7 +10,7 @@ import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {formatIpa, truncate} from '@/features/words/model/wordPresenter'
 import type {Word} from '@/features/words/types/wordTypes'
 import {SkeletonList} from '@/shared/components/Skeletons'
-import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
+import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {ApiError} from '@/shared/api/apiError'
 
 const CEFR_HERO_CLASS: Record<string, string> = {
@@ -23,6 +23,7 @@ type Props = {
   wordId: number
   words: Word[]
   fromTopicSlug?: string
+  wordList?: WordListContext
   onClose: () => void
   onNavigate: (id: number) => void
 }
@@ -34,8 +35,8 @@ function getMainTranslation(word: Word): string {
   return ''
 }
 
-export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNavigate}: Props) {
-  const navigation = useWordListNavigation(fromTopicSlug)
+export function WordDetailPanel({wordId, words, fromTopicSlug, wordList, onClose, onNavigate}: Props) {
+  const navigation = useWordListNavigation(fromTopicSlug, wordList)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
   const closeTimer = useRef<number | undefined>(undefined)

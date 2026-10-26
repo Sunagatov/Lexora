@@ -72,6 +72,41 @@ describe('useQuickAdd cache invalidation', () => {
     vi.clearAllMocks()
   })
 
+  it('clears an AI-filled translation on term changes while preserving manual translations', async () => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    vi.mocked(wordsApi.enrichWord).mockResolvedValue({...makeWord(10, 'cat'), translation_entries: ['кот']})
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(client)})
+    act(() => result.current.setTerm('cat'))
+    await act(async () => { await result.current.enrich() })
+    expect(result.current.translation).toBe('кот')
+    act(() => result.current.setTerm('dog'))
+    expect(result.current.translation).toBe('')
+    expect(result.current.canSave).toBe(false)
+    act(() => result.current.setTranslation('собака'))
+    act(() => result.current.setTerm('puppy'))
+    expect(result.current.translation).toBe('собака')
+  })
+
+  it('waits for a requested topic before allowing any save, including Enter', async () => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
+    let finish!: (topic: Topic) => void
+    vi.mocked(topicsApi.createTopic).mockReturnValueOnce(new Promise(resolve => { finish = resolve }))
+    vi.mocked(wordsApi.quickAddWord).mockResolvedValue(makeWord(10, 'cat'))
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const {result} = renderHook(() => useQuickAdd(), {wrapper: wrapper(client)})
+    await waitFor(() => expect(result.current.topicId).toBe(1))
+    act(() => { result.current.setTerm('cat'); result.current.setTranslation('кот'); result.current.setAddingTopic(true); result.current.setNewTopic('Animals') })
+    expect(result.current.canSave).toBe(false)
+    act(() => result.current.createTopic())
+    await act(async () => { await result.current.save() })
+    expect(wordsApi.quickAddWord).not.toHaveBeenCalled()
+    await act(async () => { finish(makeTopic(2, 'Animals')) })
+    await waitFor(() => expect(result.current.canSave).toBe(true))
+    await act(async () => { await result.current.save() })
+    await waitFor(() => expect(wordsApi.quickAddWord).toHaveBeenCalledWith(expect.objectContaining({topic_ids: [2]})))
+  })
+
   it('ignores enrichment that arrives after the user changes the term', async () => {
     const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([makeTopic(1, 'Inbox')])
