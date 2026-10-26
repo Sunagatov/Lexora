@@ -87,6 +87,64 @@ def word(client, topic_ids, term="receipt", **fields):
     return response.json()
 
 
+def test_batch_ratings_record_history_once_per_actual_change(api_client):
+    client = api_client
+    group = topic(client, "History")
+    first = word(client, [group["id"]], term="first", knowledge_level=1)
+    second = word(client, [group["id"]], term="second", knowledge_level=3)
+    payload = {"word_ids": [first["id"], second["id"]], "knowledge_level": 4}
+    for _ in range(2):
+        assert client.patch("/api/words/batch", json=payload).json() == {"updated": 2}
+
+    stats = client.get("/api/stats").json()
+    assert stats["efficiency_summary"]["total_review_events"] == 2
+    assert stats["daily_activity"][0]["reviewed"] == 2
+    assert stats["daily_activity"][0]["improved"] == 2
+    assert stats["retention_summary"]["strong_words"] == 2
+
+
+@pytest.mark.parametrize("deleted", [False, True])
+def test_batch_rejects_unavailable_topics_without_saving_ratings(api_client, deleted):
+    client = api_client
+    group = topic(client, "Keep")
+    entry = word(client, [group["id"]], knowledge_level=1)
+    unavailable = 999999
+    if deleted:
+        unavailable = topic(client, "Deleted")["id"]
+        assert client.delete(f"/api/topics/{unavailable}").status_code == 204
+    response = client.patch("/api/words/batch", json={
+        "word_ids": [entry["id"]], "knowledge_level": 4, "add_topic_ids": [unavailable],
+    })
+    assert response.status_code == 400
+    assert "Topics not found" in response.json()["detail"]
+    saved = client.get(f"/api/words/{entry['id']}").json()
+    assert saved["knowledge_level"] == 1
+    assert saved["topic_ids"] == [group["id"]]
+
+
+def test_batch_rejects_last_topic_removal_atomically_and_allows_replacement(api_client):
+    client = api_client
+    shared = topic(client, "Shared")
+    other = topic(client, "Other")
+    first = word(client, [shared["id"], other["id"]], term="first", knowledge_level=1)
+    second = word(client, [shared["id"]], term="second", knowledge_level=1)
+    payload = {"word_ids": [first["id"], second["id"]], "knowledge_level": 4,
+        "remove_topic_ids": [shared["id"]]}
+    response = client.patch("/api/words/batch", json=payload)
+    assert response.status_code == 400
+    assert "at least one active topic" in response.json()["detail"]
+    for entry in (first, second):
+        saved = client.get(f"/api/words/{entry['id']}").json()
+        assert saved["knowledge_level"] == 1
+        assert set(saved["topic_ids"]) == set(entry["topic_ids"])
+    assert client.get("/api/stats").json()["efficiency_summary"]["total_review_events"] == 0
+
+    payload["add_topic_ids"] = [other["id"]]
+    assert client.patch("/api/words/batch", json=payload).json() == {"updated": 2}
+    for entry in (first, second):
+        assert client.get(f"/api/words/{entry['id']}").json()["topic_ids"] == [other["id"]]
+
+
 def preview(client, book, mode="content"):
     stream = BytesIO()
     book.save(stream)

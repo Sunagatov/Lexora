@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {AllWordsPage} from '@/features/words/routes/AllWordsPage'
 import {fetchWordList, fetchWordKnowledgeSummary, batchUpdateWords} from '@/features/words/api/wordsApi'
@@ -94,4 +94,60 @@ it('refreshes other views after a successful level update', async () => {
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.word(1)})
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.wordList, refetchType: 'none'})
   })
+})
+
+it('keeps selected words when another word rating changes', async () => {
+  vi.mocked(fetchWordList).mockResolvedValue(page([alpha, bravo]))
+  vi.mocked(batchUpdateWords).mockResolvedValue({updated: 1})
+  render(<AllWordsPage />, {wrapper: Wrapper})
+  fireEvent.click(await screen.findByRole('checkbox', {name: 'Select alpha'}))
+  const row = screen.getByRole('link', {name: 'bravo'}).closest('tr')!
+  fireEvent.click(within(row).getByRole('button', {name: 'Okay'}))
+  fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
+  await waitFor(() => expect(within(row).getByRole('button', {name: 'Strong'})).toBeTruthy())
+  expect((screen.getByRole('checkbox', {name: 'Select alpha'}) as HTMLInputElement).checked).toBe(true)
+  expect(screen.getByText('1 selected')).toBeTruthy()
+})
+
+it.each([false, true])('keeps each word locked until its own rating save finishes (mobile=%s)', async mobile => {
+  if (mobile) {
+    const original = window.matchMedia('(max-width: 860px)')
+    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({...original, media: query, matches: true}))
+  }
+  vi.mocked(fetchWordList).mockResolvedValue(page([alpha, bravo]))
+  let finishAlpha!: (value: {updated: number}) => void
+  let finishBravo!: (value: {updated: number}) => void
+  vi.mocked(batchUpdateWords).mockImplementation(payload => new Promise(resolve => {
+    if (payload.word_ids[0] === alpha.id) finishAlpha = resolve
+    else finishBravo = resolve
+  }))
+  const {container} = render(<AllWordsPage />, {wrapper: Wrapper})
+  const selector = mobile ? '.word-card' : 'tr.word-row'
+  await waitFor(() => expect(container.querySelectorAll(selector).length).toBe(2))
+  const rows = Array.from(container.querySelectorAll<HTMLElement>(selector))
+  for (const row of rows) {
+    fireEvent.click(within(row).getByRole('button', {name: 'Okay'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
+  }
+  expect((within(rows[0]).getByRole('button', {name: 'Okay'}) as HTMLButtonElement).disabled).toBe(true)
+  await act(async () => { finishBravo({updated: 1}) })
+  expect((within(rows[0]).getByRole('button', {name: 'Okay'}) as HTMLButtonElement).disabled).toBe(true)
+  expect((within(rows[1]).getByRole('button', {name: 'Strong'}) as HTMLButtonElement).disabled).toBe(false)
+  fireEvent.click(within(rows[0]).getByRole('button', {name: 'Okay'}))
+  expect(screen.queryByRole('group', {name: 'Knowledge level'})).toBeNull()
+  expect(batchUpdateWords).toHaveBeenCalledTimes(2)
+  await act(async () => { finishAlpha({updated: 1}) })
+  expect((within(rows[0]).getByRole('button', {name: 'Strong'}) as HTMLButtonElement).disabled).toBe(false)
+})
+
+it('prevents individual rating saves while a bulk update is pending', async () => {
+  let finish!: (value: {updated: number}) => void
+  vi.mocked(batchUpdateWords).mockImplementation(() => new Promise(resolve => { finish = resolve }))
+  render(<AllWordsPage />, {wrapper: Wrapper})
+  fireEvent.click(await screen.findByRole('checkbox', {name: 'Select alpha'}))
+  fireEvent.change(screen.getByRole('combobox', {name: 'Set level'}), {target: {value: '4'}})
+  fireEvent.click(screen.getByRole('button', {name: 'Apply'}))
+  expect((screen.getByRole('button', {name: 'Okay'}) as HTMLButtonElement).disabled).toBe(true)
+  await act(async () => { finish({updated: 1}) })
+  expect((screen.getByRole('button', {name: 'Strong'}) as HTMLButtonElement).disabled).toBe(false)
 })

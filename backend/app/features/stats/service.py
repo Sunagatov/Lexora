@@ -14,14 +14,15 @@ from app.features.stats.activity_metrics import (
     _build_queue_stats,
     _build_retention_stats,
     _build_usage_stats,
+    _knowledge_change,
 )
 from app.features.stats.content_metrics import (
-    list_active_word_stats,
     _build_enrichment_coverage,
     _build_overview,
     _build_topic_stats,
     _build_vocab_profile,
     _build_words_added_by_month,
+    list_active_word_stats,
 )
 from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
@@ -93,11 +94,11 @@ def _summarize_progress_events(progress_events: list[WordProgressEvent]) -> Prog
 
     for event in progress_events:
         reviewed_word_ids.add(event.word_id)
-        old_level = event.old_level or 0
-        if event.new_level > old_level:
+        change = _knowledge_change(event.old_level, event.new_level)
+        if change > 0:
             improved_word_ids.add(event.word_id)
             improved_event_count += 1
-        elif event.new_level < old_level:
+        elif change < 0:
             regressed_word_ids.add(event.word_id)
             regressed_event_count += 1
 

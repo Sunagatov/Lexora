@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from types import SimpleNamespace
-from unittest.mock import MagicMock
 from typing import cast
+from unittest.mock import MagicMock
 
 from app.features.stats import content_metrics as stats_content_metrics
 from app.features.stats import service as stats_service
@@ -215,12 +215,28 @@ def test_build_retention_stats_counts_reviewed_improved_and_regressed_words(make
     assert result.never_reviewed_words == 1
     assert result.improved_words == 1
     assert result.regressed_words == 1
-    assert result.strong_words == 1
+    assert result.strong_words == 0  # Okay is not Strong.
     assert result.weak_words == 1
     assert result.parked_words == 1
     assert result.reviewed_word_share_pct == 67
     assert result.improved_word_share_pct == 50
     assert result.regressed_word_share_pct == 50
+
+
+def test_parking_and_unparking_do_not_count_as_improvement_or_regression() -> None:
+    events = [
+        _progress_event_stub(word_id=index, old_level=old, new_level=new,
+            created_at=datetime(2026, 1, 10, tzinfo=UTC))
+        for index, (old, new) in enumerate([(1, 5), (4, 5), (5, 1), (5, 4), (None, 5)], start=1)
+    ]
+    daily, _ = stats_service._build_daily_activity(events)
+    summary = stats_service._summarize_progress_events(events)
+
+    assert daily[0].reviewed == 5
+    assert (daily[0].improved, daily[0].downgraded, daily[0].net) == (0, 0, 0)
+    assert summary.reviewed_word_ids == {1, 2, 3, 4, 5}
+    assert summary.improved_word_ids == summary.regressed_word_ids == set()
+    assert summary.improved_event_count == summary.regressed_event_count == 0
 
 
 def test_build_consistency_stats_computes_active_and_study_streaks() -> None:

@@ -127,6 +127,12 @@ term and ID provide stable tie-breaks before pagination. Invalid repeated filter
 values or sorting choices return `422`.
 Word-list pagination defaults to 50 entries and accepts `page_size` from 1 to 200.
 The website offers 50, 100 and 200 entries per page on mobile and desktop.
+- `PATCH /api/words/batch` — atomically changes ratings and/or topic links for
+  selected words. Rating changes record normal manual review events; unchanged
+  ratings do not add events. Topic IDs must exist outside Trash, and each affected
+  word must retain an active topic. Invalid topic changes return `400` before any
+  batch changes are saved. The bulk screen preserves selection during rating-only
+  updates and prevents overlapping individual/bulk saves for the same word.
 - `GET /api/words/export/xlsx` — topic workbook; `layout=flat` exports one row per Word ID.
 - `GET /api/words/import/xlsx/template` — blank flat workbook with current topics.
 - `POST /api/words/import/xlsx/preview` — multipart `file`, `mode=add|content` (default add), `minimum_translations=0..20` (default four). Returns all issues, counts, before/after entries and a valid batch UUID/hash. Does not change vocabulary.
@@ -178,6 +184,10 @@ The deleted topic and its words remain in Trash on conflict.
 
 - `GET /api/stats` — aggregate stats.
 - `POST /api/stats/usage` — record usage event.
+
+Retention `strong_words` counts only Strong (`4`), separately from Okay-or-better.
+Parking/unparking still records review activity, but does not count as learning
+improvement or regression in daily, retention, topic or efficiency metrics.
 
 ## Mounted Routers
 

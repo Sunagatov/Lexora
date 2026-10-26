@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {Link, useNavigate} from 'react-router-dom'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
@@ -35,7 +35,8 @@ export function AllWordsPage() {
   const [bulkPending, setBulkPending] = useState(false)
   const [openLevelId, setOpenLevelId] = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
-  const [pendingWordId, setPendingWordId] = useState<number | null>(null)
+  const pendingIds = useRef(new Set<number>())
+  const [pendingWordIds, setPendingWordIds] = useState<ReadonlySet<number>>(new Set())
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
@@ -53,9 +54,15 @@ export function AllWordsPage() {
     : topicsQuery.isError ? 'Failed to load topics. Please try again.'
     : s.summaryQuery.isError ? 'Failed to load vocabulary progress. Please try again.' : null
 
-  useEffect(() => { setSelected(new Set()) }, [words])
+  useEffect(() => {
+    const visibleIds = new Set(words.map(word => word.id))
+    setSelected(previous => {
+      const kept = [...previous].filter(id => visibleIds.has(id))
+      return kept.length === previous.size ? previous : new Set(kept)
+    })
+  }, [words])
   const viewKey = JSON.stringify([search, pos, cefr, level, completeness, page, pageSize, s.sortBy, s.thenSortBy, s.topicFilter])
-  useEffect(() => { setActionError(null) }, [viewKey])
+  useEffect(() => { setActionError(null); setSelected(new Set()) }, [viewKey])
 
   const toggleSelect = (id: number) => setSelected(prev => {
     const next = new Set(prev)
@@ -69,7 +76,7 @@ export function AllWordsPage() {
   }
 
   async function handleBulkApply() {
-    if (selected.size === 0) return
+    if (selected.size === 0 || bulkPending || pendingIds.current.size > 0) return
     const payload: Parameters<typeof batchUpdateWords>[0] = {word_ids: [...selected]}
     if (bulkLevel) payload.knowledge_level = Number(bulkLevel)
     if (bulkTopic) payload.add_topic_ids = [Number(bulkTopic)]
@@ -94,16 +101,23 @@ export function AllWordsPage() {
   }
 
   async function handleLevelChange(wordId: number, newLevel: WordKnowledgeLevel) {
-    setPendingWordId(wordId)
+    if (bulkPending || pendingIds.current.has(wordId)) return false
+    pendingIds.current.add(wordId)
+    setPendingWordIds(new Set(pendingIds.current))
     setActionError(null)
     try {
       await batchUpdateWords({word_ids: [wordId], knowledge_level: newLevel})
       patchWordLevel(queryClient, wordId, newLevel)
       invalidateWordDependencies(queryClient, [queryKeys.smartReview, queryKeys.word(wordId)], {preserveWordPages: true})
+      return true
     } catch (error) {
       redirectIfUnauthorized(error)
       setActionError('Failed to update word. Please try again.')
-    } finally { setPendingWordId(null) }
+      return false
+    } finally {
+      pendingIds.current.delete(wordId)
+      setPendingWordIds(new Set(pendingIds.current))
+    }
   }
 
   function speak(id: number, term: string) {
@@ -225,7 +239,7 @@ export function AllWordsPage() {
                       <div className="word-level-wrap">
                         <div className="level-badge-wrap">
                           <button type="button" className={`level-badge level-badge-btn ${lc}`}
-                            disabled={pendingWordId === word.id}
+                            disabled={bulkPending || pendingWordIds.has(word.id)}
                             onClick={e => { e.stopPropagation(); if (isOpen) { setOpenLevelId(null); return } setLevelAnchor(e.currentTarget); setOpenLevelId(word.id) }}>
                             {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="2,3.5 5,6.5 8,3.5" /></svg>
@@ -244,7 +258,8 @@ export function AllWordsPage() {
             </tbody>
           </table>
         </div>
-        {isMobile && <WordCardList words={words} wordList={wordList} pendingWordId={pendingWordId} onUpdate={handleLevelChange} />}
+        {isMobile && <WordCardList words={words} wordList={wordList} pendingWordId={null}
+          pendingWordIds={bulkPending ? new Set(words.map(word => word.id)) : pendingWordIds} onUpdate={handleLevelChange} />}
         </>
       )}
 
@@ -262,7 +277,7 @@ export function AllWordsPage() {
             <option value="">Add to topic…</option>
             {topics.map(t => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
           </select>
-          <button type="button" className="btn btn-primary" disabled={bulkPending || (!bulkLevel && !bulkTopic)}
+          <button type="button" className="btn btn-primary" disabled={bulkPending || pendingWordIds.size > 0 || (!bulkLevel && !bulkTopic)}
             onClick={handleBulkApply}>{bulkPending ? 'Applying…' : 'Apply'}</button>
           <button type="button" className="btn btn-ghost" onClick={() => setSelected(new Set())}>Clear</button>
         </div>

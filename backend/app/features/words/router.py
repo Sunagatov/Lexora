@@ -16,7 +16,8 @@ from app.features.words.ai_review import (
     build_topic_ai_review_export,
     import_topic_ai_review,
 )
-from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.constants import KnowledgeLevel
+from app.features.words.exceptions import DuplicateWordInTopicError, WordRequiresTopicError
 from app.features.words.repository import (
     bulk_update_words,
     create_word,
@@ -26,7 +27,6 @@ from app.features.words.repository import (
     soft_delete_word,
     update_word,
 )
-from app.features.words.constants import KnowledgeLevel
 from app.features.words.schemas import (
     BatchUpdateRequest,
     BatchUpdateResponse,
@@ -93,13 +93,16 @@ def batch_update_words(
     payload: BatchUpdateRequest,
     db: Session = Depends(get_db),
 ) -> BatchUpdateResponse:
-    updated = bulk_update_words(
-        db,
-        word_ids=payload.word_ids,
-        knowledge_level=payload.knowledge_level,
-        add_topic_ids=payload.add_topic_ids,
-        remove_topic_ids=payload.remove_topic_ids,
-    )
+    try:
+        updated = bulk_update_words(
+            db,
+            word_ids=payload.word_ids,
+            knowledge_level=payload.knowledge_level,
+            add_topic_ids=payload.add_topic_ids,
+            remove_topic_ids=payload.remove_topic_ids,
+        )
+    except (MissingTopicsError, WordRequiresTopicError) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return BatchUpdateResponse(updated=updated)
 
 

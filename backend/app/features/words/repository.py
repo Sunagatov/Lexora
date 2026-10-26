@@ -4,6 +4,7 @@ from sqlalchemy import bindparam, func, select
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
+from app.features.topics.rules import assert_topics_exist
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.domain import (
     assert_no_duplicate_word as assert_no_duplicate_word,
@@ -17,6 +18,7 @@ from app.features.words.domain import (
 from app.features.words.domain import (
     lock_word_identities,
 )
+from app.features.words.exceptions import WordRequiresTopicError
 from app.features.words.model import (
     PartsOfSpeech,
     Word,
@@ -236,6 +238,8 @@ def bulk_update_words(
     add_topic_ids: list[int] | None = None,
     remove_topic_ids: list[int] | None = None,
 ) -> int:
+    if add_topic_ids or remove_topic_ids:
+        assert_topics_exist(db, [*(add_topic_ids or []), *(remove_topic_ids or [])])
     words = list(db.scalars(
         select(Word).where(Word.id.in_(word_ids)).where(Word.deleted_at.is_(None))
     ).all())
@@ -245,8 +249,17 @@ def bulk_update_words(
     add_topics = list(db.scalars(select(Topic).where(Topic.id.in_(add_topic_ids))).all()) if add_topic_ids else []
     remove_set = set(remove_topic_ids) if remove_topic_ids else set()
 
+    # Validate the whole batch before applying any rating or topic changes.
+    if add_topic_ids or remove_topic_ids:
+        for word in words:
+            target_ids = {t.id for t in word.topics if t.deleted_at is None} | {t.id for t in add_topics}
+            if not target_ids - remove_set:
+                raise WordRequiresTopicError(word.id)
+
     for word in words:
         if knowledge_level is not None:
+            if word.knowledge_level != knowledge_level:
+                record_level_change(db, word.id, word.knowledge_level, knowledge_level, PROGRESS_SOURCE_MANUAL)
             word.knowledge_level = knowledge_level
         if add_topics:
             existing_ids = {t.id for t in word.topics}

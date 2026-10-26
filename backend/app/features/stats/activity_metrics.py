@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.smart_review.model import StudyQueue
+from app.features.stats.content_metrics import WordStatsSnapshot
 from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import (
     ConsistencySummary,
@@ -18,7 +19,14 @@ from app.features.stats.schemas import (
     UsageSummary,
 )
 from app.features.words.progress import WordProgressEvent
-from app.features.stats.content_metrics import WordStatsSnapshot
+
+
+def _knowledge_change(old_level: int | None, new_level: int) -> int:
+    # Parked is a study preference, not a level above Strong.
+    if old_level == 5 or new_level == 5:
+        return 0
+    old_level = old_level or 0
+    return (new_level > old_level) - (new_level < old_level)
 
 
 def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyActivity], str | None]:
@@ -30,10 +38,10 @@ def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyAc
             daily[day]["reviewed"] += 1
             seen_per_day[day].add(event.word_id)
 
-        old_level = event.old_level or 0
-        if event.new_level > old_level:
+        change = _knowledge_change(event.old_level, event.new_level)
+        if change > 0:
             daily[day]["improved"] += 1
-        elif event.new_level < old_level:
+        elif change < 0:
             daily[day]["downgraded"] += 1
 
     activity = [
@@ -67,7 +75,7 @@ def _build_retention_stats(
         never_reviewed_words=max(0, total_words - reviewed_words),
         improved_words=improved_words,
         regressed_words=regressed_words,
-        strong_words=level_counts[3] + level_counts[4],
+        strong_words=level_counts[4],
         weak_words=level_counts[1],
         parked_words=level_counts[5],
         reviewed_word_share_pct=round((reviewed_words / total_words) * 100) if total_words > 0 else 0,
