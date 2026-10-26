@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchTopicSidebarStats, fetchTopics, type TopicSidebarStats} from '@/features/topics/api/topicsApi'
@@ -10,6 +10,7 @@ import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {queryKeys} from '@/app/queryKeys'
 import {routes} from '@/app/routes'
 import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
+import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 
 const EMPTY_SIDEBAR_STATS: TopicSidebarStats = {
   total_words: 0,
@@ -53,11 +54,23 @@ export function useStudyState() {
   })
 
   const topicWords = wordsQuery.data ?? []
+  const loadError = topicsQuery.isError || sidebarStatsQuery.isError || wordsQuery.isError
 
-  const filter = useWordFilter(topicWords, {defaultPageSize, topics, syncUrl: !isSmartReview, isLoading: topicsQuery.isLoading || wordsQuery.isLoading})
+  const filter = useWordFilter(topicWords, {defaultPageSize, topics, syncUrl: !isSmartReview, isLoading: topicsQuery.isLoading || wordsQuery.isLoading || loadError})
   const update = useWordUpdate(() =>
     filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
   )
+  const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
+  async function updateLevel(wordId: number, level: WordKnowledgeLevel) {
+    setFailedLevel(null)
+    try { await update.updateLevelAsync(wordId, level); return true }
+    catch { setFailedLevel({wordId, level}); return false }
+  }
+  function retryLoad() {
+    void topicsQuery.refetch()
+    void sidebarStatsQuery.refetch()
+    if (topicState.selectedTopicId !== null) void wordsQuery.refetch()
+  }
   const totalWords = sidebarStats.total_words
   const topicWordCount = topicWords.length
   const filteredWordCount = filter.filteredWords.length
@@ -88,7 +101,10 @@ export function useStudyState() {
     pageStart: filter.pageStart, pageEnd: filter.pageEnd, resetFilters: filter.resetFilters,
     overallWordCount: totalWords, topicWordCount,
     filteredWordCount,
-    updateLevel: update.updateLevel, pendingWordId: update.pendingWordId, pendingWordIds: update.pendingWordIds,
+    updateLevel, pendingWordId: update.pendingWordId, pendingWordIds: update.pendingWordIds,
+    actionError: failedLevel ? 'Failed to save word level. Please try again.' : null,
+    retryUpdate: () => { if (failedLevel) void updateLevel(failedLevel.wordId, failedLevel.level) },
+    loadError, retryLoad,
     smartQueue: smartReview.queue,
     isLoading,
     isWordsLoading,

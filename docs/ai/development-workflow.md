@@ -20,6 +20,11 @@ startup and preserves the file for backup and migration instead of deleting data
 
 The topic-study client loads every word page before applying its local filters
 and pagination. The All Words page continues to use server-side pagination.
+Topic loading failures expose Retry and preserve the requested page. Failed topic
+ratings roll back and offer retrying the chosen level. Daily Word Mix disables
+every word with a pending rating, even when another word is saved concurrently.
+Offline word creation, renaming and topic/identity changes use library-wide
+duplicate checks (including Trash); explicit parts of speech stay separate.
 
 The `/` homepage is My Vocabulary: all non-deleted words, server-side sorting
 and pagination, default 50 per page, Weak first then A1–C2 within each knowledge

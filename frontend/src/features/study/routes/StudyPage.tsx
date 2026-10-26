@@ -85,6 +85,10 @@ export function StudyPage() {
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} topics={s.topics} />
         ) : (
           <div className="study-topic-panel">
+            {(s.loadError || s.actionError) && <div role="alert" className="wp-save-error">
+              {s.loadError ? 'Failed to load this topic. Please try again.' : s.actionError}
+              <button type="button" className="btn btn-ghost" onClick={s.loadError ? s.retryLoad : s.retryUpdate}>Retry</button>
+            </div>}
             {s.selectedTopicId === null ? (
               <div className="main-inner">
                 <EmptyState
@@ -122,11 +126,13 @@ export function StudyPage() {
                   totalWordsOverall={s.overallWordCount} topicTotalCount={s.topicWordCount}
                   filteredCount={s.filteredWordCount} pageStart={s.pageStart} pageEnd={s.pageEnd}
                   levelSummary={s.levelSummary}
+                  progressReady={!s.loadError}
                   pageWords={s.pageWords} navigationWords={s.filteredWords} page={s.page} totalPages={s.totalPages}
                   pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
                   pendingWordId={s.pendingWordId} pendingWordIds={s.pendingWordIds} onUpdate={s.updateLevel}
                   fromTopicSlug={s.selectedTopic?.slug}
                   isLoading={s.isWordsLoading}
+                  emptyMessage={s.loadError ? 'Could not load words. Please try again.' : undefined}
                   onWordSelect={isMobile ? undefined : setPanelWordId}
                   selectedWordId={panelWordId}
                 />

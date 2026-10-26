@@ -12,8 +12,8 @@ vi.mock('@/features/smart-review/hooks/useSmartReview')
 vi.mock('@/features/words/hooks/useWordUpdate')
 vi.mock('@/features/words/hooks/useWordFilter')
 vi.mock('@/features/words/components/WordCollectionView', () => ({
-  WordCollectionView: ({pageWords, onUpdate}: {pageWords: Word[]; onUpdate: (wordId: number, level: 1 | 2 | 3 | 4 | 5) => void}) => (
-    <button type="button" onClick={() => onUpdate(pageWords[0]?.id ?? 0, 3)}>
+  WordCollectionView: ({pageWords, onUpdate, pendingWordId, pendingWordIds}: {pageWords: Word[]; onUpdate: (wordId: number, level: 1 | 3 | 4 | 5) => void; pendingWordId?: number | null; pendingWordIds?: ReadonlySet<number>}) => (
+    <button type="button" disabled={pendingWordId === pageWords[0]?.id || pendingWordIds?.has(pageWords[0]?.id)} onClick={() => onUpdate(pageWords[0]?.id ?? 0, 3)}>
       review first
     </button>
   ),
@@ -141,6 +141,15 @@ describe('SmartReviewView', () => {
     render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
 
     expect(vi.mocked(useWordFilter)).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({defaultPageSize: 50}))
+  })
+
+  it('keeps an earlier word disabled while another word is also saving', () => {
+    vi.mocked(useWordUpdate).mockReturnValue({updateLevelAsync, pendingWordId: 12, pendingWordIds: new Set([11, 12])} as never)
+    render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
+    const button = screen.getByRole('button', {name: 'review first'}) as HTMLButtonElement
+    expect(button.disabled).toBe(true)
+    fireEvent.click(button)
+    expect(updateLevelAsync).not.toHaveBeenCalled()
   })
 
   it('offers a Retry action when the initial word mix request fails', () => {

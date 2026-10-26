@@ -9,11 +9,20 @@ function validateTopics(replica: Replica, ids: number[]) {
   if (!ids.length || ids.some(id => !replica.topics.some(t => t.id === id && !t.deleted_at))) fail('Select at least one available topic.')
 }
 
-function checkWord(replica: Replica, word: OfflineWord) {
+function checkWord(replica: Replica, word: OfflineWord, original?: OfflineWord) {
   if (!word.term?.trim() || word.term.length > 255) fail('Enter a word (up to 255 characters).')
   if (!word.topic_ids.some(id => replica.topics.some(t => t.id === id && !t.deleted_at))) fail('Select at least one available topic.')
   if (word.knowledge_level !== null && ![1, 3, 4, 5].includes(word.knowledge_level)) fail('Choose a valid knowledge level.')
-  if (replica.words.some(w => w.id !== word.id && !w.deleted_at && normalized(w.term) === normalized(word.term) && w.topic_ids.some(id => word.topic_ids.includes(id)))) fail('This word already exists in a selected topic.')
+  // Match the server's library-wide identity rules, including entries in Trash.
+  // Content/rating edits must still work for existing entries with the same spelling.
+  const identityChanged = !original || word.term !== original.term || word.language !== original.language
+    || word.part_of_speech !== original.part_of_speech
+    || word.topic_ids.length !== original.topic_ids.length || word.topic_ids.some(id => !original.topic_ids.includes(id))
+  if (identityChanged) {
+    const duplicate = replica.words.find(w => w.id !== word.id && normalized(w.term) === normalized(word.term)
+      && ((!original && !word.part_of_speech) || (w.language === word.language && w.part_of_speech === word.part_of_speech)))
+    if (duplicate) fail(duplicate.deleted_at ? 'This word is in Trash. Restore it instead.' : 'This word already exists in your library. Add it to the topic instead.')
+  }
 }
 
 export function changeItem(replica: Replica, entity: Change['entity'], action: Change['action'], id: number, data: Record<string, unknown> = {}): unknown {
@@ -61,7 +70,7 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
       if (action === 'update') {
         if (Array.isArray(data.topic_ids)) validateTopics(replica, data.topic_ids as number[])
         const updated = {...word, ...data, updated_at: now} as OfflineWord
-        checkWord(replica, updated)
+        checkWord(replica, updated, word)
         Object.assign(word, updated)
       } else if (action === 'delete') {
         word.deleted_at = now

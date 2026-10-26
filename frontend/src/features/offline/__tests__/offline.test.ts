@@ -38,6 +38,35 @@ it('stores previous values independently from later edits for conflict detection
   expect(replica.words[0].knowledge_level).toBe(5)
 })
 
+it('rejects duplicates in another topic or Trash before adding a sync operation', () => {
+  const replica = setup()
+  changeItem(replica, 'topic', 'create', -1, {name: 'Other'})
+  const pending = replica.changes.length
+  expect(() => changeItem(replica, 'word', 'create', -1, {term: ' PATIENT ', topic_ids: [-3], part_of_speech: 'adjective'})).toThrow('already exists in your library')
+  expect(replica.changes).toHaveLength(pending)
+  changeItem(replica, 'word', 'delete', -2)
+  expect(() => changeItem(replica, 'word', 'create', -1, {term: 'patient', topic_ids: [-3], part_of_speech: 'adjective'})).toThrow('Trash')
+  expect(replica.words).toHaveLength(1)
+})
+
+it('keeps different parts of speech separate and protects edits that would collide', () => {
+  const replica = setup()
+  changeItem(replica, 'word', 'create', -1, {term: 'patient', topic_ids: [-1], part_of_speech: 'noun'})
+  expect(replica.words).toHaveLength(2)
+  const noun = replica.words[1]
+  expect(() => changeItem(replica, 'word', 'update', noun.id, {part_of_speech: 'adjective'})).toThrow('already exists')
+  changeItem(replica, 'word', 'update', noun.id, {knowledge_level: 4, notes: 'Updated'})
+  expect(noun.knowledge_level).toBe(4)
+  expect(noun.notes).toBe('Updated')
+})
+
+it('allows rating existing same-spelling entries without revalidating their identities', () => {
+  const replica = setup()
+  replica.words.push({...structuredClone(replica.words[0]), id: 100})
+  changeItem(replica, 'word', 'update', -2, {knowledge_level: 4})
+  expect(replica.words[0].knowledge_level).toBe(4)
+})
+
 it('deletes/restores topics and exclusive words while retaining relationships and translations', () => {
   const replica = setup()
   changeItem(replica, 'topic', 'delete', -1, {})
