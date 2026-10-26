@@ -278,6 +278,71 @@ describe('WordPage — draft reset on word navigation', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Save'}))
     await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, expect.objectContaining({definition: 'Enriched definition'})))
   })
+
+  it.each([
+    {name: 'bilingual pairs', examples: ['EN: Keep the receipt.\nRU: Сохраните чек.', 'EN: The receipt is here.\nRU: Чек здесь.']},
+    {name: 'plain English', examples: ['Keep the receipt.', 'The receipt is here.']},
+    {name: 'mixed examples and lowercase labels', examples: ['Keep the receipt.', 'en: The receipt is here.\nru: Чек здесь.']},
+  ])('preserves $name when saving an unrelated edit', async ({examples}) => {
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue({...word1, example_entries: examples})
+    vi.mocked(wordsApi.updateWord).mockClear()
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.change(await screen.findByLabelText('Term'), {target: {value: 'revised alpha'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, expect.objectContaining({example_entries: examples})))
+  })
+
+  it('does not keep another word locked while an earlier enrichment is pending', async () => {
+    vi.mocked(wordsApi.fetchWord).mockImplementation(async id => id === 1 ? word1 : word2)
+    vi.mocked(wordsApi.enrichWord).mockReturnValueOnce(new Promise(() => {}))
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByLabelText('Term')
+    fireEvent.click(screen.getByRole('button', {name: '✨ Enrich with AI'}))
+    await act(() => router.navigate('/words/2/edit'))
+    await screen.findByDisplayValue('beta')
+    expect(screen.getByRole('button', {name: 'Save'}).matches(':disabled')).toBe(false)
+  })
+
+  it('ignores enrichment errors from a word the user has left', async () => {
+    vi.mocked(wordsApi.fetchWord).mockImplementation(async id => id === 1 ? word1 : word2)
+    let rejectEnrichment!: (error: Error) => void
+    const pending = new Promise<EnrichResult>((_resolve, reject) => {rejectEnrichment = reject})
+    vi.mocked(wordsApi.enrichWord).mockReturnValueOnce(pending)
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByLabelText('Term')
+    fireEvent.click(screen.getByRole('button', {name: '✨ Enrich with AI'}))
+    await act(() => router.navigate('/words/2/edit'))
+    await screen.findByDisplayValue('beta')
+    await act(async () => {rejectEnrichment(new Error('Unavailable')); await pending.catch(() => {})})
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('ignores an old enrichment after leaving and reopening the same word', async () => {
+    vi.mocked(wordsApi.fetchWord).mockImplementation(async id => id === 1 ? word1 : word2)
+    let resolveEnrichment!: (value: EnrichResult) => void
+    const pending = new Promise<EnrichResult>(resolve => {resolveEnrichment = resolve})
+    vi.mocked(wordsApi.enrichWord).mockReturnValueOnce(pending)
+    const router = buildRouter('/words/1/edit')
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    await screen.findByLabelText('Term')
+    fireEvent.click(screen.getByRole('button', {name: '✨ Enrich with AI'}))
+    await act(() => router.navigate('/words/2/edit'))
+    await screen.findByDisplayValue('beta')
+    await act(() => router.navigate('/words/1/edit'))
+    await screen.findByDisplayValue('alpha')
+    await act(async () => {
+      resolveEnrichment({definition: 'Stale enrichment', translation_entries: [], example_entries: [], synonym_entries: [], antonym_entries: [], collocation_entries: []} as unknown as EnrichResult)
+      await pending
+    })
+    expect((screen.getByLabelText('Definition') as HTMLTextAreaElement).value).toBe('')
+  })
 })
 
 describe('WordPage — cache invalidation after save', () => {
@@ -357,6 +422,7 @@ describe('WordPage — cache invalidation after delete', () => {
     const confirmBtn = screen.getAllByText('Move to Trash').find(
       (el) => el.tagName === 'BUTTON',
     )
+    const wordFetchCount = vi.mocked(wordsApi.fetchWord).mock.calls.length
     fireEvent.click(confirmBtn!)
 
     await waitFor(() => {
@@ -369,6 +435,8 @@ describe('WordPage — cache invalidation after delete', () => {
       expect(keys).toContainEqual(queryKeys.stats)
       expect(keys).toContainEqual(queryKeys.trashWords)
     })
+    await waitFor(() => expect(router.state.location.pathname).toBe('/topics/alpha-topic'))
+    expect(wordsApi.fetchWord).toHaveBeenCalledTimes(wordFetchCount)
   })
 
   it('uses the backend trash retention setting in the delete confirmation copy', async () => {

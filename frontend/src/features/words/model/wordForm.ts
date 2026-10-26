@@ -34,6 +34,20 @@ function splitMultiline(value: string): string[] {
     .filter(Boolean)
 }
 
+function splitExamples(value: string): string[] {
+  const examples: string[] = []
+  for (const line of splitMultiline(value)) {
+    const previous = examples[examples.length - 1]
+    // A labelled Russian line belongs to the immediately preceding English line.
+    if (/^RU:/i.test(line) && previous && /^EN:/i.test(previous) && !previous.includes('\n')) {
+      examples[examples.length - 1] = `${previous}\n${line}`
+    } else {
+      examples.push(line)
+    }
+  }
+  return examples
+}
+
 export function toEditState(word: Word): EditState {
   return {
     term: word.term,
@@ -63,7 +77,7 @@ export function toEditState(word: Word): EditState {
 export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: boolean): Partial<Word> {
   const topicIds = Array.from(new Set(draft.topic_ids.map(Number).filter((n) => Number.isInteger(n) && n !== 0)))
   const translationEntries = splitMultiline(draft.translations)
-  const exampleEntries = splitMultiline(draft.example)
+  const exampleEntries = splitExamples(draft.example)
   const synonymEntries = splitMultiline(draft.synonyms)
   const antonymEntries = splitMultiline(draft.antonyms)
   const collocationEntries = splitMultiline(draft.collocations)

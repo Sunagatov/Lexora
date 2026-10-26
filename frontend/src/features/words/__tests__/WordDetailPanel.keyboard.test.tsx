@@ -22,13 +22,13 @@ const first: Word = {
 }
 const second = {...first, id: 2, term: 'bread'}
 
-function setup() {
-  vi.mocked(api.fetchWord).mockResolvedValue(first)
+function setup(word = first) {
+  vi.mocked(api.fetchWord).mockImplementation(async id => id === word.id ? word : second)
   vi.mocked(topicsApi.fetchTopics).mockResolvedValue([])
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
   const onNavigate = vi.fn()
   const onClose = vi.fn()
-  render(<QueryClientProvider client={client}><MemoryRouter>
+  const panel = (wordId = word.id) => <QueryClientProvider client={client}><MemoryRouter>
     <WordCollectionToolbar
       wordSearch="" setWordSearch={vi.fn()} sortBy="level-asc" setSortBy={vi.fn()}
       levelFilter="all" setLevelFilter={vi.fn()} posFilter={null} setPosFilter={vi.fn()}
@@ -36,13 +36,40 @@ function setup() {
       onReset={vi.fn()} totalWordsOverall={2} topicTotalCount={2} filteredCount={2}
       pageStart={1} pageEnd={2} levelSummary={{1: 2, 3: 0, 4: 0, 5: 0}}
     />
-    <WordDetailPanel wordId={1} words={[first, second]} onClose={onClose} onNavigate={onNavigate} />
+    <WordDetailPanel wordId={wordId} words={[word, second]} onClose={onClose} onNavigate={onNavigate} />
     <textarea aria-label="Notes" />
     <select aria-label="Test selection"><option>First</option><option>Second</option></select>
     <div contentEditable aria-label="Editable text" />
-  </MemoryRouter></QueryClientProvider>)
-  return {onNavigate, onClose}
+  </MemoryRouter></QueryClientProvider>
+  const result = render(panel())
+  return {...result, onNavigate, onClose, showWord: (id: number) => result.rerender(panel(id))}
 }
+
+it('shows every saved translation in word details', async () => {
+  setup({...first, translation_entries: ['translation one', 'translation two', 'translation three', 'translation four']})
+  await screen.findByRole('heading', {name: 'apple'})
+  expect(screen.getByText('translation one · translation two · translation three · translation four')).toBeTruthy()
+})
+
+it('cancels the pending close when another word is opened', async () => {
+  const {onClose, showWord} = setup()
+  await screen.findByRole('heading', {name: 'apple'})
+  fireEvent.click(screen.getByRole('button', {name: 'Close'}))
+  showWord(2)
+  await screen.findByRole('heading', {name: 'bread'})
+  await new Promise(resolve => setTimeout(resolve, 300))
+  expect(onClose).not.toHaveBeenCalled()
+  expect(screen.getByRole('complementary', {name: 'Word details'}).classList.contains('is-closing')).toBe(false)
+})
+
+it('cancels the pending close when the panel unmounts', async () => {
+  const {onClose, unmount} = setup()
+  await screen.findByRole('heading', {name: 'apple'})
+  fireEvent.click(screen.getByRole('button', {name: 'Close'}))
+  unmount()
+  await new Promise(resolve => setTimeout(resolve, 300))
+  expect(onClose).not.toHaveBeenCalled()
+})
 
 it('uses arrows for word navigation only when the user is not editing a field', async () => {
   const {onNavigate} = setup()

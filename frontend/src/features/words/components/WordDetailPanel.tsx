@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
 import {fetchWord} from '@/features/words/api/wordsApi'
@@ -29,7 +29,7 @@ type Props = {
 
 function getMainTranslation(word: Word): string {
   if (word.translation_entries.length) {
-    return word.translation_entries.slice(0, 2).join(' · ')
+    return word.translation_entries.join(' · ')
   }
   return ''
 }
@@ -38,6 +38,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
   const navigation = useWordListNavigation(fromTopicSlug)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
+  const closeTimer = useRef<number | undefined>(undefined)
 
   const wordQuery = useQuery({
     queryKey: queryKeys.word(wordId),
@@ -60,7 +61,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
   const handleClose = useCallback(() => {
     if (isClosing) return
     setIsClosing(true)
-    window.setTimeout(onClose, 250)
+    closeTimer.current = window.setTimeout(onClose, 250)
   }, [isClosing, onClose])
 
   useEffect(() => {
@@ -77,7 +78,11 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, onClose, onNaviga
 
   useEffect(() => {
     setIsSpeaking(false)
-    return () => { window.speechSynthesis?.cancel() }
+    setIsClosing(false)
+    return () => {
+      window.clearTimeout(closeTimer.current)
+      window.speechSynthesis?.cancel()
+    }
   }, [wordId])
 
   function handleSpeak() {

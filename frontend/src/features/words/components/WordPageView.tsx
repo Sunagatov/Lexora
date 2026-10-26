@@ -52,7 +52,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       )}
 
       {/* Grammar */}
-      {(word.part_of_speech || word.countability || word.pattern || word.register) && (
+      {((!hidePOS && word.part_of_speech) || word.cefr_level || word.countability || word.pattern || word.register) && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Grammar</h3>
           <div className="wpv-grammar-grid">

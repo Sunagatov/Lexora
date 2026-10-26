@@ -31,10 +31,16 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const [confirming, setConfirming] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [enrichPending, setEnrichPending] = useState(false)
+  const enrichmentVersion = useRef(0)
 
   const numericWordId = Number(wordId)
   const isValidWordId = Number.isInteger(numericWordId) && (numericWordId > 0 || (numericWordId < 0 && offlineStatus().saved))
   const sequence = useWordSequence(numericWordId, wordList)
+
+  useEffect(() => {
+    setEnrichPending(false)
+    return () => { enrichmentVersion.current += 1 }
+  }, [numericWordId, editing])
 
   const wordQuery = useQuery({
     queryKey: isValidWordId ? queryKeys.word(numericWordId) : ['word', 'invalid', wordId ?? 'missing'],
@@ -173,11 +179,13 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     if (!draft || enrichPending) return
     const termVal = draft.term.trim()
     if (!termVal) return
+    const version = ++enrichmentVersion.current
     setEnrichPending(true)
     try {
       const r: EnrichResult = await enrichWord(termVal)
+      if (version !== enrichmentVersion.current) return
       setDraft((d) => {
-        if (!d || d.term.trim() !== termVal || draftWordIdRef.current !== numericWordId) return d
+        if (!d || version !== enrichmentVersion.current || d.term.trim() !== termVal || draftWordIdRef.current !== numericWordId) return d
         return {
           ...d,
           definition: d.definition || r.definition || '',
@@ -201,9 +209,9 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
         }
       })
     } catch {
-      setSaveError('Enrichment failed — you can still save manually.')
+      if (version === enrichmentVersion.current) setSaveError('Enrichment failed — you can still save manually.')
     } finally {
-      setEnrichPending(false)
+      if (version === enrichmentVersion.current) setEnrichPending(false)
     }
   }
 

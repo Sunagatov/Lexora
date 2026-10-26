@@ -53,7 +53,10 @@ export function removeWordFromLists(queryClient: QueryClient, wordId: number): v
   queryClient.setQueriesData<WordListResponse>({queryKey: queryKeys.wordList}, current =>
     current ? {...current, words: current.words.filter(word => word.id !== wordId)} : current,
   )
-  queryClient.removeQueries({queryKey: queryKeys.word(wordId)})
+  // Keep the mounted detail query until navigation completes, avoiding a refetch
+  // of the word we just deleted. Revisiting its page must still load fresh data.
+  queryClient.removeQueries({queryKey: queryKeys.word(wordId), type: 'inactive'})
+  void queryClient.invalidateQueries({queryKey: queryKeys.word(wordId), refetchType: 'none'})
 }
 
 export function invalidateWordDependencies(

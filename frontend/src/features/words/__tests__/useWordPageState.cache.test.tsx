@@ -170,6 +170,7 @@ describe('useWordPageState cache invalidation', () => {
       expect(screen.getByText('delete')).toBeTruthy()
     })
 
+    const wordFetchCount = vi.mocked(wordsApi.fetchWord).mock.calls.length
     fireEvent.click(screen.getByText('delete'))
 
     await waitFor(() => {
@@ -179,6 +180,9 @@ describe('useWordPageState cache invalidation', () => {
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({queryKey: queryKeys.words})
     })
+    // Navigation may take another render; do not reload the deleted detail meanwhile.
+    expect(wordsApi.fetchWord).toHaveBeenCalledTimes(wordFetchCount)
+    expect(queryClient.getQueryState(queryKeys.word(10))?.isInvalidated).toBe(true)
   })
 
   it('reports duplicate save failures as library-wide, matching the backend rule', async () => {
