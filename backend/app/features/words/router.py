@@ -1,37 +1,13 @@
 from io import BytesIO
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
-from starlette.datastructures import UploadFile
 from pydantic import Field
+from sqlalchemy.orm import Session
 
-from app.shared.deps import get_db
 from app.features.topics.exceptions import MissingTopicsError
 from app.features.topics.rules import assert_topics_exist
-from app.features.words.repository import (
-    get_all_words, get_word_by_id, create_word, update_word, soft_delete_word,
-    bulk_update_words,
-    get_word_knowledge_summary,
-)
-from app.features.words.constants import KnowledgeLevel
-from app.features.words.schemas import (
-    BatchUpdateRequest,
-    BatchUpdateResponse,
-    WordCreate,
-    WordListResponse,
-    WordKnowledgeSummary,
-    WordResponse,
-    WordUpdate,
-    WorkbookImportResponse,
-)
-from app.features.words.workbook import (
-    InvalidWorkbookError,
-    build_words_workbook,
-    import_words_workbook,
-)
-from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.ai_review import (
     AiReviewExportResponse,
     AiReviewImportError,
@@ -40,8 +16,35 @@ from app.features.words.ai_review import (
     build_topic_ai_review_export,
     import_topic_ai_review,
 )
+from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.repository import (
+    bulk_update_words,
+    create_word,
+    get_all_words,
+    get_word_by_id,
+    get_word_knowledge_summary,
+    soft_delete_word,
+    update_word,
+)
+from app.features.words.constants import KnowledgeLevel
+from app.features.words.schemas import (
+    BatchUpdateRequest,
+    BatchUpdateResponse,
+    WordCreate,
+    WordKnowledgeSummary,
+    WordListResponse,
+    WordResponse,
+    WordUpdate,
+)
+from app.features.words.workbook import (
+    build_words_workbook,
+)
+from app.features.words.workbook.flat import build_flat_workbook
+from app.features.words.workbook.import_router import router as workbook_import_router
+from app.shared.deps import get_db
 
 router = APIRouter(prefix="/api/words", tags=["words"])
+router.include_router(workbook_import_router)
 WordSort = Literal["term-asc", "term-desc", "level-asc", "level-desc", "cefr-asc", "cefr-desc", "newest", "oldest"]
 
 
@@ -101,8 +104,11 @@ def batch_update_words(
 
 
 @router.get("/export/xlsx")
-def export_words_xlsx(db: Session = Depends(get_db)) -> StreamingResponse:
-    filename, content = build_words_workbook(db)
+def export_words_xlsx(layout: Literal["topics", "flat"] = "topics", db: Session = Depends(get_db)) -> StreamingResponse:
+    if layout == "flat":
+        filename, content = "lexora-vocabulary.xlsx", build_flat_workbook(db)
+    else:
+        filename, content = build_words_workbook(db)
     return StreamingResponse(
         BytesIO(content),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -110,33 +116,9 @@ def export_words_xlsx(db: Session = Depends(get_db)) -> StreamingResponse:
     )
 
 
-@router.post("/import/xlsx", response_model=WorkbookImportResponse)
-async def import_words_xlsx(
-    request: Request,
-    db: Session = Depends(get_db),
-) -> WorkbookImportResponse:
-    form = await request.form()
-    file = form.get("file")
-    if not isinstance(file, UploadFile):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Please upload a .xlsx workbook",
-        )
-
-    if not file.filename or not file.filename.lower().endswith(".xlsx"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Please upload a .xlsx workbook",
-        )
-
-    try:
-        content = await file.read()
-        return import_words_workbook(db, content)
-    except InvalidWorkbookError as e:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    finally:
-        await file.close()
+@router.post("/import/xlsx", deprecated=True)
+def import_words_xlsx():
+    raise HTTPException(409, "Preview the workbook at /api/words/import/xlsx/preview, then apply its reviewed plan")
 
 
 @router.get("/export/ai-review", response_model=AiReviewExportResponse)

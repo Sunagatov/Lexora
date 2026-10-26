@@ -13,6 +13,7 @@ import {TopicButton} from '@/features/topics/components/TopicButton'
 import {SORT_LABELS, type SortMode} from '@/features/topics/model/topicSort'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {TopicEditModal} from '@/features/topics/components/TopicEditModal'
+import {WorkbookImportDialog} from '@/features/words/components/WorkbookImportDialog'
 import type {TopicUpdatePayload} from '@/features/topics/api/topicsApi'
 
 type Props = {
@@ -169,6 +170,7 @@ export function TopicSidebar({
     [topics, selectedTopicId],
   )
   const {
+    importFile, closeImport, onImportApplied,
     importInputRef,
     addingTopic,
     newTopicName,
@@ -380,6 +382,8 @@ export function TopicSidebar({
         onImportClick={() => importInputRef.current?.click()}
         onImportChange={handleImportWorkbookChange}
       />
+
+      {importFile && <WorkbookImportDialog file={importFile} onClose={closeImport} onApplied={onImportApplied} />}
 
       {deleteTopicId !== null && (
         <ConfirmModal

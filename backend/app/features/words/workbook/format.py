@@ -16,6 +16,8 @@ from app.features.words.workbook.workbook_styling import _set_column_widths as _
 MAX_WORKBOOK_BYTES = 10 * 1024 * 1024
 
 HEADER_ALIASES: dict[str, set[str]] = {
+    "topics": {"topics", "topic names"},
+    "topic_ids": {"topic ids"},
     "knowledge_level": {"knowledge", "level"},
     "term": {"word", "term", "base form", "phrase"},
     "translations": {

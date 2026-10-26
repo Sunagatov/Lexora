@@ -1,22 +1,33 @@
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
-from app.shared.text import normalize_term
-from app.features.words.model import Word
 from app.features.words.exceptions import DuplicateWordInTopicError
+from app.features.words.model import Word
+from app.shared.text import normalize_term
+
+
+def lock_word_identities(db: Session) -> None:
+    """Coordinate new identities with reviewed workbook imports on PostgreSQL."""
+    if isinstance(db, Session) and db.get_bind().dialect.name == "postgresql":
+        db.execute(text("SELECT pg_advisory_xact_lock(1279611471)"))
 
 
 def existing_normalized_terms(
     db: Session,
     topic_ids: list[int] | None = None,
     exclude_word_id: int | None = None,
+    *,
+    identity: tuple[str, int | None] | None = None,
 ) -> set[str]:
-    """Return normalized terms of all words in the database, optionally excluding one word id."""
+    """Return stored spellings, optionally restricted to a language/part of speech."""
     del topic_ids
 
     stmt = select(Word.term)
+    if identity is not None:
+        language, pos_id = identity
+        stmt = stmt.where(Word.language == language, Word.part_of_speech_id == pos_id)
     if exclude_word_id is not None:
         stmt = stmt.where(Word.id != exclude_word_id)
     return {normalize_term(t) for t in db.scalars(stmt).all()}
@@ -46,5 +57,6 @@ def assert_word_restore_allowed(
             db,
             sorted(topic_ids),
             exclude_word_id=word.id,
+            identity=(getattr(word, "language", "en"), word.part_of_speech_id) if getattr(word, "part_of_speech_id", None) is not None else None,
         ),
     )

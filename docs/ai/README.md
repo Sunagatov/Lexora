@@ -17,6 +17,8 @@
 
 Specialized AI/product docs:
 
+- `bulk-workbook-import.md` owns the website preview/apply import, flat format and retry/recovery contracts.
+
 - `workbook-synchronization.md` owns content-only Word ID synchronization, conflict review, progress preservation, and recovery.
 
 - `ai-curation-workflow.md` owns the canonical current AI curation workflow and v2 payload shape.

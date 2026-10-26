@@ -4,22 +4,27 @@ from typing import cast
 
 from sqlalchemy.orm import Session
 
+from app.features.topics.api import (
+    create_topic_draft,
+    find_active_topic_by_exact_name,
+    find_active_topic_by_slug,
+    find_deleted_topic_by_exact_name,
+    find_deleted_topic_by_slug,
+)
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
+from app.features.topics.exceptions import (
+    InvalidTopicNameError,
+    TopicNameConflictError,
+    TopicSlugConflictError,
+)
+from app.features.words.api import existing_normalized_terms
 from app.features.words.bulk.exceptions import (
     BulkInvalidTopicNameError,
     BulkSlugConflictError,
     BulkTopicInTrashError,
 )
-from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
-from app.features.topics.exceptions import InvalidTopicNameError, TopicNameConflictError, TopicSlugConflictError
-from app.features.topics.api import (
-    find_active_topic_by_exact_name,
-    find_active_topic_by_slug,
-    create_topic_draft,
-    find_deleted_topic_by_exact_name,
-    find_deleted_topic_by_slug,
-)
+from app.features.words.domain import lock_word_identities
 from app.features.words.model import Word, WordVerbForm
-from app.features.words.api import existing_normalized_terms
 from app.features.words.multivalue import sync_word_multivalue_fields
 from app.features.words.repository import _resolve_pos_id
 from app.features.words.schemas import BulkImportResponse, WordBulkCreate
@@ -90,14 +95,19 @@ def _build_bulk_word(db: Session, topic, payload_word) -> Word:
 
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
     try:
+        lock_word_identities(db)
         topic = _resolve_topic_for_bulk_import(db, payload.topic_name)
         topic_id = cast(int, cast(object, topic.id))
         topic_name = cast(str, cast(object, topic.name))
-        existing = existing_normalized_terms(db, [topic_id])
+        existing_by_identity = {}
 
         added_terms: list[str] = []
         skipped_terms: list[str] = []
         for w in payload.words:
+            identity = (w.language, _resolve_pos_id(db, w.part_of_speech) if w.part_of_speech else None)
+            if identity not in existing_by_identity:
+                existing_by_identity[identity] = existing_normalized_terms(db, [topic_id], identity=identity if identity[1] is not None else None)
+            existing = existing_by_identity[identity]
             norm = normalize_term(w.term)
             if norm in existing:
                 skipped_terms.append(w.term)

@@ -59,11 +59,17 @@ def _read_optional_int(
     if column_idx is None:
         return None
     raw = ws.cell(row=row_idx, column=column_idx).value
+    return _parse_optional_int(raw, label, sheet_name, row_idx)
+
+
+def _parse_optional_int(raw, label: str, sheet_name: str, row_idx: int) -> int | None:
     if raw is None or str(raw).strip() == "":
         return None
     try:
+        if isinstance(raw, bool) or (isinstance(raw, float) and not raw.is_integer()):
+            raise ValueError("Expected a whole number")
         return int(raw)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, OverflowError) as exc:
         raise InvalidWorkbookError(
             f"{sheet_name}, row {row_idx}: invalid {label} value '{raw}'"
         ) from exc
@@ -104,7 +110,15 @@ def _split_examples_cell(value: str | None) -> list[str]:
     for line in lines:
         match = re.match(r'^(EN|RU):\s*(.+)$', line, re.IGNORECASE)
         if not match:
-            raise InvalidWorkbookError('Examples must use non-empty EN: / RU: lines consistently')
+            if re.match(r'^(EN|RU):', line, re.IGNORECASE):
+                raise InvalidWorkbookError('EN: / RU: example lines must not be empty')
+            if re.search('[А-Яа-яЁё]', line) and not re.search('[A-Za-z]', line):
+                raise InvalidWorkbookError('Unlabelled Russian example; use EN: / RU: pairs')
+            if english:
+                result.append('EN: ' + english)
+                english = None
+            result.append(line)
+            continue
         language, sentence = match.groups()
         if language.upper() == 'EN':
             if english:

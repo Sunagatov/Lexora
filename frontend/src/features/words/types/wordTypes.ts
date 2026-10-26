@@ -81,3 +81,29 @@ export type WorkbookImportResponse = {
   skipped: number
   sheets: WorkbookImportSheetSummary[]
 }
+
+export type ImportIssue = {sheet: string; row: number; message: string}
+export type ImportEntry = {
+  word_id: number | null
+  action: 'create' | 'update' | 'unchanged'
+  locations: {sheet: string; row: number}[]
+  before: Record<string, unknown> | null
+  after: Record<string, unknown>
+}
+export type WorkbookPreview = {
+  batch_id: string | null
+  plan_hash: string
+  summary: {rows: number; created: number; updated: number; unchanged: number; topics_created: number}
+  errors: ImportIssue[]
+  warnings: ImportIssue[]
+  entries: ImportEntry[]
+  topics: {name: string}[]
+  topic_labels?: Record<string, string>
+}
+export type WorkbookImportResult = WorkbookPreview['summary'] & {
+  batch_id: string
+  created_word_ids: number[]
+  created_topic_ids: number[]
+  progress_preserved: boolean
+  replayed: boolean
+}

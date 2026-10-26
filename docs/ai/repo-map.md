@@ -35,6 +35,7 @@ Active backend feature areas:
 - `backend/app/features/words/ai_review/`
 - `backend/app/features/words/bulk/`
 - `backend/app/features/words/workbook/`
+  - `import_source.py`, `import_plan.py`, `import_batches.py`, `import_router.py` own the reviewed import flow; `import_models.py` owns receipts and `flat.py` owns flat exports/templates.
 - `backend/app/features/smart_review/`
 - `backend/app/features/trash/`
 - `backend/app/features/stats/`

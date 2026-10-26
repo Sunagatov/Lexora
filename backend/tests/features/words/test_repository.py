@@ -87,7 +87,7 @@ def test_create_word_persists_new_word_with_topics(monkeypatch) -> None:
 
     duplicate_check = MagicMock()
     monkeypatch.setattr(word_repository, "Word", DummyWord)
-    monkeypatch.setattr(word_repository, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+    monkeypatch.setattr(word_repository, "existing_normalized_terms", lambda db_arg, topic_ids, **_: set())
     monkeypatch.setattr(word_repository, "assert_no_duplicate_word", duplicate_check)
 
     payload = WordCreate(

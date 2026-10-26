@@ -1,6 +1,6 @@
 import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
-import type {Word, WordKnowledgeLevel, WorkbookImportResponse, EnrichResult} from '@/features/words/types/wordTypes'
+import type {Word, WordKnowledgeLevel, WorkbookPreview, WorkbookImportResult, EnrichResult} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
 
@@ -44,8 +44,8 @@ function parseErrorDetail(body: unknown, fallback: string): string {
   return fallback
 }
 
-export async function exportWordsWorkbook(): Promise<void> {
-  const response = await fetch(buildApiUrl('/api/words/export/xlsx'), {
+export async function exportWordsWorkbook(template = false): Promise<void> {
+  const response = await fetch(buildApiUrl(template ? '/api/words/import/xlsx/template' : '/api/words/export/xlsx?layout=flat'), {
     method: 'GET',
     credentials: 'include',
     headers: buildRequestHeaders(),
@@ -122,12 +122,21 @@ export const batchUpdateWords = (payload: {
   remove_topic_ids?: number[];
 }) => request<{updated: number}>('/api/words/batch', {method: 'PATCH', body: JSON.stringify(payload)})
 
-export function importWordsWorkbook(file: File): Promise<WorkbookImportResponse> {
+export function previewWordsWorkbook(file: File, mode: 'add' | 'content', minimumTranslations: number, signal?: AbortSignal): Promise<WorkbookPreview> {
   const formData = new FormData()
   formData.append('file', file)
 
-  return request<WorkbookImportResponse>('/api/words/import/xlsx', {
+  formData.append('mode', mode)
+  formData.append('minimum_translations', String(minimumTranslations))
+  return request<WorkbookPreview>('/api/words/import/xlsx/preview', {
     method: 'POST',
     body: formData,
+    signal,
   })
 }
+
+export const applyWordsWorkbook = (preview: WorkbookPreview) => request<WorkbookImportResult>('/api/words/import/xlsx/apply', {
+  method: 'POST', body: JSON.stringify({batch_id: preview.batch_id, plan_hash: preview.plan_hash}),
+})
+
+export const fetchWorkbookRecovery = (batchId: string) => request<unknown>(`/api/words/import/xlsx/${batchId}/recovery`)

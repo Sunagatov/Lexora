@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from io import BytesIO
-
-from openpyxl import load_workbook
 from sqlalchemy.orm import Session
 
 from app.features.topics.model import Topic
@@ -11,26 +8,23 @@ from app.features.words.domain import assert_no_duplicate_word
 from app.features.words.model import Word
 from app.features.words.progress import record_level_change
 from app.features.words.schemas import WorkbookImportResponse, WorkbookImportSheetSummary
-from app.features.words.workbook.cells import _build_header_map, _read_meta_topic_refs
 from app.features.words.workbook.format import (
-    LISTS_SHEET_NAME,
-    MAX_WORKBOOK_BYTES,
-    META_SHEET_NAME,
     InvalidWorkbookError,
 )
 from app.features.words.workbook.import_apply import (
-    WorkbookImportOps,
     WorkbookImportFlags,
+    WorkbookImportOps,
     WorkbookSheetContext,
     create_new_word_from_row,
     update_existing_word_from_row,
 )
+from app.features.words.workbook.import_batches import apply_import, preview_import
 from app.features.words.workbook.import_rows import _read_row_data
 from app.features.words.workbook.import_rules import (
     _find_existing_word,
-    _get_topic,
     _should_validate_existing_word_duplicate,
 )
+from app.features.words.workbook.import_source import read_import_source
 
 
 def _import_sheet(
@@ -112,54 +106,30 @@ def _import_sheet(
 
 
 def import_words_workbook(db: Session, content: bytes) -> WorkbookImportResponse:
-    if len(content) > MAX_WORKBOOK_BYTES:
-        raise InvalidWorkbookError(
-            f"Workbook is too large; maximum size is {MAX_WORKBOOK_BYTES // (1024 * 1024)} MB"
-        )
+    """Programmatic compatibility entrypoint using the same safe planner as the UI.
 
-    try:
-        workbook = load_workbook(filename=BytesIO(content))
-    except Exception as exc:
-        raise InvalidWorkbookError("Failed to read XLSX workbook") from exc
-
-    meta_topic_refs = _read_meta_topic_refs(workbook)
-
-    summaries: list[WorkbookImportSheetSummary] = []
-    total_created = 0
-    total_updated = 0
-    total_skipped = 0
-    seen_existing_words: dict[int, tuple[str, tuple[object, ...]]] = {}
-
-    for ws in workbook.worksheets:
-        if ws.sheet_state != "visible":
-            continue
-        if ws.title in {LISTS_SHEET_NAME, META_SHEET_NAME}:
-            continue
-
-        header_map = _build_header_map(ws)
-        if "term" not in header_map or "translations" not in header_map:
-            continue
-
-        topic_id, topic_name = meta_topic_refs.get(ws.title, (None, None))
-        resolved_topic_name = topic_name or ws.title
-        topic = _get_topic(db, resolved_topic_name, topic_id=topic_id)
-
-        summary = _import_sheet(db, ws, header_map, topic, seen_existing_words)
-        summaries.append(summary)
-        total_created += summary.created
-        total_updated += summary.updated
-        total_skipped += summary.skipped
-
-    if not summaries:
-        raise InvalidWorkbookError("No importable sheets found in workbook")
-
-    db.commit()
-    return WorkbookImportResponse(
-        created=total_created,
-        updated=total_updated,
-        skipped=total_skipped,
-        sheets=summaries,
-    )
+    Browser imports must use the separate preview/apply endpoints. Explicit local
+    callers still get atomic content-only updates, with progress and blanks preserved.
+    """
+    source = read_import_source(content)
+    reviewed = preview_import(db, source, mode="content", minimum_translations=0)
+    if reviewed["errors"]:
+        raise InvalidWorkbookError("; ".join(item["message"] for item in reviewed["errors"]))
+    result = apply_import(db, reviewed["batch_id"], reviewed["plan_hash"])
+    sheets = {}
+    for entry in reviewed["entries"]:
+        for sheet in {location["sheet"] for location in entry["locations"]}:
+            summary = sheets.setdefault(sheet, WorkbookImportSheetSummary(
+                sheet_name=sheet, topic_name=sheet, created=0, updated=0, skipped=0,
+            ))
+            if entry["action"] == "create":
+                summary.created += 1
+            elif entry["action"] == "update":
+                summary.updated += 1
+            else:
+                summary.skipped += 1
+    return WorkbookImportResponse(created=result["created"], updated=result["updated"],
+                                  skipped=result["unchanged"], sheets=list(sheets.values()))
 
 
 def _enabled_header_map(header_map: dict[str, int]) -> dict[str, int]:

@@ -1,8 +1,8 @@
 # Content-only workbook synchronization
 
 Use `app.scripts.sync_vocabulary_workbook` for linguistic updates to an exported
-workbook. The normal UI importer remains a general import, including explicit
-knowledge edits; it is not the content-only synchronization entrypoint.
+workbook. The website uses the separate [reviewed bulk import](bulk-workbook-import.md)
+flow for new words and content updates. Both website modes protect learning progress.
 
 The operator command defaults to a PostgreSQL read-only transaction and writes a
 JSON report. It refuses an implicit SQLite fallback. Configure the target through
@@ -19,7 +19,8 @@ Production execution and recovery belong in Vault, with explicit user approval.
   field names and explicitly selected observed values.
 - Blank cells preserve current data. Non-empty translations replace the ordered
   translation list, with duplicates removed. Labelled EN/RU lines remain one
-  `WordExample.value` per pair. Existing English examples absent from the workbook
+  `WordExample.value` per pair; plain English examples may coexist in the same
+  cell. Existing English examples absent from the workbook
   remain appended; matching English sentences gain the supplied Russian version.
 - Preserve existing Notes and distinct topical annotations together. Never treat
   arbitrary note text as a topic. Explicit `Related:` labels generate suggestions

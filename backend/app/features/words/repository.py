@@ -7,8 +7,15 @@ from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
 from app.features.words.domain import (
     assert_no_duplicate_word as assert_no_duplicate_word,
+)
+from app.features.words.domain import (
     assert_word_restore_allowed as assert_word_restore_allowed,
+)
+from app.features.words.domain import (
     existing_normalized_terms as existing_normalized_terms,
+)
+from app.features.words.domain import (
+    lock_word_identities,
 )
 from app.features.words.model import (
     PartsOfSpeech,
@@ -145,9 +152,10 @@ def list_active_word_topic_levels(db: Session) -> list[tuple[int, int | None, in
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
-    assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids))
-    topics = _load_topics(db, payload.topic_ids)
+    lock_word_identities(db)
     pos_id = _resolve_pos_id(db, payload.part_of_speech)
+    assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids, identity=(payload.language, pos_id) if pos_id is not None else None))
+    topics = _load_topics(db, payload.topic_ids)
 
     word = Word(
         term=payload.term,
@@ -175,12 +183,15 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
 
 
 def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = True) -> Word:
+    lock_word_identities(db)
     effective_term = _effective_term(word, payload)
     target_topic_ids = _target_topic_ids(word, payload)
     if _requires_duplicate_check(word, payload, effective_term):
         assert_no_duplicate_word(
             effective_term,
-            existing_normalized_terms(db, target_topic_ids, exclude_word_id=word.id),
+            existing_normalized_terms(db, target_topic_ids, exclude_word_id=word.id,
+                identity=(payload.language if payload.language is not None else word.language,
+                    _resolve_pos_id(db, payload.part_of_speech) if "part_of_speech" in payload.model_fields_set else word.part_of_speech_id)),
         )
 
     old_level = word.knowledge_level
@@ -408,7 +419,9 @@ def _requires_duplicate_check(word: Word, payload: WordUpdate, effective_term: s
     data = payload.model_dump(exclude_unset=True, exclude={"topic_ids", "progress_source"})
     term_changed = "term" in data and effective_term != word.term
     topics_changed = payload.topic_ids is not None and set(payload.topic_ids) != {int(topic.id) for topic in word.topics}
-    return term_changed or topics_changed
+    pos_changed = "part_of_speech" in data and payload.part_of_speech != (word.part_of_speech.name if word.part_of_speech else None)
+    language_changed = payload.language is not None and payload.language != word.language
+    return term_changed or topics_changed or pos_changed or language_changed
 
 
 def _word_attribute_updates(db: Session, payload: WordUpdate) -> dict[str, object]:

@@ -13,7 +13,7 @@ import {
   invalidateTopicTrashDependencies,
   replaceTopicInLists,
 } from '@/features/topics/model/topicCache'
-import {exportWordsWorkbook, importWordsWorkbook} from '@/features/words/api/wordsApi'
+import {exportWordsWorkbook} from '@/features/words/api/wordsApi'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 type Params = {
@@ -24,25 +24,6 @@ type Params = {
 
 function getWorkbookActionErrorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback
-}
-
-function formatWorkbookImportSuccessMessage(result: Awaited<ReturnType<typeof importWordsWorkbook>>): string {
-  const lines = [
-    'Workbook imported successfully.',
-    '',
-    `Created: ${result.created}`,
-    `Updated: ${result.updated}`,
-    `Skipped: ${result.skipped}`,
-  ]
-
-  if (result.sheets.length > 0) {
-    lines.push(
-      '',
-      ...result.sheets.map((sheet) => `${sheet.topic_name}: +${sheet.created} new, ${sheet.updated} updated`),
-    )
-  }
-
-  return lines.join('\n')
 }
 
 export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTopicAsParent}: Params) {
@@ -59,6 +40,7 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   const [addingTopic, setAddingTopic] = useState(false)
   const [topicError, setTopicError] = useState<string | null>(null)
   const [workbookBusy, setWorkbookBusy] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
 
   const editingTopic = topics.find((topic) => topic.id === editTopicId) ?? null
 
@@ -125,23 +107,10 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     }
   }
 
-  async function handleImportWorkbookChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleImportWorkbookChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (!file) return
-
-    try {
-      setWorkbookBusy(true)
-      const result = await importWordsWorkbook(file)
-      await invalidateTopicDependencies(queryClient)
-      window.alert(formatWorkbookImportSuccessMessage(result))
-    } catch (error) {
-      redirectIfUnauthorized(error)
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) return
-      window.alert(getWorkbookActionErrorMessage(error, 'Failed to import workbook.'))
-    } finally {
-      setWorkbookBusy(false)
-    }
+    if (file) setImportFile(file)
   }
 
   function startAddTopic() {
@@ -182,6 +151,9 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   }
 
   return {
+    importFile,
+    closeImport: () => setImportFile(null),
+    onImportApplied: () => invalidateTopicDependencies(queryClient),
     importInputRef,
     addingTopic,
     setAddingTopic,

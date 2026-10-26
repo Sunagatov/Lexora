@@ -4,8 +4,8 @@ from io import BytesIO
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from openpyxl import Workbook
 import pytest
+from openpyxl import Workbook
 
 from app.features.topics.model import Topic
 from app.features.words.workbook import importer as workbook_importer
@@ -149,7 +149,6 @@ def test_import_sheet_flush_called_for_each_row(monkeypatch) -> None:
 
 def test_import_words_workbook_prefers_meta_topic_id(monkeypatch) -> None:
     db = MagicMock()
-    topic = _make_topic(topic_id=77, name="Renamed Topic")
 
     workbook = Workbook()
     ws = workbook.active
@@ -163,25 +162,16 @@ def test_import_words_workbook_prefers_meta_topic_id(monkeypatch) -> None:
     buffer = BytesIO()
     workbook.save(buffer)
 
-    seen: list[tuple[str, int | None, str | None]] = []
-
-    monkeypatch.setattr(workbook_importer, "_get_topic", lambda db_arg, topic_name, topic_id=None: seen.append((topic_name, topic_id, topic.name)) or topic)
-    monkeypatch.setattr(
-        workbook_importer,
-        "_import_sheet",
-        lambda db_arg, ws_arg, header_map_arg, topic_arg, seen_existing_words_arg=None: workbook_importer.WorkbookImportSheetSummary(
-            sheet_name=ws_arg.title,
-            topic_name=topic_arg.name,
-            created=0,
-            updated=0,
-            skipped=0,
-        ),
-    )
+    seen = []
+    monkeypatch.setattr(workbook_importer, "preview_import", lambda db_arg, source, **options: seen.append(source) or {
+        "batch_id": "local", "plan_hash": "hash", "errors": [], "entries": [],
+    })
+    monkeypatch.setattr(workbook_importer, "apply_import", lambda *_: {"created": 0, "updated": 0, "unchanged": 0})
 
     result = workbook_importer.import_words_workbook(db, buffer.getvalue())
 
-    assert result.sheets[0].topic_name == "Renamed Topic"
-    assert seen == [("Renamed Topic", 77, "Renamed Topic")]
+    assert result.created == 0
+    assert seen[0]["rows"][0]["topic_refs"] == ["id:77"]
 
 
 def test_import_sheet_allows_identical_shared_word_updates_across_sheets(monkeypatch) -> None:

@@ -127,8 +127,14 @@ term and ID provide stable tie-breaks before pagination. Invalid repeated filter
 values or sorting choices return `422`.
 Word-list pagination defaults to 50 entries and accepts `page_size` from 1 to 200.
 The website offers 50, 100 and 200 entries per page on mobile and desktop.
-- `GET /api/words/export/xlsx` — export workbook.
-- `POST /api/words/import/xlsx` — import workbook upload.
+- `GET /api/words/export/xlsx` — topic workbook; `layout=flat` exports one row per Word ID.
+- `GET /api/words/import/xlsx/template` — blank flat workbook with current topics.
+- `POST /api/words/import/xlsx/preview` — multipart `file`, `mode=add|content` (default add), `minimum_translations=0..20` (default four). Returns all issues, counts, before/after entries and a valid batch UUID/hash. Does not change vocabulary.
+- `POST /api/words/import/xlsx/apply` — JSON `batch_id`, `plan_hash`; atomically applies the reviewed plan preserving progress. Retries return its receipt; stale/expired previews return 409.
+- `GET /api/words/import/xlsx/{batch_id}/recovery` — recovery record for a completed import.
+- `POST /api/words/import/xlsx` — deprecated immediate import; returns 409 requiring preview/apply.
+
+Workbook contracts: [bulk-workbook-import.md](bulk-workbook-import.md).
 - `GET /api/words/export/ai-review` — export a topic page for AI review.
 - `POST /api/words/import/ai-review` — import AI review payload.
 - `GET /api/words/{word_id}` — get one word.

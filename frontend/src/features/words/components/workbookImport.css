@@ -1,0 +1,153 @@
+.workbook-dialog {
+  margin: auto;
+  inset: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  width: min(760px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: 88dvh;
+  overflow: hidden;
+}
+.workbook-dialog::backdrop {
+  background: #0009;
+}
+.workbook-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.workbook-dialog header,
+.workbook-dialog footer {
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+.workbook-dialog h2 {
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+}
+.workbook-dialog p {
+  line-height: 1.5;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.workbook-body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 20px 12px;
+}
+.workbook-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.workbook-options {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.workbook-settings summary {
+  margin-bottom: 12px;
+}
+.workbook-options label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.workbook-options > div {
+  display: grid;
+  gap: 6px;
+}
+.workbook-options select,
+.workbook-options input {
+  font: inherit;
+  background: var(--surface-2);
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  max-width: 100%;
+  min-width: 0;
+}
+.workbook-muted,
+.workbook-options p {
+  opacity: 0.75;
+  font-size: 0.88rem;
+}
+.workbook-counts {
+  font-weight: 700;
+}
+.workbook-issues,
+.workbook-change {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.workbook-dialog summary {
+  cursor: pointer;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.workbook-issues ul {
+  padding-left: 18px;
+  line-height: 1.5;
+}
+.workbook-issues li {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.workbook-ack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+.workbook-change summary span {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-left: 8px;
+}
+.workbook-change dl > div {
+  margin: 12px 0;
+}
+.workbook-change dt {
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.workbook-change dd {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+.workbook-change dd > * {
+  display: block;
+}
+.workbook-change del {
+  opacity: 0.65;
+  margin-bottom: 4px;
+}
+.workbook-dialog nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 600px) {
+  .workbook-dialog header,
+  .workbook-dialog footer {
+    padding: 12px;
+  }
+  .workbook-body {
+    padding: 0 12px 12px;
+  }
+  .workbook-dialog footer .btn {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+}

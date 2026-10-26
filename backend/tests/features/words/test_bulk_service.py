@@ -19,7 +19,7 @@ def test_bulk_import_reuses_existing_topic_and_skips_duplicates(monkeypatch) -> 
     monkeypatch.setattr(bulk_service, "find_active_topic_by_exact_name", lambda db_arg, topic_name: topic)
 
     monkeypatch.setattr(bulk_service, "Word", DummyWord)
-    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: {"go"})
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids, **_: {"go"})
 
     payload = WordBulkCreate(
         topic_name="Travel",
@@ -114,7 +114,7 @@ def test_bulk_import_reuses_existing_topic_when_name_slugifies_to_same_slug(monk
     monkeypatch.setattr(bulk_service, "find_active_topic_by_slug", lambda db_arg, slug: topic)
 
     monkeypatch.setattr(bulk_service, "Word", DummyWord)
-    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids, **_: set())
 
     payload = WordBulkCreate(
         topic_name="daily-life",
@@ -163,7 +163,7 @@ def test_bulk_import_creates_topic_without_committing_early(monkeypatch) -> None
         return created_topic
 
     monkeypatch.setattr(bulk_service, "create_topic_draft", fake_create_topic_draft)
-    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids, **_: set())
     monkeypatch.setattr(
         bulk_service,
         "sync_word_multivalue_fields",
@@ -187,7 +187,7 @@ def test_bulk_import_reuses_existing_topic_when_exact_name_matches_but_slug_diff
     db = MagicMock()
     monkeypatch.setattr(bulk_service, "find_active_topic_by_exact_name", lambda db_arg, topic_name: topic)
     monkeypatch.setattr(bulk_service, "Word", DummyWord)
-    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids: set())
+    monkeypatch.setattr(bulk_service, "existing_normalized_terms", lambda db_arg, topic_ids, **_: set())
 
     payload = WordBulkCreate(
         topic_name="Travel",

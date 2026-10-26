@@ -46,7 +46,7 @@ def test_assert_word_restore_allowed_checks_active_topics_and_restoring_topic_id
 
     seen_topic_ids = []
 
-    def fake_existing_normalized_terms(db_arg, topic_ids, exclude_word_id=None):
+    def fake_existing_normalized_terms(db_arg, topic_ids, exclude_word_id=None, **_):
         seen_topic_ids.append((tuple(topic_ids), exclude_word_id))
         return {"plane"}
 
