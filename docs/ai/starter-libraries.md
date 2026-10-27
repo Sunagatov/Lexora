@@ -61,6 +61,9 @@ definitions and optional grammar notes. Each example is one stored string:
 through `start1s500`; the Word language completes the seed identity. Existing
 words without the expected marker are conflicts, including entries in Trash.
 It never merges an existing manual entry or restores a deleted entry implicitly.
+Migration `20261027_0014` permits these markers in the legacy `ck_words_source`
+database constraint. It changes no existing records. Downgrade refuses to remove
+marker support while installed starter entries still depend on it.
 
 An exact prior seed entry is skipped. Its current rating, history, topic
 assignments, pronunciation and unrelated metadata remain untouched. Editing its

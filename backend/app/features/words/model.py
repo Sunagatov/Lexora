@@ -175,6 +175,7 @@ class Word(Base):
         CheckConstraint("countability IN ('countable', 'uncountable', 'both', 'plural', 'collective')", name="ck_words_countability"),
         CheckConstraint("knowledge_level IN (1, 3, 4, 5)", name="ck_words_knowledge_level"),
         CheckConstraint("frequency_rank >= 1", name="ck_words_frequency_rank"),
+        CheckConstraint("source IN ('manual', 'import') OR source LIKE 'start1s___'", name="ck_words_source"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
