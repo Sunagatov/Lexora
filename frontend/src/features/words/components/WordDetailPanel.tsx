@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 import {useQuery} from '@tanstack/react-query'
@@ -90,7 +91,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, wordList, onClose
     if (!word?.term.trim()) return
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(word.term)
-    utterance.lang = 'en-GB'
+    utterance.lang = languageProfile(word.language).locale
     utterance.rate = 0.92
     utterance.onstart = () => setIsSpeaking(true)
     utterance.onend = () => setIsSpeaking(false)

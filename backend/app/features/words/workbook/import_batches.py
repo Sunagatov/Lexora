@@ -7,6 +7,7 @@ from uuid import uuid4
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.words.domain import lock_word_identities
 from app.features.words.model import PartsOfSpeech, Word, WordExample, WordTranslation
@@ -47,6 +48,8 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
     )
     if batch is None:
         raise InvalidWorkbookError("Import preview not found; upload the file again")
+    if (batch.plan.get("language", "en"), batch.plan.get("translation_language", "ru")) != (learning_language(db), translation_language(db)):
+        raise StaleImportError("This preview belongs to a different language; switch back or preview again")
     if batch.plan_hash != expected_hash:
         raise StaleImportError("The preview does not match; preview the file again")
     if batch.result is not None:
@@ -67,9 +70,9 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
     )
     if fresh["plan_hash"] != batch.plan_hash or fresh["errors"]:
         raise StaleImportError("Vocabulary changed after preview; preview again before applying")
-    topics = {str(topic.id): topic for topic in db.scalars(select(Topic)).all()}
+    topics = {str(topic.id): topic for topic in db.scalars(select(Topic).where(Topic.language == learning_language(db))).all()}
     for item in fresh["topics"]:
-        topic = Topic(**item, is_active=True)
+        topic = Topic(**item, language=learning_language(db), is_active=True)
         db.add(topic)
         topics["new:" + topic.name.casefold()] = topic
     positions = {pos.name: pos for pos in db.scalars(select(PartsOfSpeech)).all()}
@@ -88,7 +91,7 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
             continue
         after = entry["after"]
         if entry["action"] == "create":
-            word = Word(language="en", knowledge_level=1, is_active=True, source="import")
+            word = Word(language=learning_language(db), knowledge_level=1, is_active=True, source="import")
             db.add(word)
             created.append(word)
         else:
@@ -102,21 +105,26 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
             "register",
             "notes",
         ):
-            setattr(word, name, after[name])
+            if name in ("definition", "notes") and translation_language(db) == "en":
+                groups = word.explanation_groups or {}
+                word.explanation_groups = {**groups, "en": {**groups.get("en", {}), name: after[name]}}
+            else:
+                setattr(word, name, after[name])
         word.part_of_speech = positions.get(after["part_of_speech"])
         word.topics = [topics[ref] for ref in after["topic_ids"]]
         for name, model, values in (
             ("translation_items", WordTranslation, after["translations"]),
             ("example_items", WordExample, after["examples"]),
         ):
-            if [item.value for item in getattr(word, name)] != values:
-                setattr(word, name, [])
+            existing = getattr(word, name)
+            selected = [item for item in existing if name != "translation_items" or (item.language or "ru") == translation_language(db)]
+            if [item.value for item in selected] != values:
+                setattr(word, name, [item for item in existing if item not in selected])
                 pending_entries.append((word, name, model, values))
     db.flush()  # Remove old positions before inserting replacements, once for the whole batch.
     for word, name, model, values in pending_entries:
-        setattr(
-            word, name, [model(position=index, value=value) for index, value in enumerate(values)]
-        )
+        options = {"language": translation_language(db)} if name == "translation_items" else {}
+        getattr(word, name).extend(model(position=index, value=value, **options) for index, value in enumerate(values))
     db.flush()
     result = {
         "batch_id": batch.id,
@@ -135,8 +143,12 @@ def recovery_record(db: Session, batch_id: str) -> dict:
     batch = db.get(WorkbookImportBatch, batch_id)
     if batch is None or batch.result is None:
         raise InvalidWorkbookError("Completed import not found")
+    if (batch.plan.get("language", "en"), batch.plan.get("translation_language", "ru")) != (learning_language(db), translation_language(db)):
+        raise InvalidWorkbookError("This import belongs to a different language")
     payload = {
         "format": "lexora-workbook-import-v1",
+        "language": learning_language(db),
+        "translation_language": translation_language(db),
         "batch_id": batch.id,
         "plan_hash": batch.plan_hash,
         "changes": [entry for entry in batch.plan["entries"] if entry["action"] == "update"],

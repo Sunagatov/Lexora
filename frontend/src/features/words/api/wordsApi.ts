@@ -3,6 +3,11 @@ import {ApiError} from '@/shared/api/apiError'
 import type {Word, WordKnowledgeLevel, WorkbookPreview, WorkbookImportResult, EnrichResult} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
+import {languagePreferences} from '@/features/languages/api'
+
+function translationPayload<T extends object>(payload: T) {
+  return ['translation_entries', 'definition', 'notes'].some(key => key in payload) ? {...payload, translation_language: languagePreferences().translationLanguage} : payload
+}
 
 export const fetchWords = async (params: {topicId?: number; search?: string} = {}) => {
   const q = new URLSearchParams()
@@ -21,14 +26,14 @@ export const fetchWords = async (params: {topicId?: number; search?: string} = {
 }
 
 export const fetchWord                = (id: number)                                                    => request<Word>(`/api/words/${id}`)
-export const updateWord               = (id: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>>) => request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify(payload)})
+export const updateWord               = (id: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>>) => request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify(translationPayload(payload))})
 export const deleteWord               = (id: number)                                                    => request<void>(`/api/words/${id}`, {method: 'DELETE'})
 export const updateWordKnowledgeLevel = (id: number, level: WordKnowledgeLevel, source = DEFAULT_WORD_PROGRESS_SOURCE) =>
   request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify({knowledge_level: level, progress_source: source})})
 export const quickAddWord = (payload: {term: string; topic_ids: number[]; translation_entries: string[]; knowledge_level: number; [key: string]: unknown}) =>
-  request<Word>('/api/words', {method: 'POST', body: JSON.stringify(payload)})
+  request<Word>('/api/words', {method: 'POST', body: JSON.stringify({...translationPayload(payload), language: languagePreferences().language})})
 export const enrichWord = (term: string) =>
-  request<EnrichResult>('/api/words/enrich', {method: 'POST', body: JSON.stringify({term})})
+  request<EnrichResult>('/api/words/enrich', {method: 'POST', body: JSON.stringify({term, language: languagePreferences().language, translation_language: languagePreferences().translationLanguage})})
 export const restoreWord              = (id: number)                                                    => request<Word>(`/api/trash/words/${id}/restore`, {method: 'POST'})
 export const fetchTrashWords          = ()                                                              => request<(Word & {deleted_at: string})[]>('/api/trash/words')
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.db import Base
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class StudyQueue(Base):
     __tablename__ = "study_queues"
+    language: Mapped[str] = mapped_column(String(2), nullable=False, default="en", server_default=text("'en'"), index=True)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

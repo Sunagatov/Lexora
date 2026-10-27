@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {useState} from 'react'
 import type {CSSProperties} from 'react'
 import {Link} from 'react-router-dom'
@@ -39,7 +40,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
     e.stopPropagation()
     window.speechSynthesis.cancel()
     const u = new SpeechSynthesisUtterance(word.term)
-    u.lang = 'en-GB'
+    u.lang = languageProfile(word.language).locale
     u.rate = 0.92
     u.onstart = () => setIsSpeaking(true)
     u.onend = () => setIsSpeaking(false)
@@ -59,7 +60,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
         <div className="word-card-grid">
           <div className="word-card-left">
             <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-              <span className="word-term" style={{display: 'inline', flex: 'none', marginBottom: 0}}>{word.term}</span>
+              <span className="word-term" style={{display: 'inline', flex: 'none', marginBottom: 0}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
               <button type="button"
                 className={`wdp-speak-btn ripple-btn${isSpeaking ? ' is-speaking' : ''}`}
                 style={{marginLeft: 0}}

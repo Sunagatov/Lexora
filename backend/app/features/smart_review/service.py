@@ -1,15 +1,20 @@
 from __future__ import annotations
+
 import random
 from typing import cast
 
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
 from app.features.smart_review import lifecycle, selection
 from app.features.smart_review.exceptions import (
     QueueItemNotFoundError as QueueItemNotFoundError,
+)
+from app.features.smart_review.exceptions import (
     QueueNotActiveError as QueueNotActiveError,
 )
-from app.features.smart_review.model import StudyQueue, StudyQueueItem as StudyQueueItem
+from app.features.smart_review.model import StudyQueue
+from app.features.smart_review.model import StudyQueueItem as StudyQueueItem
 from app.shared.config import settings
 from app.shared.logging_utils import log_audit_event
 
@@ -46,6 +51,7 @@ def generate_queue(db: Session) -> StudyQueue:
 
     deactivate_all_queues(db)
     queue = lifecycle.build_queue(selected, ttl_hours=settings.smart_review_queue_ttl_hours)
+    queue.language = learning_language(db)
     return lifecycle.persist_queue(
         db,
         queue,

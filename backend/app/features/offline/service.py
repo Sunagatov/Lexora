@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session, selectinload
 
+from app.features.languages.catalog import learning_language
 from app.features.offline.model import OfflineReceipt
 from app.features.topics.api import create_topic, restore_topic, update_topic
 from app.features.topics.api import delete_topic_checked as delete_topic
@@ -54,9 +55,13 @@ def topic_data(topic: Topic) -> dict:
     return TopicResponse.model_validate(topic).model_dump(mode="json")
 
 
-def snapshot(db: Session) -> dict:
-    words = db.scalars(with_word_details(select(Word).order_by(Word.id))).all()
-    topics = db.scalars(select(Topic).order_by(Topic.id)).all()
+def snapshot(db: Session, *, all_languages: bool = False) -> dict:
+    word_query, topic_query = select(Word), select(Topic)
+    if not all_languages:
+        word_query = word_query.where(Word.language == learning_language(db))
+        topic_query = topic_query.where(Topic.language == learning_language(db))
+    words = db.scalars(with_word_details(word_query.order_by(Word.id))).all()
+    topics = db.scalars(topic_query.order_by(Topic.id)).all()
     return {
         "version": 1,
         "words": [word_data(w) for w in words],
@@ -78,6 +83,10 @@ def comparable(data: dict) -> dict:
     }
     allowed = set(WordResponse.model_fields) | set(TopicResponse.model_fields)
     result = {key: value for key, value in data.items() if key in allowed and key not in excluded}
+    result.setdefault("language", "en")
+    if "translation_entries" in data:
+        result.setdefault("translation_groups", {"ru": data["translation_entries"]})
+        result.setdefault("explanation_groups", {"ru": {"definition": data.get("definition"), "notes": data.get("notes")}})
     result["deleted_at"] = bool(result.get("deleted_at"))
     if "topic_ids" in result:
         result["topic_ids"] = sorted(result["topic_ids"])
@@ -85,10 +94,24 @@ def comparable(data: dict) -> dict:
 
 
 def _check_before(current: dict, change: OfflineChange) -> None:
+    current = dict(current)
+    if "transliteration" in change.data and "transliteration" not in change.before:
+        change = change.model_copy(update={"before": {**change.before, "transliteration": None}})
+    target = change.data.get("translation_language", "ru")
+    if target == "en":
+        for field in ("definition", "notes"):
+            if field in change.data:
+                current[field] = current.get("explanation_groups", {}).get("en", {}).get(field)
+                change = change.model_copy(update={"before": {**change.before, field: change.before.get("explanation_groups", {}).get("en", {}).get(field)}})
+    if target != "ru" and "translation_entries" in change.data:
+        current["translation_entries"] = current.get("translation_groups", {}).get(target, [])
+        before = dict(change.before)
+        before["translation_entries"] = before.get("translation_groups", {}).get(target, [])
+        change = change.model_copy(update={"before": before})
     expected = comparable(change.before)
     actual = comparable(current)
     if change.action == "update":
-        fields = set(change.data) - {"progress_source"}
+        fields = set(change.data) - {"progress_source", "translation_language"}
         if not fields or not fields <= change.before.keys():
             raise HTTPException(
                 422, "Offline update must include previous values for every edited field"
@@ -126,6 +149,8 @@ def apply_change(db: Session, change: OfflineChange) -> dict:
             raise HTTPException(422, "New offline items require a temporary negative ID")
         if is_word:
             payload = WordCreate.model_validate(change.data)
+            if "language" in payload.model_fields_set and payload.language != learning_language(db):
+                raise HTTPException(400, "Word language must match the current library")
             assert_topics_exist(db, payload.topic_ids)
             item = create_word(db, payload, commit=False)
         else:
@@ -133,7 +158,7 @@ def apply_change(db: Session, change: OfflineChange) -> dict:
     else:
         if change.entity_id <= 0:
             raise HTTPException(422, "Sync the new item before changing it")
-        stmt = select(model).where(model.id == change.entity_id).with_for_update()
+        stmt = select(model).where(model.id == change.entity_id, model.language == learning_language(db)).with_for_update()
         if is_word:
             stmt = with_word_details(stmt)
         else:
@@ -148,6 +173,8 @@ def apply_change(db: Session, change: OfflineChange) -> dict:
         if change.action == "update":
             if is_word:
                 payload = WordUpdate.model_validate(change.data)
+                if payload.language is not None and payload.language != item.language:
+                    raise HTTPException(400, "Words cannot be moved between languages")
                 if payload.topic_ids is not None:
                     assert_topics_exist(db, payload.topic_ids)
                 item = update_word(db, item, payload, commit=False)

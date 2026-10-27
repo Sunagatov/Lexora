@@ -1,17 +1,19 @@
+import {languagePreferences} from '@/features/languages/api'
+import {inLanguage} from './collections'
 import {ApiError} from '@/shared/api/apiError'
 import type {Change, OfflineWord, Replica} from './types'
 
 const fail = (message: string): never => { throw new ApiError(400, message) }
-const slugify = (name: string) => name.normalize('NFKD').replace(/[^\x20-\x7e]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 200)
+const slugify = (name: string) => name.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 200)
 const normalized = (term: string) => term.normalize('NFKC').trim().replace(/\s+/g, ' ').toLowerCase()
 
 function validateTopics(replica: Replica, ids: number[]) {
-  if (!ids.length || ids.some(id => !replica.topics.some(t => t.id === id && !t.deleted_at))) fail('Select at least one available topic.')
+  if (!ids.length || ids.some(id => !replica.topics.some(t => t.id === id && !t.deleted_at && inLanguage(t)))) fail('Select at least one available topic.')
 }
 
 function checkWord(replica: Replica, word: OfflineWord, original?: OfflineWord) {
   if (!word.term?.trim() || word.term.length > 255) fail('Enter a word (up to 255 characters).')
-  if (!word.topic_ids.some(id => replica.topics.some(t => t.id === id && !t.deleted_at))) fail('Select at least one available topic.')
+  if (!word.topic_ids.some(id => replica.topics.some(t => t.id === id && !t.deleted_at && inLanguage(t)))) fail('Select at least one available topic.')
   if (word.knowledge_level !== null && ![1, 3, 4, 5].includes(word.knowledge_level)) fail('Choose a valid knowledge level.')
   if (word.frequency_rank !== null && (!Number.isSafeInteger(word.frequency_rank) || word.frequency_rank < 1)) fail('Frequency rank must be a positive whole number.')
   // Match the server's library-wide identity rules, including entries in Trash.
@@ -20,7 +22,7 @@ function checkWord(replica: Replica, word: OfflineWord, original?: OfflineWord) 
     || word.part_of_speech !== original.part_of_speech
     || word.topic_ids.length !== original.topic_ids.length || word.topic_ids.some(id => !original.topic_ids.includes(id))
   if (identityChanged) {
-    const duplicate = replica.words.find(w => w.id !== word.id && normalized(w.term) === normalized(word.term)
+    const duplicate = replica.words.find(w => w.id !== word.id && w.language === word.language && normalized(w.term) === normalized(word.term)
       && ((!original && !word.part_of_speech) || (w.language === word.language && w.part_of_speech === word.part_of_speech)))
     if (duplicate) fail(duplicate.deleted_at ? 'This word is in Trash. Restore it instead.' : 'This word already exists in your library. Add it to the topic instead.')
   }
@@ -45,7 +47,10 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
   if (action === 'create') id = replica.nextId
   const aliases = entity === 'word' ? replica.wordAliases : replica.topicAliases
   id = aliases?.[id] ?? id
-  const current = collection.find(item => item.id === id)
+  const current = collection.find(item => item.id === id && inLanguage(item))
+  if (entity === 'word' && current) (current as OfflineWord).transliteration ??= null
+  if (action === 'create') data.language = languagePreferences().language
+  if (data.language && data.language !== languagePreferences().language) fail('Language must match the current library.')
   if (action !== 'create' && !current) throw new ApiError(404, 'Item not found in the offline copy.')
   const change: Change = {id: crypto.randomUUID(), entity, action, entity_id: id, data: structuredClone(data), before: structuredClone(current ?? {}), affected_words: []}
 
@@ -54,7 +59,7 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
     if (action === 'create') {
       id = replica.nextId--
       word = {
-        id, term: '', topic_ids: [], language: 'en', definition: null, pronunciation_ipa: null,
+        id, term: '', topic_ids: [], language: languagePreferences().language, definition: null, pronunciation_ipa: null, transliteration: null,
         pronunciation_audio_url: null, image_url: null, part_of_speech: null, cefr_level: null,
         register: null, countability: null, frequency_rank: null, knowledge_level: null, pattern: null,
         notes: null, is_active: true, verb_form: null, translation_entries: [], example_entries: [],
@@ -84,6 +89,21 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
       }
     }
     if (!word) throw new Error('Word not found')
+    if (data.translation_language === 'en' && ('definition' in data || 'notes' in data)) {
+      const before = action === 'create' ? {} : change.before
+      word.explanation_groups = {...(word.explanation_groups ?? {ru: {definition: before.definition as string | null, notes: before.notes as string | null}}),
+        en: {...word.explanation_groups?.en, ...Object.fromEntries(['definition', 'notes'].filter(key => key in data).map(key => [key, data[key]]))}}
+      word.definition = (before.definition as string | null) ?? null
+      word.notes = (before.notes as string | null) ?? null
+    }
+    if ((data.translation_language ?? 'ru') === 'ru' && ('definition' in data || 'notes' in data) && word.explanation_groups) {
+      word.explanation_groups.ru = {definition: word.definition, notes: word.notes}
+    }
+    if (Array.isArray(data.translation_entries)) {
+      const target = String(data.translation_language ?? 'ru')
+      word.translation_groups = {...(word.translation_groups ?? {ru: action === 'create' ? [] : (change.before.translation_entries as string[] ?? [])}), [target]: data.translation_entries as string[]}
+      word.translation_entries = word.translation_groups.ru ?? []
+    }
     word.example_count = word.example_entries.length
     word.example_status = word.example_count >= 3 ? 'complete' : word.example_count ? 'partial' : 'missing'
     word.needs_example_enrichment = word.example_count < 3
@@ -93,21 +113,21 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
       const name = String(data.name ?? topic?.name ?? '').trim()
       const parentId = (data.parent_topic_id === undefined ? topic?.parent_topic_id : data.parent_topic_id) as number | null
       if (!name || name.length > 200 || !slugify(name)) fail('Enter a valid topic name (up to 200 characters).')
-      if (replica.topics.some(t => t.id !== id && !t.deleted_at && normalized(t.name) === normalized(name))) fail('A topic with this name already exists.')
+      if (replica.topics.some(t => t.id !== id && !t.deleted_at && inLanguage(t) && normalized(t.name) === normalized(name))) fail('A topic with this name already exists.')
       const slug = data.slug ? slugify(String(data.slug)) : name !== topic?.name || !topic ? slugify(name) : topic.slug
-      if (replica.topics.some(t => t.id !== id && t.slug === slug)) fail('A topic with this address already exists.')
+      if (replica.topics.some(t => t.id !== id && inLanguage(t) && t.slug === slug)) fail('A topic with this address already exists.')
       const visited = new Set([id])
       let ancestor = parentId
       while (ancestor) {
         if (visited.has(ancestor)) fail('A topic cannot be its own ancestor.')
         visited.add(ancestor)
-        const parent = replica.topics.find(t => t.id === ancestor && !t.deleted_at)
+        const parent = replica.topics.find(t => t.id === ancestor && !t.deleted_at && inLanguage(t))
         if (!parent) fail('Select an available parent topic.')
         ancestor = parent!.parent_topic_id ?? null
       }
       if (action === 'create') {
         id = replica.nextId--
-        topic = {id, name, slug, description: null, parent_topic_id: parentId ?? null, is_active: true, deleted_at: null, created_at: now, updated_at: now, ...data}
+        topic = {id, name, slug, language: languagePreferences().language, description: null, parent_topic_id: parentId ?? null, is_active: true, deleted_at: null, created_at: now, updated_at: now, ...data}
         replica.topics.push(topic)
         change.entity_id = id
       } else if (topic && action === 'update') Object.assign(topic, data, {name, slug, updated_at: now})
@@ -147,10 +167,11 @@ export function remapId(replica: Replica, entity: Change['entity'], temporary: n
     }
   }
   replica.words.forEach(remapWord)
-  if (replica.mix) replica.mix.items.forEach(item => {
+  const mixes = new Set([replica.mix, ...Object.values(replica.mixes ?? {})].filter(mix => !!mix))
+  mixes.forEach(mix => mix.items.forEach(item => {
     if (entity === 'word') item.word_id = remap(item.word_id)
     remapWord(item.word)
-  })
+  }))
   replica.topics.forEach(topic => {
     if (entity === 'topic') {
       topic.id = remap(topic.id)

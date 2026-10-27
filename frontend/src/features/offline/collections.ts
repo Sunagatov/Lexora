@@ -1,13 +1,19 @@
+import {displayTranslations, languagePreferences} from '@/features/languages/api'
 import {filterAndSort} from '@/features/words/model/wordDomain'
 import type {Word} from '@/features/words/types/wordTypes'
 import type {FilterOptions} from '@/features/words/model/wordDomain'
 import type {Replica} from './types'
 
+export function inLanguage(item: {language?: string}) { return (item.language ?? 'en') === languagePreferences().language }
+export function scopedReplica(replica: Replica): Replica {
+  return {...replica, words: replica.words.filter(inLanguage), topics: replica.topics.filter(inLanguage)}
+}
+
 export function subtree(replica: Replica, root: number): number[] {
   const ids = new Set<number>()
   const visit = (id: number) => {
     if (ids.has(id)) return
-    if (!replica.topics.some(t => t.id === id && !t.deleted_at)) return
+    if (!replica.topics.some(t => t.id === id && !t.deleted_at && inLanguage(t))) return
     ids.add(id)
     replica.topics.filter(t => t.parent_topic_id === id && !t.deleted_at).forEach(t => visit(t.id))
   }
@@ -21,7 +27,7 @@ export function visibleWord(replica: Replica, word: Word): Word {
 }
 
 export function listWords(replica: Replica, params: URLSearchParams) {
-  let words = replica.words.filter(w => !w.deleted_at).map(w => visibleWord(replica, w))
+  let words = replica.words.filter(w => !w.deleted_at && inLanguage(w)).map(w => displayTranslations(visibleWord(replica, w)) as Word)
   const root = Number(params.get('topic_id'))
   if (root) {
     const ids = subtree(replica, root)
@@ -48,9 +54,9 @@ export function listWords(replica: Replica, params: URLSearchParams) {
 }
 
 export function sidebarStats(replica: Replica) {
-  const words = replica.words.filter(w => !w.deleted_at)
+  const words = replica.words.filter(w => !w.deleted_at && inLanguage(w))
   const topic_counts: Record<number, number> = {}, topic_progress: Record<number, number> = {}
-  replica.topics.filter(t => !t.deleted_at).forEach(topic => {
+  replica.topics.filter(t => !t.deleted_at && inLanguage(t)).forEach(topic => {
     const ids = subtree(replica, topic.id)
     const matching = words.filter(w => w.topic_ids.some(id => ids.includes(id)))
     topic_counts[topic.id] = matching.length

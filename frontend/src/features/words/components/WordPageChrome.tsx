@@ -135,7 +135,7 @@ export function WordPageHero({
           </button>
         </div>
 
-        <h1 className="word-page-term">{word.term}</h1>
+        <h1 className="word-page-term"><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></h1>
 
         {translation && (
           <p className="word-page-hero-translation">{translation}</p>

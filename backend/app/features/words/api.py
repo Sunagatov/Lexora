@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.features.words.domain import (
     assert_word_restore_allowed as assert_word_restore_allowed,
     existing_normalized_terms as existing_normalized_terms,
+    lock_word_identities as lock_word_identities,  # noqa: PLC0414 - public feature re-export
 )
 from app.features.words.multivalue import (
     sync_word_multivalue_fields as sync_word_multivalue_fields,

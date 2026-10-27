@@ -4,14 +4,21 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from app.shared.logging_utils import log_audit_event
+from app.features.languages.catalog import translation_language
 from app.features.topics.api import get_active_subtree_topic_ids
 from app.features.words.ai_curation import import_service as _import_service
-from app.features.words.ai_curation.common import AiCurationImportError as _AiCurationImportError, _get_topic
+from app.features.words.ai_curation.common import AiCurationImportError as _AiCurationImportError
+from app.features.words.ai_curation.common import _get_topic
 from app.features.words.ai_curation.export_support import (
     EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
+)
+from app.features.words.ai_curation.export_support import (
     export_topic_words_lean_page as _export_topic_words_lean_page,
+)
+from app.features.words.ai_curation.export_support import (
     export_topic_words_page as _export_topic_words_page,
+)
+from app.features.words.ai_curation.export_support import (
     list_topics_page as _list_topics_page,
 )
 from app.features.words.ai_curation.import_support import AiCurationImportOperations
@@ -20,6 +27,7 @@ from app.features.words.ai_curation.schemas import (
     AiCurationTopicWordsLeanResponse,
     AiCurationTopicWordsResponse,
 )
+from app.shared.logging_utils import log_audit_event
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +71,8 @@ def list_topics_page(db: Session, page: int, page_size: int) -> AiCurationTopicL
 
 
 def export_topic_words_page(db: Session, topic_id: int, page: int, page_size: int) -> AiCurationTopicWordsResponse:
+    if translation_language(db) != "ru":
+        raise AiCurationImportError("This legacy curation format uses Russian translations. Switch to Russian, or use the workbook preview for English content.")
     topic = _get_topic(db, topic_id)
     subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
     return _export_topic_words_page(

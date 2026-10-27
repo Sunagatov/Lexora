@@ -18,8 +18,9 @@ router = APIRouter(prefix="/api/words", tags=["words"])
 @router.post("/enrich", response_model=EnrichResponse)
 async def enrich_word(payload: EnrichRequest) -> EnrichResponse:
     dict_result, ai_result = await asyncio.gather(
-        fetch_dictionary(payload.term),
-        fetch_gemini(payload.term),
+        fetch_dictionary(payload.term) if payload.language == "en" else asyncio.sleep(0, result=None),
+        fetch_gemini(payload.term) if payload.language == "en" and payload.translation_language == "ru"
+        else fetch_gemini(payload.term, payload.language, payload.translation_language),
     )
 
     if dict_result is None and ai_result is None:
@@ -28,4 +29,9 @@ async def enrich_word(payload: EnrichRequest) -> EnrichResponse:
             detail="Enrichment sources unavailable",
         )
 
-    return merge_enrichment(payload.term, dict_result, ai_result)
+    result = merge_enrichment(payload.term, dict_result, ai_result)
+    if ai_result and ai_result.definition:
+        result.definition = ai_result.definition
+    if payload.language != "en":
+        result.verb_form = None
+    return result

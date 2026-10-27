@@ -23,6 +23,7 @@ from app.features.words.workbook.format import (
     InvalidWorkbookError,
 )
 from app.features.words.workbook.import_rules import _validate_part_of_speech
+from app.features.words.workbook.language import LANGUAGE_SHEET
 from app.features.words.workbook.sync_rows import POS_ALIASES
 
 MAX_IMPORT_ROWS = 50_000
@@ -51,6 +52,8 @@ def read_import_source(content: bytes) -> dict:
         "warnings": [],
     }
     try:
+        if LANGUAGE_SHEET in book:
+            source["language_context"] = {str(row[0]): row[1] for row in book[LANGUAGE_SHEET].iter_rows(values_only=True) if len(row) == 2}
         if sum(ws.max_row or 0 for ws in book if ws.title != LISTS_SHEET_NAME) > MAX_IMPORT_ROWS:
             raise InvalidWorkbookError(
                 "Workbook exceeds the 50,000-row limit; remove unused formatted rows"
@@ -71,7 +74,7 @@ def read_import_source(content: bytes) -> dict:
                         )
                     meta[name] = values[1]
         for ws in book:
-            if ws.sheet_state != "visible" or ws.title in {LISTS_SHEET_NAME, META_SHEET_NAME}:
+            if ws.sheet_state != "visible" or ws.title in {LISTS_SHEET_NAME, META_SHEET_NAME, LANGUAGE_SHEET}:
                 continue
             if ws.max_column > 50:
                 source["errors"].append(

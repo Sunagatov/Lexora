@@ -3,6 +3,7 @@ import type {ReactElement, ReactNode} from 'react'
 import {LEVELS, LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {EditState} from '@/features/words/model/wordForm'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {languagePreferences} from '@/features/languages/api'
 
 type Props = {
   draft: EditState
@@ -32,7 +33,8 @@ export function WordPageEditForm({
   onEnrich,
 }: Props) {
   const [topicSearch, setTopicSearch] = useState('')
-  const isVerb = draft.part_of_speech === 'verb' || draft.part_of_speech === 'phrasal verb'
+  const language = languagePreferences().language
+  const isVerb = language === 'en' && (draft.part_of_speech === 'verb' || draft.part_of_speech === 'phrasal verb')
   const isNoun = draft.part_of_speech === 'noun'
   const topicOptions = [...topics].sort((a, b) => a.name.localeCompare(b.name))
   const filteredTopicOptions = topicSearch.trim()
@@ -69,6 +71,9 @@ export function WordPageEditForm({
         <FormField label="Definition">
           <textarea className="wp-input wp-textarea" rows={2} value={draft.definition} onChange={(event) => updateField('definition', event.target.value)} />
         </FormField>
+        {['zh', 'ar', 'tt'].includes(language) && <FormField label={language === 'zh' ? 'Pinyin (with tones)' : 'Transliteration'}>
+          <input className="wp-input" value={draft.transliteration ?? ''} onChange={event => updateField('transliteration', event.target.value)} />
+        </FormField>}
         <FormField label="Translations (one per line)">
           <textarea
             className="wp-input wp-textarea"

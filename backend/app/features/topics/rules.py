@@ -3,6 +3,8 @@ from __future__ import annotations
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.exceptions import (
     InvalidTopicNameError,
     InvalidTopicParentError,
@@ -11,7 +13,6 @@ from app.features.topics.exceptions import (
     TopicNameConflictError,
     TopicSlugConflictError,
 )
-from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.shared.text import slugify
 
@@ -37,7 +38,7 @@ def assert_topic_has_no_active_children(db: Session, topic_id: int) -> None:
 
 
 def assert_slug_available(db: Session, slug: str, exclude_topic_id: int | None = None) -> None:
-    existing = db.scalar(select(Topic).where(Topic.slug == slug))
+    existing = db.scalar(select(Topic).where(Topic.slug == slug, Topic.language == learning_language(db)))
     if existing is None or existing.id == exclude_topic_id:
         return
     detail = (
@@ -57,6 +58,7 @@ def assert_active_topic_name_available(
     existing = db.scalar(
         select(Topic)
         .where(func.lower(Topic.name) == normalized)
+        .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.is_(None))
     )
     if existing is None or existing.id == exclude_topic_id:
@@ -66,7 +68,7 @@ def assert_active_topic_name_available(
 
 def assert_topics_exist(db: Session, topic_ids: list[int]) -> None:
     found = set(
-        db.scalars(select(Topic.id).where(Topic.id.in_(topic_ids)).where(Topic.deleted_at.is_(None))).all()
+        db.scalars(select(Topic.id).where(Topic.id.in_(topic_ids), Topic.language == learning_language(db)).where(Topic.deleted_at.is_(None))).all()
     )
     missing = [topic_id for topic_id in topic_ids if topic_id not in found]
     if missing:
@@ -82,7 +84,7 @@ def assert_topic_parent_valid(
     if parent_topic_id is None:
         return
 
-    parent = db.scalar(select(Topic).where(Topic.id == parent_topic_id, Topic.deleted_at.is_(None)))
+    parent = db.scalar(select(Topic).where(Topic.id == parent_topic_id, Topic.deleted_at.is_(None), Topic.language == learning_language(db)))
     if parent is None:
         raise InvalidTopicParentError(f"Parent topic {parent_topic_id} not found")
     if exclude_topic_id is not None and parent.id == exclude_topic_id:

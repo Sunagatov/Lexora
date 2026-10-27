@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import cast
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.api import (
     create_topic_draft,
     find_active_topic_by_exact_name,
@@ -61,7 +63,9 @@ def _build_bulk_word(db: Session, topic, payload_word) -> Word:
     word = Word(
         term=payload_word.term,
         language=getattr(payload_word, "language", "en"),
-        definition=getattr(payload_word, "definition", None),
+        transliteration=payload_word.transliteration,
+        definition=payload_word.definition if payload_word.translation_language == "ru" else None,
+        explanation_groups={"en": {"definition": payload_word.definition, "notes": payload_word.notes}} if payload_word.translation_language == "en" else None,
         pronunciation_ipa=getattr(payload_word, "pronunciation_ipa", None),
         part_of_speech_id=pos_id,
         cefr_level=payload_word.cefr_level,
@@ -70,7 +74,7 @@ def _build_bulk_word(db: Session, topic, payload_word) -> Word:
         frequency_rank=payload_word.frequency_rank,
         knowledge_level=payload_word.knowledge_level,
         pattern=payload_word.pattern,
-        notes=payload_word.notes,
+        notes=payload_word.notes if payload_word.translation_language == "ru" else None,
         is_active=True,
         source="import",
         topics=[topic],
@@ -90,11 +94,19 @@ def _build_bulk_word(db: Session, topic, payload_word) -> Word:
         None,
         payload_word.example_entries,
     )
+    for item in word.translation_items:
+        item.language = payload_word.translation_language
     return word
 
 
 def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
     try:
+        words = []
+        for item in payload.words:
+            if "language" in item.model_fields_set and item.language != learning_language(db):
+                raise HTTPException(400, "All imported words must match the selected learning language")
+            target = item.translation_language if "translation_language" in item.model_fields_set else translation_language(db)
+            words.append(item.model_copy(update={"language": learning_language(db), "translation_language": target}))
         lock_word_identities(db)
         topic = _resolve_topic_for_bulk_import(db, payload.topic_name)
         topic_id = cast(int, cast(object, topic.id))
@@ -103,7 +115,7 @@ def bulk_import(db: Session, payload: WordBulkCreate) -> BulkImportResponse:
 
         added_terms: list[str] = []
         skipped_terms: list[str] = []
-        for w in payload.words:
+        for w in words:
             identity = (w.language, _resolve_pos_id(db, w.part_of_speech) if w.part_of_speech else None)
             if identity not in existing_by_identity:
                 existing_by_identity[identity] = existing_normalized_terms(db, [topic_id], identity=identity if identity[1] is not None else None)

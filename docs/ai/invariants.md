@@ -34,3 +34,14 @@ These rules should not be violated without explicit user instruction.
 - Do not change public API contracts without corresponding tests and docs.
 - Do not add unnecessary dependencies.
 - Prefer simple, maintainable changes over speculative abstractions.
+
+## Learning Libraries
+
+- Learning language belongs to each word, topic, review queue and usage event.
+- Cross-language topic parenting and word/topic assignment are not valid.
+- Query scope is explicit through the request database session; English is the
+  backward-compatible default. The authenticated offline snapshot deliberately
+  includes all libraries, and local reads must apply the active language scope.
+- Changing translation language must never replace another translation group,
+  change knowledge/progress, or silently translate historical content.
+- Workbook preview/apply must bind both learning and translation languages.

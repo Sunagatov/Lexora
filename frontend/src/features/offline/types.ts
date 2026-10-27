@@ -22,4 +22,5 @@ export type Replica = Snapshot & {
   wordAliases?: Record<number, number>
   topicAliases?: Record<number, number>
   mix?: StudyQueue
+  mixes?: Record<string, StudyQueue>
 }

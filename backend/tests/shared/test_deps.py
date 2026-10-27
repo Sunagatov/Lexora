@@ -1,9 +1,6 @@
 from types import SimpleNamespace
 
 import pytest
-from fastapi import HTTPException
-from jose import jwt
-
 from app.shared import deps
 from app.shared.auth import (
     AUTH_TYPE_SESSION,
@@ -16,6 +13,8 @@ from app.shared.auth import (
 )
 from app.shared.config import settings
 from app.shared.logging_utils import get_request_context, reset_request_context
+from fastapi import HTTPException
+from jose import jwt
 
 
 def _make_session_token(sub: str = SESSION_SUBJECT_OWNER) -> str:
@@ -97,6 +96,7 @@ def test_get_db_yields_session_and_closes_it(monkeypatch) -> None:
     class FakeSession:
         def __init__(self) -> None:
             self.closed = False
+            self.info = {}
 
         def close(self) -> None:
             self.closed = True

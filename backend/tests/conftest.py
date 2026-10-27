@@ -23,6 +23,24 @@ os.environ["PGCONNECT_TIMEOUT"] = "2"
 os.environ["APP_DEBUG"] = "true"
 
 
+@pytest.fixture(scope="session", autouse=True)
+def isolated_fallback_database():
+    """Application-startup tests must never reuse a developer's SQLite copy."""
+    from app.shared import db, deps
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.pool import StaticPool
+
+    original = db.engine, db.SessionLocal, deps.SessionLocal, db._sqlite_schema_ready
+    engine = create_engine("sqlite://", poolclass=StaticPool, connect_args={"check_same_thread": False})
+    db.engine = engine
+    db.SessionLocal = deps.SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
+    db._sqlite_schema_ready = False
+    yield
+    db.engine, db.SessionLocal, deps.SessionLocal, db._sqlite_schema_ready = original
+    engine.dispose()
+
+
 @pytest.fixture
 def fixed_now() -> datetime:
     return datetime(2026, 1, 1, 12, 0, tzinfo=UTC)

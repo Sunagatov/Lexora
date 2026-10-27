@@ -99,38 +99,43 @@ def _ordered_unique(values: list[str]) -> list[str]:
 
 
 def _split_examples_cell(value: str | None) -> list[str]:
-    """Store each labelled EN/RU pair as one example, preserving their association."""
+    """Keep each source sentence with its Russian and optional English translations."""
     lines = [line.strip() for line in (value or '').splitlines() if line.strip()]
-    if not any(re.match(r'^(EN|RU):', line, re.IGNORECASE) for line in lines):
+    labels = r'EN|RU|ZH|ES|DE|TR|TT|AR|FR|PT'
+    if not any(re.match(rf'^({labels}):', line, re.IGNORECASE) for line in lines):
         if any(re.search('[А-Яа-яЁё]', line) and not re.search('[A-Za-z]', line) for line in lines):
             raise InvalidWorkbookError('Unlabelled Russian example; use EN: / RU: pairs')
         return _ordered_unique(lines)
     result: list[str] = []
-    english: str | None = None
+    block: list[str] = []
+    source: str | None = None
+    seen: set[str] = set()
     for line in lines:
-        match = re.match(r'^(EN|RU):\s*(.+)$', line, re.IGNORECASE)
+        match = re.match(rf'^({labels}):\s*(.+)$', line, re.IGNORECASE)
         if not match:
-            if re.match(r'^(EN|RU):', line, re.IGNORECASE):
+            if re.match(rf'^({labels}):', line, re.IGNORECASE):
                 raise InvalidWorkbookError('EN: / RU: example lines must not be empty')
             if re.search('[А-Яа-яЁё]', line) and not re.search('[A-Za-z]', line):
                 raise InvalidWorkbookError('Unlabelled Russian example; use EN: / RU: pairs')
-            if english:
-                result.append('EN: ' + english)
-                english = None
+            if block:
+                result.append('\n'.join(block))
+                block, source, seen = [], None, set()
             result.append(line)
             continue
         language, sentence = match.groups()
-        if language.upper() == 'EN':
-            if english:
-                result.append('EN: ' + english)
-            english = sentence
+        language = language.upper()
+        is_translation = language in ('RU', 'EN') and source and language != source and language not in seen
+        if is_translation:
+            block.append(f'{language}: {sentence}')
+            seen.add(language)
         else:
-            if english is None:
-                raise InvalidWorkbookError('RU example has no preceding EN example')
-            result.append(f'EN: {english}\nRU: {sentence}')
-            english = None
-    if english:
-        result.append('EN: ' + english)
+            if language == 'RU':
+                raise InvalidWorkbookError('RU example has no preceding source example')
+            if block:
+                result.append('\n'.join(block))
+            block, source, seen = [f'{language}: {sentence}'], language, {language}
+    if block:
+        result.append('\n'.join(block))
     return _ordered_unique(result)
 
 

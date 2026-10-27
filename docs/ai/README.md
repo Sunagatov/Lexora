@@ -17,6 +17,8 @@
 
 Specialized AI/product docs:
 
+- `multilingual.md` owns learning-language scoping, translation groups, language defaults and migration compatibility.
+
 - `bulk-workbook-import.md` owns the website preview/apply import, flat format and retry/recovery contracts.
 
 - `workbook-synchronization.md` owns content-only Word ID synchronization, conflict review, progress preservation, and recovery.

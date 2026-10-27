@@ -42,6 +42,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       )}
 
       {/* Translations */}
+      {word.transliteration && <section className="wpv-section"><h3 className="wpv-section-title">{word.language === 'zh' ? 'Pinyin' : 'Transliteration'}</h3><p>{word.transliteration}</p></section>}
       {!hideTranslation && word.translation_entries.length > 0 && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Translations</h3>
@@ -71,7 +72,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       )}
 
       {/* Verb forms */}
-      {word.verb_form && (word.verb_form.past_simple || word.verb_form.past_participle || word.verb_form.present_participle || word.verb_form.third_person) && (
+      {word.language === 'en' && word.verb_form && (word.verb_form.past_simple || word.verb_form.past_participle || word.verb_form.present_participle || word.verb_form.third_person) && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Verb Forms</h3>
           <div className="wpv-verb-grid">

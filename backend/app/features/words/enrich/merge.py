@@ -52,6 +52,7 @@ def merge_enrichment(
 
     return EnrichResponse(
         term=term,
+        transliteration=a.transliteration,
         definition=d.definition or a.definition,
         pronunciation_ipa=d.pronunciation_ipa,
         pronunciation_audio_url=d.pronunciation_audio_url,

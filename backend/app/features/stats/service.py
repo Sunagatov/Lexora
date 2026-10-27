@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session, load_only
 
+from app.features.languages.catalog import learning_language
 from app.features.stats.activity_metrics import (
     _build_consistency_stats,
     _build_daily_activity,
@@ -27,6 +28,7 @@ from app.features.stats.content_metrics import (
 from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import LevelCounts, StatsResponse, UsageEventCreate
 from app.features.topics.model import Topic
+from app.features.words.model import Word
 from app.features.words.progress import WordProgressEvent
 
 
@@ -47,6 +49,7 @@ def record_usage_event(db: Session, payload: UsageEventCreate) -> None:
             session_key=payload.session_key,
             route=payload.route,
             active_seconds=payload.active_seconds,
+            language=learning_language(db),
         )
         .on_conflict_do_nothing(index_elements=[AppUsageEvent.event_key])
     )
@@ -60,6 +63,7 @@ def _load_active_topics(db: Session) -> list[Topic]:
                 select(Topic)
                 .options(load_only(Topic.id, Topic.name, Topic.slug, Topic.parent_topic_id))
                 .where(Topic.deleted_at.is_(None))
+                .where(Topic.language == learning_language(db))
             ).all()
         ),
     )
@@ -71,6 +75,8 @@ def _load_progress_events(db: Session) -> list[WordProgressEvent]:
         list(
             db.scalars(
                 select(WordProgressEvent)
+                .join(Word, Word.id == WordProgressEvent.word_id)
+                .where(Word.language == learning_language(db))
                 .options(
                     load_only(
                         WordProgressEvent.word_id,

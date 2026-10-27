@@ -78,7 +78,7 @@ def build_update_payload(item) -> WordUpdate:
 
 def current_value(word: Word, field: str):
     if field == "translation_entries":
-        return [item.value for item in getattr(word, "translation_items", [])]
+        return [item.value for item in getattr(word, "translation_items", []) if (getattr(item, "language", None) or "ru") == "ru"]
     if field == "example_entries":
         return [item.value for item in getattr(word, "example_items", [])]
     if field == "synonym_entries":

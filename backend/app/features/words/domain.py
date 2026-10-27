@@ -3,6 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
 from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.model import Word
 from app.shared.text import normalize_term
@@ -24,7 +25,7 @@ def existing_normalized_terms(
     """Return stored spellings, optionally restricted to a language/part of speech."""
     del topic_ids
 
-    stmt = select(Word.term)
+    stmt = select(Word.term).where(Word.language == learning_language(db))
     if identity is not None:
         language, pos_id = identity
         stmt = stmt.where(Word.language == language, Word.part_of_speech_id == pos_id)

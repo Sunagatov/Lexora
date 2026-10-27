@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {Link, useNavigate} from 'react-router-dom'
@@ -126,7 +127,7 @@ export function AllWordsPage() {
   function speak(id: number, term: string) {
     window.speechSynthesis.cancel()
     const u = new SpeechSynthesisUtterance(term)
-    u.lang = 'en-GB'
+    u.lang = languageProfile().locale
     u.rate = 0.92
     u.onstart = () => setSpeakingId(id)
     u.onend = () => setSpeakingId(null)
@@ -213,7 +214,7 @@ export function AllWordsPage() {
                     </td>
                     <td className="word-cell-word">
                       <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-                        <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}>{word.term}</Link>
+                        <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></Link>
                         <button type="button"
                           className={`wdp-speak-btn ripple-btn${speakingId === word.id ? ' is-speaking' : ''}`}
                           style={{marginLeft: 0}}

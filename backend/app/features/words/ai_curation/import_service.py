@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.features.topics.exceptions import InvalidTopicNameError, TopicSlugConflictError
+from app.features.languages.catalog import translation_language
 from app.features.topics.api import create_topic_from_values as _create_topic_from_values
+from app.features.topics.exceptions import InvalidTopicNameError, TopicSlugConflictError
 from app.features.words.ai_curation.common import AiCurationImportError, _get_topic
 from app.features.words.ai_curation.import_loading import (
     load_existing_words as _load_existing_words,
+)
+from app.features.words.ai_curation.import_loading import (
     resolve_topic_ref as _resolve_topic_ref,
 )
 from app.features.words.ai_curation.import_operations import (
@@ -30,8 +33,8 @@ from app.features.words.ai_curation.schemas import (
     AiCurationImportResponse,
     CreateTopicOperation,
 )
-from app.features.words.exceptions import DuplicateWordInTopicError
 from app.features.words.api import create_word, update_word
+from app.features.words.exceptions import DuplicateWordInTopicError
 
 
 def create_topic(db: Session, payload: CreateTopicOperation, commit: bool = True):
@@ -70,6 +73,8 @@ def import_ai_curation(
     payload: AiCurationImportRequest,
     operations: AiCurationImportOperations | None = None,
 ) -> AiCurationImportResponse:
+    if translation_language(db) != "ru":
+        raise AiCurationImportError("This legacy curation format uses Russian translations; use the workbook preview for English content")
     operations = operations or _default_operations()
     source_topic = _get_topic(db, payload.source_topic_id)
 

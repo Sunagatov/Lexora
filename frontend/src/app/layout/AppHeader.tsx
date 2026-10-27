@@ -4,6 +4,8 @@ import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 import {useTheme} from '@/shared/hooks/useTheme'
 import {OfflineStatus} from '@/features/offline/OfflineButton'
+import {LanguagePicker} from '@/features/languages/LanguagePicker'
+import {languageProfile} from '@/features/languages/api'
 
 type Props = {
   hasDrawer?: boolean
@@ -20,9 +22,10 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}:
     <header className="app-header">
       <div className="app-header-left">
         <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
-          <img src="/favicon.svg" alt="" width="20" height="10" />
+          {languageProfile().code === 'en' ? <img src="/favicon.svg" alt="" width="20" height="10" /> : <span aria-hidden="true">🌐</span>}
           Lexora
         </button>
+        <LanguagePicker />
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">

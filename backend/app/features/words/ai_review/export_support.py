@@ -92,7 +92,7 @@ def _word_to_ai_review_word(word: Word) -> AiReviewWord:
         term=word.term,
         language=word.language,
         definition=word.definition,
-        translation_entries=[item.value for item in getattr(word, "translation_items", [])],
+        translation_entries=[item.value for item in getattr(word, "translation_items", []) if (getattr(item, "language", None) or "ru") == "ru"],
         pattern=word.pattern,
         example_entries=[item.value for item in getattr(word, "example_items", [])],
         countability=word.countability,

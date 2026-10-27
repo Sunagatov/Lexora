@@ -5,10 +5,15 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import Session, selectinload
 
-from app.features.stats.schemas import EnrichmentCoverage, TopicStat, VocabProfileSummary, VocabularyOverview
+from app.features.languages.catalog import learning_language
+from app.features.stats.schemas import (
+    EnrichmentCoverage,
+    TopicStat,
+    VocabProfileSummary,
+    VocabularyOverview,
+)
 from app.features.topics.model import Topic
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
 from app.features.words.model import Word, word_topics
@@ -187,7 +192,7 @@ def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
             selectinload(Word.antonym_items),
             selectinload(Word.collocation_items),
             selectinload(Word.confusable_items),
-        ).where(Word.deleted_at.is_(None))
+        ).where(Word.deleted_at.is_(None), Word.language == learning_language(db))
     ).all()
     return [
         WordStatsSnapshot(

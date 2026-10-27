@@ -1,6 +1,11 @@
 # Lexora
 
-Lexora is a personal English vocabulary learning app focused on topic-based study, review, word management, and progress tracking.
+Lexora is a personal multilingual vocabulary learning app focused on topic-based study, review, word management, and progress tracking.
+
+Study English, Mandarin Chinese, Spanish, German, Turkish, Tatar, Arabic, French or
+Portuguese in separate libraries. Choose Russian or English translations and
+explanations from the header language selector. New libraries start empty; your
+existing English vocabulary and progress stay in English.
 
 ## Project Shape
 

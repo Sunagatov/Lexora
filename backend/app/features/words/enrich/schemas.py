@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.features.languages.catalog import Language, TranslationLanguage
 from app.features.words.constants import WORD_TERM_MAX_LEN
 
 
@@ -19,13 +20,15 @@ class VerbFormOut(BaseModel):
 
 class EnrichRequest(BaseModel):
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    language: str = Field(default="en", max_length=2)
+    language: Language = "en"
+    translation_language: TranslationLanguage = "ru"
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
 class EnrichResponse(BaseModel):
     term: str
+    transliteration: str | None = None
     definition: str | None = None
     pronunciation_ipa: str | None = None
     pronunciation_audio_url: str | None = None

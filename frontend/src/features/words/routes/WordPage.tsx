@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {useEffect, useState} from 'react'
 import {useNavigate, useLocation} from 'react-router-dom'
 import {routes} from '@/app/routes'
@@ -66,7 +67,7 @@ export function WordPage() {
     window.speechSynthesis.cancel()
 
     const utterance = new SpeechSynthesisUtterance(word.term)
-    utterance.lang = 'en-GB'
+    utterance.lang = languageProfile(word.language).locale
     utterance.rate = 0.92
     utterance.onstart = () => setIsSpeaking(true)
     utterance.onend = () => setIsSpeaking(false)

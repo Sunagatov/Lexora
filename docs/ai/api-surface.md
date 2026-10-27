@@ -18,6 +18,28 @@ Protected router groups:
 - `/api/ai-curation`
 - `/api/offline`
 
+## Language Context
+
+- `X-Lexora-Language` selects the learning library (`en` by default). Accepted:
+  `en`, `zh`, `es`, `de`, `tr`, `tt`, `ar`, `fr`, `pt`; legacy `ru` remains valid.
+- `X-Lexora-Translation-Language` selects workbook/search content (`ru` by default,
+  optional `en`). Unsupported header values return `400`.
+- Word/topic lists, IDs, hierarchy, Trash, statistics, usage events and Daily Mix
+  are scoped to the learning language. Word IDs remain globally stable. A word
+  cannot move between learning languages through an update.
+- Create/update translation payloads use `translation_language: "ru" | "en"`.
+  Only that translation group and its definition/notes change. `WordResponse`
+  includes `translation_groups`, `explanation_groups` and optional `transliteration`;
+  legacy `translation_entries`, `definition`, `notes` retain Russian/default content.
+- Offline snapshots include all learning libraries when `X-Lexora-All-Languages: true` is sent; legacy clients receive their selected library only. Each queued edit syncs with
+  its own library header, independent of the currently selected UI language.
+- Workbook exports bind their language context in a hidden metadata sheet.
+  Preview hashes and recovery records include both languages; apply rejects
+  a preview from a different context. Legacy workbooks without metadata use
+  the explicitly selected context.
+- Legacy AI-review/curation formats use Russian translations. For English content,
+  use workbook preview/apply or normal word editing. See `multilingual.md`.
+
 ## Offline Copy And Synchronization
 
 - `GET /api/offline/snapshot` returns version 1 of the complete word/topic copy,

@@ -2,13 +2,20 @@
 
 ## Product purpose
 
-Lexora is a personal English vocabulary learning app centered on:
+Lexora is a personal multilingual vocabulary learning app centered on:
 
 - topic-based study
 - fast review
 - knowledge-level progression
 - smart review queues
 - quick word management
+
+Learning libraries are separate for English, Mandarin Chinese, Spanish, German,
+Turkish, Tatar, Arabic, French and Portuguese. The header language selector chooses
+the library and Russian (default) or English translations/explanations. Changing
+the library clears scoped query data and returns to All words. Existing English
+Word IDs, topics and learning progress remain in the English library; new libraries
+start empty. See `multilingual.md` for language, migration and offline contracts.
 
 ## Runtime shape
 

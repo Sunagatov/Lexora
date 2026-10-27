@@ -7,7 +7,7 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.shared.config import settings
+from app.features.languages.catalog import LANGUAGES, learning_language
 from app.features.topics.model import Topic
 from app.features.words.suggest.exceptions import (
     AiMalformedResponseError,
@@ -15,6 +15,7 @@ from app.features.words.suggest.exceptions import (
     AiUnknownTopicError,
     NoTopicsError,
 )
+from app.shared.config import settings
 
 logger = logging.getLogger(__name__)
 AI_PROVIDER = "openai_compatible"
@@ -23,7 +24,7 @@ AI_REQUEST_TIMEOUT_SECONDS = 10.0
 
 SYSTEM_PROMPT = """\
 You are a vocabulary categorisation assistant.
-Given an English word or phrase and its translation, pick the single best matching topic \
+Given a vocabulary word or phrase and its translation, pick the single best matching topic \
 from the provided list.
 Reply with ONLY the exact topic name from the list — nothing else, no explanation, no punctuation.\
 """
@@ -44,12 +45,12 @@ async def suggest_topic_for_word(db: Session, term: str, translation: str) -> st
     if not settings.openai_api_key:
         raise AiNotConfiguredError
 
-    topic_names = list(db.scalars(select(Topic.name).where(Topic.deleted_at.is_(None)).order_by(Topic.name)).all())
+    topic_names = list(db.scalars(select(Topic.name).where(Topic.deleted_at.is_(None), Topic.language == learning_language(db)).order_by(Topic.name)).all())
     if not topic_names:
         raise NoTopicsError
 
     topic_list = "\n".join(f"- {topic_name}" for topic_name in topic_names)
-    user_message = f"Word: {term}\nTranslation: {translation}\n\nTopics:\n{topic_list}"
+    user_message = f"Learning language: {LANGUAGES[learning_language(db)]['name']}\nWord: {term}\nTranslation: {translation}\n\nTopics:\n{topic_list}"
 
     started_at = time.perf_counter()
     try:

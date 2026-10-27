@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import Field
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
 from app.features.topics.exceptions import MissingTopicsError
 from app.features.topics.rules import assert_topics_exist
 from app.features.words.ai_review import (
@@ -161,6 +162,8 @@ def get_word(word_id: int, db: Session = Depends(get_db)) -> WordResponse:
 @router.post("", response_model=WordResponse, status_code=status.HTTP_201_CREATED)
 def create_word_route(payload: WordCreate, db: Session = Depends(get_db)) -> WordResponse:
     try:
+        if "language" in payload.model_fields_set and payload.language != learning_language(db):
+            raise HTTPException(400, "The word must use the selected learning language")
         assert_topics_exist(db, payload.topic_ids)
         return WordResponse.from_word(create_word(db, payload))
     except MissingTopicsError as e:
@@ -175,6 +178,8 @@ def update_word_route(word_id: int, payload: WordUpdate, db: Session = Depends(g
     if word is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Word not found")
     try:
+        if payload.language is not None and payload.language != word.language:
+            raise HTTPException(400, "A word cannot be moved to another learning language by editing it")
         if payload.topic_ids is not None:
             assert_topics_exist(db, payload.topic_ids)
         return WordResponse.from_word(update_word(db, word, payload))

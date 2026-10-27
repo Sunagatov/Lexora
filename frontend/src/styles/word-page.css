@@ -266,6 +266,7 @@
   font-style: italic;
   color: var(--text-2);
   line-height: 1.65;
+  white-space: pre-line;
   border-left: 2px solid rgba(99, 102, 241, 0.25);
 }
 

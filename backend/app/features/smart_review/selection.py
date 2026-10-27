@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.features.languages.catalog import learning_language
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.model import Word
 
@@ -18,6 +19,7 @@ def cooldown_word_ids(db, *, cooldown_days: int) -> set[int]:
     stmt = (
         select(StudyQueueItem.word_id)
         .join(StudyQueue, StudyQueueItem.queue_id == StudyQueue.id)
+        .where(StudyQueue.language == learning_language(db))
         .where(StudyQueueItem.is_completed.is_(True))
         .where(StudyQueueItem.completed_at.is_not(None))
         .where(StudyQueueItem.completed_at >= cutoff)
@@ -108,6 +110,7 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], nee
     from sqlalchemy.sql.expression import func as sa_func
     stmt = (
         select(Word)
+        .where(Word.language == learning_language(db))
         .options(selectinload(Word.topics))
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
@@ -123,6 +126,7 @@ def _list_smart_review_candidates(db, *, level: int, excluded_ids: set[int], nee
 def _has_smart_review_candidate(db, *, level: int, excluded_ids: set[int]) -> bool:
     stmt = (
         select(Word.id)
+        .where(Word.language == learning_language(db))
         .where(Word.is_active.is_(True))
         .where(Word.deleted_at.is_(None))
         .limit(1)

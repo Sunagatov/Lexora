@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     CheckConstraint,
     Column,
@@ -20,8 +22,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.features.words.constants import WORD_TERM_MAX_LEN
 from app.shared.db import Base
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.features.topics.model import Topic
@@ -45,7 +45,7 @@ class PartsOfSpeech(Base):
 class WordTranslation(Base):
     __tablename__ = "word_translations"
     __table_args__ = (
-        UniqueConstraint("word_id", "position", name="uq_word_translations_word_id_position"),
+        UniqueConstraint("word_id", "language", "position", name="uq_word_translations_word_language_position"),
         CheckConstraint("position >= 0", name="ck_word_translations_position"),
         CheckConstraint("value != ''", name="ck_word_translations_value"),
     )
@@ -54,6 +54,7 @@ class WordTranslation(Base):
     word_id: Mapped[int] = mapped_column(ForeignKey("words.id", ondelete="CASCADE"), index=True)
     position: Mapped[int] = mapped_column(Integer(), nullable=False)
     value: Mapped[str] = mapped_column(Text(), nullable=False)
+    language: Mapped[str] = mapped_column(String(2), nullable=False, default="ru", server_default=text("'ru'"))
 
     word = relationship("Word", back_populates="translation_items")
 
@@ -168,7 +169,7 @@ class Word(Base):
     __tablename__ = "words"
     __table_args__ = (
         UniqueConstraint("term", "part_of_speech_id", "language", name="uq_words_term_pos_lang"),
-        CheckConstraint("language IN ('en', 'ru')", name="ck_words_language"),
+        CheckConstraint("language IN ('en', 'ru', 'zh', 'es', 'de', 'tr', 'tt', 'ar', 'fr', 'pt')", name="ck_words_language"),
         CheckConstraint("cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')", name="ck_words_cefr_level"),
         CheckConstraint("register IN ('formal', 'informal', 'neutral', 'slang', 'technical')", name="ck_words_register"),
         CheckConstraint("countability IN ('countable', 'uncountable', 'both', 'plural', 'collective')", name="ck_words_countability"),
@@ -178,7 +179,9 @@ class Word(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     term: Mapped[str] = mapped_column(String(WORD_TERM_MAX_LEN), index=True)
-    language: Mapped[str] = mapped_column(String(2), nullable=False, server_default=text("'en'"))
+    language: Mapped[str] = mapped_column(String(2), nullable=False, server_default=text("'en'"), index=True)
+    transliteration: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    explanation_groups: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), nullable=True)
     definition: Mapped[str | None] = mapped_column(Text(), nullable=True)
     pronunciation_ipa: Mapped[str | None] = mapped_column(String(255), nullable=True)
     pronunciation_audio_url: Mapped[str | None] = mapped_column(String(512), nullable=True)

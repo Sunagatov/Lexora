@@ -29,7 +29,7 @@ BULK_WORDS_MAX = 500
 
 # ── Language ──
 
-LANGUAGES = ("en", "ru")
+LANGUAGES = ("en", "zh", "es", "de", "tr", "tt", "ar", "fr", "pt", "ru")
 
 # ── CEFR levels ──
 

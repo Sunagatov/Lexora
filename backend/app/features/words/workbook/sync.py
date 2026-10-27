@@ -44,11 +44,15 @@ def canonical_json(value: object) -> bytes:
     ).encode("utf-8")
 
 
-def content_state(word: Word) -> dict:
+def content_state(word: Word, target_language: str = "ru") -> dict:
+    scalars = {name: getattr(word, name) for name in SCALAR_FIELDS}
+    if target_language == "en":
+        explanations = (word.explanation_groups or {}).get("en", {})
+        scalars.update({name: explanations.get(name) for name in ("definition", "notes")})
     return {
-        **{name: getattr(word, name) for name in SCALAR_FIELDS},
+        **scalars,
         "part_of_speech": word.part_of_speech.name if word.part_of_speech else None,
-        "translations": [item.value for item in word.translation_items],
+        "translations": [item.value for item in word.translation_items if (item.language or "ru") == target_language],
         "examples": [item.value for item in word.example_items],
         "topic_ids": sorted(topic.id for topic in word.topics),
     }
@@ -98,9 +102,9 @@ def _seal_plan(plan: dict) -> dict:
 def build_sync_plan(
     db: Session, source: SyncSource, *, lock: bool = False, include_related_topics: bool = False
 ) -> dict:
-    topics = {topic.id: topic for topic in db.scalars(select(Topic)).all()}
+    topics = {topic.id: topic for topic in db.scalars(select(Topic).where(Topic.language == "en")).all()}
     positions = {pos.name for pos in db.scalars(select(PartsOfSpeech)).all()}
-    statement = with_word_details(select(Word).order_by(Word.id))
+    statement = with_word_details(select(Word).where(Word.language == "en").order_by(Word.id))
     if lock:
         statement = statement.with_for_update(of=Word)
     words = {word.id: word for word in db.scalars(statement).all()}
@@ -273,13 +277,13 @@ def apply_sync_plan(db: Session, plan: dict, *, skip_conflicts: bool = False) ->
         raise InvalidWorkbookError("Unresolved validation errors/conflicts; no changes applied")
     before_digest = protected_digest(db)
     positions = {pos.name: pos for pos in db.scalars(select(PartsOfSpeech)).all()}
-    topics = {topic.id: topic for topic in db.scalars(select(Topic)).all()}
+    topics = {topic.id: topic for topic in db.scalars(select(Topic).where(Topic.language == "en")).all()}
     ids = [change["word_id"] for change in plan["changes"]]
     words = {
         word.id: word
         for word in db.scalars(
             with_word_details(
-                select(Word).where(Word.id.in_(ids)).with_for_update(of=Word),
+                select(Word).where(Word.id.in_(ids), Word.language == "en").with_for_update(of=Word),
             )
         ).all()
     }
@@ -307,14 +311,15 @@ def apply_sync_plan(db: Session, plan: dict, *, skip_conflicts: bool = False) ->
                     if name == "translations"
                     else ("example_items", WordExample)
                 )
-                setattr(word, attribute, [])
+                preserved = [item for item in getattr(word, attribute) if name == "translations" and (item.language or "ru") != "ru"]
+                setattr(word, attribute, preserved)
                 pending_entries.append((word, attribute, model, value))
             else:
                 setattr(word, name, value)
     # Delete all old positions before inserting replacements; avoid per-word round trips.
     db.flush()
     for word, attribute, model, values in pending_entries:
-        setattr(word, attribute, [model(position=i, value=value) for i, value in enumerate(values)])
+        setattr(word, attribute, [*getattr(word, attribute), *[model(position=i, value=value) for i, value in enumerate(values)]])
     db.flush()
     if protected_digest(db) != before_digest:
         raise InvalidWorkbookError(
@@ -345,7 +350,7 @@ def build_restore_plan(db: Session, path: Path, *, lock: bool = False) -> dict:
         "errors": [],
     }
     ids = [change["word_id"] for change in payload["changes"]]
-    statement = with_word_details(select(Word).where(Word.id.in_(ids)))
+    statement = with_word_details(select(Word).where(Word.id.in_(ids), Word.language == "en"))
     if lock:
         statement = statement.with_for_update(of=Word)
     words = {word.id: word for word in db.scalars(statement).all()}

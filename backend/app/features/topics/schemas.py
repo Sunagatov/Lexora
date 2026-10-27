@@ -2,10 +2,12 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.features.languages.catalog import Language
 from app.features.topics.constants import TOPIC_NAME_MAX_LEN, TOPIC_SLUG_MAX_LEN
 
 
 class TopicCreate(BaseModel):
+    language: Language | None = None
     name: str = Field(min_length=1, max_length=TOPIC_NAME_MAX_LEN)
     description: str | None = None
     parent_topic_id: int | None = Field(default=None, gt=0)
@@ -32,6 +34,7 @@ class TopicUpdate(BaseModel):
 
 
 class TopicResponse(BaseModel):
+    language: str = "en"
     id: int
     name: str
     slug: str

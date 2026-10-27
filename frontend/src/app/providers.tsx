@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {Fragment, useEffect, useState, useSyncExternalStore} from 'react'
 import {MutationCache, QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import type {PropsWithChildren} from 'react'
 import {routes} from '@/app/routes'
@@ -6,6 +6,8 @@ import {ApiError} from '@/shared/api/apiError'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {bootstrapSession} from '@/features/auth/api/authApi'
 import {initializeOffline, syncOffline} from '@/features/offline/offline'
+import {displayTranslations, languagePreferences, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
+import {setRequestContext} from '@/shared/api/http'
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -27,6 +29,9 @@ queryClient.getQueryCache().subscribe((event) => {
     redirectIfUnauthorized(event.query.state.error)
   }
 })
+onLanguageChange(() => queryClient.clear())
+setRequestContext(() => ({'X-Lexora-Language': languagePreferences().language,
+  'X-Lexora-Translation-Language': languagePreferences().translationLanguage}), displayTranslations)
 
 function replaceRoute(pathname: string) {
   window.history.replaceState({}, '', pathname)
@@ -34,6 +39,7 @@ function replaceRoute(pathname: string) {
 }
 
 export function Providers({children}: PropsWithChildren) {
+  const preferences = useSyncExternalStore(subscribeLanguages, languagePreferences)
   const [authReady, setAuthReady] = useState(false)
 
   useEffect(() => {
@@ -66,7 +72,7 @@ export function Providers({children}: PropsWithChildren) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {authReady ? children : null}
+      {authReady ? <Fragment key={preferences.language + preferences.translationLanguage}>{children}</Fragment> : null}
     </QueryClientProvider>
   )
 }

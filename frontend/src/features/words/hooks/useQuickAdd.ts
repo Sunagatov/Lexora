@@ -70,6 +70,7 @@ export function useQuickAdd() {
     const er = enrichResult
     if (er.definition) base.definition = er.definition
     if (er.pronunciation_ipa) base.pronunciation_ipa = er.pronunciation_ipa
+    if (er.transliteration) base.transliteration = er.transliteration
     if (er.pronunciation_audio_url) base.pronunciation_audio_url = er.pronunciation_audio_url
     if (er.part_of_speech) base.part_of_speech = er.part_of_speech
     if (er.cefr_level) base.cefr_level = er.cefr_level

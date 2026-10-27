@@ -241,11 +241,11 @@ export function WordCollectionToolbar({
           </div>}
           {setThenSortBy && <div className="toolbar-advanced-sort">
             <label>Sort by<select className="toolbar-control" aria-label="Primary sort" value={sortBy} onChange={event => setSortBy(event.target.value as SortOption)}>
-              {sortOptions.map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'English level: ' : ''}{SORT_LABELS[value]}</option>)}
+              {sortOptions.map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'CEFR level: ' : ''}{SORT_LABELS[value]}</option>)}
             </select></label>
             <label>Then by<select className="toolbar-control" aria-label="Secondary sort" value={thenSortBy ?? 'none'} onChange={event => setThenSortBy(event.target.value === 'none' ? null : event.target.value as SortOption)}>
               <option value="none">Alphabetical tie-break only</option>
-              {sortOptions.filter(value => sortField(value) !== sortField(sortBy)).map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'English level: ' : ''}{SORT_LABELS[value]}</option>)}
+              {sortOptions.filter(value => sortField(value) !== sortField(sortBy)).map(value => <option key={value} value={value}>{value.startsWith('level') ? 'Knowledge: ' : value.startsWith('cefr') ? 'CEFR level: ' : ''}{SORT_LABELS[value]}</option>)}
             </select></label>
             {onLearningSort && <button type="button" className="btn btn-ghost toolbar-learning-preset" onClick={onLearningSort}>Weak words, easiest first</button>}
           </div>}

@@ -2,15 +2,27 @@ from __future__ import annotations
 
 from typing import cast
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
 from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.exceptions import (
     InvalidTopicNameError as InvalidTopicNameError,
+)
+from app.features.topics.exceptions import (
     InvalidTopicParentError as InvalidTopicParentError,
+)
+from app.features.topics.exceptions import (
     MissingTopicsError as MissingTopicsError,
+)
+from app.features.topics.exceptions import (
     TopicHasActiveChildrenError as TopicHasActiveChildrenError,
+)
+from app.features.topics.exceptions import (
     TopicNameConflictError as TopicNameConflictError,
+)
+from app.features.topics.exceptions import (
     TopicSlugConflictError as TopicSlugConflictError,
 )
 from app.features.topics.model import Topic
@@ -19,14 +31,26 @@ from app.features.topics.repository import soft_delete_topic
 from app.features.topics.repository import update_topic as persist_topic_update
 from app.features.topics.rules import (
     assert_active_topic_name_available as assert_active_topic_name_available,
+)
+from app.features.topics.rules import (
     assert_slug_available as assert_slug_available,
+)
+from app.features.topics.rules import (
     assert_topic_has_no_active_children as assert_topic_has_no_active_children,
+)
+from app.features.topics.rules import (
     assert_topic_parent_valid as assert_topic_parent_valid,
+)
+from app.features.topics.rules import (
     assert_topics_exist as assert_topics_exist,
+)
+from app.features.topics.rules import (
     build_topic_slug as build_topic_slug,
 )
 from app.features.topics.schemas import TopicCreate, TopicUpdate
-from app.features.topics.sidebar_stats import compute_topic_sidebar_stats as compute_topic_sidebar_stats
+from app.features.topics.sidebar_stats import (
+    compute_topic_sidebar_stats as compute_topic_sidebar_stats,
+)
 from app.features.words.api import assert_word_restore_allowed
 from app.shared.text import slugify as slugify
 
@@ -54,11 +78,14 @@ def _build_topic_create_payload(
 
 
 def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> Topic:
+    if getattr(payload, "language", None) is not None and payload.language != learning_language(db):
+        raise HTTPException(400, "Topic language must match the selected learning language")
     server_slug = _build_topic_slug(payload.name)
     assert_active_topic_name_available(db, payload.name)
     assert_slug_available(db, server_slug)
     assert_topic_parent_valid(db, payload.parent_topic_id)
     topic = Topic(
+        language=learning_language(db),
         name=payload.name,
         slug=server_slug,
         description=payload.description,

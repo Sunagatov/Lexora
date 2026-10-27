@@ -17,6 +17,10 @@ export type Word = {
   topic_ids: number[]
   term: string
   language: string
+  transliteration?: string | null
+  translation_language?: 'ru' | 'en'
+  translation_groups?: Record<string, string[]>
+  explanation_groups?: Record<string, {definition?: string | null; notes?: string | null}>
   definition: string | null
   pronunciation_ipa: string | null
   pronunciation_audio_url: string | null
@@ -47,6 +51,7 @@ export type Word = {
 }
 
 export type EnrichResult = {
+  transliteration?: string | null
   term: string
   definition: string | null
   pronunciation_ipa: string | null

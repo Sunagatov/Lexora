@@ -10,5 +10,6 @@ def normalize_term(term: str) -> str:
 def slugify(value: str, max_len: int = 200) -> str:
     """Convert a string to a URL-safe slug."""
     normalized = unicodedata.normalize('NFKD', value)
-    slug = re.sub(r'[^a-zA-Z0-9]+', '-', normalized.encode('ascii', 'ignore').decode()).strip('-').lower()
+    letters = ''.join(char for char in normalized if not unicodedata.combining(char))
+    slug = re.sub(r'[\W_]+', '-', letters, flags=re.UNICODE).strip('-').lower()
     return slug[:max_len]

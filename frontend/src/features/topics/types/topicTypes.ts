@@ -1,4 +1,5 @@
 export type Topic = {
+  language?: string
   id: number
   name: string
   slug: string

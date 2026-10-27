@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.features.topics.constants import TOPIC_NAME_MAX_LEN, TOPIC_SLUG_MAX_LEN
@@ -16,10 +16,12 @@ if TYPE_CHECKING:
 
 class Topic(Base):
     __tablename__ = "topics"
+    __table_args__ = (UniqueConstraint("slug", "language", name="uq_topics_slug_language"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(TOPIC_NAME_MAX_LEN), index=True)
-    slug: Mapped[str] = mapped_column(String(TOPIC_SLUG_MAX_LEN), unique=True)
+    slug: Mapped[str] = mapped_column(String(TOPIC_SLUG_MAX_LEN))
+    language: Mapped[str] = mapped_column(String(2), nullable=False, default="en", server_default=text("'en'"), index=True)
     description: Mapped[str | None] = mapped_column(Text(), nullable=True)
     parent_topic_id: Mapped[int | None] = mapped_column(
         ForeignKey("topics.id", ondelete="SET NULL"),

@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {Fragment, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
@@ -29,7 +30,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
   function speak(id: number, term: string) {
     window.speechSynthesis.cancel()
     const u = new SpeechSynthesisUtterance(term)
-    u.lang = 'en-GB'
+    u.lang = languageProfile().locale
     u.rate = 0.92
     u.onstart = () => setSpeakingId(id)
     u.onend = () => setSpeakingId(null)
@@ -62,11 +63,11 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                     <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
                     {onWordSelect ? (
                       <span className="word-term word-term-link" style={{display: 'inline', flex: 'none'}}>
-                        {word.term}
+                        <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
                       </span>
                     ) : (
                       <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}>
-                        {word.term}
+                        <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
                       </Link>
                     )}
                     <button type="button"

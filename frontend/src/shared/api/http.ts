@@ -11,6 +11,9 @@ function normalizeBaseUrl(raw: string | undefined): string {
 }
 
 export const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+let contextHeaders: () => Record<string, string> = () => ({})
+let responseMapper: (value: unknown) => unknown = value => value
+export function setRequestContext(headers: typeof contextHeaders, mapper: typeof responseMapper) { contextHeaders = headers; responseMapper = mapper }
 
 export function buildApiUrl(path: string): string {
   return `${API_BASE_URL}${path}`
@@ -18,6 +21,7 @@ export function buildApiUrl(path: string): string {
 
 export function buildRequestHeaders(headersInit?: HeadersInit, body?: BodyInit | null): Headers {
   const headers = new Headers(headersInit)
+  for (const [name, value] of Object.entries(contextHeaders())) if (!headers.has(name)) headers.set(name, value)
   if (body && !(body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
@@ -33,7 +37,7 @@ let requestAdapter: RequestAdapter | undefined
 export function setRequestAdapter(adapter: RequestAdapter) { requestAdapter = adapter }
 
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  return (requestAdapter ? requestAdapter(path, init, networkRequest) : networkRequest(path, init)) as Promise<T>
+  return responseMapper(await (requestAdapter ? requestAdapter(path, init, networkRequest) : networkRequest(path, init))) as T
 }
 
 export async function networkRequest<T>(path: string, init: RequestInit = {}): Promise<T> {

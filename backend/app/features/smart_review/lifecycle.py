@@ -6,6 +6,7 @@ from typing import cast
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
+from app.features.languages.catalog import learning_language
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.model import Word
@@ -29,7 +30,7 @@ def complete_queue_item(db, item_id: int) -> StudyQueue:
 
     queue: StudyQueue | None = cast(StudyQueue | None, db.get(StudyQueue, item.queue_id))
     now = datetime.now(timezone.utc)
-    if queue is None or not queue.is_active or queue.expires_at <= now:
+    if queue is None or not queue.is_active or queue.expires_at <= now or (getattr(queue, "language", None) or "en") != learning_language(db):
         raise QueueNotActiveError
 
     word = db.get(Word, item.word_id)
@@ -46,7 +47,7 @@ def complete_queue_item(db, item_id: int) -> StudyQueue:
 
 
 def deactivate_all_queues(db) -> None:
-    for queue in cast(list[StudyQueue], list(db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True))).all())):
+    for queue in cast(list[StudyQueue], list(db.scalars(select(StudyQueue).where(StudyQueue.is_active.is_(True), StudyQueue.language == learning_language(db))).all())):
         queue.is_active = False
 
 
@@ -94,6 +95,7 @@ def load_active_queue(db) -> StudyQueue | None:
         StudyQueue | None,
         db.scalar(
             select(StudyQueue)
+            .where(StudyQueue.language == learning_language(db))
             .where(StudyQueue.is_active.is_(True))
             .where(StudyQueue.expires_at > now)
             .options(selectinload(StudyQueue.items).selectinload(StudyQueueItem.word))
@@ -109,6 +111,7 @@ def load_active_queue_lightweight(db) -> StudyQueue | None:
         StudyQueue | None,
         db.scalar(
             select(StudyQueue)
+            .where(StudyQueue.language == learning_language(db))
             .where(StudyQueue.is_active.is_(True))
             .where(StudyQueue.expires_at > now)
             .order_by(StudyQueue.generated_at.desc())

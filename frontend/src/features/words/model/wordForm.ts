@@ -3,6 +3,7 @@ import {levelToStr, strToLevel} from '@/features/words/model/wordDomain'
 import {toStr, toNullStr, toNullStrIf} from '@/shared/lib/utils'
 
 export type EditState = {
+  language?: string
   term: string
   translations: string
   knowledge_level: string
@@ -10,6 +11,7 @@ export type EditState = {
   topic_ids: string[]
   definition: string
   pronunciation_ipa: string
+  transliteration?: string
   cefr_level: string
   register: string
   countability: string
@@ -38,8 +40,11 @@ function splitExamples(value: string): string[] {
   const examples: string[] = []
   for (const line of splitMultiline(value)) {
     const previous = examples[examples.length - 1]
-    // A labelled Russian line belongs to the immediately preceding English line.
-    if (/^RU:/i.test(line) && previous && /^EN:/i.test(previous) && !previous.includes('\n')) {
+    const source = previous?.match(/^([A-Z]{2}):/i)?.[1].toUpperCase()
+    const label = line.match(/^(RU|EN):/i)?.[1].toUpperCase()
+    const labels = previous?.split('\n').map(value => value.slice(0, 2).toUpperCase()) ?? []
+    // Keep a labelled translation with the immediately preceding source sentence.
+    if (label && source && source !== 'RU' && label !== source && !labels.includes(label)) {
       examples[examples.length - 1] = `${previous}\n${line}`
     } else {
       examples.push(line)
@@ -51,12 +56,14 @@ function splitExamples(value: string): string[] {
 export function toEditState(word: Word): EditState {
   return {
     term: word.term,
+    language: word.language,
     translations: word.translation_entries.length ? word.translation_entries.join('\n') : '',
     knowledge_level: levelToStr(word.knowledge_level),
     part_of_speech: toStr(word.part_of_speech),
     topic_ids: word.topic_ids.map(String),
     definition: toStr(word.definition),
     pronunciation_ipa: toStr(word.pronunciation_ipa),
+    transliteration: toStr(word.transliteration),
     cefr_level: toStr(word.cefr_level),
     register: toStr(word.register),
     countability: toStr(word.countability),
@@ -91,6 +98,7 @@ export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: bool
     topic_ids: topicIds,
     definition: toNullStr(draft.definition),
     pronunciation_ipa: toNullStr(draft.pronunciation_ipa),
+    transliteration: toNullStr(draft.transliteration ?? ''),
     cefr_level: toNullStr(draft.cefr_level),
     register: toNullStr(draft.register),
     countability: toNullStrIf(isNoun, draft.countability),
@@ -112,7 +120,7 @@ export function buildSavePayload(draft: EditState, isVerb: boolean, isNoun: bool
 
 export function buildChangedSavePayload(draft: EditState, initial: EditState): Partial<Word> {
   const payloadFor = (state: EditState) => buildSavePayload(state,
-    state.part_of_speech === 'verb' || state.part_of_speech === 'phrasal verb', state.part_of_speech === 'noun')
+    (state.language ?? 'en') === 'en' && (state.part_of_speech === 'verb' || state.part_of_speech === 'phrasal verb'), state.part_of_speech === 'noun')
   const before = payloadFor(initial)
   return Object.fromEntries(Object.entries(payloadFor(draft))
     .filter(([key, value]) => JSON.stringify(value) !== JSON.stringify(before[key as keyof Word])))

@@ -79,6 +79,7 @@ describe('UsageTracker auth handling', () => {
 
     expect(statsApi.recordUsageEvent).toHaveBeenCalledWith(
       expect.objectContaining({active_seconds: 8}),
+      'en',
     )
   })
 })

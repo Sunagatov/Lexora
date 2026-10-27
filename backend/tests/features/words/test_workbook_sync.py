@@ -332,6 +332,12 @@ def test_pair_parser_rejects_orphan_ru_and_preserves_english_only_examples():
         _split_examples_cell("RU: Один.")
 
 
+def test_multilingual_three_line_examples_keep_their_associations():
+    example = "ZH: 你好，安娜！\nRU: Привет, Анна!\nEN: Hello, Anna!"
+    other = "ZH: 大家好！\nRU: Всем привет!\nEN: Hello, everyone!"
+    assert _split_examples_cell(example + "\n" + other) == [example, other]
+
+
 def test_skipping_conflicts_leaves_entire_conflicted_word_unchanged(database):
     other = Word(
         id=11,

@@ -2,7 +2,8 @@ import {ApiError} from '@/shared/api/apiError'
 import {networkRequest, setRequestAdapter} from '@/shared/api/http'
 import {readReplica, withOfflineLock, writeReplica} from './storage'
 import {changeItem, remapId} from './changes'
-import {listWords, sidebarStats, visibleWord} from './collections'
+import {languagePreferences} from '@/features/languages/api'
+import {inLanguage, scopedReplica, listWords, sidebarStats, visibleWord} from './collections'
 import type {Replica, Snapshot} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
@@ -36,7 +37,7 @@ function isNetworkFailure(error: unknown) {
 }
 
 function newMix(replica: Replica): StudyQueue {
-  const words = replica.words.filter(w => !w.deleted_at && w.is_active && w.knowledge_level !== 5)
+  const words = replica.words.filter(w => !w.deleted_at && inLanguage(w) && w.is_active && w.knowledge_level !== 5)
   // Fisher–Yates avoids biased random ordering and saves a stable local set.
   for (let i = words.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1)); [words[i], words[j]] = [words[j], words[i]]
@@ -47,44 +48,49 @@ function newMix(replica: Replica): StudyQueue {
 }
 
 function readMix(replica: Replica) {
-  replica.mix ??= newMix(replica)
+  replica.mixes ??= replica.mix ? {en: replica.mix} : {}
+  const language = languagePreferences().language
+  const mix = replica.mixes[language] ??= newMix(replica)
   const words = new Map(replica.words.filter(w => !w.deleted_at).map(w => [w.id, w]))
-  replica.mix.items = replica.mix.items.filter(item => words.has(item.word_id)).map(item => ({...item, word: visibleWord(replica, words.get(item.word_id)!)}))
-  replica.mix.total_count = replica.mix.items.length
-  replica.mix.completed_count = replica.mix.items.filter(item => item.is_completed).length
-  return replica.mix
+  mix.items = mix.items.filter(item => words.has(item.word_id)).map(item => ({...item, word: visibleWord(replica, words.get(item.word_id)!)}))
+  mix.total_count = mix.items.length
+  mix.completed_count = mix.items.filter(item => item.is_completed).length
+  return mix
 }
 
 async function localRequest(replica: Replica, path: string, init: RequestInit) {
   const url = new URL(path, window.location.origin), route = url.pathname, params = url.searchParams
   const method = init.method?.toUpperCase() ?? 'GET'
+  const scope = scopedReplica(replica)
   const body = typeof init.body === 'string' ? JSON.parse(init.body) as Record<string, unknown> : {}
   if (method === 'GET') {
     if (route === '/api/config/public') return replica.public_config ?? {trash_retention_days: 30}
     if (route === '/api/words') return listWords(replica, params)
-    if (route === '/api/topics') return replica.topics.filter(t => !t.deleted_at).sort((a, b) => a.name.localeCompare(b.name))
+    if (route === '/api/topics') return scope.topics.filter(t => !t.deleted_at).sort((a, b) => a.name.localeCompare(b.name))
     if (route === '/api/topics/sidebar-stats') return sidebarStats(replica)
     if (route === '/api/words/summary') {
       const level_counts: Record<number, number> = {}
-      const words = replica.words.filter(w => !w.deleted_at)
+      const words = scope.words.filter(w => !w.deleted_at)
       words.forEach(w => { const level = w.knowledge_level ?? 0; level_counts[level] = (level_counts[level] ?? 0) + 1 })
       return {total: words.length, level_counts}
     }
-    if (route === '/api/trash/words') return replica.words.filter(w => w.deleted_at).map(w => visibleWord(replica, w))
-    if (route === '/api/trash/topics') return replica.topics.filter(t => t.deleted_at)
+    if (route === '/api/trash/words') return scope.words.filter(w => w.deleted_at).map(w => visibleWord(replica, w))
+    if (route === '/api/trash/topics') return scope.topics.filter(t => t.deleted_at)
     const match = route.match(/^\/api\/(words|topics)\/(-?\d+)$/)
     if (match) {
       const isWord = match[1] === 'words'
       const aliases = isWord ? replica.wordAliases : replica.topicAliases
       const id = aliases?.[Number(match[2])] ?? Number(match[2])
-      const item = (isWord ? replica.words : replica.topics).find(item => item.id === id && !item.deleted_at)
+      const item = (isWord ? scope.words : scope.topics).find(item => item.id === id && !item.deleted_at)
       if (!item) throw new ApiError(404, 'Item not found')
       return isWord ? visibleWord(replica, item as Replica['words'][number]) : item
     }
   }
   if (route === '/api/smart-review' || route.startsWith('/api/smart-review/')) {
-    const hadMix = !!replica.mix
-    if (route.endsWith('/refresh') && method === 'POST') replica.mix = newMix(replica)
+    replica.mixes ??= replica.mix ? {en: replica.mix} : {}
+    const language = languagePreferences().language
+    const hadMix = !!replica.mixes[language]
+    if (route.endsWith('/refresh') && method === 'POST') replica.mixes[language] = newMix(replica)
     const match = route.match(/\/items\/(-?\d+)\/complete$/)
     const mix = readMix(replica)
     if (match && method === 'POST') {
@@ -101,7 +107,7 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
     let updated = 0
     for (const rawId of [...new Set(ids)]) {
       const id = replica.wordAliases?.[rawId] ?? rawId
-      const word = replica.words.find(w => w.id === id && !w.deleted_at)
+      const word = replica.words.find(w => w.id === id && !w.deleted_at && inLanguage(w))
       if (!word) continue
       const data: Record<string, unknown> = {}
       if (body.knowledge_level !== undefined && body.knowledge_level !== null) data.knowledge_level = body.knowledge_level
@@ -196,6 +202,7 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
 }
 
 export async function saveOffline() {
+  const language = languagePreferences().language
   notify({busy: true, error: undefined})
   try {
     if (status.pending) throw new Error('Sync or export your pending changes before replacing the saved copy.')
@@ -210,14 +217,14 @@ export async function saveOffline() {
       })
     })
     await navigator.serviceWorker.ready
-    const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {signal: AbortSignal.timeout(60_000)})
+    const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {headers: {'X-Lexora-All-Languages': 'true'}, signal: AbortSignal.timeout(60_000)})
     if (snapshot.version !== 1) throw new Error('Update the page before saving offline.')
     let mix: StudyQueue | undefined
-    try { mix = await networkRequest<StudyQueue>('/api/smart-review', {signal: AbortSignal.timeout(20_000)}) }
+    try { mix = await networkRequest<StudyQueue>('/api/smart-review', {headers: {'X-Lexora-Language': language}, signal: AbortSignal.timeout(20_000)}) }
     catch (error) { if (!(error instanceof ApiError && error.status === 503)) throw error }
     await withOfflineLock(async () => {
       if ((await readReplica())?.changes.length) throw new Error('Another tab has pending edits. Sync them before saving again.')
-      await persist({...snapshot, savedAt: new Date().toISOString(), nextId: -Date.now(), changes: [], mix})
+      await persist({...snapshot, savedAt: new Date().toISOString(), nextId: -Date.now(), changes: [], mixes: mix ? {[language]: mix} : {}})
     })
     // Storage persistence is a best-effort browser policy; never claim it is guaranteed.
     void navigator.storage?.persist?.()
@@ -241,7 +248,7 @@ export function syncOffline(forceRefresh = false): Promise<void> {
         if (!replica) break
         if (replica.changes.length) {
           const change = replica.changes[0]
-          const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {method: 'POST', body: JSON.stringify(change), signal: AbortSignal.timeout(20_000)})
+          const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {method: 'POST', headers: {'X-Lexora-Language': String(change.data.language ?? change.before.language ?? 'en')}, body: JSON.stringify(change), signal: AbortSignal.timeout(20_000)})
           await withOfflineLock(async () => {
             const latest = await readReplica()
             // Another tab may have already recorded the same server receipt.
@@ -253,7 +260,7 @@ export function syncOffline(forceRefresh = false): Promise<void> {
           continue
         }
         // Network waits must not hold the storage lock needed by local edits.
-        const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {signal: AbortSignal.timeout(60_000)})
+        const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {headers: {'X-Lexora-All-Languages': 'true'}, signal: AbortSignal.timeout(60_000)})
         const refreshed = await withOfflineLock(async () => {
           const latest = await readReplica()
           if (!latest) return true

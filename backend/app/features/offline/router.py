@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -21,8 +21,8 @@ router = APIRouter(prefix="/api/offline", tags=["offline"])
 
 
 @router.get("/snapshot")
-def get_snapshot(db: Annotated[Session, Depends(get_db)]):
-    return snapshot(db)
+def get_snapshot(db: Annotated[Session, Depends(get_db)], all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False):
+    return snapshot(db, all_languages=all_languages)
 
 
 @router.post("/changes")

@@ -3,21 +3,22 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
+from app.features.languages.catalog import learning_language
+from app.features.topics.domain import soft_delete_all_words, soft_delete_exclusive_words
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicUpdate
-from app.features.topics.domain import soft_delete_exclusive_words, soft_delete_all_words
-from app.features.words.progress import WordProgressEvent  # noqa: F401
 from app.features.words.model import Word
+from app.features.words.progress import WordProgressEvent  # noqa: F401
 
 
 def get_all_topics(db: Session) -> list[Topic]:
-    return list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.name.asc())).all())
+    return list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None), Topic.language == learning_language(db)).order_by(Topic.name.asc())).all())
 
 
 def get_all_topics_with_words(db: Session) -> list[Topic]:
     stmt = (
         select(Topic)
-        .where(Topic.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None), Topic.language == learning_language(db))
         .options(selectinload(Topic.words).selectinload(Word.topics))
         .order_by(Topic.name.asc())
     )
@@ -25,7 +26,7 @@ def get_all_topics_with_words(db: Session) -> list[Topic]:
 
 
 def get_topic_by_id(db: Session, topic_id: int) -> Topic | None:
-    return db.scalar(select(Topic).where(Topic.id == topic_id).where(Topic.deleted_at.is_(None)))
+    return db.scalar(select(Topic).where(Topic.id == topic_id, Topic.language == learning_language(db)).where(Topic.deleted_at.is_(None)))
 
 
 def get_active_topic_or_none(db: Session, topic_id: int) -> Topic | None:
@@ -36,6 +37,7 @@ def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
     stmt = (
         select(Topic)
         .where(Topic.id == topic_id)
+        .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.is_(None))
         .options(selectinload(Topic.words).selectinload(Word.topics))
     )
@@ -43,11 +45,11 @@ def get_topic_by_id_with_words(db: Session, topic_id: int) -> Topic | None:
 
 
 def get_topic_by_id_including_deleted(db: Session, topic_id: int) -> Topic | None:
-    return db.scalars(select(Topic).where(Topic.id == topic_id)).first()
+    return db.scalars(select(Topic).where(Topic.id == topic_id, Topic.language == learning_language(db))).first()
 
 
 def get_topic_by_slug(db: Session, slug: str) -> Topic | None:
-    return db.scalar(select(Topic).where(Topic.slug == slug).where(Topic.deleted_at.is_(None)))
+    return db.scalar(select(Topic).where(Topic.slug == slug, Topic.language == learning_language(db)).where(Topic.deleted_at.is_(None)))
 
 
 def find_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
@@ -55,6 +57,7 @@ def find_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | Non
     return db.scalar(
         select(Topic)
         .where(func.lower(Topic.name) == normalized)
+        .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.is_(None))
     )
 
@@ -64,6 +67,7 @@ def find_deleted_topic_by_exact_name(db: Session, topic_name: str) -> Topic | No
     return db.scalar(
         select(Topic)
         .where(func.lower(Topic.name) == normalized)
+        .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.isnot(None))
     )
 
@@ -76,17 +80,19 @@ def find_deleted_topic_by_slug(db: Session, slug: str) -> Topic | None:
     return db.scalar(
         select(Topic)
         .where(Topic.slug == slug)
+        .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.isnot(None))
     )
 
 
 def get_deleted_topics(db: Session) -> list[Topic]:
-    return list(db.scalars(select(Topic).where(Topic.deleted_at.is_not(None)).order_by(Topic.deleted_at.desc())).all())
+    return list(db.scalars(select(Topic).where(Topic.deleted_at.is_not(None), Topic.language == learning_language(db)).order_by(Topic.deleted_at.desc())).all())
 
 
 def get_active_subtree_topic_ids(db: Session, root_topic_id: int) -> list[int]:
     subtree = select(Topic.id).where(
         Topic.id == root_topic_id,
+        Topic.language == learning_language(db),
         Topic.deleted_at.is_(None),
     ).cte(name="topic_subtree", recursive=True)
     topic_children = (
@@ -112,6 +118,7 @@ def count_active_topics(db: Session) -> int:
             select(func.count())
             .select_from(Topic)
             .where(Topic.deleted_at.is_(None))
+            .where(Topic.language == learning_language(db))
         )
         or 0
     )
@@ -132,6 +139,7 @@ def list_active_topics_page_rows(db, *, offset: int, page_size: int, word_cls, w
         .outerjoin(word_cls, (word_cls.id == word_topics_table.c.word_id) & word_cls.deleted_at.is_(None))
         .where(Topic.deleted_at.is_(None))
         .group_by(Topic.id)
+        .where(Topic.language == learning_language(db))
         .order_by(Topic.name.asc(), Topic.id.asc())
         .offset(offset)
         .limit(page_size)
@@ -143,6 +151,7 @@ def list_deleted_topics_for_purge(db, *, deleted_before: datetime | None = None)
     stmt = (
         select(Topic)
         .where(Topic.deleted_at.isnot(None))
+        .where(Topic.language == learning_language(db))
         .options(selectinload(Topic.words).selectinload(Word.topics))
     )
     if deleted_before is not None:

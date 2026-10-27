@@ -1,3 +1,4 @@
+import {languageProfile} from '@/features/languages/api'
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
@@ -30,7 +31,7 @@ export function TrashPage() {
   function speak(id: number, term: string) {
     window.speechSynthesis.cancel()
     const u = new SpeechSynthesisUtterance(term)
-    u.lang = 'en-GB'
+    u.lang = languageProfile().locale
     u.rate = 0.92
     u.onstart = () => setSpeakingId(id)
     u.onend = () => setSpeakingId(null)

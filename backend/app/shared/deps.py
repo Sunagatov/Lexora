@@ -5,6 +5,7 @@ from fastapi import Cookie, Header, HTTPException, Request, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import configure_language
 from app.shared.auth import (
     ALGORITHM,
     AUTH_TYPE_SESSION,
@@ -20,10 +21,14 @@ from app.shared.db import SessionLocal, ensure_database_schema
 from app.shared.logging_utils import bind_request_context
 
 
-def get_db() -> Generator[Session, None, None]:
+def get_db(request: Request = None) -> Generator[Session, None, None]:
     ensure_database_schema()
     db = SessionLocal()
     try:
+        configure_language(
+            db, request.headers.get("X-Lexora-Language", "en") if request else "en",
+            request.headers.get("X-Lexora-Translation-Language", "ru") if request else "ru",
+        )
         yield db
     finally:
         db.close()

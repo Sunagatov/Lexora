@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useRef} from 'react'
 import {useLocation} from 'react-router-dom'
 import {recordUsageEvent} from '@/features/stats/api/statsApi'
+import {languagePreferences} from '@/features/languages/api'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 const SESSION_STORAGE_KEY = 'lexora-usage-session-key'
@@ -32,6 +33,7 @@ function getSessionKey(): string {
 }
 
 export function UsageTracker() {
+  const language = useRef(languagePreferences().language).current
   const {pathname} = useLocation()
   const sessionKeyRef = useRef<string>(getSessionKey())
   const routeRef = useRef(pathname)
@@ -82,13 +84,13 @@ export function UsageTracker() {
         session_key: event.sessionKey,
         route: event.route,
         active_seconds: event.activeSeconds,
-      })
+      }, language)
       pendingEventRef.current = null
     } catch (error) {
       redirectIfUnauthorized(error)
       // Keep the pending payload for the next flush attempt.
     }
-  }, [accrueActiveTime])
+  }, [accrueActiveTime, language])
 
   useEffect(() => {
     void flushPending()

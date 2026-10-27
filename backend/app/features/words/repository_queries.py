@@ -50,14 +50,17 @@ def words_for_topics_stmt(topic_ids: list[int]):
     return active_words_stmt().where(Word.id.in_(word_ids))
 
 
-def apply_word_search(stmt, search: str):
+def apply_word_search(stmt, search: str, target: str = "ru"):
     needle = f"%{search}%"
+    definition = Word.explanation_groups["en"]["definition"].as_string() if target == "en" else Word.definition
+    notes = Word.explanation_groups["en"]["notes"].as_string() if target == "en" else Word.notes
     return stmt.where(
         Word.term.ilike(needle)
-        | Word.definition.ilike(needle)
+        | definition.ilike(needle)
+        | Word.transliteration.ilike(needle)
         | Word.pattern.ilike(needle)
-        | Word.notes.ilike(needle)
-        | Word.id.in_(select(WordTranslation.word_id).where(WordTranslation.value.ilike(needle)))
+        | notes.ilike(needle)
+        | Word.id.in_(select(WordTranslation.word_id).where(WordTranslation.value.ilike(needle), WordTranslation.language == target))
         | Word.id.in_(select(WordExample.word_id).where(WordExample.value.ilike(needle)))
         | Word.id.in_(select(WordVerbForm.word_id).where(
             WordVerbForm.past_simple.ilike(needle) | WordVerbForm.past_participle.ilike(needle)
@@ -108,10 +111,11 @@ def apply_level_filter(stmt, level: int | list[int]):
     return stmt.where(Word.knowledge_level.in_([level] if isinstance(level, int) else level))
 
 
-def apply_completeness_filter(stmt, completeness: str):
-    has_definition = Word.definition.isnot(None) & (Word.definition != "")
+def apply_completeness_filter(stmt, completeness: str, target: str = "ru"):
+    definition = Word.explanation_groups["en"]["definition"].as_string() if target == "en" else Word.definition
+    has_definition = definition.isnot(None) & (definition != "")
     has_pos = Word.part_of_speech_id.isnot(None)
-    has_translations = Word.id.in_(select(WordTranslation.word_id).distinct())
+    has_translations = Word.id.in_(select(WordTranslation.word_id).where(WordTranslation.language == target).distinct())
     has_examples = Word.id.in_(select(WordExample.word_id).distinct())
     if completeness == "complete":
         return stmt.where(has_definition & has_pos & has_translations & has_examples)

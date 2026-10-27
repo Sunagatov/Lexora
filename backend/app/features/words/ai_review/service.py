@@ -2,19 +2,30 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import translation_language
 from app.features.topics.api import get_active_subtree_topic_ids, get_active_topic_or_none
 from app.features.words.ai_review.exceptions import AiReviewImportError
 from app.features.words.ai_review.export_support import (
     EXPORT_INSTRUCTIONS as EXPORT_INSTRUCTIONS,
+)
+from app.features.words.ai_review.export_support import (
     build_topic_ai_review_export as _build_topic_ai_review_export,
 )
 from app.features.words.ai_review.import_support import (
     assert_import_words_present,
     assert_not_stale,
     assert_term_matches,
+)
+from app.features.words.ai_review.import_support import (
     assert_unique_word_ids as _assert_unique_word_ids,
+)
+from app.features.words.ai_review.import_support import (
     build_update_payload as _build_update_payload,
+)
+from app.features.words.ai_review.import_support import (
     has_changes as _has_changes,
+)
+from app.features.words.ai_review.import_support import (
     load_import_words as _load_import_words,
 )
 from app.features.words.ai_review.schemas import (
@@ -38,6 +49,8 @@ def build_topic_ai_review_export(
     page: int,
     page_size: int,
 ) -> AiReviewExportResponse:
+    if translation_language(db) != "ru":
+        raise AiReviewImportError("This legacy review format uses Russian translations; use the workbook preview for English content")
     topic = _get_topic(db, topic_id)
     subtree_topic_ids = get_active_subtree_topic_ids(db, topic.id)
     return _build_topic_ai_review_export(
@@ -49,6 +62,8 @@ def build_topic_ai_review_export(
     )
 
 def import_topic_ai_review(db: Session, payload: AiReviewImportRequest) -> AiReviewImportResponse:
+    if translation_language(db) != "ru":
+        raise AiReviewImportError("This legacy review format uses Russian translations; use the workbook preview for English content")
     topic = _get_topic(db, payload.topic_id)
     word_ids = [word.id for word in payload.words]
     _assert_unique_word_ids(word_ids, AiReviewImportError)

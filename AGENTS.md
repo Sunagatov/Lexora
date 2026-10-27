@@ -1,6 +1,6 @@
 # Lexora Agent Bootloader
 
-Lexora is a personal English vocabulary learning application. This repository owns the application source code, tests, and source-level documentation for the FastAPI backend and React frontend.
+Lexora is a personal multilingual vocabulary learning application. This repository owns the application source code, tests, and source-level documentation for the FastAPI backend and React frontend.
 
 ## Documentation Source-Of-Truth Policy
 

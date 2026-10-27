@@ -15,6 +15,7 @@ import type {
   WorkbookPreview,
 } from '@/features/words/types/wordTypes'
 import './workbookImport.css'
+import {languagePreferences, languageProfile} from '@/features/languages/api'
 
 type Props = {file: File; onClose: () => void; onApplied: () => Promise<unknown>}
 
@@ -201,6 +202,7 @@ export function WorkbookImportDialog({file, onClose, onApplied}: Props) {
       <header>
         <h2 id={titleId}>{result ? 'Import complete' : 'Import vocabulary'}</h2>
         <p className="workbook-muted">{file.name}</p>
+        <p className="workbook-muted">{languageProfile().name} vocabulary · {languagePreferences().translationLanguage === 'ru' ? 'Russian' : 'English'} translations and explanations</p>
       </header>
       <div className="workbook-body">
         {result ? (

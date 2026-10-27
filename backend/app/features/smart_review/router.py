@@ -2,13 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.shared.config import settings
-from app.shared.deps import get_db
+from app.features.languages.catalog import learning_language
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.smart_review.schemas import StudyQueueResponse
-from app.features.smart_review.service import complete_queue_item, generate_queue, get_or_create_active_queue
+from app.features.smart_review.service import (
+    complete_queue_item,
+    generate_queue,
+    get_or_create_active_queue,
+)
 from app.features.words.model import Word
+from app.shared.config import settings
+from app.shared.deps import get_db
 
 router = APIRouter(prefix="/api/smart-review", tags=["smart-review"])
 
@@ -18,6 +23,7 @@ def _load_queue(db: Session, queue_id: int) -> StudyQueue | None:
     return db.scalar(
         select(StudyQueue)
         .where(StudyQueue.id == queue_id)
+        .where(StudyQueue.language == learning_language(db))
         .options(
             word_loader.selectinload(Word.topics),
             word_loader.selectinload(Word.translation_items),

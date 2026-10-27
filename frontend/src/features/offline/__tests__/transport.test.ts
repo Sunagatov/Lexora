@@ -49,7 +49,7 @@ it('copies the current practice set and its progress when saving all words offli
     total_count: 1, completed_count: 1, items: [{id: 50, word_id: -2, position: 0, word: snapshot.words[0], is_completed: true, completed_at: '2026-10-17'}]}
   fake.network.mockImplementation(async (path: string) => path === '/api/offline/snapshot' ? snapshot : mix)
   await offline.saveOffline()
-  expect(fake.replica!.mix).toEqual(mix)
+  expect(fake.replica!.mixes!.en).toEqual(mix)
   const savedMix = await request('/api/smart-review') as StudyQueue
   expect(savedMix.id).toBe(40)
   expect(savedMix.completed_count).toBe(1)
@@ -217,6 +217,6 @@ it('preserves a newly completed practice item while refreshing the saved vocabul
   try {
     await expect(Promise.race([completing, new Promise(resolve => setTimeout(() => resolve('blocked'), 40))])).resolves.toMatchObject({completed_count: 1})
   } finally { releaseSnapshot(); await syncing; await completing }
-  expect(fake.replica!.mix!.completed_count).toBe(1)
+  expect(fake.replica!.mixes!.en.completed_count).toBe(1)
   expect(snapshots).toBe(2)
 })

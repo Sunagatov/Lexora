@@ -5,13 +5,14 @@ from collections import defaultdict
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicSidebarStatsResponse
 from app.features.words.api import count_active_words, list_active_word_topic_levels
 
 
 def compute_topic_sidebar_stats(db: Session) -> TopicSidebarStatsResponse:
-    topics = list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None)).order_by(Topic.id.asc())).all())
+    topics = list(db.scalars(select(Topic).where(Topic.deleted_at.is_(None), Topic.language == learning_language(db)).order_by(Topic.id.asc())).all())
     total_words = count_active_words(db)
     if not topics:
         return TopicSidebarStatsResponse(total_words=total_words, topic_counts={}, topic_progress={})

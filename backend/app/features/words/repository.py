@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 
+from fastapi import HTTPException
 from sqlalchemy import bindparam, func, select
 from sqlalchemy.orm import Session
 
+from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.topics.rules import assert_topics_exist
 from app.features.words.constants import PROGRESS_SOURCE_MANUAL
@@ -95,17 +97,17 @@ def _filtered_word_stmt(
     cefr_levels: list[str] | None = None,
     topic_ids: list[int] | None = None,
 ):
-    stmt = active_words_stmt()
+    stmt = active_words_stmt().where(Word.language == learning_language(db))
     if topic_id is not None or topic_ids:
         from app.features.topics.api import get_active_subtree_topic_ids
         if topic_id is not None:
-            stmt = words_for_topics_stmt(get_active_subtree_topic_ids(db, topic_id))
+            stmt = words_for_topics_stmt(get_active_subtree_topic_ids(db, topic_id)).where(Word.language == learning_language(db))
         if topic_ids:
             selected_ids = {child_id for selected_id in topic_ids for child_id in get_active_subtree_topic_ids(db, selected_id)}
             selected = words_for_topics_stmt(list(selected_ids))
             stmt = stmt.where(Word.id.in_(selected.with_only_columns(Word.id)))
     if search:
-        stmt = apply_word_search(stmt, search)
+        stmt = apply_word_search(stmt, search, translation_language(db))
     if pos or positions:
         stmt = apply_pos_filter(stmt, [*(positions or []), *([pos] if pos else [])])
     if cefr or cefr_levels:
@@ -113,21 +115,21 @@ def _filtered_word_stmt(
     if level is not None or levels:
         stmt = apply_level_filter(stmt, [*(levels or []), *([level] if level is not None else [])])
     if completeness:
-        stmt = apply_completeness_filter(stmt, completeness)
+        stmt = apply_completeness_filter(stmt, completeness, translation_language(db))
 
     return stmt
 
 
 def get_word_by_id(db: Session, word_id: int) -> Word | None:
-    return db.scalar(with_word_details(select(Word).where(Word.id == word_id).where(Word.deleted_at.is_(None))))
+    return db.scalar(with_word_details(select(Word).where(Word.id == word_id, Word.language == learning_language(db)).where(Word.deleted_at.is_(None))))
 
 
 def get_word_by_id_including_deleted(db: Session, word_id: int) -> Word | None:
-    return db.scalar(with_word_details(select(Word).where(Word.id == word_id)))
+    return db.scalar(with_word_details(select(Word).where(Word.id == word_id, Word.language == learning_language(db))))
 
 
 def get_deleted_words(db: Session) -> list[Word]:
-    stmt = with_word_details(select(Word).where(Word.deleted_at.is_not(None)).order_by(Word.deleted_at.desc()))
+    stmt = with_word_details(select(Word).where(Word.deleted_at.is_not(None), Word.language == learning_language(db)).order_by(Word.deleted_at.desc()))
     return list(db.scalars(stmt).all())
 
 
@@ -135,6 +137,7 @@ def hard_delete_deleted_words(db: Session, *, deleted_before: datetime | None = 
     stmt = Word.__table__.delete().where(Word.deleted_at.isnot(None))
     if deleted_before is not None:
         stmt = stmt.where(Word.deleted_at < deleted_before)
+    stmt = stmt.where(Word.language == learning_language(db))
     result = db.execute(stmt)
     return result.rowcount or 0
 
@@ -150,13 +153,14 @@ def hard_delete_words_by_ids(db: Session, word_ids: list[int]) -> int:
 
 
 def count_active_words(db: Session) -> int:
-    return int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None))) or 0)
+    return int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), Word.language == learning_language(db))) or 0)
 
 
 def get_word_knowledge_summary(db: Session) -> dict[int, int]:
     rows = db.execute(
         select(Word.knowledge_level, func.count())
         .where(Word.deleted_at.is_(None))
+        .where(Word.language == learning_language(db))
         .group_by(Word.knowledge_level)
     ).all()
     return {int(level or 0): int(count) for level, count in rows}
@@ -169,6 +173,7 @@ def list_active_word_topic_levels(db: Session) -> list[tuple[int, int | None, in
         .join(Topic, Topic.id == word_topics.c.topic_id)
         .where(Word.deleted_at.is_(None))
         .where(Topic.deleted_at.is_(None))
+        .where(Word.language == learning_language(db), Topic.language == learning_language(db))
         .order_by(Word.id.asc(), word_topics.c.topic_id.asc())
     ).all()
     return [
@@ -178,6 +183,10 @@ def list_active_word_topic_levels(db: Session) -> list[tuple[int, int | None, in
 
 
 def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Word:
+    if "language" not in payload.model_fields_set:
+        payload = payload.model_copy(update={"language": learning_language(db)})
+    if payload.language != learning_language(db):
+        raise HTTPException(400, "Word language must match the current library")
     lock_word_identities(db)
     pos_id = _resolve_pos_id(db, payload.part_of_speech)
     assert_no_duplicate_word(payload.term, existing_normalized_terms(db, payload.topic_ids, identity=(payload.language, pos_id) if pos_id is not None else None))
@@ -186,7 +195,9 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
     word = Word(
         term=payload.term,
         language=payload.language,
-        definition=payload.definition,
+        transliteration=payload.transliteration,
+        definition=payload.definition if payload.translation_language == "ru" else None,
+        explanation_groups={"en": {"definition": payload.definition, "notes": payload.notes}} if payload.translation_language == "en" else None,
         pronunciation_ipa=payload.pronunciation_ipa,
         pronunciation_audio_url=payload.pronunciation_audio_url,
         image_url=payload.image_url,
@@ -197,7 +208,7 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
         frequency_rank=payload.frequency_rank,
         knowledge_level=payload.knowledge_level,
         pattern=payload.pattern,
-        notes=payload.notes,
+        notes=payload.notes if payload.translation_language == "ru" else None,
         is_active=payload.is_active,
         source=payload.source,
         topics=list(topics),
@@ -209,6 +220,8 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
 
 
 def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = True) -> Word:
+    if payload.language is not None and payload.language != word.language:
+        raise HTTPException(400, "Words cannot be moved between languages")
     lock_word_identities(db)
     effective_term = _effective_term(word, payload)
     target_topic_ids = _target_topic_ids(word, payload)
@@ -221,6 +234,11 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         )
 
     old_level = word.knowledge_level
+    if payload.translation_language == "en":
+        fields = {key: getattr(payload, key) for key in ("definition", "notes") if key in payload.model_fields_set}
+        if fields:
+            groups = word.explanation_groups or {}
+            word.explanation_groups = {**groups, "en": {**groups.get("en", {}), **fields}}
     for field, value in _word_attribute_updates(db, payload).items():
         setattr(word, field, value)
 
@@ -265,7 +283,7 @@ def bulk_update_words(
     if add_topic_ids or remove_topic_ids:
         assert_topics_exist(db, [*(add_topic_ids or []), *(remove_topic_ids or [])])
     words = list(db.scalars(
-        select(Word).where(Word.id.in_(word_ids)).where(Word.deleted_at.is_(None))
+        select(Word).where(Word.id.in_(word_ids), Word.language == learning_language(db)).where(Word.deleted_at.is_(None))
     ).all())
     if not words:
         return 0
@@ -317,7 +335,7 @@ def _resolve_pos_id(db: Session, pos_name: str | None) -> int | None:
 def _sync_entry_tables(word: Word, payload) -> None:
     if payload.translation_entries:
         word.translation_items = [
-            WordTranslation(position=i, value=v) for i, v in enumerate(_clean(payload.translation_entries))
+            WordTranslation(position=i, value=v, language=payload.translation_language) for i, v in enumerate(_clean(payload.translation_entries))
         ]
     if payload.example_entries:
         word.example_items = [
@@ -353,12 +371,12 @@ def _sync_entry_tables(word: Word, payload) -> None:
 def _sync_entry_tables_for_update(db: Session, word: Word, payload: WordUpdate) -> None:
     fields = payload.model_fields_set
     if "translation_entries" in fields:
-        word.translation_items = []
+        word.translation_items = [item for item in word.translation_items if item.language != payload.translation_language]
         db.flush()
         if payload.translation_entries:
-            word.translation_items = [
-                WordTranslation(position=i, value=v) for i, v in enumerate(_clean(payload.translation_entries))
-            ]
+            word.translation_items.extend(
+                WordTranslation(position=i, value=v, language=payload.translation_language) for i, v in enumerate(_clean(payload.translation_entries))
+            )
     if "example_entries" in fields:
         word.example_items = []
         db.flush()
@@ -432,7 +450,7 @@ def _clean(entries: list[str]) -> list[str]:
 # ── Helpers ──
 
 def _load_topics(db: Session, topic_ids: list[int]) -> list[Topic]:
-    return list(db.scalars(select(Topic).where(Topic.id.in_(topic_ids))).all())
+    return list(db.scalars(select(Topic).where(Topic.id.in_(topic_ids), Topic.language == learning_language(db))).all())
 
 
 def _finalize_write(db: Session, word: Word, *, commit: bool) -> None:
@@ -463,12 +481,15 @@ def _requires_duplicate_check(word: Word, payload: WordUpdate, effective_term: s
 
 def _word_attribute_updates(db: Session, payload: WordUpdate) -> dict[str, object]:
     exclude = {
+        "translation_language",
         "topic_ids", "progress_source",
         "translation_entries", "example_entries",
         "synonym_entries", "antonym_entries",
         "collocation_entries", "confusable_entries",
         "verb_form", "part_of_speech",
     }
+    if payload.translation_language == "en":
+        exclude.update({"definition", "notes"})
     result = payload.model_dump(exclude_unset=True, exclude=exclude)
     if "part_of_speech" in payload.model_fields_set:
         result["part_of_speech_id"] = _resolve_pos_id(db, payload.part_of_speech)

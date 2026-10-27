@@ -7,6 +7,7 @@ from hashlib import sha256
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.workbook.import_source import issue
@@ -17,7 +18,7 @@ from app.shared.text import normalize_term, slugify
 def build_import_plan(
     db: Session, source: dict, *, mode: str, minimum_translations: int = 4, lock: bool = False
 ) -> dict:
-    topic_query, word_query = select(Topic), select(Word).order_by(Word.id)
+    topic_query, word_query = select(Topic).where(Topic.language == learning_language(db)), select(Word).where(Word.language == learning_language(db)).order_by(Word.id)
     if lock:
         topic_query, word_query = topic_query.with_for_update(), word_query.with_for_update(of=Word)
     topics = {topic.id: topic for topic in db.scalars(topic_query).all()}
@@ -39,6 +40,8 @@ def build_import_plan(
             )
         ).all()
     plan = {
+        "language": learning_language(db),
+        "translation_language": translation_language(db),
         "mode": mode,
         "minimum_translations": minimum_translations,
         "workbook_sha256": source["sha256"],
@@ -55,6 +58,9 @@ def build_import_plan(
         },
     }
     topic_names = defaultdict(list)
+    context = source.get("language_context")
+    if context and context != {"language": learning_language(db), "translation_language": translation_language(db)}:
+        plan["errors"].append(issue("Workbook", 0, "This workbook was exported for another learning or translation language. Switch to its languages before importing."))
     for topic in topics.values():
         topic_names[topic.name.casefold()].append(topic)
     new_topics = {}
@@ -134,7 +140,7 @@ def build_import_plan(
             matches = [
                 item
                 for item in matches
-                if item.language == "en"
+                if item.language == learning_language(db)
                 and (
                     pos is None
                     or (item.part_of_speech.name if item.part_of_speech else None) == pos
@@ -148,7 +154,7 @@ def build_import_plan(
                 word = matches[0]
                 # A blank ID must not silently replace another sense of an existing word.
                 if any(
-                    row["fields"].get(name) != content_state(word)[name]
+                    row["fields"].get(name) != content_state(word, translation_language(db))[name]
                     for name in ("translations", "definition")
                     if name in row["fields"]
                 ):
@@ -168,7 +174,7 @@ def build_import_plan(
             + str(row["fields"].get("part_of_speech"))
         )
         if key not in entries:
-            before = content_state(word) if word else None
+            before = content_state(word, translation_language(db)) if word else None
             entries[key] = {
                 "key": key,
                 "word_id": word.id if word else None,
@@ -260,7 +266,7 @@ def build_import_plan(
             item.id
             for item in by_term.get(identity[0], [])
             if item.id != entry["word_id"]
-            and item.language == "en"
+            and item.language == learning_language(db)
             and (item.part_of_speech.name if item.part_of_speech else None) == identity[1]
         ]
         if collisions and changed_identity:

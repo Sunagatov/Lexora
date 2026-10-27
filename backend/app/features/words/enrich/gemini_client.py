@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 import httpx
 
+from app.features.languages.catalog import LANGUAGES
 from app.shared.config import settings
 
 logger = logging.getLogger(__name__)
@@ -20,12 +21,12 @@ Given an English word or phrase, return a JSON object with these exact keys:
 {
   "definition": "concise English definition",
   "part_of_speech": one of "noun","verb","adjective","adverb","phrase","preposition","phrasal verb","other",
-  "cefr_level": one of "A1","A2","B1","B2","C1","C2",
+  "cefr_level": one of "A1","A2","B1","B2","C1","C2", or null when unknown or inappropriate,
   "register": one of "formal","informal","neutral","slang","technical",
   "countability": one of "countable","uncountable","both","plural","collective" or null if not a noun,
   "frequency_rank": integer estimate of rank in English frequency lists (1=most common),
   "pattern": grammatical pattern e.g. "verb + to-infinitive",
-  "translation_entries": ["Russian translation 1","Russian translation 2"] (2-3 contextual translations),
+  "translation_entries": ["Russian translation 1","Russian translation 2"] (up to 4 accurate contextual translations, without filler),
   "example_entries": ["example sentence 1","example sentence 2","example sentence 3"] (3 graded examples),
   "synonym_entries": ["synonym1","synonym2","synonym3"] (3-5 synonyms),
   "antonym_entries": ["antonym1","antonym2"] (2-3 antonyms, or empty if none),
@@ -41,6 +42,7 @@ Return ONLY valid JSON. No markdown, no explanation.\
 
 @dataclass
 class GeminiResult:
+    transliteration: str | None = None
     definition: str | None = None
     part_of_speech: str | None = None
     cefr_level: str | None = None
@@ -85,6 +87,7 @@ def _parse_gemini_response(data: dict) -> GeminiResult | None:
         return [s for s in val if isinstance(s, str) and s.strip()] if isinstance(val, list) else []
 
     result = GeminiResult(
+        transliteration=obj.get("transliteration") if isinstance(obj.get("transliteration"), str) else None,
         definition=obj.get("definition") if isinstance(obj.get("definition"), str) else None,
         part_of_speech=obj.get("part_of_speech") if isinstance(obj.get("part_of_speech"), str) else None,
         cefr_level=obj.get("cefr_level") if isinstance(obj.get("cefr_level"), str) else None,
@@ -115,15 +118,24 @@ def _parse_gemini_response(data: dict) -> GeminiResult | None:
     return result
 
 
-async def fetch_gemini(term: str) -> GeminiResult | None:
+async def fetch_gemini(term: str, language: str = "en", translation_language: str = "ru") -> GeminiResult | None:
     if not settings.gemini_api_key:
         return None
 
     model = settings.gemini_model
     url = f"{GEMINI_API_URL}/{model}:generateContent?key={settings.gemini_api_key}"
 
+    prompt = SYSTEM_PROMPT.replace("English", LANGUAGES[language]["name"]).replace("Russian", LANGUAGES[translation_language]["name"])
+    target = LANGUAGES[translation_language]["name"]
+    prompt = prompt.replace(f"concise {LANGUAGES[language]['name']} definition", f"concise {target} definition")
+    prompt += f"\nWrite definition, usage notes and confusable explanations in {target}. Give three bilingual examples, each formatted as '{language.upper()}: source sentence\\n{translation_language.upper()}: translated sentence'. Synonyms, antonyms and collocations must use the learning language. Provide four accurate translations when four natural equivalents exist; never invent synonyms just to reach a count."
+    prompt += "\nInclude optional transliteration: Mandarin pinyin with tone marks, or Arabic romanisation. Use Simplified Chinese, Modern Standard Arabic and Cyrillic Tatar."
+    if language != "en":
+        prompt += "\nSet verb_form to null; describe this language's own grammar, gender, plural or conjugation in pattern and notes. Do not apply English verb forms to other languages."
+    if language == translation_language:
+        prompt += "\nFor translations provide useful same-language paraphrases, rather than simply repeating the word."
     body = {
-        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "system_instruction": {"parts": [{"text": prompt}]},
         "contents": [{"parts": [{"text": term}]}],
         "generationConfig": {
             "temperature": 0.2,

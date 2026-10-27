@@ -159,7 +159,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
       setSaveError('Term cannot be empty.')
       return
     }
-    if (!transVal) {
+    if (!transVal && word?.translation_entries.length) {
       setSaveError('Translation cannot be empty.')
       return
     }
@@ -202,6 +202,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
           ...d,
           definition: d.definition || r.definition || '',
           pronunciation_ipa: d.pronunciation_ipa || r.pronunciation_ipa || '',
+          transliteration: d.transliteration || r.transliteration || '',
           cefr_level: d.cefr_level || r.cefr_level || '',
           register: d.register || r.register || '',
           countability: d.countability || r.countability || '',

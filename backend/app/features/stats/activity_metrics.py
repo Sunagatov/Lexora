@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from app.features.languages.catalog import learning_language
 from app.features.smart_review.model import StudyQueue
 from app.features.stats.content_metrics import WordStatsSnapshot
 from app.features.stats.model import AppUsageEvent
@@ -126,7 +127,7 @@ def _build_consistency_stats(
 
 
 def _build_usage_stats(db: Session, now: datetime | None = None) -> tuple[UsageSummary, list[UsageDay], str | None]:
-    events = db.scalars(select(AppUsageEvent).order_by(AppUsageEvent.created_at.asc())).all()
+    events = db.scalars(select(AppUsageEvent).where(AppUsageEvent.language == learning_language(db)).order_by(AppUsageEvent.created_at.asc())).all()
     if not events:
         return (
             UsageSummary(
@@ -170,7 +171,7 @@ def _build_usage_stats(db: Session, now: datetime | None = None) -> tuple[UsageS
 
 def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary:
     queues = db.scalars(
-        select(StudyQueue).options(selectinload(StudyQueue.items)).order_by(StudyQueue.generated_at.asc())
+        select(StudyQueue).where(StudyQueue.language == learning_language(db)).options(selectinload(StudyQueue.items)).order_by(StudyQueue.generated_at.asc())
     ).all()
     if not queues:
         return QueueSummary(

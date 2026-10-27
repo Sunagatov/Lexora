@@ -129,7 +129,7 @@ export function filterAndSort(
     if (completeness === 'complete' && !isComplete(w)) return false
     if (completeness === 'incomplete' && isComplete(w)) return false
     if (!needle) return true
-    return [w.term, w.translation_entries?.join(' '), w.part_of_speech, w.pattern, w.example_entries?.join(' '), w.notes, w.definition, w.verb_form?.past_simple, w.verb_form?.past_participle]
+    return [w.term, w.transliteration, w.translation_entries?.join(' '), w.part_of_speech, w.pattern, w.example_entries?.join(' '), w.notes, w.definition, w.verb_form?.past_simple, w.verb_form?.past_participle]
       .some((v) => v?.toLowerCase().trim().includes(needle))
   })
 

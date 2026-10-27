@@ -7,6 +7,7 @@ from openpyxl import Workbook
 from sqlalchemy import select
 from sqlalchemy.orm import Session, load_only
 
+from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.words.model import Word, word_topics
 from app.features.words.repository_queries import with_word_details
@@ -23,13 +24,14 @@ from app.features.words.workbook.format import (
     _set_column_widths,
 )
 from app.features.words.workbook.importer import import_words_workbook
+from app.features.words.workbook.language import add_language_metadata
 
 __all__ = ["InvalidWorkbookError", "build_words_workbook", "import_words_workbook"]
 
 
-def _translation_entries_for_export(word: Word) -> str:
+def _translation_entries_for_export(word: Word, target: str = "ru") -> str:
     if word.translation_items:
-        return "\n".join(item.value for item in word.translation_items)
+        return "\n".join(item.value for item in word.translation_items if (item.language or "ru") == target)
     return ""
 
 
@@ -44,7 +46,7 @@ def _load_export_topics(db: Session) -> list[Topic]:
         db.scalars(
             select(Topic)
             .options(load_only(Topic.id, Topic.name))
-            .where(Topic.deleted_at.is_(None))
+            .where(Topic.deleted_at.is_(None), Topic.language == learning_language(db))
             .order_by(Topic.name.asc())
         ).all()
     )
@@ -60,8 +62,8 @@ def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, 
                 select(Word)
                 .join(word_topics, Word.id == word_topics.c.word_id)
                 .join(Topic, Topic.id == word_topics.c.topic_id)
-                .where(Word.deleted_at.is_(None))
-                .where(Topic.deleted_at.is_(None))
+                .where(Word.deleted_at.is_(None), Word.language == learning_language(db))
+                .where(Topic.deleted_at.is_(None), Topic.language == learning_language(db))
                 .where(Topic.id.in_(topic_ids))
                 .distinct()
                 .order_by(Word.term.asc(), Word.id.asc())
@@ -72,7 +74,7 @@ def _load_export_words_by_topic(db: Session, topic_ids: list[int]) -> dict[int, 
     topic_rows = db.execute(
         select(word_topics.c.topic_id, word_topics.c.word_id)
         .join(Topic, Topic.id == word_topics.c.topic_id)
-        .where(Topic.deleted_at.is_(None))
+        .where(Topic.deleted_at.is_(None), Topic.language == learning_language(db))
         .where(word_topics.c.topic_id.in_(topic_ids))
         .where(word_topics.c.word_id.in_(word_map))
     ).all()
@@ -122,15 +124,15 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
                 pos_name = word.part_of_speech.name if word.part_of_speech else None
                 ws.cell(row=row_idx, column=1, value=word.knowledge_level)
                 ws.cell(row=row_idx, column=2, value=word.term)
-                ws.cell(row=row_idx, column=3, value=_translation_entries_for_export(word))
+                ws.cell(row=row_idx, column=3, value=_translation_entries_for_export(word, translation_language(db)))
                 ws.cell(row=row_idx, column=4, value=word.pattern)
                 ws.cell(row=row_idx, column=5, value=_example_entries_for_export(word))
                 ws.cell(row=row_idx, column=6, value=word.countability)
                 ws.cell(row=row_idx, column=7, value=pos_name)
-                ws.cell(row=row_idx, column=8, value=word.definition)
+                ws.cell(row=row_idx, column=8, value=(word.explanation_groups or {}).get("en", {}).get("definition") if translation_language(db) == "en" else word.definition)
                 ws.cell(row=row_idx, column=9, value=word.cefr_level)
                 ws.cell(row=row_idx, column=10, value=word.register)
-                ws.cell(row=row_idx, column=11, value=word.notes)
+                ws.cell(row=row_idx, column=11, value=(word.explanation_groups or {}).get("en", {}).get("notes") if translation_language(db) == "en" else word.notes)
                 ws.cell(row=row_idx, column=12, value=word.id)
                 row_idx += 1
 
@@ -141,6 +143,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
             _add_validations(workbook, ws, last_row)
 
     _create_meta_sheet(workbook, meta_mappings)
+    add_language_metadata(workbook, db)
 
     output = BytesIO()
     workbook.save(output)

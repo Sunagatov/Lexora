@@ -5,25 +5,28 @@ from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.features.languages.catalog import Language, TranslationLanguage
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.constants import (
     BULK_WORDS_MAX,
     CEFR_LEVELS,
     COUNTABILITY_VALUES,
-    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     LANGUAGES,
     REGISTER_VALUES,
-    ProgressSource,
     WORD_TERM_MAX_LEN,
+    KnowledgeLevel,
+    ProgressSource,
 )
 from app.features.words.enrichment import (
     EXAMPLE_TARGET_COUNT,
-    example_count as count_examples,
     example_enrichment_status,
     needs_example_enrichment,
 )
-from app.features.topics.constants import TOPIC_NAME_MAX_LEN
+from app.features.words.enrichment import (
+    example_count as count_examples,
+)
 
 if TYPE_CHECKING:
     from app.features.words.model import Word
@@ -52,7 +55,9 @@ class ConfusableEntry(BaseModel):
 class WordCreate(BaseModel):
     topic_ids: list[int] = Field(min_length=1)
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    language: str = Field(default="en")
+    language: Language = "en"
+    translation_language: TranslationLanguage = "ru"
+    transliteration: str | None = None
     definition: str | None = None
     pronunciation_ipa: str | None = None
     pronunciation_audio_url: str | None = None
@@ -83,7 +88,9 @@ class WordCreate(BaseModel):
 class WordUpdate(BaseModel):
     topic_ids: list[int] | None = Field(default=None, min_length=1)
     term: str | None = Field(default=None, min_length=1, max_length=WORD_TERM_MAX_LEN)
-    language: str | None = None
+    language: Language | None = None
+    translation_language: TranslationLanguage = "ru"
+    transliteration: str | None = None
     definition: str | None = None
     pronunciation_ipa: str | None = None
     pronunciation_audio_url: str | None = None
@@ -135,6 +142,9 @@ class WordResponse(BaseModel):
     topic_ids: list[int]
     term: str
     language: str
+    transliteration: str | None = None
+    translation_groups: dict[str, list[str]] = Field(default_factory=dict)
+    explanation_groups: dict[str, dict[str, str | None]] = Field(default_factory=dict)
     definition: str | None
     pronunciation_ipa: str | None
     pronunciation_audio_url: str | None
@@ -169,11 +179,17 @@ class WordResponse(BaseModel):
     def from_word(cls, word: "Word") -> "WordResponse":
         ec = count_examples(word)
         vf = word.verb_form
+        groups: dict[str, list[str]] = {}
+        for item in getattr(word, "translation_items", []):
+            groups.setdefault(getattr(item, "language", None) or "ru", []).append(item.value)
         return cls(
             id=word.id,
             topic_ids=[t.id for t in word.topics if t.deleted_at is None],
             term=word.term,
             language=word.language,
+            transliteration=getattr(word, "transliteration", None),
+            translation_groups=groups,
+            explanation_groups={"ru": {"definition": word.definition, "notes": word.notes}, **(getattr(word, "explanation_groups", None) or {})},
             definition=word.definition,
             pronunciation_ipa=word.pronunciation_ipa,
             pronunciation_audio_url=word.pronunciation_audio_url,
@@ -193,7 +209,7 @@ class WordResponse(BaseModel):
                 present_participle=vf.present_participle,
                 third_person=vf.third_person,
             ) if vf else None,
-            translation_entries=[item.value for item in getattr(word, "translation_items", [])],
+            translation_entries=groups.get("ru", []),
             example_entries=[item.value for item in getattr(word, "example_items", [])],
             example_count=ec,
             example_target_count=EXAMPLE_TARGET_COUNT,
@@ -217,7 +233,9 @@ class WordResponse(BaseModel):
 class WordInput(BaseModel):
     """Word data for bulk import — no topic_id, comes from WordBulkCreate."""
     term: str = Field(min_length=1, max_length=WORD_TERM_MAX_LEN)
-    language: str = Field(default="en")
+    language: Language = "en"
+    translation_language: TranslationLanguage = "ru"
+    transliteration: str | None = None
     definition: str | None = None
     pronunciation_ipa: str | None = None
     part_of_speech: str | None = None
