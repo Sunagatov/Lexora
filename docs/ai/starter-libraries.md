@@ -4,6 +4,11 @@ The first starter release adds 500 everyday words/phrases to each of the eight n
 learning libraries. English is deliberately excluded. Existing English vocabulary,
 topics, ratings and history are never updated by this importer.
 
+The complete reviewed content package is versioned under
+[`backend/data/starters/20261027`](../../backend/data/starters/20261027/README.md).
+It contains the eight language JSONL files, file hashes and review metadata.
+Keeping the package in Git does not itself run an import.
+
 ## Package contract
 
 Supply UTF-8 JSONL files with exactly 500 records per language. The complete batch
