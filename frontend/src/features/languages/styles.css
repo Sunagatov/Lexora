@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Lexora Flags';
+  src: url('../../assets/flags/noto-flags.woff2') format('woff2');
+  font-style: normal; font-weight: 400; font-display: swap;
+  unicode-range: U+1F1E6-1F1FF;
+}
+
 .language-picker {
   display: inline-flex; align-items: center; gap: .4rem; flex-shrink: 0;
   min-height: 30px; padding: .2rem .5rem; border: 1px solid var(--border);
@@ -16,8 +23,7 @@
 .language-dialog label {display: grid; gap: 8px; margin-bottom: 16px; font-size: .9rem}
 .language-dialog select {width: 100%; padding: 10px; border: 1px solid #555b70; border-radius: 8px; background: inherit; color: inherit; font: inherit}
 .language-dialog option {background: var(--surface)}
-.language-dialog p {font-size: .85rem; line-height: 1.5}
-.language-defaults {opacity: .75}
+.language-picker, .language-dialog select {font-family: 'Lexora Flags', 'Inter', system-ui, -apple-system, sans-serif}
 .language-dialog .modal-actions {display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px}
 @media (max-width: 767px) {
   .language-picker-full {display: none}

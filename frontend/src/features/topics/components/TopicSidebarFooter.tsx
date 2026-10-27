@@ -88,10 +88,10 @@ export function TopicSidebarFooter({
           {topicError && <div className="sidebar-new-topic-error">{topicError}</div>}
         </div>
       ) : (
-        <div className="sidebar-create-offline-row"><button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd} aria-label="Create topic">
+        <button type="button" className="sidebar-add-topic-btn" onClick={onStartAdd} aria-label="Create topic">
           <span className="sidebar-add-topic-plus">+</span>
           <span className="sidebar-add-topic-text"> New topic</span>
-        </button><OfflineButton /></div>
+        </button>
       )}
       <div className="sidebar-footer-actions-grid">
         <button
@@ -140,6 +140,7 @@ export function TopicSidebarFooter({
           <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10V2"/><path d="M4.5 5.5 8 2l3.5 3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
           <span className="sidebar-footer-btn-label">{workbookBusy ? 'Importing…' : 'Import'}</span>
         </button>
+        <OfflineButton />
       </div>
       <input
         ref={importInputRef}

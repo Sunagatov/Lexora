@@ -36,7 +36,18 @@ function OfflineDialog({onClose}: {onClose: () => void}) {
 export function OfflineButton() {
   const state = useSyncExternalStore(subscribeOffline, offlineStatus)
   const [open, setOpen] = useState(false)
-  return <><button type="button" className="sidebar-save-offline-btn" aria-label={state.saved ? 'Offline settings' : 'Save offline'} title={state.saved ? 'Offline settings' : 'Save offline'} onClick={() => setOpen(true)}><span aria-hidden="true">{state.saved ? '✓' : '↓'}</span><span className="offline-button-label">{state.saved ? ' Offline saved' : ' Save offline'}{state.pending ? ` · ${state.pending}` : ''}</span></button>{open && <OfflineDialog onClose={() => setOpen(false)} />}</>
+  const label = state.saved ? 'Offline settings' : 'Save offline'
+  return <>
+    <button type="button" className="sidebar-footer-btn sidebar-footer-btn-secondary"
+      aria-label={label} title={label} data-sidebar-tooltip={label} onClick={() => setOpen(true)}>
+      <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {state.saved ? <><circle cx="8" cy="8" r="6" /><path d="m5 8 2 2 4-4" /></>
+          : <><path d="M8 2v8m-3.5-3.5L8 10l3.5-3.5" /><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12" /></>}
+      </svg>
+      <span className="sidebar-footer-btn-label">{state.saved ? 'Offline saved' : 'Save offline'}{state.pending ? ` · ${state.pending}` : ''}</span>
+    </button>
+    {open && <OfflineDialog onClose={() => setOpen(false)} />}
+  </>
 }
 
 export function OfflineStatus() {

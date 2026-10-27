@@ -1,9 +1,4 @@
-.sidebar-create-offline-row { display: flex; align-items: center; gap: 8px; }
-.sidebar-create-offline-row .sidebar-add-topic-btn { flex: 1; width: auto; min-width: 0; }
-.sidebar-collapsed .sidebar-create-offline-row { justify-content: center; padding: 6px 0; }
-.sidebar-collapsed .offline-button-label { display: none; }
-.sidebar-collapsed .sidebar-save-offline-btn { width: 40px; height: 40px; padding: 0; font-size: 20px; }
-.sidebar-save-offline-btn, .offline-dialog button {
+.offline-dialog button {
   border: 1px solid var(--border); border-radius: 9px;
   background: var(--surface); color: var(--text);
   font: inherit; font-size: 13px; padding: 9px 12px; cursor: pointer;

@@ -105,6 +105,14 @@ body {
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 
+select option,
+select optgroup {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+select option:disabled { color: var(--text-2); }
+
 .app-shell {
   display: flex;
   flex-direction: column;

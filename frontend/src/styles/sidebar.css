@@ -808,7 +808,7 @@
 /* Footer actions */
 .sidebar-footer-actions-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
   border-top: 1px solid var(--sidebar-divider);
 }
@@ -848,7 +848,7 @@
   opacity: 1;
   transform: scale(1.08);
 }
-.sidebar-footer-btn-label { line-height: 1; }
+.sidebar-footer-btn-label { line-height: 1.1; min-height: 2.2em; text-align: center; }
 
 .sidebar-footer-btn-primary.is-active {
   color: var(--accent-dark);
@@ -1202,6 +1202,7 @@
 .sidebar-collapsed .sidebar-util-label { display: none; }
 .sidebar-collapsed .sidebar-util-btn { padding: 8px 4px; }
 .sidebar-collapsed .sidebar-footer-actions-grid > * + * { border-left: none; }
+.sidebar-collapsed .sidebar-footer-actions-grid > :last-child { grid-column: 1 / -1; }
 .sidebar-collapsed .sidebar-footer-btn {
   min-height: 44px;
   padding: 0;

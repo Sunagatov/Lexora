@@ -4,8 +4,8 @@ export const LEARNING_LANGUAGES = [
   {code: 'es', name: 'Spanish', locale: 'es-ES', direction: 'ltr', icon: '🇪🇸'},
   {code: 'de', name: 'German', locale: 'de-DE', direction: 'ltr', icon: '🇩🇪'},
   {code: 'tr', name: 'Turkish', locale: 'tr-TR', direction: 'ltr', icon: '🇹🇷'},
-  {code: 'tt', name: 'Tatar', locale: 'tt-RU', direction: 'ltr', icon: '🌐'},
-  {code: 'ar', name: 'Arabic', locale: 'ar-SA', direction: 'rtl', icon: '🌐'},
+  {code: 'tt', name: 'Tatar', locale: 'tt-RU', direction: 'ltr', icon: '🇷🇺'},
+  {code: 'ar', name: 'Arabic', locale: 'ar-SA', direction: 'rtl', icon: '🇸🇦'},
   {code: 'fr', name: 'French', locale: 'fr-FR', direction: 'ltr', icon: '🇫🇷'},
   {code: 'pt', name: 'Portuguese', locale: 'pt-PT', direction: 'ltr', icon: '🇵🇹'},
 ] as const

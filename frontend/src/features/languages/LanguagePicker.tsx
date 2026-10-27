@@ -13,15 +13,12 @@ function LanguageDialog({onClose}: {onClose: () => void}) {
     <h2 id="language-title">Languages</h2>
     <label>Learning language<select aria-label="Learning language" value={draft.language}
       onChange={event => setDraft({...draft, language: event.target.value as LanguagePreferences['language']})}>
-      {LEARNING_LANGUAGES.map(language => <option key={language.code} value={language.code}>{language.name}</option>)}
+      {LEARNING_LANGUAGES.map(language => <option key={language.code} value={language.code}>{language.icon} {language.name}</option>)}
     </select></label>
     <label>Translations and explanations<select aria-label="Translation language" value={draft.translationLanguage}
       onChange={event => setDraft({...draft, translationLanguage: event.target.value as 'ru' | 'en'})}>
-      <option value="ru">Russian</option><option value="en">English</option>
+      <option value="ru">🇷🇺 Russian</option><option value="en">🇬🇧 English</option>
     </select></label>
-    <p>Each learning language has its own words, topics, progress and Daily Word Mix. New languages start empty.</p>
-    <p>Switching translations shows the saved Russian or English entries. It does not automatically translate your library.</p>
-    <p className="language-defaults">Defaults: Simplified Mandarin, Spain Spanish, Germany German, Turkey Turkish, Cyrillic Tatar, Modern Standard Arabic, France French and Portugal Portuguese.</p>
     <div className="modal-actions"><button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
       <button type="button" className="btn btn-primary btn-sm" onClick={() => {
         const current = languagePreferences()
@@ -42,6 +39,6 @@ export function LanguagePicker() {
   const editing = useLocation().pathname.endsWith('/edit')
   return <><button type="button" className="language-picker" disabled={pending || editing}
     aria-label={'Choose languages. Learning ' + profile.name} title={editing ? 'Finish editing before changing languages' : profile.name}
-    onClick={() => setOpen(true)}><span className="language-picker-full">{profile.name}</span><span className="language-picker-short">{profile.code.toUpperCase()}</span><span aria-hidden="true">⌄</span></button>
+    onClick={() => setOpen(true)}><span aria-hidden="true">{profile.icon}</span><span className="language-picker-full">{profile.name}</span><span className="language-picker-short">{profile.code.toUpperCase()}</span><span aria-hidden="true">⌄</span></button>
     {open && <LanguageDialog onClose={() => setOpen(false)} />}</>
 }
