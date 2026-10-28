@@ -1,0 +1,616 @@
+[
+  {
+    "word_id": 21370,
+    "before": {
+      "word_id": 21370,
+      "language": "zh",
+      "term": "不客气",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "bù kè qi",
+      "pronunciation_note_ru": "不 bù 在第四声 kè 之前连读成 bú；气 qi 在这里是轻声。",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "бу² кэ⁴ ци⁰",
+      "reason": "Connected-speech 不 before fourth-tone kè is bú; matches saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21385,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Сверить употребление и акцентное членение фразы у носителя.",
+    "saved_pinyin": "bǎo zhòng",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21396,
+    "before": {
+      "word_id": 21396,
+      "language": "zh",
+      "term": "丈夫",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "zhàng fū",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "чжан⁴ фу⁰",
+      "reason": "Husband: neutral fu in Mainland conversational Mandarin; CC-CEDICT and saved Pinyin agree."
+    }
+  },
+  {
+    "word_id": 21445,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Исправлено de на dì; финальная словарно-аудио проверка.",
+    "saved_pinyin": "dì bǎn",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21456,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить тон второго слога и произношение в связной речи.",
+    "saved_pinyin": "máo jīn",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21457,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить второй слог и ударное выделение.",
+    "saved_pinyin": "féi zào",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21459,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Сверить естественную передачу названия предмета с разговорным путём произношения.",
+    "saved_pinyin": "lín yù qì",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21472,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить нейтральный тон последнего слога в конкретной разновидности.",
+    "saved_pinyin": "hú luó bo",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21478,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить произношение второго знака в слове «сыр».",
+    "saved_pinyin": "nǎi lào",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21493,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить нейтральный тон слога li и слогоделение.",
+    "saved_pinyin": "bō li bēi",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21493,
+    "before": {
+      "word_id": 21493,
+      "language": "zh",
+      "term": "玻璃杯",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить нейтральный тон слога li и слогоделение."
+    },
+    "decision": {
+      "pronunciation_easy": "бо¹ ли⁰ бэй¹",
+      "reason": "Glass: neutral li; CC-CEDICT and saved Pinyin agree."
+    }
+  },
+  {
+    "word_id": 21511,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить употребление и ударение второго слога в речи.",
+    "saved_pinyin": "chèn shān",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21512,
+    "before": {
+      "word_id": 21512,
+      "language": "zh",
+      "term": "T恤",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "T xù",
+      "pronunciation_note_ru": "Latin T произносится как английская буква T («ти»); 恤 xù.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ти сюй⁴",
+      "reason": "T is an English letter name, not a first-tone Mandarin syllable; do not invent a tone for it."
+    }
+  },
+  {
+    "word_id": 21514,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "В 牛仔裤 второй слог читается zǎi, а не zǐ, как в автоматическом выводе.",
+    "saved_pinyin": "niú zǎi kù",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21517,
+    "before": {
+      "word_id": 21517,
+      "language": "zh",
+      "term": "夹克",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "jiā kè",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "цзя² кэ⁴",
+      "reason": "Use the accepted jiákè reading already saved in Pinyin; Zdic confirms this variant."
+    }
+  },
+  {
+    "word_id": 21533,
+    "before": {
+      "word_id": 21533,
+      "language": "zh",
+      "term": "戒指",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "jiè zhǐ",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "цзе⁴ чжи⁰",
+      "reason": "Use neutral zhi in the saved Mainland conversational reading."
+    }
+  },
+  {
+    "word_id": 21550,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "В бытовой речи последний слог часто нейтральный; источники различаются.",
+    "saved_pinyin": "tóu fa",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21556,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Исправлено автоматическое hāi на ké; финальная словарно-аудио проверка.",
+    "saved_pinyin": "ké sou",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21556,
+    "before": {
+      "word_id": 21556,
+      "language": "zh",
+      "term": "咳嗽",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": "В слове «кашель» 咳 читается ké; стандартная словарная форма ké sòu.",
+      "status": "needs_review",
+      "issue": "Исправлено автоматическое hāi на ké; финальная словарно-аудио проверка."
+    },
+    "decision": {
+      "pronunciation_easy": "кэ² соу⁰",
+      "reason": "Cough: neutral sou in the saved Mainland reading; CC-CEDICT agrees."
+    }
+  },
+  {
+    "word_id": 21571,
+    "before": {
+      "word_id": 21571,
+      "language": "zh",
+      "term": "休息一下",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "xiū xi yī xià",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "сю¹ си⁰ и⁰ ся⁴",
+      "reason": "Keep the reduced conversational yi already saved for this unstressed short-duration expression."
+    }
+  },
+  {
+    "word_id": 21575,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Исправлено jué на jiào; финальная словарно-аудио проверка.",
+    "saved_pinyin": "shuì jiào",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21579,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Часто shōushi; сверить нейтральный тон второго слога.",
+    "saved_pinyin": "shōu shi",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21581,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Редкий отдельно стоящий глагол; нужна словарная сверка yùn.",
+    "saved_pinyin": "yùn",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21628,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Многозначный 行; проверено yínháng, требуется финальный аудиоконтроль.",
+    "saved_pinyin": "yín háng",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21651,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Несколько возможных словарных прочтений; по переводу выбрано pián yi. Проверить употребление.",
+    "saved_pinyin": "pián yi",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21660,
+    "before": {
+      "word_id": 21660,
+      "language": "zh",
+      "term": "队伍",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "duì wǔ",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "дуй⁴ у⁰",
+      "reason": "Neutral wu in the saved conversational reading."
+    }
+  },
+  {
+    "word_id": 21700,
+    "before": {
+      "word_id": 21700,
+      "language": "zh",
+      "term": "重复",
+      "part_of_speech": "verb",
+      "pronunciation_easy": "zhòng fù",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "чун² фу⁴",
+      "reason": "Repeat is chóngfù, not zhòngfù; CC-CEDICT, Zdic and existing Pinyin agree."
+    }
+  },
+  {
+    "word_id": 21706,
+    "before": {
+      "word_id": 21706,
+      "language": "zh",
+      "term": "消息",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "xiāo xī",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "сяо¹ си⁰",
+      "reason": "News/message uses neutral xi; CC-CEDICT and saved Pinyin agree."
+    }
+  },
+  {
+    "word_id": 21709,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Исправлено de на dì; финальная словарно-аудио проверка.",
+    "saved_pinyin": "dì zhǐ",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21721,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Последний слог часто нейтральный: nuǎnhuo. Проверить словарную норму.",
+    "saved_pinyin": "nuǎn huo",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21722,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить оттенок значения и произношение в конкретном употреблении.",
+    "saved_pinyin": "liáng",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21736,
+    "before": {
+      "word_id": 21736,
+      "language": "zh",
+      "term": "音乐",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "yīn lè",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "инь¹ юэ⁴",
+      "reason": "Music is yīnyuè, not yīnlè; verified in Zdic and CC-CEDICT."
+    }
+  },
+  {
+    "word_id": 21743,
+    "before": {
+      "word_id": 21743,
+      "language": "zh",
+      "term": "音乐会",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "yīn lè huì",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "инь¹ юэ⁴ хуэй⁴",
+      "reason": "Concert is yīnyuèhuì; 乐 is yuè in this musical sense."
+    }
+  },
+  {
+    "word_id": 21744,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID.",
+    "saved_pinyin": "huà",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21745,
+    "before": {
+      "word_id": 21745,
+      "language": "zh",
+      "term": "照相机",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "zhào xiāng jī",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "чжао⁴ сян⁴ цзи¹",
+      "reason": "Camera: xiàng, not xiāng; verified in Zdic and CC-CEDICT."
+    }
+  },
+  {
+    "word_id": 21746,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "В значении «отпуск» 假 читается jià, а не jiǎ.",
+    "saved_pinyin": "jià qī",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21750,
+    "before": {
+      "word_id": 21750,
+      "language": "zh",
+      "term": "业余爱好",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "yè yú ài hǎo",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "е⁴ юй² ай⁴ хао⁴",
+      "reason": "Hobby uses àihào, not àihǎo; verified in Zdic and saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21751,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Различить kōngxián и kòngxián по контексту.",
+    "saved_pinyin": "kòng xián shí jiān",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21751,
+    "before": {
+      "word_id": 21751,
+      "language": "zh",
+      "term": "空闲时间",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Различить kōngxián и kòngxián по контексту."
+    },
+    "decision": {
+      "pronunciation_easy": "кун⁴ сянь² ши² цзянь¹",
+      "reason": "Free/leisure time uses kòngxián, not kōngxián; verified in Zdic and saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21756,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID.",
+    "saved_pinyin": "huà",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21759,
+    "before": {
+      "word_id": 21759,
+      "language": "zh",
+      "term": "看望朋友",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "kàn wàng péng yǒu",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "кань⁴ ван⁴ пэн² ю⁰",
+      "reason": "Neutral you for friend; match the saved conversational Pinyin."
+    }
+  },
+  {
+    "word_id": 21766,
+    "before": {
+      "word_id": 21766,
+      "language": "zh",
+      "term": "饿",
+      "part_of_speech": "adjective",
+      "pronunciation_easy": "è",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "э⁴",
+      "reason": "Replace the unconverted Latin è with an actual Russian-letter hint and tone number."
+    }
+  },
+  {
+    "word_id": 21774,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить разделение hǎo (хороший) vs hào (любить); контекст указывает hǎo.",
+    "saved_pinyin": "hǎo",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21778,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Многозначный иероглиф; значение «длинный» требует cháng.",
+    "saved_pinyin": "cháng",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21782,
+    "decision": "resolved_contextual_reading",
+    "original_issue": "Проверить передачу ü в русской подсказке; не путать с обычным у.",
+    "saved_pinyin": "lǜ",
+    "method": "Reviewed intended meaning/POS and the complete phrase against saved Pinyin and Mandarin reading rules; no native-audio certification"
+  },
+  {
+    "word_id": 21823,
+    "before": {
+      "word_id": 21823,
+      "language": "zh",
+      "term": "一直往前",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "yī zhí wǎng qián",
+      "pronunciation_note_ru": "一 перед zhí (2-й тон) в связной речи обычно произносится yì.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "и⁴ чжи² ван³ цянь²",
+      "reason": "一 before the second tone has yì in connected speech; matches saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21833,
+    "before": {
+      "word_id": 21833,
+      "language": "zh",
+      "term": "多少",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "duō shǎo",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "до¹ шао⁰",
+      "reason": "How many/much question uses neutral shao in the saved reading; CC-CEDICT distinguishes it from the full-tone number/amount sense."
+    }
+  },
+  {
+    "word_id": 21834,
+    "before": {
+      "word_id": 21834,
+      "language": "zh",
+      "term": "多少钱",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "duō shǎo qián",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "до¹ шао⁰ цянь²",
+      "reason": "How much money: use the same interrogative neutral shao reading."
+    }
+  },
+  {
+    "word_id": 21836,
+    "before": {
+      "word_id": 21836,
+      "language": "zh",
+      "term": "我不明白",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "wǒ bù míng bái",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "во³ бу⁴ мин² бай⁰",
+      "reason": "Neutral bai in the saved colloquial míngbai reading."
+    }
+  },
+  {
+    "word_id": 21837,
+    "before": {
+      "word_id": 21837,
+      "language": "zh",
+      "term": "请说慢一点",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "qǐng shuō màn yī diǎn",
+      "pronunciation_note_ru": "一 yī перед diǎn (3-й тон) в речи меняет тон на yì: yì diǎn.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "цин³ шо¹ мань⁴ и⁴ дянь³",
+      "reason": "一 before third-tone diǎn is yì in connected speech; match saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21838,
+    "before": {
+      "word_id": 21838,
+      "language": "zh",
+      "term": "你能再说一遍吗？",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "nǐ néng zài shuō yī biàn ma？",
+      "pronunciation_note_ru": "一 yī перед biàn (4-й тон) в речи произносится yí.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ни³ нэн² цзай⁴ шо¹ и² бянь⁴ ма⁰？",
+      "reason": "一 before fourth-tone biàn is yí in connected speech; match saved Pinyin."
+    }
+  },
+  {
+    "word_id": 21843,
+    "before": {
+      "word_id": 21843,
+      "language": "zh",
+      "term": "这个要多少钱？",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "zhè ge yào duō shǎo qián？",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "чжэ⁴ гэ⁰ яо⁴ до¹ шао⁰ цянь²？",
+      "reason": "How much question: neutral shao consistent with the saved Pinyin and interrogative 多少."
+    }
+  }
+]

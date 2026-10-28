@@ -1,0 +1,1757 @@
+[
+  {
+    "word_id": 17861,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/mar.ħa.ban/",
+        "reading": "ма́рхабан"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17869,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʃuk.ran/",
+        "reading": "шу́кран"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17870,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕaf.wan/",
+        "reading": "ъа́фван"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17881,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/is.miː/",
+        "reading": "и́сми:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17886,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔumm/",
+        "reading": "у́мм"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17887,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔab/",
+        "reading": "а́б"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17894,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/d͡ʒad.da/",
+        "reading": "джа́дда"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17895,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/d͡ʒadd/",
+        "reading": "джа́дд"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17898,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔus.ra/",
+        "reading": "у́сра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17903,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/im.ra.ʔa/",
+        "reading": "и́мраʼа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17904,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ra.dˤiːʕ/",
+        "reading": "ради́:ъ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17911,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sˤifr/",
+        "reading": "си́фр"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17912,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/waː.ħid/",
+        "reading": "ва́:хид"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17913,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/iθ.naːn/",
+        "reading": "исна́:н"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17914,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/θa.laː.θa/",
+        "reading": "сала́:са"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17915,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔar.ba.ʕa/",
+        "reading": "а́рбаъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17916,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/xam.sa/",
+        "reading": "ха́мса"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17917,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sit.ta/",
+        "reading": "си́тта"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17918,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sab.ʕa/",
+        "reading": "са́бъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17919,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/θa.maː.ni.ja/",
+        "reading": "сама́:нийа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17920,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/tis.ʕa/",
+        "reading": "ти́съа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17921,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕa.ʃa.ra/",
+        "reading": "ъа́шара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17922,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/mi.ʔa/",
+        "reading": "ми́ʼа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17923,
+    "before": {
+      "word_id": 17923,
+      "language": "ar",
+      "term": "اليوم",
+      "part_of_speech": "adverb",
+      "pronunciation_easy": "а́л-йа́вм",
+      "pronunciation_note_ru": "Артикль ال иногда ассимилируется с последующим солнечным согласным.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ал-йа́вм",
+      "status": "ready",
+      "reason": "Do not stress the definite article separately from the noun/adverb."
+    }
+  },
+  {
+    "word_id": 17933,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.na/",
+        "reading": "са́на"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17934,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/saː.ʕa/",
+        "reading": "са́:ъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17935,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/da.qiː.qa/",
+        "reading": "дакъи́:къа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17941,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ħam.maːm/",
+        "reading": "хамма́:м"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17943,
+    "before": {
+      "word_id": 17943,
+      "language": "ar",
+      "term": "نافذة",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "на:фи́за",
+      "pronunciation_note_ru": "ث/ذ — межзубные звуки, упрощённо переданы через «с/з». Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "на́:физа",
+      "status": "ready",
+      "reason": "Vocalized dictionary /naː.fi.ða/ and MSA syllable-weight rules place stress on the first syllable."
+    }
+  },
+  {
+    "word_id": 17967,
+    "before": {
+      "word_id": 17967,
+      "language": "ar",
+      "term": "أرز",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "а́рузз",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ару́зз",
+      "status": "ready",
+      "reason": "For the selected aruzz variant, dictionary /ʔa.ruzz/ has a final superheavy syllable; stress the final vowel."
+    }
+  },
+  {
+    "word_id": 17978,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/d͡ʒubn/",
+        "reading": "джу́бн"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17979,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/zub.da/",
+        "reading": "зу́бда"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17982,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.mak/",
+        "reading": "са́мак"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17983,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ħa.saːʔ/",
+        "reading": "хаса́:ʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17984,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.la.tˤa/",
+        "reading": "са́лата"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17985,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/milħ/",
+        "reading": "ми́лх"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17988,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/da.qiːq/",
+        "reading": "дакъи́:къ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17991,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/wi.ʕaːʔ/",
+        "reading": "виъа́:ʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 17996,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʃaw.ka/",
+        "reading": "ша́вка"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18004,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/wad͡ʒ.ba/",
+        "reading": "ва́джба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18006,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ɣa.daːʔ/",
+        "reading": "гада́:ʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18007,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕa.ʃaːʔ/",
+        "reading": "ъаша́:ʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18009,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔaɣ.laː/",
+        "reading": "а́гла:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18013,
+    "before": {
+      "word_id": 18013,
+      "language": "ar",
+      "term": "بنطال",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "бинта́:л",
+      "pronunciation_note_ru": "ص/ض/ط/ظ — эмфатические; ق — заднеязычный, не обычное русское «к». Артикль ال иногда ассимилируется с последующим солнечным согласным. Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "بنطال: source binṭāl and the available dictionary's banṭāl variant need an explicit MSA variety choice."
+    }
+  },
+  {
+    "word_id": 18019,
+    "before": {
+      "word_id": 18019,
+      "language": "ar",
+      "term": "كنزة",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "ку́нза",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "كنزة: source kunza and the available dictionary's kanza need lexical/variety confirmation."
+    }
+  },
+  {
+    "word_id": 18029,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/miħ.fa.ðˤa/",
+        "reading": "ми́хфаза"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18032,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/naðˤ.ðˤaː.ra/",
+        "reading": "назза́:ра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18033,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/xaː.tam/",
+        "reading": "ха́:там"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18038,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕajn/",
+        "reading": "ъа́йн"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18042,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sinn/",
+        "reading": "си́нн"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18047,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ðˤahr/",
+        "reading": "за́хр"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18056,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/su.ʕaːl/",
+        "reading": "суъа́:л"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18061,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/is.taj.qa.ðˤa/",
+        "reading": "иста́йкъаза"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18063,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ɣa.sa.la/",
+        "reading": "га́сала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18075,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/naː.ma/",
+        "reading": "на́:ма"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18076,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔa.ka.la/",
+        "reading": "а́кала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18077,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʃa.ri.ba/",
+        "reading": "ша́риба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18078,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/naðˤ.ðˤa.fa/",
+        "reading": "на́ззафа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18079,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/rat.ta.ba/",
+        "reading": "ра́ттаба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18084,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/in.ta.ðˤa.ra/",
+        "reading": "инта́зара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18085,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔan.haː/",
+        "reading": "а́нха:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18086,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ða.ha.ba/",
+        "reading": "за́хаба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18087,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/d͡ʒaː.ʔa/",
+        "reading": "джа́:ʼа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18088,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ma.ʃaː/",
+        "reading": "ма́ша:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18089,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ra.ka.dˤa/",
+        "reading": "ра́када"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18090,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ta.waq.qa.fa/",
+        "reading": "тава́къкъафа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18092,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ɣaː.da.ra/",
+        "reading": "га́:дара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18093,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕaː.da/",
+        "reading": "ъа́:да"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18094,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/in.ʕa.tˤa.fa/",
+        "reading": "инъа́тафа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18121,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/mak.ta.ba/",
+        "reading": "ма́ктаба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18123,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/suːq/",
+        "reading": "су́:къ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18128,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/bank/",
+        "reading": "ба́нк"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18135,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/misˤ.ʕad/",
+        "reading": "ми́съад"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18137,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/siʕr/",
+        "reading": "си́ър"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18145,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/faː.tuː.ra/",
+        "reading": "фа:ту́:ра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18146,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/iʃ.ta.raː/",
+        "reading": "и́штара:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18147,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/baː.ʕa/",
+        "reading": "ба́:ъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18148,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/da.fa.ʕa/",
+        "reading": "да́фаъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18149,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔan.fa.qa/",
+        "reading": "а́нфакъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18152,
+    "before": {
+      "word_id": 18152,
+      "language": "ar",
+      "term": "غالي الثمن",
+      "part_of_speech": "adjective",
+      "pronunciation_easy": "га́:ли: а́с-са́ман",
+      "pronunciation_note_ru": "ث/ذ — межзубные звуки, упрощённо переданы через «с/з». Артикль ال иногда ассимилируется с последующим солнечным согласным. Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "غالي الثمن: establish connected MSA phrase reading and article linkage before import."
+    }
+  },
+  {
+    "word_id": 18156,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ma.qaːs/",
+        "reading": "макъа́:с"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18157,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/lawn/",
+        "reading": "ла́вн"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18158,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/tˤa.lab/",
+        "reading": "та́лаб"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18161,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕa.mal/",
+        "reading": "ъа́мал"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18162,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/mih.na/",
+        "reading": "ми́хна"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18168,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ti.d͡ʒaː.ra/",
+        "reading": "тиджа́:ра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18176,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/xi.tˤaːb/",
+        "reading": "хита́:б"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18178,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/daf.tar/",
+        "reading": "да́фтар"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18181,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/wa.raq/",
+        "reading": "ва́ракъ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18182,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/dars/",
+        "reading": "да́рс"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18185,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ta.ʕal.la.ma/",
+        "reading": "таъа́ллама"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18187,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/qaː.la/",
+        "reading": "къа́:ла"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18188,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔax.ba.ra/",
+        "reading": "а́хбара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18189,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.ʔa.la/",
+        "reading": "са́ʼала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18190,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔa.d͡ʒaː.ba/",
+        "reading": "аджа́:ба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18191,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/is.ta.ma.ʕa/",
+        "reading": "иста́маъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18192,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.mi.ʕa/",
+        "reading": "са́миъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18193,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/qa.ra.ʔa/",
+        "reading": "къа́раʼа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18194,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ka.ta.ba/",
+        "reading": "ка́таба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18195,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/fa.hi.ma/",
+        "reading": "фа́хима"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18196,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʕa.ra.fa/",
+        "reading": "ъа́рафа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18197,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ta.ðak.ka.ra/",
+        "reading": "таза́ккара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18200,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/kar.ra.ra/",
+        "reading": "ка́ррара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18201,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/tar.d͡ʒa.ma/",
+        "reading": "та́рджама"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18202,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/lu.ɣa/",
+        "reading": "лу́га"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18205,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/su.ʔaːl/",
+        "reading": "суʼа́:л"
+      },
+      {
+        "ipa": "/suʔ.ʔaːl/",
+        "reading": "суʼа́:л"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18206,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ri.saː.la/",
+        "reading": "риса́:ла"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18208,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/it.ta.sˤa.la/",
+        "reading": "итта́сала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18215,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ma.tˤar/",
+        "reading": "ма́тар"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18217,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/riːħ/",
+        "reading": "ри́:х"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18218,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/tˤaqs/",
+        "reading": "та́къс"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18221,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/daː.fiʔ/",
+        "reading": "да́:фиʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18223,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʃa.d͡ʒa.ra/",
+        "reading": "ша́джара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18224,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/zah.ra/",
+        "reading": "за́хра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18237,
+    "before": {
+      "word_id": 18237,
+      "language": "ar",
+      "term": "أغنية",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "у́гнийа",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "أغنية: confirm niyya gemination and stress; the source and available dictionary differ."
+    }
+  },
+  {
+    "word_id": 18238,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/fiːlm/",
+        "reading": "фи́:лм"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18244,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/law.ħa/",
+        "reading": "ла́вха"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18252,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/la.ʕi.ba/",
+        "reading": "ла́ъиба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18253,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ɣan.naː/",
+        "reading": "га́нна:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18254,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ra.qa.sˤa/",
+        "reading": "ра́къаса"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18255,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sa.ba.ħa/",
+        "reading": "са́баха"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18256,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ra.sa.ma/",
+        "reading": "ра́сама"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18263,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ɣaː.dˤib/",
+        "reading": "га́:диб"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18271,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sahl/",
+        "reading": "са́хл"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18275,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/saj.jiʔ/",
+        "reading": "са́ййиʼ"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18286,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ra.ʔaː/",
+        "reading": "ра́ʼа:"
+      },
+      {
+        "ipa": "/raʔ.ʔaː/",
+        "reading": "ра́ʼа:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18287,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/na.ðˤa.ra/",
+        "reading": "на́зара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18288,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/wa.d͡ʒa.da/",
+        "reading": "ва́джада"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18290,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔaʕ.tˤaː/",
+        "reading": "а́ъта:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18291,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔa.xa.ða/",
+        "reading": "а́хаза"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18292,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/wa.dˤa.ʕa/",
+        "reading": "ва́даъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18294,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔar.sa.la/",
+        "reading": "а́рсала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18295,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ta.laq.qaː/",
+        "reading": "тала́къкъа:"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18296,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/sˤa.na.ʕa/",
+        "reading": "са́наъа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18297,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/fa.ʕa.la/",
+        "reading": "фа́ъала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18298,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/is.tax.da.ma/",
+        "reading": "иста́хдама"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18299,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/iħ.taː.d͡ʒa/",
+        "reading": "ихта́:джа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18300,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔa.raː.da/",
+        "reading": "ара́:да"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18302,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔa.ħab.ba/",
+        "reading": "аха́бба"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18303,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/saː.ʕa.da/",
+        "reading": "са́:ъада"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18304,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ħaː.wa.la/",
+        "reading": "ха́:вала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18305,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ba.da.ʔa/",
+        "reading": "ба́даʼа"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18306,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/waː.sˤa.la/",
+        "reading": "ва́:сала"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18307,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ix.taː.ra/",
+        "reading": "ихта́:ра"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18309,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ka.sa.ra/",
+        "reading": "ка́сара"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18313,
+    "before": {
+      "word_id": 18313,
+      "language": "ar",
+      "term": "في الداخل",
+      "part_of_speech": "adverb",
+      "pronunciation_easy": "фи́: а́д-да́:хил",
+      "pronunciation_note_ru": "Артикль ال иногда ассимилируется с последующим солнечным согласным. Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "في الداخل: verify connected article elision; the source marks several artificial word stresses."
+    }
+  },
+  {
+    "word_id": 18314,
+    "before": {
+      "word_id": 18314,
+      "language": "ar",
+      "term": "في الخارج",
+      "part_of_speech": "adverb",
+      "pronunciation_easy": "фи́: а́л-ха́:ридж",
+      "pronunciation_note_ru": "Артикль ال иногда ассимилируется с последующим солнечным согласным. Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "في الخارج: verify connected article elision; the source marks several artificial word stresses."
+    }
+  },
+  {
+    "word_id": 18316,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔan.ta/",
+        "reading": "а́нта"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18318,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/hum/",
+        "reading": "ху́м"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18325,
+    "before": {
+      "word_id": 18325,
+      "language": "ar",
+      "term": "الجميع",
+      "part_of_speech": "other",
+      "pronunciation_easy": "а́л-джами́:ъ",
+      "pronunciation_note_ru": "ح/ع: гортанные звуки, без точного аналога в русском. Артикль ال иногда ассимилируется с последующим солнечным согласным. Двоеточие после гласной в русской подсказке означает долготу, не отдельный звук.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ал-джами́:ъ",
+      "status": "ready",
+      "reason": "Do not give the definite article a second primary stress."
+    }
+  },
+  {
+    "word_id": 18328,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/man/",
+        "reading": "ма́н"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18332,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/ʔajj/",
+        "reading": "а́йй"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  },
+  {
+    "word_id": 18333,
+    "decision": "resolved_dictionary_flag",
+    "evidence": [
+      {
+        "ipa": "/kam/",
+        "reading": "ка́м"
+      }
+    ],
+    "method": "Vocalized MSA dictionary reading, context/POS review and MSA stress rules; not audio certification"
+  }
+]

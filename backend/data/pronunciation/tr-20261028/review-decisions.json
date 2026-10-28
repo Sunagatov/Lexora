@@ -1,0 +1,443 @@
+[
+  {
+    "word_id": 20361,
+    "before": {
+      "word_id": 20361,
+      "language": "tr",
+      "term": "merhaba",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "мэ́рхаба",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "merhaba: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио; merhaba: исключение из общего правила ударения; требуется словарная проверка"
+    },
+    "decision": {
+      "pronunciation_easy": "мэ́рхаба",
+      "status": "ready",
+      "reason": "The draft first-syllable stress agrees with the full-form dictionary IPA; the generic exception flag can be closed."
+    }
+  },
+  {
+    "word_id": 20368,
+    "before": {
+      "word_id": 20368,
+      "language": "tr",
+      "term": "lütfen",
+      "part_of_speech": "other",
+      "pronunciation_easy": "лютфэ́н",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских. До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "lütfen: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио"
+    },
+    "decision": {
+      "pronunciation_easy": "лю́тфэн",
+      "status": "ready",
+      "reason": "Dictionary IPA /ˈlytfen/ confirms initial stress."
+    }
+  },
+  {
+    "word_id": 20377,
+    "before": {
+      "word_id": 20377,
+      "language": "tr",
+      "term": "nasılsın?",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "насылсы́н?",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "на́сылсын?",
+      "status": "ready",
+      "reason": "Dictionary nasılsın /ˈna.sɯɫ.sɯn/; the personal suffix must not receive the draft's stress."
+    }
+  },
+  {
+    "word_id": 20386,
+    "before": {
+      "word_id": 20386,
+      "language": "tr",
+      "term": "anne",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "а́ннэ",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "anne: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио; anne: исключение из общего правила ударения; требуется словарная проверка"
+    },
+    "decision": {
+      "pronunciation_easy": "а́ннэ",
+      "status": "ready",
+      "reason": "ANne is an explicit lexical exception in Turkish stress teaching; retain initial stress despite a conflicting default dictionary-template IPA."
+    }
+  },
+  {
+    "word_id": 20388,
+    "before": {
+      "word_id": 20388,
+      "language": "tr",
+      "term": "anne baba",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "а́ннэ баба́",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "anne: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио; anne: исключение из общего правила ударения; требуется словарная проверка"
+    },
+    "decision": {
+      "pronunciation_easy": "а́ннэ баба́",
+      "status": "ready",
+      "reason": "Citation word stresses ANne and baBA; no claim of sentence focus."
+    }
+  },
+  {
+    "word_id": 20394,
+    "before": {
+      "word_id": 20394,
+      "language": "tr",
+      "term": "büyükanne",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "бюйюканнэ́",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound büyükanne: reliable lexical stress still needs confirmation; do not rely on the last-syllable default."
+    }
+  },
+  {
+    "word_id": 20395,
+    "before": {
+      "word_id": 20395,
+      "language": "tr",
+      "term": "büyükbaba",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "бюйюкбаба́",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound büyükbaba: draft and dictionary stress disagree; leave it out pending a reliable citation."
+    }
+  },
+  {
+    "word_id": 20419,
+    "before": {
+      "word_id": 20419,
+      "language": "tr",
+      "term": "sekiz",
+      "part_of_speech": "other",
+      "pronunciation_easy": "сэ́киз",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "sekiz: синтезатор предполагает неоконечное ударение (IPA sˈecɪz); без аудио не утверждать"
+    },
+    "decision": {
+      "pronunciation_easy": "сэки́з",
+      "status": "ready",
+      "reason": "Dictionary IPA and regular numeral citation stress agree on the final syllable."
+    }
+  },
+  {
+    "word_id": 20420,
+    "before": {
+      "word_id": 20420,
+      "language": "tr",
+      "term": "dokuz",
+      "part_of_speech": "other",
+      "pronunciation_easy": "до́куз",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "dokuz: синтезатор предполагает неоконечное ударение (IPA dˈokʊz); без аудио не утверждать"
+    },
+    "decision": {
+      "pronunciation_easy": "доку́з",
+      "status": "ready",
+      "reason": "Dictionary IPA and regular numeral citation stress agree on the final syllable."
+    }
+  },
+  {
+    "word_id": 20443,
+    "before": {
+      "word_id": 20443,
+      "language": "tr",
+      "term": "pencere",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "пэнджэрэ́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "пэ́нджэрэ",
+      "status": "ready",
+      "reason": "PENcere is a lexical exception, corroborated by dictionary IPA /ˈpen.d͡ʒe.ɾe/."
+    }
+  },
+  {
+    "word_id": 20489,
+    "before": {
+      "word_id": 20489,
+      "language": "tr",
+      "term": "karabiber",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "карабибэ́р",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound karabiber: draft final stress and dictionary compound stress disagree; lexical confirmation required."
+    }
+  },
+  {
+    "word_id": 20499,
+    "before": {
+      "word_id": 20499,
+      "language": "tr",
+      "term": "tencere",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "тэнджэрэ́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "тэ́нджэрэ",
+      "status": "ready",
+      "reason": "Retain the initial-stress dictionary citation reading of tencere."
+    }
+  },
+  {
+    "word_id": 20520,
+    "before": {
+      "word_id": 20520,
+      "language": "tr",
+      "term": "ayakkabı",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "айаккабы́",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound ayakkabı: draft and dictionary stress disagree; lexical confirmation required."
+    }
+  },
+  {
+    "word_id": 20548,
+    "before": {
+      "word_id": 20548,
+      "language": "tr",
+      "term": "mide",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "мидэ́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "mide: the reference gives vowel length but no stress; the generated final accent has not been established."
+    }
+  },
+  {
+    "word_id": 20604,
+    "before": {
+      "word_id": 20604,
+      "language": "tr",
+      "term": "havalimanı",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "хавалиманы́",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound havalimanı: stress requires a reliable lexical citation, not a general final-syllable rule."
+    }
+  },
+  {
+    "word_id": 20628,
+    "before": {
+      "word_id": 20628,
+      "language": "tr",
+      "term": "banka",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "ба́нка",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "banka: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио; banka: исключение из общего правила ударения; требуется словарная проверка"
+    },
+    "decision": {
+      "pronunciation_easy": "ба́нка",
+      "status": "ready",
+      "reason": "BAnka is an explicit loanword exception in TDK-published Turkish stress literature."
+    }
+  },
+  {
+    "word_id": 20670,
+    "before": {
+      "word_id": 20670,
+      "language": "tr",
+      "term": "dizüstü bilgisayar",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "дизюстю́ билгисайа́р",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "Compound dizüstü: the source and dictionary disagree on stress; leave the phrase unchanged until resolved."
+    }
+  },
+  {
+    "word_id": 20703,
+    "before": {
+      "word_id": 20703,
+      "language": "tr",
+      "term": "kelime",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "кэли́мэ",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "kelime: синтезатор предполагает неоконечное ударение (IPA celˈimɛ); без аудио не утверждать"
+    },
+    "decision": {
+      "pronunciation_easy": "кэли́мэ",
+      "status": "ready",
+      "reason": "The existing middle-syllable stress agrees with dictionary IPA for kelime."
+    }
+  },
+  {
+    "word_id": 20729,
+    "before": {
+      "word_id": 20729,
+      "language": "tr",
+      "term": "deniz",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "дэ́низ",
+      "pronunciation_note_ru": "До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "deniz: синтезатор предполагает неоконечное ударение (IPA dˈenɪz); без аудио не утверждать"
+    },
+    "decision": {
+      "pronunciation_easy": "дэни́з",
+      "status": "ready",
+      "reason": "The common noun sea has final-stress dictionary citation; do not use the draft's name-like initial stress."
+    }
+  },
+  {
+    "word_id": 20744,
+    "before": {
+      "word_id": 20744,
+      "language": "tr",
+      "term": "tablo",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "табло́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "tablo: draft and dictionary stress disagree; keep this loanword out pending confirmation."
+    }
+  },
+  {
+    "word_id": 20781,
+    "before": {
+      "word_id": 20781,
+      "language": "tr",
+      "term": "mavi",
+      "part_of_speech": "adjective",
+      "pronunciation_easy": "мави́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "mavi: lexical stress needs confirmation; the draft only applies a default rule."
+    }
+  },
+  {
+    "word_id": 20831,
+    "before": {
+      "word_id": 20831,
+      "language": "tr",
+      "term": "nasıl",
+      "part_of_speech": "other",
+      "pronunciation_easy": "насы́л",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских. До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "nasıl: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио"
+    },
+    "decision": {
+      "pronunciation_easy": "на́сыл",
+      "status": "ready",
+      "reason": "Dictionary IPA /ˈna.sɯɫ/ confirms initial stress."
+    }
+  },
+  {
+    "word_id": 20832,
+    "before": {
+      "word_id": 20832,
+      "language": "tr",
+      "term": "hangi",
+      "part_of_speech": "other",
+      "pronunciation_easy": "ханги́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ха́нги",
+      "status": "ready",
+      "reason": "Dictionary IPA /ˈhan.ɟi/ confirms initial stress."
+    }
+  },
+  {
+    "word_id": 20846,
+    "before": {
+      "word_id": 20846,
+      "language": "tr",
+      "term": "hesap lütfen",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "хэса́п лютфэ́н",
+      "pronunciation_note_ru": "Русская подсказка приблизительна: ı≈ы, ü≈ю, ö≈ё, но турецкие гласные отличаются от русских. До проверки носителем — не импортировать автоматически.",
+      "status": "needs_review",
+      "issue": "lütfen: исключение или сомнительное ударение/заимствование, нужна проверка по словарному аудио"
+    },
+    "decision": {
+      "pronunciation_easy": "хэса́п лю́тфэн",
+      "status": "ready",
+      "reason": "Correct lütfen to its initial-stress citation reading."
+    }
+  },
+  {
+    "word_id": 20858,
+    "before": {
+      "word_id": 20858,
+      "language": "tr",
+      "term": "şifre ne?",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "шифрэ́ нэ́?",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "ши́фрэ нэ́?",
+      "status": "ready",
+      "reason": "Use the dictionary's initial-stress şifre reading; ne is monosyllabic."
+    }
+  }
+]

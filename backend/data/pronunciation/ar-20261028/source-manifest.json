@@ -1,0 +1,78 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (3).xlsx",
+      "sha256": "82581d3983b8dfa0fe27f9d63a7bb880af9baa3775eb7dc1126ecf3980c2bdde",
+      "learning_language": "ar",
+      "translation_language": "ru",
+      "sheets": [
+        "Words",
+        "Topics",
+        "_Lexora_Language"
+      ],
+      "unique_word_ids": 500,
+      "word_id_min": 17861,
+      "word_id_max": 18360
+    }
+  ],
+  "output": {
+    "filename": "lexora-ar-cyrillic-pronunciation.jsonl",
+    "sha256": "ad5788f3ce7080bfb24404e2586c32c5e1e959d35936eacb462dadcbeb24d24a"
+  },
+  "auxiliary_files": [
+    {
+      "filename": "lexora-ar-all-500-google-doc-source.txt",
+      "sha256": "5c7831ba80f97bc691c01c09dea5b6db9498f1344222a4abae07c7ae40d30373"
+    },
+    {
+      "filename": "lexora-ar-codex-handoff.md",
+      "sha256": "e772714be2ebb834a40a74389a6d651345d47a69f9042fe504040497100871e8"
+    },
+    {
+      "filename": "lexora-ar-cyrillic-pronunciation.jsonl",
+      "sha256": "ad5788f3ce7080bfb24404e2586c32c5e1e959d35936eacb462dadcbeb24d24a"
+    },
+    {
+      "filename": "lexora-ar-needs-review.csv",
+      "sha256": "06f35e46fa3970a75fb3f0e2f312cc729b9f207bea80cc85f985dc2a2628a940"
+    },
+    {
+      "filename": "lexora-ar-pronunciation-guide.md",
+      "sha256": "ad414d316c9648f235cfd097ba746fb6ae8f8925d3ca1688382563effa3c947e"
+    },
+    {
+      "filename": "lexora-ar-pronunciation-review.xlsx",
+      "sha256": "02871414d234fd7040cf52f506ef5be6e26358cefbddfc45f7e81daaf2d42580"
+    },
+    {
+      "filename": "lexora-ar-review-report.md",
+      "sha256": "d89eb114c64c7a2cff715878be434d475c54142e9b5ebc14d18bdbfa7ba2ce66"
+    },
+    {
+      "filename": "lexora-ar-romanization-proposals.jsonl",
+      "sha256": "638744e98e3692dfe0af8444705a29205339c7313b467243d5115f11a4c457a8"
+    }
+  ],
+  "languages": {
+    "ar": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 224,
+      "needs_review": 276,
+      "duplicate_word_ids": 0,
+      "scheme": "russian-cyrillic-with-length-v1",
+      "romanization_scheme": "academic-style-MSA-proposal",
+      "dialect": "Modern Standard Arabic"
+    }
+  },
+  "verification": {
+    "source_ids_pos_spellings_checked": true,
+    "doc_vs_jsonl_to_be_checked_on_upload": true,
+    "direct_native_audio_verifications": 0,
+    "approved_for_import": false,
+    "review_status": "linguistic_review_required"
+  },
+  "quality_notice": "All pronunciations are provisional linguistic proposals based on unvowelled Arabic; Latin and Cyrillic stress have not been independently verified against audio; review items excluded from import-ready easy field."
+}

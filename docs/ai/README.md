@@ -17,7 +17,7 @@
 
 Specialized AI/product docs:
 
-- `easy-pronunciation.md` owns approximate reading hints and the reviewed Spanish import.
+- `easy-pronunciation.md` owns approximate reading hints and reviewed pronunciation imports.
 
 - `multilingual.md` owns learning-language scoping, translation groups, language defaults and migration compatibility.
 

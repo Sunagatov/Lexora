@@ -1,0 +1,65 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary(1).xlsx",
+      "sha256": "83c5caf0657c338d978dbb969d9bf94cf7b30c69517664bff35d8623a8c56f41",
+      "learning_language": "tt",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-tt-cyrillic-pronunciation.jsonl",
+    "sha256": "4997402bbf2a41bc7ebc1af7de50264567a007f6506c92b63c7d1a8fa5f445cd"
+  },
+  "other_outputs": [
+    {
+      "filename": "lexora-tt-pronunciation-guide.md",
+      "sha256": "93a3acf34fc2c1bbb44bfc933373eb85c41e57806d2dfe1df71d48ff99d6469a"
+    },
+    {
+      "filename": "lexora-tt-needs-review.csv",
+      "sha256": "7b064bce03db3e9ffb85a385871a7a5f58d2f2d845cc3c3bd492bd6c3956f091"
+    },
+    {
+      "filename": "lexora-tt-review-report.md",
+      "sha256": "d6220cdbb8ad412a8253a3e86afdc8d2820facff66ad2d99318770058773a232"
+    },
+    {
+      "filename": "lexora-tt-cyrillic-pronunciation-review.xlsx",
+      "sha256": "a84f3e0cf9840d8b9f1077cf8d0fd64132b75544b5ff7bc6ef2dfeb819fc34be"
+    },
+    {
+      "filename": "lexora-tt-all-500-google-doc-source.txt",
+      "sha256": "3fd4851b61b34a2eb1a46abeb5e54390dd1c1739d509eeb37aa8fe668b509691"
+    }
+  ],
+  "languages": {
+    "tt": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 446,
+      "needs_review": 54,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "scheme": "tatar-cyrillic-stress-v1",
+      "dialect": "standard literary Tatar, Tatarstan"
+    }
+  },
+  "quality": {
+    "source_read": "Lexora Excel Words and hidden _Lexora_Language; actual IDs preserved",
+    "direct_native_audio_verifications": 0,
+    "approved_for_import": false,
+    "notes": "Russian-readable Tatar Cyrillic annotated stress; exceptions/loanwords require human confirmation; status ready is provisional",
+    "input_existing_ipa_audio_audited": false,
+    "sources": [
+      "https://suzlek.antat.ru/about/Orf2004.pdf",
+      "https://www.azatliq.org/a/31824886.html",
+      "https://ibtrussia.org/sites/default/files/files/TTR_Gram_R_web.pdf",
+      "https://iseees.berkeley.edu/sites/default/files/2002_02-wert.pdf",
+      "https://assets.publishing.service.gov.uk/media/5d6f828ce5274a097c07b95c/TABLE_OF_CORRESPONDENCES_FOR_TATAR.pdf"
+    ]
+  },
+  "other_languages_processed": []
+}

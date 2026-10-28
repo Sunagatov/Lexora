@@ -1,0 +1,69 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (1).xlsx",
+      "sha256": "b22658141228c27cf4f83faccfa2de9d4d9e3a03e1c19bf819dea2273bf81421",
+      "learning_language": "zh",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-zh-easy-pronunciation.jsonl",
+    "sha256": "05165373ab2e45fff4805ca47b20cc903c6fcef95b93e7ef2154a3ff7e105c45"
+  },
+  "auxiliary_files": [
+    {
+      "filename": "lexora-zh-russian-reading-hints.jsonl",
+      "sha256": "231528fd60a9ab6513ccfdd4373d6c6a432d5a21c7752de583fb6f8e400e220a"
+    },
+    {
+      "filename": "lexora-zh-pronunciation-guide.md",
+      "sha256": "45c7bc275dc915f481b6bc0cdbb03e0ff78b78f049a4e5fe35978277c1b1a963"
+    },
+    {
+      "filename": "lexora-zh-review-report.md",
+      "sha256": "3a87979c61988d0afeed66a54a8a13f4b7e67155bcd93338d83107b09d5069ea"
+    },
+    {
+      "filename": "lexora-zh-needs-review.csv",
+      "sha256": "bc026d0ddcf486496fbb358287fb8a43ea378351b5d57273b381214eeddcd0af"
+    },
+    {
+      "filename": "lexora-zh-pinyin-corrections.csv",
+      "sha256": "cd6907c46e473681d6d35fbdc423f30f328620652e3abf5a8f6fddf8df63ffca"
+    },
+    {
+      "filename": "lexora-zh-pronunciation-review.xlsx",
+      "sha256": "9518240f6eb6502cb78f5b83fe1407f45dc840373ac6bad594c42045adf4ac35"
+    },
+    {
+      "filename": "lexora-zh-all-500-google-doc-source.txt",
+      "sha256": "734973fc8bc89d987d9b55fd3c674e6069a532c40ae4ca43d72ebf2175ac8112"
+    }
+  ],
+  "languages": {
+    "zh": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 473,
+      "needs_review": 27,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "scheme": "pinyin-tones-v1",
+      "russian_hint_scheme": "cyrillic-with-tone-numbers-v1",
+      "variety": "Mainland Mandarin, Simplified Chinese"
+    }
+  },
+  "quality_notice": "Base ICU Han-Latin + context-sensitive manual corrections; not 500 individual native audio checks; import not approved.",
+  "verification": {
+    "workbook_language_metadata_verified": true,
+    "word_id_identity_matches": 500,
+    "manual_overrides_reviewed": 74,
+    "needs_review_records_have_null_pronunciation_easy": true,
+    "all_rows_have_proposed_pinyin_and_russian_hints_in_separate_overlay": true,
+    "native_audio_verifications": 0,
+    "approved_for_import": false
+  }
+}

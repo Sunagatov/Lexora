@@ -1,0 +1,4 @@
+# Preserve the supplied source-package bytes and checksums.
+* -text
+# Original Markdown uses intentional two-space line breaks.
+source-guide.md whitespace=-blank-at-eol

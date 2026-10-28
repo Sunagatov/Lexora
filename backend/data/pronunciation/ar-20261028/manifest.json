@@ -1,0 +1,52 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "lexora-ar-reviewed-pronunciation.jsonl",
+    "sha256": "3f1ab774a4c15975b1d01b111c98d12c2625fe9980603d37b502b130f67372d3"
+  },
+  "languages": {
+    "ar": {
+      "scheme": "russian-cyrillic-with-length-v1",
+      "unique_output_word_ids": 500,
+      "ready": 361,
+      "needs_review": 139
+    }
+  },
+  "source_manifest_sha256": "6da1baea63f1916b4e915ded4bbc846e888f015980f09204022a4df1f45a104b",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (3).xlsx",
+      "sha256": "82581d3983b8dfa0fe27f9d63a7bb880af9baa3775eb7dc1126ecf3980c2bdde",
+      "learning_language": "ar",
+      "translation_language": "ru",
+      "sheets": [
+        "Words",
+        "Topics",
+        "_Lexora_Language"
+      ],
+      "unique_word_ids": 500,
+      "word_id_min": 17861,
+      "word_id_max": 18360
+    }
+  ],
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "method": "Full model review of supplied hints and meanings, dictionary/reference comparisons, targeted corrections; unresolved entries deliberately excluded"
+  },
+  "preserve": [
+    "Word IDs",
+    "terms",
+    "part of speech",
+    "existing Pinyin/transliteration",
+    "IPA",
+    "audio",
+    "translations",
+    "definitions",
+    "topics",
+    "ratings",
+    "history",
+    "timestamps"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "lexora-tt-reviewed-pronunciation.jsonl",
+    "sha256": "fa970bf14b4fd262174f517730c60df0959362fee209d4b7f93e28adf5b214fb"
+  },
+  "languages": {
+    "tt": {
+      "scheme": "tatar-cyrillic-stress-v1",
+      "unique_output_word_ids": 500,
+      "ready": 459,
+      "needs_review": 41
+    }
+  },
+  "source_manifest_sha256": "f7a0d8c5c5a21667642ec635ba65fbda853c618550084aa7eb1d9f527b930a12",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary(1).xlsx",
+      "sha256": "83c5caf0657c338d978dbb969d9bf94cf7b30c69517664bff35d8623a8c56f41",
+      "learning_language": "tt",
+      "translation_language": "ru"
+    }
+  ],
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "method": "Full model review of supplied hints and meanings, dictionary/reference comparisons, targeted corrections; unresolved entries deliberately excluded"
+  },
+  "preserve": [
+    "Word IDs",
+    "terms",
+    "part of speech",
+    "existing Pinyin/transliteration",
+    "IPA",
+    "audio",
+    "translations",
+    "definitions",
+    "topics",
+    "ratings",
+    "history",
+    "timestamps"
+  ]
+}

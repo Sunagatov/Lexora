@@ -1,0 +1,500 @@
+{"word_id":21361,"language":"zh","term":"你好","part_of_speech":"phrase","pronunciation_easy":"nǐ hǎo","pronunciation_note_ru":"两个第三声相邻：nǐ hǎo обычно произносится ní hǎo.","status":"ready","issue":null}
+{"word_id":21362,"language":"zh","term":"早上好","part_of_speech":"phrase","pronunciation_easy":"zǎo shang hǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21363,"language":"zh","term":"下午好","part_of_speech":"phrase","pronunciation_easy":"xià wǔ hǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21364,"language":"zh","term":"晚上好","part_of_speech":"phrase","pronunciation_easy":"wǎn shang hǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21365,"language":"zh","term":"晚安","part_of_speech":"phrase","pronunciation_easy":"wǎn ān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21366,"language":"zh","term":"再见","part_of_speech":"phrase","pronunciation_easy":"zài jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21367,"language":"zh","term":"回头见","part_of_speech":"phrase","pronunciation_easy":"huí tóu jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21368,"language":"zh","term":"请","part_of_speech":"other","pronunciation_easy":"qǐng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21369,"language":"zh","term":"谢谢","part_of_speech":"phrase","pronunciation_easy":"xiè xie","pronunciation_note_ru":"Второй xie — нейтральный тон.","status":"ready","issue":null}
+{"word_id":21370,"language":"zh","term":"不客气","part_of_speech":"phrase","pronunciation_easy":"bù kè qi","pronunciation_note_ru":"不 bù 在第四声 kè 之前连读成 bú；气 qi 在这里是轻声。","status":"ready","issue":null}
+{"word_id":21371,"language":"zh","term":"劳驾","part_of_speech":"phrase","pronunciation_easy":"láo jià","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21372,"language":"zh","term":"对不起","part_of_speech":"phrase","pronunciation_easy":"duì bu qǐ","pronunciation_note_ru":"对不起中间的 bu 通常读轻声，前后语流应连贯。","status":"ready","issue":null}
+{"word_id":21373,"language":"zh","term":"是的","part_of_speech":"other","pronunciation_easy":"shì de","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21374,"language":"zh","term":"不","part_of_speech":"other","pronunciation_easy":"bù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21375,"language":"zh","term":"好的","part_of_speech":"other","pronunciation_easy":"hǎo de","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21376,"language":"zh","term":"欢迎","part_of_speech":"phrase","pronunciation_easy":"huān yíng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21377,"language":"zh","term":"你好吗？","part_of_speech":"phrase","pronunciation_easy":"nǐ hǎo ma？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21378,"language":"zh","term":"我很好","part_of_speech":"phrase","pronunciation_easy":"wǒ hěn hǎo","pronunciation_note_ru":"连续第三声会发生变调；不能按每个第三声孤立地朗读。","status":"ready","issue":null}
+{"word_id":21379,"language":"zh","term":"很高兴认识你","part_of_speech":"phrase","pronunciation_easy":"hěn gāo xìng rèn shi nǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21380,"language":"zh","term":"你叫什么名字？","part_of_speech":"phrase","pronunciation_easy":"nǐ jiào shén me míng zi？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21381,"language":"zh","term":"我叫","part_of_speech":"phrase","pronunciation_easy":"wǒ jiào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21382,"language":"zh","term":"祝你好运","part_of_speech":"phrase","pronunciation_easy":"zhù nǐ hǎo yùn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21383,"language":"zh","term":"恭喜","part_of_speech":"other","pronunciation_easy":"gōng xǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21384,"language":"zh","term":"生日快乐","part_of_speech":"phrase","pronunciation_easy":"shēng rì kuài lè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21385,"language":"zh","term":"保重","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Сверить употребление и акцентное членение фразы у носителя."}
+{"word_id":21386,"language":"zh","term":"妈妈","part_of_speech":"noun","pronunciation_easy":"mā ma","pronunciation_note_ru":"Второй ma — нейтральный (нулевой) тон: коротко, без отдельного тона.","status":"ready","issue":null}
+{"word_id":21387,"language":"zh","term":"爸爸","part_of_speech":"noun","pronunciation_easy":"bà ba","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21388,"language":"zh","term":"父母","part_of_speech":"noun","pronunciation_easy":"fù mǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21389,"language":"zh","term":"孩子","part_of_speech":"noun","pronunciation_easy":"hái zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21390,"language":"zh","term":"儿子","part_of_speech":"noun","pronunciation_easy":"ér zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21391,"language":"zh","term":"女儿","part_of_speech":"noun","pronunciation_easy":"nǚ ér","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21392,"language":"zh","term":"哥哥","part_of_speech":"noun","pronunciation_easy":"gē ge","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21393,"language":"zh","term":"妹妹","part_of_speech":"noun","pronunciation_easy":"mèi mei","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21394,"language":"zh","term":"奶奶","part_of_speech":"noun","pronunciation_easy":"nǎi nai","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21395,"language":"zh","term":"爷爷","part_of_speech":"noun","pronunciation_easy":"yé ye","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21396,"language":"zh","term":"丈夫","part_of_speech":"noun","pronunciation_easy":"zhàng fū","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21397,"language":"zh","term":"妻子","part_of_speech":"noun","pronunciation_easy":"qī zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21398,"language":"zh","term":"家庭","part_of_speech":"noun","pronunciation_easy":"jiā tíng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21399,"language":"zh","term":"朋友","part_of_speech":"noun","pronunciation_easy":"péng you","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21400,"language":"zh","term":"邻居","part_of_speech":"noun","pronunciation_easy":"lín jū","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21401,"language":"zh","term":"人","part_of_speech":"noun","pronunciation_easy":"rén","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21402,"language":"zh","term":"男人","part_of_speech":"noun","pronunciation_easy":"nán rén","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21403,"language":"zh","term":"女人","part_of_speech":"noun","pronunciation_easy":"nǚ rén","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21404,"language":"zh","term":"婴儿","part_of_speech":"noun","pronunciation_easy":"yīng ér","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21405,"language":"zh","term":"男孩","part_of_speech":"noun","pronunciation_easy":"nán hái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21406,"language":"zh","term":"女孩","part_of_speech":"noun","pronunciation_easy":"nǚ hái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21407,"language":"zh","term":"老师","part_of_speech":"noun","pronunciation_easy":"lǎo shī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21408,"language":"zh","term":"医生","part_of_speech":"noun","pronunciation_easy":"yī shēng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21409,"language":"zh","term":"同事","part_of_speech":"noun","pronunciation_easy":"tóng shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21410,"language":"zh","term":"陌生人","part_of_speech":"noun","pronunciation_easy":"mò shēng rén","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21411,"language":"zh","term":"零","part_of_speech":"other","pronunciation_easy":"líng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21412,"language":"zh","term":"一","part_of_speech":"other","pronunciation_easy":"yī","pronunciation_note_ru":"Отдельное число 一 читается yī. В сочетаниях перед другими тонами часто происходит изменение тона.","status":"ready","issue":null}
+{"word_id":21413,"language":"zh","term":"二","part_of_speech":"other","pronunciation_easy":"èr","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21414,"language":"zh","term":"三","part_of_speech":"other","pronunciation_easy":"sān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21415,"language":"zh","term":"四","part_of_speech":"other","pronunciation_easy":"sì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21416,"language":"zh","term":"五","part_of_speech":"other","pronunciation_easy":"wǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21417,"language":"zh","term":"六","part_of_speech":"other","pronunciation_easy":"liù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21418,"language":"zh","term":"七","part_of_speech":"other","pronunciation_easy":"qī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21419,"language":"zh","term":"八","part_of_speech":"other","pronunciation_easy":"bā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21420,"language":"zh","term":"九","part_of_speech":"other","pronunciation_easy":"jiǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21421,"language":"zh","term":"十","part_of_speech":"other","pronunciation_easy":"shí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21422,"language":"zh","term":"百","part_of_speech":"other","pronunciation_easy":"bǎi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21423,"language":"zh","term":"今天","part_of_speech":"adverb","pronunciation_easy":"jīn tiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21424,"language":"zh","term":"明天","part_of_speech":"adverb","pronunciation_easy":"míng tiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21425,"language":"zh","term":"昨天","part_of_speech":"adverb","pronunciation_easy":"zuó tiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21426,"language":"zh","term":"早上","part_of_speech":"noun","pronunciation_easy":"zǎo shang","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21427,"language":"zh","term":"下午","part_of_speech":"noun","pronunciation_easy":"xià wǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21428,"language":"zh","term":"晚上","part_of_speech":"noun","pronunciation_easy":"wǎn shang","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21429,"language":"zh","term":"夜晚","part_of_speech":"noun","pronunciation_easy":"yè wǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21430,"language":"zh","term":"天","part_of_speech":"noun","pronunciation_easy":"tiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21431,"language":"zh","term":"星期","part_of_speech":"noun","pronunciation_easy":"xīng qī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21432,"language":"zh","term":"月","part_of_speech":"noun","pronunciation_easy":"yuè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21433,"language":"zh","term":"年","part_of_speech":"noun","pronunciation_easy":"nián","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21434,"language":"zh","term":"小时","part_of_speech":"noun","pronunciation_easy":"xiǎo shí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21435,"language":"zh","term":"分钟","part_of_speech":"noun","pronunciation_easy":"fēn zhōng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21436,"language":"zh","term":"房子","part_of_speech":"noun","pronunciation_easy":"fáng zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21437,"language":"zh","term":"公寓","part_of_speech":"noun","pronunciation_easy":"gōng yù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21438,"language":"zh","term":"房间","part_of_speech":"noun","pronunciation_easy":"fáng jiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21439,"language":"zh","term":"厨房","part_of_speech":"noun","pronunciation_easy":"chú fáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21440,"language":"zh","term":"卧室","part_of_speech":"noun","pronunciation_easy":"wò shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21441,"language":"zh","term":"浴室","part_of_speech":"noun","pronunciation_easy":"yù shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21442,"language":"zh","term":"门","part_of_speech":"noun","pronunciation_easy":"mén","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21443,"language":"zh","term":"窗户","part_of_speech":"noun","pronunciation_easy":"chuāng hu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21444,"language":"zh","term":"墙","part_of_speech":"noun","pronunciation_easy":"qiáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21445,"language":"zh","term":"地板","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"地 в этом слове читается dì (не de).","status":"needs_review","issue":"Исправлено de на dì; финальная словарно-аудио проверка."}
+{"word_id":21446,"language":"zh","term":"天花板","part_of_speech":"noun","pronunciation_easy":"tiān huā bǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21447,"language":"zh","term":"屋顶","part_of_speech":"noun","pronunciation_easy":"wū dǐng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21448,"language":"zh","term":"桌子","part_of_speech":"noun","pronunciation_easy":"zhuō zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21449,"language":"zh","term":"椅子","part_of_speech":"noun","pronunciation_easy":"yǐ zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21450,"language":"zh","term":"床","part_of_speech":"noun","pronunciation_easy":"chuáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21451,"language":"zh","term":"沙发","part_of_speech":"noun","pronunciation_easy":"shā fā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21452,"language":"zh","term":"衣柜","part_of_speech":"noun","pronunciation_easy":"yī guì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21453,"language":"zh","term":"镜子","part_of_speech":"noun","pronunciation_easy":"jìng zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21454,"language":"zh","term":"灯","part_of_speech":"noun","pronunciation_easy":"dēng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21455,"language":"zh","term":"钥匙","part_of_speech":"noun","pronunciation_easy":"yào shi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21456,"language":"zh","term":"毛巾","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить тон второго слога и произношение в связной речи."}
+{"word_id":21457,"language":"zh","term":"肥皂","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить второй слог и ударное выделение."}
+{"word_id":21458,"language":"zh","term":"马桶","part_of_speech":"noun","pronunciation_easy":"mǎ tǒng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21459,"language":"zh","term":"淋浴器","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Сверить естественную передачу названия предмета с разговорным путём произношения."}
+{"word_id":21460,"language":"zh","term":"花园","part_of_speech":"noun","pronunciation_easy":"huā yuán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21461,"language":"zh","term":"水","part_of_speech":"noun","pronunciation_easy":"shuǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21462,"language":"zh","term":"茶","part_of_speech":"noun","pronunciation_easy":"chá","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21463,"language":"zh","term":"咖啡","part_of_speech":"noun","pronunciation_easy":"kā fēi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21464,"language":"zh","term":"牛奶","part_of_speech":"noun","pronunciation_easy":"niú nǎi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21465,"language":"zh","term":"果汁","part_of_speech":"noun","pronunciation_easy":"guǒ zhī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21466,"language":"zh","term":"面包","part_of_speech":"noun","pronunciation_easy":"miàn bāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21467,"language":"zh","term":"米饭","part_of_speech":"noun","pronunciation_easy":"mǐ fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21468,"language":"zh","term":"意大利面","part_of_speech":"noun","pronunciation_easy":"yì dà lì miàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21469,"language":"zh","term":"土豆","part_of_speech":"noun","pronunciation_easy":"tǔ dòu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21470,"language":"zh","term":"洋葱","part_of_speech":"noun","pronunciation_easy":"yáng cōng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21471,"language":"zh","term":"西红柿","part_of_speech":"noun","pronunciation_easy":"xī hóng shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21472,"language":"zh","term":"胡萝卜","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить нейтральный тон последнего слога в конкретной разновидности."}
+{"word_id":21473,"language":"zh","term":"苹果","part_of_speech":"noun","pronunciation_easy":"píng guǒ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21474,"language":"zh","term":"香蕉","part_of_speech":"noun","pronunciation_easy":"xiāng jiāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21475,"language":"zh","term":"橙子","part_of_speech":"noun","pronunciation_easy":"chéng zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21476,"language":"zh","term":"柠檬","part_of_speech":"noun","pronunciation_easy":"níng méng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21477,"language":"zh","term":"鸡蛋","part_of_speech":"noun","pronunciation_easy":"jī dàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21478,"language":"zh","term":"奶酪","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить произношение второго знака в слове «сыр»."}
+{"word_id":21479,"language":"zh","term":"黄油","part_of_speech":"noun","pronunciation_easy":"huáng yóu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21480,"language":"zh","term":"肉","part_of_speech":"noun","pronunciation_easy":"ròu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21481,"language":"zh","term":"鸡肉","part_of_speech":"noun","pronunciation_easy":"jī ròu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21482,"language":"zh","term":"鱼","part_of_speech":"noun","pronunciation_easy":"yú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21483,"language":"zh","term":"汤","part_of_speech":"noun","pronunciation_easy":"tāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21484,"language":"zh","term":"沙拉","part_of_speech":"noun","pronunciation_easy":"shā lā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21485,"language":"zh","term":"盐","part_of_speech":"noun","pronunciation_easy":"yán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21486,"language":"zh","term":"糖","part_of_speech":"noun","pronunciation_easy":"táng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21487,"language":"zh","term":"油","part_of_speech":"noun","pronunciation_easy":"yóu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21488,"language":"zh","term":"面粉","part_of_speech":"noun","pronunciation_easy":"miàn fěn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21489,"language":"zh","term":"胡椒","part_of_speech":"noun","pronunciation_easy":"hú jiāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21490,"language":"zh","term":"盘子","part_of_speech":"noun","pronunciation_easy":"pán zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21491,"language":"zh","term":"碗","part_of_speech":"noun","pronunciation_easy":"wǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21492,"language":"zh","term":"杯子","part_of_speech":"noun","pronunciation_easy":"bēi zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21493,"language":"zh","term":"玻璃杯","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить нейтральный тон слога li и слогоделение."}
+{"word_id":21494,"language":"zh","term":"瓶子","part_of_speech":"noun","pronunciation_easy":"píng zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21495,"language":"zh","term":"勺子","part_of_speech":"noun","pronunciation_easy":"sháo zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21496,"language":"zh","term":"叉子","part_of_speech":"noun","pronunciation_easy":"chā zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21497,"language":"zh","term":"刀","part_of_speech":"noun","pronunciation_easy":"dāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21498,"language":"zh","term":"平底锅","part_of_speech":"noun","pronunciation_easy":"píng dǐ guō","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21499,"language":"zh","term":"锅","part_of_speech":"noun","pronunciation_easy":"guō","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21500,"language":"zh","term":"烤箱","part_of_speech":"noun","pronunciation_easy":"kǎo xiāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21501,"language":"zh","term":"冰箱","part_of_speech":"noun","pronunciation_easy":"bīng xiāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21502,"language":"zh","term":"炉灶","part_of_speech":"noun","pronunciation_easy":"lú zào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21503,"language":"zh","term":"水壶","part_of_speech":"noun","pronunciation_easy":"shuǐ hú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21504,"language":"zh","term":"饭","part_of_speech":"noun","pronunciation_easy":"fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21505,"language":"zh","term":"早饭","part_of_speech":"noun","pronunciation_easy":"zǎo fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21506,"language":"zh","term":"午饭","part_of_speech":"noun","pronunciation_easy":"wǔ fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21507,"language":"zh","term":"晚饭","part_of_speech":"noun","pronunciation_easy":"wǎn fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21508,"language":"zh","term":"做饭","part_of_speech":"verb","pronunciation_easy":"zuò fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21509,"language":"zh","term":"煮","part_of_speech":"verb","pronunciation_easy":"zhǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21510,"language":"zh","term":"煎","part_of_speech":"verb","pronunciation_easy":"jiān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21511,"language":"zh","term":"衬衫","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить употребление и ударение второго слога в речи."}
+{"word_id":21512,"language":"zh","term":"T恤","part_of_speech":"noun","pronunciation_easy":"T xù","pronunciation_note_ru":"Latin T произносится как английская буква T («ти»); 恤 xù.","status":"ready","issue":null}
+{"word_id":21513,"language":"zh","term":"裤子","part_of_speech":"noun","pronunciation_easy":"kù zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21514,"language":"zh","term":"牛仔裤","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"В 牛仔裤 второй слог читается zǎi, а не zǐ, как в автоматическом выводе."}
+{"word_id":21515,"language":"zh","term":"连衣裙","part_of_speech":"noun","pronunciation_easy":"lián yī qún","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21516,"language":"zh","term":"裙子","part_of_speech":"noun","pronunciation_easy":"qún zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21517,"language":"zh","term":"夹克","part_of_speech":"noun","pronunciation_easy":"jiā kè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21518,"language":"zh","term":"大衣","part_of_speech":"noun","pronunciation_easy":"dà yī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21519,"language":"zh","term":"毛衣","part_of_speech":"noun","pronunciation_easy":"máo yī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21520,"language":"zh","term":"鞋","part_of_speech":"noun","pronunciation_easy":"xié","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21521,"language":"zh","term":"靴子","part_of_speech":"noun","pronunciation_easy":"xuē zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21522,"language":"zh","term":"袜子","part_of_speech":"noun","pronunciation_easy":"wà zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21523,"language":"zh","term":"帽子","part_of_speech":"noun","pronunciation_easy":"mào zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21524,"language":"zh","term":"鸭舌帽","part_of_speech":"noun","pronunciation_easy":"yā shé mào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21525,"language":"zh","term":"手套","part_of_speech":"noun","pronunciation_easy":"shǒu tào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21526,"language":"zh","term":"围巾","part_of_speech":"noun","pronunciation_easy":"wéi jīn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21527,"language":"zh","term":"腰带","part_of_speech":"noun","pronunciation_easy":"yāo dài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21528,"language":"zh","term":"包","part_of_speech":"noun","pronunciation_easy":"bāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21529,"language":"zh","term":"钱包","part_of_speech":"noun","pronunciation_easy":"qián bāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21530,"language":"zh","term":"雨伞","part_of_speech":"noun","pronunciation_easy":"yǔ sǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21531,"language":"zh","term":"手表","part_of_speech":"noun","pronunciation_easy":"shǒu biǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21532,"language":"zh","term":"眼镜","part_of_speech":"noun","pronunciation_easy":"yǎn jìng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21533,"language":"zh","term":"戒指","part_of_speech":"noun","pronunciation_easy":"jiè zhǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21534,"language":"zh","term":"口袋","part_of_speech":"noun","pronunciation_easy":"kǒu dài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21535,"language":"zh","term":"纽扣","part_of_speech":"noun","pronunciation_easy":"niǔ kòu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21536,"language":"zh","term":"头","part_of_speech":"noun","pronunciation_easy":"tóu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21537,"language":"zh","term":"脸","part_of_speech":"noun","pronunciation_easy":"liǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21538,"language":"zh","term":"眼睛","part_of_speech":"noun","pronunciation_easy":"yǎn jing","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21539,"language":"zh","term":"耳朵","part_of_speech":"noun","pronunciation_easy":"ěr duo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21540,"language":"zh","term":"鼻子","part_of_speech":"noun","pronunciation_easy":"bí zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21541,"language":"zh","term":"嘴","part_of_speech":"noun","pronunciation_easy":"zuǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21542,"language":"zh","term":"牙齿","part_of_speech":"noun","pronunciation_easy":"yá chǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21543,"language":"zh","term":"手","part_of_speech":"noun","pronunciation_easy":"shǒu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21544,"language":"zh","term":"手指","part_of_speech":"noun","pronunciation_easy":"shǒu zhǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21545,"language":"zh","term":"腿","part_of_speech":"noun","pronunciation_easy":"tuǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21546,"language":"zh","term":"膝盖","part_of_speech":"noun","pronunciation_easy":"xī gài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21547,"language":"zh","term":"后背","part_of_speech":"noun","pronunciation_easy":"hòu bèi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21548,"language":"zh","term":"胃","part_of_speech":"noun","pronunciation_easy":"wèi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21549,"language":"zh","term":"心脏","part_of_speech":"noun","pronunciation_easy":"xīn zàng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21550,"language":"zh","term":"头发","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"В бытовой речи последний слог часто нейтральный; источники различаются."}
+{"word_id":21551,"language":"zh","term":"皮肤","part_of_speech":"noun","pronunciation_easy":"pí fū","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21552,"language":"zh","term":"血","part_of_speech":"noun","pronunciation_easy":"xuè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21553,"language":"zh","term":"健康","part_of_speech":"noun","pronunciation_easy":"jiàn kāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21554,"language":"zh","term":"疼痛","part_of_speech":"noun","pronunciation_easy":"téng tòng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21555,"language":"zh","term":"发烧","part_of_speech":"verb","pronunciation_easy":"fā shāo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21556,"language":"zh","term":"咳嗽","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"В слове «кашель» 咳 читается ké; стандартная словарная форма ké sòu.","status":"needs_review","issue":"Исправлено автоматическое hāi на ké; финальная словарно-аудио проверка."}
+{"word_id":21557,"language":"zh","term":"药","part_of_speech":"noun","pronunciation_easy":"yào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21558,"language":"zh","term":"医院","part_of_speech":"noun","pronunciation_easy":"yī yuàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21559,"language":"zh","term":"药店","part_of_speech":"noun","pronunciation_easy":"yào diàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21560,"language":"zh","term":"救护车","part_of_speech":"noun","pronunciation_easy":"jiù hù chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21561,"language":"zh","term":"醒来","part_of_speech":"phrase","pronunciation_easy":"xǐng lái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21562,"language":"zh","term":"起床","part_of_speech":"phrase","pronunciation_easy":"qǐ chuáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21563,"language":"zh","term":"洗","part_of_speech":"verb","pronunciation_easy":"xǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21564,"language":"zh","term":"穿衣服","part_of_speech":"phrase","pronunciation_easy":"chuān yī fu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21565,"language":"zh","term":"刷牙","part_of_speech":"phrase","pronunciation_easy":"shuā yá","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21566,"language":"zh","term":"梳头","part_of_speech":"phrase","pronunciation_easy":"shū tóu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21567,"language":"zh","term":"吃早饭","part_of_speech":"phrase","pronunciation_easy":"chī zǎo fàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21568,"language":"zh","term":"上班","part_of_speech":"phrase","pronunciation_easy":"shàng bān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21569,"language":"zh","term":"上学","part_of_speech":"phrase","pronunciation_easy":"shàng xué","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21570,"language":"zh","term":"回家","part_of_speech":"phrase","pronunciation_easy":"huí jiā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21571,"language":"zh","term":"休息一下","part_of_speech":"phrase","pronunciation_easy":"xiū xi yī xià","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21572,"language":"zh","term":"泡澡","part_of_speech":"phrase","pronunciation_easy":"pào zǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21573,"language":"zh","term":"洗淋浴","part_of_speech":"phrase","pronunciation_easy":"xǐ lín yù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21574,"language":"zh","term":"上床睡觉","part_of_speech":"phrase","pronunciation_easy":"shàng chuáng shuì jiào","pronunciation_note_ru":"В 睡觉 иероглиф 觉 читается jiào.","status":"ready","issue":null}
+{"word_id":21575,"language":"zh","term":"睡觉","part_of_speech":"verb","pronunciation_easy":null,"pronunciation_note_ru":"觉 в этом слове читается jiào (не jué).","status":"needs_review","issue":"Исправлено jué на jiào; финальная словарно-аудио проверка."}
+{"word_id":21576,"language":"zh","term":"吃","part_of_speech":"verb","pronunciation_easy":"chī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21577,"language":"zh","term":"喝","part_of_speech":"verb","pronunciation_easy":"hē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21578,"language":"zh","term":"打扫","part_of_speech":"verb","pronunciation_easy":"dǎ sǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21579,"language":"zh","term":"收拾","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Часто shōushi; сверить нейтральный тон второго слога."}
+{"word_id":21580,"language":"zh","term":"洗衣服","part_of_speech":"phrase","pronunciation_easy":"xǐ yī fu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21581,"language":"zh","term":"熨","part_of_speech":"verb","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Редкий отдельно стоящий глагол; нужна словарная сверка yùn."}
+{"word_id":21582,"language":"zh","term":"去买东西","part_of_speech":"phrase","pronunciation_easy":"qù mǎi dōng xi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21583,"language":"zh","term":"锻炼","part_of_speech":"verb","pronunciation_easy":"duàn liàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21584,"language":"zh","term":"等","part_of_speech":"verb","pronunciation_easy":"děng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21585,"language":"zh","term":"完成","part_of_speech":"verb","pronunciation_easy":"wán chéng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21586,"language":"zh","term":"去","part_of_speech":"verb","pronunciation_easy":"qù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21587,"language":"zh","term":"来","part_of_speech":"verb","pronunciation_easy":"lái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21588,"language":"zh","term":"走路","part_of_speech":"verb","pronunciation_easy":"zǒu lù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21589,"language":"zh","term":"跑","part_of_speech":"verb","pronunciation_easy":"pǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21590,"language":"zh","term":"停","part_of_speech":"verb","pronunciation_easy":"tíng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21591,"language":"zh","term":"到达","part_of_speech":"verb","pronunciation_easy":"dào dá","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21592,"language":"zh","term":"离开","part_of_speech":"verb","pronunciation_easy":"lí kāi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21593,"language":"zh","term":"回来","part_of_speech":"verb","pronunciation_easy":"huí lái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21594,"language":"zh","term":"转","part_of_speech":"verb","pronunciation_easy":"zhuǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21595,"language":"zh","term":"开车","part_of_speech":"verb","pronunciation_easy":"kāi chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21596,"language":"zh","term":"骑自行车","part_of_speech":"phrase","pronunciation_easy":"qí zì xíng chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21597,"language":"zh","term":"汽车","part_of_speech":"noun","pronunciation_easy":"qì chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21598,"language":"zh","term":"公共汽车","part_of_speech":"noun","pronunciation_easy":"gōng gòng qì chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21599,"language":"zh","term":"火车","part_of_speech":"noun","pronunciation_easy":"huǒ chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21600,"language":"zh","term":"出租车","part_of_speech":"noun","pronunciation_easy":"chū zū chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21601,"language":"zh","term":"自行车","part_of_speech":"noun","pronunciation_easy":"zì xíng chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21602,"language":"zh","term":"飞机","part_of_speech":"noun","pronunciation_easy":"fēi jī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21603,"language":"zh","term":"船","part_of_speech":"noun","pronunciation_easy":"chuán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21604,"language":"zh","term":"机场","part_of_speech":"noun","pronunciation_easy":"jī chǎng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21605,"language":"zh","term":"车站","part_of_speech":"noun","pronunciation_easy":"chē zhàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21606,"language":"zh","term":"票","part_of_speech":"noun","pronunciation_easy":"piào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21607,"language":"zh","term":"护照","part_of_speech":"noun","pronunciation_easy":"hù zhào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21608,"language":"zh","term":"行李箱","part_of_speech":"noun","pronunciation_easy":"xíng li xiāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21609,"language":"zh","term":"旅程","part_of_speech":"noun","pronunciation_easy":"lǚ chéng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21610,"language":"zh","term":"道路","part_of_speech":"noun","pronunciation_easy":"dào lù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21611,"language":"zh","term":"城市","part_of_speech":"noun","pronunciation_easy":"chéng shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21612,"language":"zh","term":"小镇","part_of_speech":"noun","pronunciation_easy":"xiǎo zhèn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21613,"language":"zh","term":"村庄","part_of_speech":"noun","pronunciation_easy":"cūn zhuāng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21614,"language":"zh","term":"街道","part_of_speech":"noun","pronunciation_easy":"jiē dào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21615,"language":"zh","term":"广场","part_of_speech":"noun","pronunciation_easy":"guǎng chǎng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21616,"language":"zh","term":"公园","part_of_speech":"noun","pronunciation_easy":"gōng yuán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21617,"language":"zh","term":"桥","part_of_speech":"noun","pronunciation_easy":"qiáo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21618,"language":"zh","term":"建筑物","part_of_speech":"noun","pronunciation_easy":"jiàn zhù wù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21619,"language":"zh","term":"学校","part_of_speech":"noun","pronunciation_easy":"xué xiào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21620,"language":"zh","term":"大学","part_of_speech":"noun","pronunciation_easy":"dà xué","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21621,"language":"zh","term":"图书馆","part_of_speech":"noun","pronunciation_easy":"tú shū guǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21622,"language":"zh","term":"商店","part_of_speech":"noun","pronunciation_easy":"shāng diàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21623,"language":"zh","term":"市场","part_of_speech":"noun","pronunciation_easy":"shì chǎng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21624,"language":"zh","term":"超市","part_of_speech":"noun","pronunciation_easy":"chāo shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21625,"language":"zh","term":"餐馆","part_of_speech":"noun","pronunciation_easy":"cān guǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21626,"language":"zh","term":"咖啡馆","part_of_speech":"noun","pronunciation_easy":"kā fēi guǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21627,"language":"zh","term":"酒店","part_of_speech":"noun","pronunciation_easy":"jiǔ diàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21628,"language":"zh","term":"银行","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"行在“银行”（финансовый банк）中读 háng，不读 xíng。","status":"needs_review","issue":"Многозначный 行; проверено yínháng, требуется финальный аудиоконтроль."}
+{"word_id":21629,"language":"zh","term":"邮局","part_of_speech":"noun","pronunciation_easy":"yóu jú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21630,"language":"zh","term":"警察","part_of_speech":"noun","pronunciation_easy":"jǐng chá","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21631,"language":"zh","term":"电影院","part_of_speech":"noun","pronunciation_easy":"diàn yǐng yuàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21632,"language":"zh","term":"博物馆","part_of_speech":"noun","pronunciation_easy":"bó wù guǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21633,"language":"zh","term":"入口","part_of_speech":"noun","pronunciation_easy":"rù kǒu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21634,"language":"zh","term":"出口","part_of_speech":"noun","pronunciation_easy":"chū kǒu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21635,"language":"zh","term":"电梯","part_of_speech":"noun","pronunciation_easy":"diàn tī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21636,"language":"zh","term":"钱","part_of_speech":"noun","pronunciation_easy":"qián","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21637,"language":"zh","term":"价格","part_of_speech":"noun","pronunciation_easy":"jià gé","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21638,"language":"zh","term":"硬币","part_of_speech":"noun","pronunciation_easy":"yìng bì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21639,"language":"zh","term":"纸币","part_of_speech":"noun","pronunciation_easy":"zhǐ bì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21640,"language":"zh","term":"银行卡","part_of_speech":"noun","pronunciation_easy":"yín háng kǎ","pronunciation_note_ru":"行在“银行卡”（банковская карта）中读 háng。","status":"ready","issue":null}
+{"word_id":21641,"language":"zh","term":"现金","part_of_speech":"noun","pronunciation_easy":"xiàn jīn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21642,"language":"zh","term":"收据","part_of_speech":"noun","pronunciation_easy":"shōu jù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21643,"language":"zh","term":"零钱","part_of_speech":"noun","pronunciation_easy":"líng qián","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21644,"language":"zh","term":"折扣","part_of_speech":"noun","pronunciation_easy":"zhé kòu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21645,"language":"zh","term":"账单","part_of_speech":"noun","pronunciation_easy":"zhàng dān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21646,"language":"zh","term":"买","part_of_speech":"verb","pronunciation_easy":"mǎi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21647,"language":"zh","term":"卖","part_of_speech":"verb","pronunciation_easy":"mài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21648,"language":"zh","term":"付款","part_of_speech":"verb","pronunciation_easy":"fù kuǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21649,"language":"zh","term":"花钱","part_of_speech":"verb","pronunciation_easy":"huā qián","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21650,"language":"zh","term":"花费","part_of_speech":"verb","pronunciation_easy":"huā fèi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21651,"language":"zh","term":"便宜","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":"В значении «дешёвый» произносится pián yi, не biàn yí.","status":"needs_review","issue":"Несколько возможных словарных прочтений; по переводу выбрано pián yi. Проверить употребление."}
+{"word_id":21652,"language":"zh","term":"贵","part_of_speech":"adjective","pronunciation_easy":"guì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21653,"language":"zh","term":"免费","part_of_speech":"adjective","pronunciation_easy":"miǎn fèi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21654,"language":"zh","term":"营业中","part_of_speech":"phrase","pronunciation_easy":"yíng yè zhōng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21655,"language":"zh","term":"关门了","part_of_speech":"phrase","pronunciation_easy":"guān mén le","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21656,"language":"zh","term":"尺寸","part_of_speech":"noun","pronunciation_easy":"chǐ cùn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21657,"language":"zh","term":"颜色","part_of_speech":"noun","pronunciation_easy":"yán sè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21658,"language":"zh","term":"订单","part_of_speech":"noun","pronunciation_easy":"dìng dān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21659,"language":"zh","term":"顾客","part_of_speech":"noun","pronunciation_easy":"gù kè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21660,"language":"zh","term":"队伍","part_of_speech":"noun","pronunciation_easy":"duì wǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21661,"language":"zh","term":"工作","part_of_speech":"noun","pronunciation_easy":"gōng zuò","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21662,"language":"zh","term":"职业","part_of_speech":"noun","pronunciation_easy":"zhí yè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21663,"language":"zh","term":"办公室","part_of_speech":"noun","pronunciation_easy":"bàn gōng shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21664,"language":"zh","term":"公司","part_of_speech":"noun","pronunciation_easy":"gōng sī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21665,"language":"zh","term":"会议","part_of_speech":"noun","pronunciation_easy":"huì yì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21666,"language":"zh","term":"经理","part_of_speech":"noun","pronunciation_easy":"jīng lǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21667,"language":"zh","term":"员工","part_of_speech":"noun","pronunciation_easy":"yuán gōng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21668,"language":"zh","term":"生意","part_of_speech":"noun","pronunciation_easy":"shēng yi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21669,"language":"zh","term":"电脑","part_of_speech":"noun","pronunciation_easy":"diàn nǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21670,"language":"zh","term":"笔记本电脑","part_of_speech":"noun","pronunciation_easy":"bǐ jì běn diàn nǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21671,"language":"zh","term":"键盘","part_of_speech":"noun","pronunciation_easy":"jiàn pán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21672,"language":"zh","term":"屏幕","part_of_speech":"noun","pronunciation_easy":"píng mù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21673,"language":"zh","term":"打印机","part_of_speech":"noun","pronunciation_easy":"dǎ yìn jī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21674,"language":"zh","term":"文件","part_of_speech":"noun","pronunciation_easy":"wén jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21675,"language":"zh","term":"电子邮件","part_of_speech":"noun","pronunciation_easy":"diàn zǐ yóu jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21676,"language":"zh","term":"信","part_of_speech":"noun","pronunciation_easy":"xìn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21677,"language":"zh","term":"书","part_of_speech":"noun","pronunciation_easy":"shū","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21678,"language":"zh","term":"笔记本","part_of_speech":"noun","pronunciation_easy":"bǐ jì běn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21679,"language":"zh","term":"笔","part_of_speech":"noun","pronunciation_easy":"bǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21680,"language":"zh","term":"铅笔","part_of_speech":"noun","pronunciation_easy":"qiān bǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21681,"language":"zh","term":"纸","part_of_speech":"noun","pronunciation_easy":"zhǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21682,"language":"zh","term":"课","part_of_speech":"noun","pronunciation_easy":"kè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21683,"language":"zh","term":"作业","part_of_speech":"noun","pronunciation_easy":"zuò yè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21684,"language":"zh","term":"考试","part_of_speech":"noun","pronunciation_easy":"kǎo shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21685,"language":"zh","term":"学习","part_of_speech":"verb","pronunciation_easy":"xué xí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21686,"language":"zh","term":"说话","part_of_speech":"verb","pronunciation_easy":"shuō huà","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21687,"language":"zh","term":"说","part_of_speech":"verb","pronunciation_easy":"shuō","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21688,"language":"zh","term":"告诉","part_of_speech":"verb","pronunciation_easy":"gào su","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21689,"language":"zh","term":"问","part_of_speech":"verb","pronunciation_easy":"wèn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21690,"language":"zh","term":"回答","part_of_speech":"verb","pronunciation_easy":"huí dá","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21691,"language":"zh","term":"听","part_of_speech":"verb","pronunciation_easy":"tīng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21692,"language":"zh","term":"听见","part_of_speech":"verb","pronunciation_easy":"tīng jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21693,"language":"zh","term":"读","part_of_speech":"verb","pronunciation_easy":"dú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21694,"language":"zh","term":"写","part_of_speech":"verb","pronunciation_easy":"xiě","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21695,"language":"zh","term":"明白","part_of_speech":"verb","pronunciation_easy":"míng bai","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21696,"language":"zh","term":"知道","part_of_speech":"verb","pronunciation_easy":"zhī dào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21697,"language":"zh","term":"记得","part_of_speech":"verb","pronunciation_easy":"jì de","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21698,"language":"zh","term":"忘记","part_of_speech":"verb","pronunciation_easy":"wàng jì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21699,"language":"zh","term":"解释","part_of_speech":"verb","pronunciation_easy":"jiě shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21700,"language":"zh","term":"重复","part_of_speech":"verb","pronunciation_easy":"zhòng fù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21701,"language":"zh","term":"翻译","part_of_speech":"verb","pronunciation_easy":"fān yì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21702,"language":"zh","term":"语言","part_of_speech":"noun","pronunciation_easy":"yǔ yán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21703,"language":"zh","term":"词","part_of_speech":"noun","pronunciation_easy":"cí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21704,"language":"zh","term":"句子","part_of_speech":"noun","pronunciation_easy":"jù zi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21705,"language":"zh","term":"问题","part_of_speech":"noun","pronunciation_easy":"wèn tí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21706,"language":"zh","term":"消息","part_of_speech":"noun","pronunciation_easy":"xiāo xī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21707,"language":"zh","term":"手机","part_of_speech":"noun","pronunciation_easy":"shǒu jī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21708,"language":"zh","term":"打电话","part_of_speech":"verb","pronunciation_easy":"dǎ diàn huà","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21709,"language":"zh","term":"地址","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"地 в этом слове читается dì (не de).","status":"needs_review","issue":"Исправлено de на dì; финальная словарно-аудио проверка."}
+{"word_id":21710,"language":"zh","term":"名字","part_of_speech":"noun","pronunciation_easy":"míng zi","pronunciation_note_ru":"Второй zi произносится без собственного тона.","status":"ready","issue":null}
+{"word_id":21711,"language":"zh","term":"太阳","part_of_speech":"noun","pronunciation_easy":"tài yáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21712,"language":"zh","term":"星星","part_of_speech":"noun","pronunciation_easy":"xīng xing","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21713,"language":"zh","term":"天空","part_of_speech":"noun","pronunciation_easy":"tiān kōng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21714,"language":"zh","term":"云","part_of_speech":"noun","pronunciation_easy":"yún","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21715,"language":"zh","term":"雨","part_of_speech":"noun","pronunciation_easy":"yǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21716,"language":"zh","term":"雪","part_of_speech":"noun","pronunciation_easy":"xuě","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21717,"language":"zh","term":"风","part_of_speech":"noun","pronunciation_easy":"fēng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21718,"language":"zh","term":"天气","part_of_speech":"noun","pronunciation_easy":"tiān qì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21719,"language":"zh","term":"热","part_of_speech":"adjective","pronunciation_easy":"rè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21720,"language":"zh","term":"冷","part_of_speech":"adjective","pronunciation_easy":"lěng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21721,"language":"zh","term":"暖和","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Последний слог часто нейтральный: nuǎnhuo. Проверить словарную норму."}
+{"word_id":21722,"language":"zh","term":"凉","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить оттенок значения и произношение в конкретном употреблении."}
+{"word_id":21723,"language":"zh","term":"树","part_of_speech":"noun","pronunciation_easy":"shù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21724,"language":"zh","term":"花","part_of_speech":"noun","pronunciation_easy":"huā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21725,"language":"zh","term":"草","part_of_speech":"noun","pronunciation_easy":"cǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21726,"language":"zh","term":"森林","part_of_speech":"noun","pronunciation_easy":"sēn lín","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21727,"language":"zh","term":"河","part_of_speech":"noun","pronunciation_easy":"hé","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21728,"language":"zh","term":"湖","part_of_speech":"noun","pronunciation_easy":"hú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21729,"language":"zh","term":"海","part_of_speech":"noun","pronunciation_easy":"hǎi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21730,"language":"zh","term":"山","part_of_speech":"noun","pronunciation_easy":"shān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21731,"language":"zh","term":"海滩","part_of_speech":"noun","pronunciation_easy":"hǎi tān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21732,"language":"zh","term":"动物","part_of_speech":"noun","pronunciation_easy":"dòng wù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21733,"language":"zh","term":"狗","part_of_speech":"noun","pronunciation_easy":"gǒu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21734,"language":"zh","term":"猫","part_of_speech":"noun","pronunciation_easy":"māo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21735,"language":"zh","term":"鸟","part_of_speech":"noun","pronunciation_easy":"niǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21736,"language":"zh","term":"音乐","part_of_speech":"noun","pronunciation_easy":"yīn lè","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21737,"language":"zh","term":"歌","part_of_speech":"noun","pronunciation_easy":"gē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21738,"language":"zh","term":"电影","part_of_speech":"noun","pronunciation_easy":"diàn yǐng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21739,"language":"zh","term":"游戏","part_of_speech":"noun","pronunciation_easy":"yóu xì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21740,"language":"zh","term":"运动","part_of_speech":"noun","pronunciation_easy":"yùn dòng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21741,"language":"zh","term":"足球","part_of_speech":"noun","pronunciation_easy":"zú qiú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21742,"language":"zh","term":"游泳池","part_of_speech":"noun","pronunciation_easy":"yóu yǒng chí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21743,"language":"zh","term":"音乐会","part_of_speech":"noun","pronunciation_easy":"yīn lè huì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21744,"language":"zh","term":"画","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID."}
+{"word_id":21745,"language":"zh","term":"照相机","part_of_speech":"noun","pronunciation_easy":"zhào xiāng jī","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21746,"language":"zh","term":"假期","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"В значении «отпуск» 假 читается jià, а не jiǎ."}
+{"word_id":21747,"language":"zh","term":"周末","part_of_speech":"noun","pronunciation_easy":"zhōu mò","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21748,"language":"zh","term":"聚会","part_of_speech":"noun","pronunciation_easy":"jù huì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21749,"language":"zh","term":"生日","part_of_speech":"noun","pronunciation_easy":"shēng rì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21750,"language":"zh","term":"业余爱好","part_of_speech":"noun","pronunciation_easy":"yè yú ài hǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21751,"language":"zh","term":"空闲时间","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Различить kōngxián и kòngxián по контексту."}
+{"word_id":21752,"language":"zh","term":"玩","part_of_speech":"verb","pronunciation_easy":"wán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21753,"language":"zh","term":"唱歌","part_of_speech":"verb","pronunciation_easy":"chàng gē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21754,"language":"zh","term":"跳舞","part_of_speech":"verb","pronunciation_easy":"tiào wǔ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21755,"language":"zh","term":"游泳","part_of_speech":"verb","pronunciation_easy":"yóu yǒng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21756,"language":"zh","term":"画","part_of_speech":"verb","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID."}
+{"word_id":21757,"language":"zh","term":"看电视","part_of_speech":"phrase","pronunciation_easy":"kàn diàn shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21758,"language":"zh","term":"拍照","part_of_speech":"phrase","pronunciation_easy":"pāi zhào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21759,"language":"zh","term":"看望朋友","part_of_speech":"phrase","pronunciation_easy":"kàn wàng péng yǒu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21760,"language":"zh","term":"出国旅行","part_of_speech":"phrase","pronunciation_easy":"chū guó lǚ xíng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21761,"language":"zh","term":"高兴","part_of_speech":"adjective","pronunciation_easy":"gāo xìng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21762,"language":"zh","term":"难过","part_of_speech":"adjective","pronunciation_easy":"nán guò","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21763,"language":"zh","term":"生气","part_of_speech":"verb","pronunciation_easy":"shēng qì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21764,"language":"zh","term":"害怕","part_of_speech":"verb","pronunciation_easy":"hài pà","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21765,"language":"zh","term":"累","part_of_speech":"adjective","pronunciation_easy":"lèi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21766,"language":"zh","term":"饿","part_of_speech":"adjective","pronunciation_easy":"è","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21767,"language":"zh","term":"渴","part_of_speech":"adjective","pronunciation_easy":"kě","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21768,"language":"zh","term":"惊讶","part_of_speech":"adjective","pronunciation_easy":"jīng yà","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21769,"language":"zh","term":"善良","part_of_speech":"adjective","pronunciation_easy":"shàn liáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21770,"language":"zh","term":"友好","part_of_speech":"adjective","pronunciation_easy":"yǒu hǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21771,"language":"zh","term":"容易","part_of_speech":"adjective","pronunciation_easy":"róng yì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21772,"language":"zh","term":"难","part_of_speech":"adjective","pronunciation_easy":"nán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21773,"language":"zh","term":"漂亮","part_of_speech":"adjective","pronunciation_easy":"piào liang","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21774,"language":"zh","term":"好","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить разделение hǎo (хороший) vs hào (любить); контекст указывает hǎo."}
+{"word_id":21775,"language":"zh","term":"坏","part_of_speech":"adjective","pronunciation_easy":"huài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21776,"language":"zh","term":"大","part_of_speech":"adjective","pronunciation_easy":"dà","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21777,"language":"zh","term":"小","part_of_speech":"adjective","pronunciation_easy":"xiǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21778,"language":"zh","term":"长","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":"В значении «длинный» читается cháng; zhǎng означает «расти / старший».","status":"needs_review","issue":"Многозначный иероглиф; значение «длинный» требует cháng."}
+{"word_id":21779,"language":"zh","term":"短","part_of_speech":"adjective","pronunciation_easy":"duǎn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21780,"language":"zh","term":"红","part_of_speech":"adjective","pronunciation_easy":"hóng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21781,"language":"zh","term":"蓝","part_of_speech":"adjective","pronunciation_easy":"lán","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21782,"language":"zh","term":"绿","part_of_speech":"adjective","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить передачу ü в русской подсказке; не путать с обычным у."}
+{"word_id":21783,"language":"zh","term":"白","part_of_speech":"adjective","pronunciation_easy":"bái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21784,"language":"zh","term":"黑","part_of_speech":"adjective","pronunciation_easy":"hēi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21785,"language":"zh","term":"黄","part_of_speech":"adjective","pronunciation_easy":"huáng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21786,"language":"zh","term":"看见","part_of_speech":"verb","pronunciation_easy":"kàn jiàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21787,"language":"zh","term":"看","part_of_speech":"verb","pronunciation_easy":"kàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21788,"language":"zh","term":"找到","part_of_speech":"verb","pronunciation_easy":"zhǎo dào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21789,"language":"zh","term":"找","part_of_speech":"verb","pronunciation_easy":"zhǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21790,"language":"zh","term":"给","part_of_speech":"verb","pronunciation_easy":"gěi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21791,"language":"zh","term":"拿","part_of_speech":"verb","pronunciation_easy":"ná","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21792,"language":"zh","term":"放","part_of_speech":"verb","pronunciation_easy":"fàng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21793,"language":"zh","term":"带来","part_of_speech":"verb","pronunciation_easy":"dài lái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21794,"language":"zh","term":"寄","part_of_speech":"verb","pronunciation_easy":"jì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21795,"language":"zh","term":"收到","part_of_speech":"verb","pronunciation_easy":"shōu dào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21796,"language":"zh","term":"制作","part_of_speech":"verb","pronunciation_easy":"zhì zuò","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21797,"language":"zh","term":"做","part_of_speech":"verb","pronunciation_easy":"zuò","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21798,"language":"zh","term":"用","part_of_speech":"verb","pronunciation_easy":"yòng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21799,"language":"zh","term":"需要","part_of_speech":"verb","pronunciation_easy":"xū yào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21800,"language":"zh","term":"想要","part_of_speech":"verb","pronunciation_easy":"xiǎng yào","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21801,"language":"zh","term":"喜欢","part_of_speech":"verb","pronunciation_easy":"xǐ huan","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21802,"language":"zh","term":"爱","part_of_speech":"verb","pronunciation_easy":"ài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21803,"language":"zh","term":"帮助","part_of_speech":"verb","pronunciation_easy":"bāng zhù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21804,"language":"zh","term":"试","part_of_speech":"verb","pronunciation_easy":"shì","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21805,"language":"zh","term":"开始","part_of_speech":"verb","pronunciation_easy":"kāi shǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21806,"language":"zh","term":"继续","part_of_speech":"verb","pronunciation_easy":"jì xù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21807,"language":"zh","term":"选择","part_of_speech":"verb","pronunciation_easy":"xuǎn zé","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21808,"language":"zh","term":"保留","part_of_speech":"verb","pronunciation_easy":"bǎo liú","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21809,"language":"zh","term":"弄坏","part_of_speech":"verb","pronunciation_easy":"nòng huài","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21810,"language":"zh","term":"修理","part_of_speech":"verb","pronunciation_easy":"xiū lǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21811,"language":"zh","term":"这里","part_of_speech":"adverb","pronunciation_easy":"zhè lǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21812,"language":"zh","term":"那里","part_of_speech":"adverb","pronunciation_easy":"nà lǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21813,"language":"zh","term":"里面","part_of_speech":"adverb","pronunciation_easy":"lǐ miàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21814,"language":"zh","term":"外面","part_of_speech":"adverb","pronunciation_easy":"wài miàn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21815,"language":"zh","term":"我","part_of_speech":"other","pronunciation_easy":"wǒ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21816,"language":"zh","term":"你","part_of_speech":"other","pronunciation_easy":"nǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21817,"language":"zh","term":"我们","part_of_speech":"other","pronunciation_easy":"wǒ men","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21818,"language":"zh","term":"他们","part_of_speech":"other","pronunciation_easy":"tā men","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21819,"language":"zh","term":"在……附近","part_of_speech":"phrase","pronunciation_easy":"zài……fù jìn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21820,"language":"zh","term":"这个","part_of_speech":"other","pronunciation_easy":"zhè ge","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21821,"language":"zh","term":"左边","part_of_speech":"other","pronunciation_easy":"zuǒ biān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21822,"language":"zh","term":"右边","part_of_speech":"other","pronunciation_easy":"yòu biān","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21823,"language":"zh","term":"一直往前","part_of_speech":"phrase","pronunciation_easy":"yī zhí wǎng qián","pronunciation_note_ru":"一 перед zhí (2-й тон) в связной речи обычно произносится yì.","status":"ready","issue":null}
+{"word_id":21824,"language":"zh","term":"那个","part_of_speech":"other","pronunciation_easy":"nà ge","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21825,"language":"zh","term":"大家","part_of_speech":"other","pronunciation_easy":"dà jiā","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21826,"language":"zh","term":"哪里","part_of_speech":"other","pronunciation_easy":"nǎ lǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21827,"language":"zh","term":"什么时候","part_of_speech":"other","pronunciation_easy":"shén me shí hou","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21828,"language":"zh","term":"谁","part_of_speech":"other","pronunciation_easy":"shéi","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21829,"language":"zh","term":"什么","part_of_speech":"other","pronunciation_easy":"shén me","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21830,"language":"zh","term":"为什么","part_of_speech":"other","pronunciation_easy":"wèi shén me","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21831,"language":"zh","term":"怎么","part_of_speech":"other","pronunciation_easy":"zěn me","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21832,"language":"zh","term":"哪","part_of_speech":"other","pronunciation_easy":"nǎ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21833,"language":"zh","term":"多少","part_of_speech":"phrase","pronunciation_easy":"duō shǎo","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21834,"language":"zh","term":"多少钱","part_of_speech":"phrase","pronunciation_easy":"duō shǎo qián","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21835,"language":"zh","term":"谁的","part_of_speech":"other","pronunciation_easy":"shéi de","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21836,"language":"zh","term":"我不明白","part_of_speech":"phrase","pronunciation_easy":"wǒ bù míng bái","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21837,"language":"zh","term":"请说慢一点","part_of_speech":"phrase","pronunciation_easy":"qǐng shuō màn yī diǎn","pronunciation_note_ru":"一 yī перед diǎn (3-й тон) в речи меняет тон на yì: yì diǎn.","status":"ready","issue":null}
+{"word_id":21838,"language":"zh","term":"你能再说一遍吗？","part_of_speech":"phrase","pronunciation_easy":"nǐ néng zài shuō yī biàn ma？","pronunciation_note_ru":"一 yī перед biàn (4-й тон) в речи произносится yí.","status":"ready","issue":null}
+{"word_id":21839,"language":"zh","term":"这是什么意思？","part_of_speech":"phrase","pronunciation_easy":"zhè shì shén me yì si？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21840,"language":"zh","term":"这个怎么说？","part_of_speech":"phrase","pronunciation_easy":"zhè ge zěn me shuō？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21841,"language":"zh","term":"我需要帮助","part_of_speech":"phrase","pronunciation_easy":"wǒ xū yào bāng zhù","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21842,"language":"zh","term":"洗手间在哪里？","part_of_speech":"phrase","pronunciation_easy":"xǐ shǒu jiān zài nǎ lǐ？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21843,"language":"zh","term":"这个要多少钱？","part_of_speech":"phrase","pronunciation_easy":"zhè ge yào duō shǎo qián？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21844,"language":"zh","term":"我想要这个","part_of_speech":"phrase","pronunciation_easy":"wǒ xiǎng yào zhè ge","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21845,"language":"zh","term":"可以刷卡吗？","part_of_speech":"phrase","pronunciation_easy":"kě yǐ shuā kǎ ma？","pronunciation_note_ru":"kě yǐ: первый третий тон в речи превращается во второй — ké yǐ.","status":"ready","issue":null}
+{"word_id":21846,"language":"zh","term":"请结账","part_of_speech":"phrase","pronunciation_easy":"qǐng jié zhàng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21847,"language":"zh","term":"我有预订","part_of_speech":"phrase","pronunciation_easy":"wǒ yǒu yù dìng","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21848,"language":"zh","term":"请安排两人桌","part_of_speech":"phrase","pronunciation_easy":"qǐng ān pái liǎng rén zhuō","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21849,"language":"zh","term":"火车站在哪里？","part_of_speech":"phrase","pronunciation_easy":"huǒ chē zhàn zài nǎ lǐ？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21850,"language":"zh","term":"现在几点？","part_of_speech":"phrase","pronunciation_easy":"xiàn zài jǐ diǎn？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21851,"language":"zh","term":"我迷路了","part_of_speech":"phrase","pronunciation_easy":"wǒ mí lù le","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21852,"language":"zh","term":"叫救护车","part_of_speech":"phrase","pronunciation_easy":"jiào jiù hù chē","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21853,"language":"zh","term":"我不舒服","part_of_speech":"phrase","pronunciation_easy":"wǒ bù shū fu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21854,"language":"zh","term":"我对……过敏","part_of_speech":"phrase","pronunciation_easy":"wǒ duì……guò mǐn","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21855,"language":"zh","term":"我想喝点水","part_of_speech":"phrase","pronunciation_easy":"wǒ xiǎng hē diǎn shuǐ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21856,"language":"zh","term":"我不吃肉","part_of_speech":"phrase","pronunciation_easy":"wǒ bù chī ròu","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21857,"language":"zh","term":"有无线网络吗？","part_of_speech":"phrase","pronunciation_easy":"yǒu wú xiàn wǎng luò ma？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21858,"language":"zh","term":"密码是什么？","part_of_speech":"phrase","pronunciation_easy":"mì mǎ shì shén me？","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21859,"language":"zh","term":"没问题","part_of_speech":"phrase","pronunciation_easy":"méi wèn tí","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21860,"language":"zh","term":"我们走吧","part_of_speech":"phrase","pronunciation_easy":"wǒ men zǒu ba","pronunciation_note_ru":null,"status":"ready","issue":null}

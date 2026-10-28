@@ -108,6 +108,88 @@ def test_rejects_changed_bytes_and_duplicate_ids(tmp_path):
         read_package(data, meta)
 
 
+def write_test_package(tmp_path, rows, language="tr", scheme="russian-cyrillic-v1"):
+    import hashlib
+
+    data, meta = tmp_path / "data.jsonl", tmp_path / "manifest.json"
+    data.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows), encoding="utf-8")
+    meta.write_text(
+        json.dumps(
+            {
+                "format_version": "lexora-easy-pronunciation-v1",
+                "output": {"sha256": hashlib.sha256(data.read_bytes()).hexdigest()},
+                "languages": {language: {"scheme": scheme, "unique_output_word_ids": len(rows)}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    return data, meta
+
+
+def test_partial_package_requires_explicit_choice_and_records_held_entries(tmp_path):
+    rows = [
+        entry(language="tr").model_dump(),
+        entry(
+            word_id=2,
+            language="tr",
+            pronunciation_easy=None,
+            status="needs_review",
+            issue="Stress is unresolved",
+        ).model_dump(),
+    ]
+    data, meta = write_test_package(tmp_path, rows)
+    with pytest.raises(PronunciationImportError, match="still requires review"):
+        read_package(data, meta)
+    eligible, manifest = read_package(data, meta, skip_unreviewed=True)
+    assert [row.word_id for row in eligible] == [1]
+    assert manifest["deferred_entries"] == [
+        {"word_id": 2, "term": "hola", "issue": "Stress is unresolved"}
+    ]
+
+
+def test_package_language_and_scheme_cannot_be_mixed(tmp_path):
+    data, meta = write_test_package(tmp_path, [entry(language="es").model_dump()])
+    with pytest.raises(PronunciationImportError, match="Entry language"):
+        read_package(data, meta, skip_unreviewed=True)
+    data, meta = write_test_package(
+        tmp_path, [entry(language="zh").model_dump()], language="zh", scheme="pinyin-tones-v1"
+    )
+    with pytest.raises(PronunciationImportError, match="Unsupported"):
+        read_package(data, meta)
+
+
+@pytest.mark.parametrize(
+    ("language", "eligible", "held", "first_id"),
+    [
+        ("zh", 500, 0, 21361),
+        ("tt", 459, 41, 20861),
+        ("tr", 384, 116, 20361),
+        ("ar", 361, 139, 17861),
+    ],
+)
+def test_reviewed_language_packages_keep_held_readings_out(language, eligible, held, first_id):
+    directory = PACKAGE.parent / f"{language}-20261028"
+    rows, manifest = read_package(
+        directory / f"lexora-{language}-reviewed-pronunciation.jsonl",
+        directory / "manifest.json",
+        skip_unreviewed=True,
+    )
+    deferred = manifest["deferred_entries"]
+    assert len(rows) == eligible
+    assert len(deferred) == held
+    assert {r.word_id for r in rows} | {r["word_id"] for r in deferred} == set(
+        range(first_id, first_id + 500)
+    )
+    assert not ({r.word_id for r in rows} & {r["word_id"] for r in deferred})
+    assert all(row.language == language for row in rows)
+    assert manifest["review"]["native_audio_verifications"] == 0
+    if language == "zh":
+        readings = {row.term: row.pronunciation_easy for row in rows}
+        assert readings["音乐"] == "инь¹ юэ⁴"
+        assert readings["重复"] == "чун² фу⁴"
+        assert readings["饿"] == "э⁴"
+
+
 def test_only_hints_change_and_repeat_import_is_noop(database):
     db, word = database
     original = {

@@ -1,0 +1,65 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (2).xlsx",
+      "sha256": "43f357e87c7860414107a8856ebb31916ff4ae9245853efb1d3e1f8941ae5d89",
+      "learning_language": "tr",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-tr-cyrillic-pronunciation.jsonl",
+    "sha256": "184e8178b2358c68414a98aa98d1406ab4df690c8c1c13dca8730a0de566936f"
+  },
+  "other_outputs": [
+    {
+      "filename": "README-FIRST.md",
+      "sha256": "4ef83c7566ab958c574b2e527c4fa57d8cec5f894ab451cb9d74c43f9cdd7d50"
+    },
+    {
+      "filename": "lexora-tr-all-500-google-doc-source.txt",
+      "sha256": "e0c2d4411b739620e24fa11149a9c55914f7f2eed8ba37e0665e5eab37549e20"
+    },
+    {
+      "filename": "lexora-tr-codex-handoff.md",
+      "sha256": "7714011e5424c717154c1f519a2612cf34222827581a944fa64a63b0fa712855"
+    },
+    {
+      "filename": "lexora-tr-needs-review.csv",
+      "sha256": "a793ce35eeb6dab41645ab05657381dc392da43034e76bfaf01419fbd2a1a4a2"
+    },
+    {
+      "filename": "lexora-tr-pronunciation-guide.md",
+      "sha256": "8123d0c8c9f2635c9a2100f9e1b788cf962498482b9b3ce40ac8a0b2ccef9b00"
+    },
+    {
+      "filename": "lexora-tr-pronunciation-review.xlsx",
+      "sha256": "f969a8e658f7c31eccd5a2147692f3b75b0cbb26502b404d50d6ca964fd3777f"
+    },
+    {
+      "filename": "lexora-tr-review-report.md",
+      "sha256": "f5d7f900d7f41fadbf023db0d987acb19e18119a4351be0413a15a4c6787ba16"
+    }
+  ],
+  "languages": {
+    "tr": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 382,
+      "needs_review": 118,
+      "duplicate_id_occurrences": 0,
+      "scheme": "russian-cyrillic-v1",
+      "dialect": "Standard Turkish (Turkey)"
+    }
+  },
+  "other_languages_processed": [],
+  "review": {
+    "approved_for_import": false,
+    "per_word_native_audio_verified": 0,
+    "method": "Turkish orthographic transliteration, limited stress heuristics and eSpeak diagnostic; no per-entry native audio audit",
+    "review_status": "requires_lexicographic_or_native_audio_validation"
+  },
+  "quality_notice": "All 500 words have draft Russian hints. They are not individually verified. `ready` is provisional, NOT permission to import."
+}

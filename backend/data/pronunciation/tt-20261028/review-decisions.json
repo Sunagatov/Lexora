@@ -1,0 +1,431 @@
+[
+  {
+    "word_id": 20888,
+    "before": {
+      "word_id": 20888,
+      "language": "tt",
+      "term": "әти-әни",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "әти́-әни́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "әти-әни́",
+      "status": "ready",
+      "reason": "Paired word: primary stress on the last component, following the cited Tatar stress lesson."
+    }
+  },
+  {
+    "word_id": 20910,
+    "before": {
+      "word_id": 20910,
+      "language": "tt",
+      "term": "таныш булмаган кеше",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "таны́ш булмага́н кеше́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "таны́ш бу́лмаган кеше́",
+      "status": "ready",
+      "reason": "Negative -ма does not receive stress; place it before the negative suffix instead of using final stress."
+    }
+  },
+  {
+    "word_id": 20911,
+    "before": {
+      "word_id": 20911,
+      "language": "tt",
+      "term": "нуль",
+      "part_of_speech": "other",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."
+    },
+    "decision": {
+      "pronunciation_easy": "ну́ль",
+      "status": "ready",
+      "reason": "Monosyllabic loan; no stress ambiguity."
+    }
+  },
+  {
+    "word_id": 20919,
+    "before": {
+      "word_id": 20919,
+      "language": "tt",
+      "term": "сигез",
+      "part_of_speech": "other",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."
+    },
+    "decision": {
+      "pronunciation_easy": "сиге́з",
+      "status": "ready",
+      "reason": "Regular native numeral citation stress on the final syllable."
+    }
+  },
+  {
+    "word_id": 20920,
+    "before": {
+      "word_id": 20920,
+      "language": "tt",
+      "term": "тугыз",
+      "part_of_speech": "other",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."
+    },
+    "decision": {
+      "pronunciation_easy": "тугы́з",
+      "status": "ready",
+      "reason": "Regular native numeral citation stress on the final syllable."
+    }
+  },
+  {
+    "word_id": 21015,
+    "before": {
+      "word_id": 21015,
+      "language": "tt",
+      "term": "хатын-кыз күлмәге",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "хаты́н-кы́з күлмәге́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "хатын-кы́з күлмәге́",
+      "status": "ready",
+      "reason": "The paired word хатын-кыз takes primary stress on its last component; preserve the following noun's citation stress."
+    }
+  },
+  {
+    "word_id": 21018,
+    "before": {
+      "word_id": 21018,
+      "language": "tt",
+      "term": "пальто",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "пальто́",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress under the cited Tatar loanword rule."
+    }
+  },
+  {
+    "word_id": 21028,
+    "before": {
+      "word_id": 21028,
+      "language": "tt",
+      "term": "сумка",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "сумка́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "су́мка",
+      "status": "ready",
+      "reason": "Retain Russian-loan initial stress rather than a generated final-syllable default."
+    }
+  },
+  {
+    "word_id": 21099,
+    "before": {
+      "word_id": 21099,
+      "language": "tt",
+      "term": "поезд",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Заимствование поезд: проверить татарскую реализацию русской фонетики."
+    },
+    "decision": {
+      "pronunciation_easy": "по́езд",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21104,
+    "before": {
+      "word_id": 21104,
+      "language": "tt",
+      "term": "аэропорт",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "аэропо́рт",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21120,
+    "before": {
+      "word_id": 21120,
+      "language": "tt",
+      "term": "университет",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "университе́т",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21124,
+    "before": {
+      "word_id": 21124,
+      "language": "tt",
+      "term": "супермаркет",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "суперма́ркет",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21129,
+    "before": {
+      "word_id": 21129,
+      "language": "tt",
+      "term": "почта бүлекчәсе",
+      "part_of_speech": "noun",
+      "pronunciation_easy": "почта́ бүлекчәсе́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "pronunciation_easy": "по́чта бүлекчәсе́",
+      "status": "ready",
+      "reason": "The loan почта retains Russian initial stress; preserve the native following word."
+    }
+  },
+  {
+    "word_id": 21130,
+    "before": {
+      "word_id": 21130,
+      "language": "tt",
+      "term": "полиция",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Полиция: проверить нормативную адаптацию заимствования."
+    },
+    "decision": {
+      "pronunciation_easy": "поли́ция",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21158,
+    "before": {
+      "word_id": 21158,
+      "language": "tt",
+      "term": "заказ",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."
+    },
+    "decision": {
+      "pronunciation_easy": "зака́з",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21169,
+    "before": {
+      "word_id": 21169,
+      "language": "tt",
+      "term": "компьютер",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "компью́тер",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21170,
+    "before": {
+      "word_id": 21170,
+      "language": "tt",
+      "term": "ноутбук",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "ноутбу́к",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21215,
+    "before": {
+      "word_id": 21215,
+      "language": "tt",
+      "term": "яңгыр",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": "Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.",
+      "status": "needs_review",
+      "issue": "Слово яңгыр: требуется сверка носового ң и ударения."
+    },
+    "decision": {
+      "pronunciation_easy": "яңгы́р",
+      "status": "ready",
+      "reason": "Dictionary IPA /jɒŋˈʁɯr/ supports final stress and the nasal/uvular consonants."
+    }
+  },
+  {
+    "word_id": 21222,
+    "before": {
+      "word_id": 21222,
+      "language": "tt",
+      "term": "салкынча",
+      "part_of_speech": "adjective",
+      "pronunciation_easy": "салкынча́",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "салкынча: confirm the adjectival suffix's lexical stress; the source blindly stresses -ча."
+    }
+  },
+  {
+    "word_id": 21229,
+    "before": {
+      "word_id": 21229,
+      "language": "tt",
+      "term": "диңгез",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": "Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.",
+      "status": "needs_review",
+      "issue": "Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."
+    },
+    "decision": {
+      "pronunciation_easy": "диңге́з",
+      "status": "ready",
+      "reason": "This is a lexical noun meaning sea, not an imperative ending in -гез; use regular noun citation stress."
+    }
+  },
+  {
+    "word_id": 21245,
+    "before": {
+      "word_id": 21245,
+      "language": "tt",
+      "term": "фотоаппарат",
+      "part_of_speech": "noun",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."
+    },
+    "decision": {
+      "pronunciation_easy": "фотоаппара́т",
+      "status": "ready",
+      "reason": "Transparent Russian loan keeps its source-language stress."
+    }
+  },
+  {
+    "word_id": 21325,
+    "before": {
+      "word_id": 21325,
+      "language": "tt",
+      "term": "һәркем",
+      "part_of_speech": "other",
+      "pronunciation_easy": "һәрке́м",
+      "pronunciation_note_ru": "Татарское һ — придыхательное [h], не твёрдое русское х.",
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "һәркем: establish the quantifier's lexical stress independently rather than applying the final-syllable default."
+    }
+  },
+  {
+    "word_id": 21357,
+    "before": {
+      "word_id": 21357,
+      "language": "tt",
+      "term": "вайфай бармы?",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": "ва́йфай ба́рмы?",
+      "pronunciation_note_ru": null,
+      "status": "ready",
+      "issue": null
+    },
+    "decision": {
+      "status": "needs_review",
+      "issue": "вайфай: confirm the borrowed word's accepted Tatar stress before presenting one variant as the reading guide."
+    }
+  },
+  {
+    "word_id": 21358,
+    "before": {
+      "word_id": 21358,
+      "language": "tt",
+      "term": "пароль нинди?",
+      "part_of_speech": "phrase",
+      "pronunciation_easy": null,
+      "pronunciation_note_ru": null,
+      "status": "needs_review",
+      "issue": "Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."
+    },
+    "decision": {
+      "pronunciation_easy": "паро́ль ни́нди?",
+      "status": "ready",
+      "reason": "Russian-loan stress plus first-syllable stress in the Tatar interrogative pronoun, following the cited rules."
+    }
+  }
+]

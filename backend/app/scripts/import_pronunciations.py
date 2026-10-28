@@ -1,4 +1,4 @@
-"""Preview/import Spanish reading hints. Explicit review is required to apply."""
+"""Preview/import reading hints. Explicit review is required to apply."""
 
 import argparse
 import json
@@ -18,6 +18,11 @@ def main(argv=None):
         help="Operator accepts the approximate Cyrillic guides after review",
     )
     parser.add_argument("--expected-plan")
+    parser.add_argument(
+        "--skip-unreviewed",
+        action="store_true",
+        help="Explicitly leave review-flagged entries unchanged",
+    )
     args = parser.parse_args(argv)
     if args.report.resolve() in {args.data.resolve(), args.manifest.resolve()}:
         parser.error("Report must not overwrite the input files")
@@ -33,7 +38,9 @@ def main(argv=None):
 
         if engine.dialect.name != "postgresql":
             raise ValueError("PostgreSQL is required; refusing SQLite fallback")
-        entries, manifest = read_package(args.data, args.manifest)
+        entries, manifest = read_package(
+            args.data, args.manifest, skip_unreviewed=args.skip_unreviewed
+        )
         args.report.parent.mkdir(parents=True, exist_ok=True)
         with engine.connect() as connection, Session(bind=connection) as db, db.begin():
             if not args.apply:
@@ -47,6 +54,7 @@ def main(argv=None):
                 **plan,
                 "mode": "apply" if args.apply else "preview",
                 "operator_reviewed": args.reviewed,
+                "deferred_entries": manifest["deferred_entries"],
                 "source_approved_for_import": manifest.get("review", {}).get(
                     "approved_for_import", False
                 ),

@@ -1,0 +1,500 @@
+{"word_id":21361,"language":"zh","term":"你好","pinyin_proposed":"nǐ hǎo","pronunciation_ru_proposed":"ни³ хао³","status":"ready","issue":null}
+{"word_id":21362,"language":"zh","term":"早上好","pinyin_proposed":"zǎo shang hǎo","pronunciation_ru_proposed":"цзао³ шан⁰ хао³","status":"ready","issue":null}
+{"word_id":21363,"language":"zh","term":"下午好","pinyin_proposed":"xià wǔ hǎo","pronunciation_ru_proposed":"ся⁴ у³ хао³","status":"ready","issue":null}
+{"word_id":21364,"language":"zh","term":"晚上好","pinyin_proposed":"wǎn shang hǎo","pronunciation_ru_proposed":"вань³ шан⁰ хао³","status":"ready","issue":null}
+{"word_id":21365,"language":"zh","term":"晚安","pinyin_proposed":"wǎn ān","pronunciation_ru_proposed":"вань³ ань¹","status":"ready","issue":null}
+{"word_id":21366,"language":"zh","term":"再见","pinyin_proposed":"zài jiàn","pronunciation_ru_proposed":"цзай⁴ цзянь⁴","status":"ready","issue":null}
+{"word_id":21367,"language":"zh","term":"回头见","pinyin_proposed":"huí tóu jiàn","pronunciation_ru_proposed":"хуэй² тоу² цзянь⁴","status":"ready","issue":null}
+{"word_id":21368,"language":"zh","term":"请","pinyin_proposed":"qǐng","pronunciation_ru_proposed":"цин³","status":"ready","issue":null}
+{"word_id":21369,"language":"zh","term":"谢谢","pinyin_proposed":"xiè xie","pronunciation_ru_proposed":"се⁴ се⁰","status":"ready","issue":null}
+{"word_id":21370,"language":"zh","term":"不客气","pinyin_proposed":"bù kè qi","pronunciation_ru_proposed":"бу⁴ кэ⁴ ци⁰","status":"ready","issue":null}
+{"word_id":21371,"language":"zh","term":"劳驾","pinyin_proposed":"láo jià","pronunciation_ru_proposed":"лао² цзя⁴","status":"ready","issue":null}
+{"word_id":21372,"language":"zh","term":"对不起","pinyin_proposed":"duì bu qǐ","pronunciation_ru_proposed":"дуй⁴ бу⁰ ци³","status":"ready","issue":null}
+{"word_id":21373,"language":"zh","term":"是的","pinyin_proposed":"shì de","pronunciation_ru_proposed":"ши⁴ дэ⁰","status":"ready","issue":null}
+{"word_id":21374,"language":"zh","term":"不","pinyin_proposed":"bù","pronunciation_ru_proposed":"бу⁴","status":"ready","issue":null}
+{"word_id":21375,"language":"zh","term":"好的","pinyin_proposed":"hǎo de","pronunciation_ru_proposed":"хао³ дэ⁰","status":"ready","issue":null}
+{"word_id":21376,"language":"zh","term":"欢迎","pinyin_proposed":"huān yíng","pronunciation_ru_proposed":"хуань¹ ин²","status":"ready","issue":null}
+{"word_id":21377,"language":"zh","term":"你好吗？","pinyin_proposed":"nǐ hǎo ma？","pronunciation_ru_proposed":"ни³ хао³ ма⁰？","status":"ready","issue":null}
+{"word_id":21378,"language":"zh","term":"我很好","pinyin_proposed":"wǒ hěn hǎo","pronunciation_ru_proposed":"во³ хэнь³ хао³","status":"ready","issue":null}
+{"word_id":21379,"language":"zh","term":"很高兴认识你","pinyin_proposed":"hěn gāo xìng rèn shi nǐ","pronunciation_ru_proposed":"хэнь³ гао¹ син⁴ жэнь⁴ ши⁰ ни³","status":"ready","issue":null}
+{"word_id":21380,"language":"zh","term":"你叫什么名字？","pinyin_proposed":"nǐ jiào shén me míng zi？","pronunciation_ru_proposed":"ни³ цзяо⁴ шэнь² мэ⁰ мин² цзы⁰？","status":"ready","issue":null}
+{"word_id":21381,"language":"zh","term":"我叫","pinyin_proposed":"wǒ jiào","pronunciation_ru_proposed":"во³ цзяо⁴","status":"ready","issue":null}
+{"word_id":21382,"language":"zh","term":"祝你好运","pinyin_proposed":"zhù nǐ hǎo yùn","pronunciation_ru_proposed":"чжу⁴ ни³ хао³ юнь⁴","status":"ready","issue":null}
+{"word_id":21383,"language":"zh","term":"恭喜","pinyin_proposed":"gōng xǐ","pronunciation_ru_proposed":"гун¹ си³","status":"ready","issue":null}
+{"word_id":21384,"language":"zh","term":"生日快乐","pinyin_proposed":"shēng rì kuài lè","pronunciation_ru_proposed":"шэн¹ жи⁴ куай⁴ лэ⁴","status":"ready","issue":null}
+{"word_id":21385,"language":"zh","term":"保重","pinyin_proposed":"bǎo zhòng","pronunciation_ru_proposed":"бао³ чжун⁴","status":"needs_review","issue":"Сверить употребление и акцентное членение фразы у носителя."}
+{"word_id":21386,"language":"zh","term":"妈妈","pinyin_proposed":"mā ma","pronunciation_ru_proposed":"ма¹ ма⁰","status":"ready","issue":null}
+{"word_id":21387,"language":"zh","term":"爸爸","pinyin_proposed":"bà ba","pronunciation_ru_proposed":"ба⁴ ба⁰","status":"ready","issue":null}
+{"word_id":21388,"language":"zh","term":"父母","pinyin_proposed":"fù mǔ","pronunciation_ru_proposed":"фу⁴ му³","status":"ready","issue":null}
+{"word_id":21389,"language":"zh","term":"孩子","pinyin_proposed":"hái zi","pronunciation_ru_proposed":"хай² цзы⁰","status":"ready","issue":null}
+{"word_id":21390,"language":"zh","term":"儿子","pinyin_proposed":"ér zi","pronunciation_ru_proposed":"эр² цзы⁰","status":"ready","issue":null}
+{"word_id":21391,"language":"zh","term":"女儿","pinyin_proposed":"nǚ ér","pronunciation_ru_proposed":"нюй³ эр²","status":"ready","issue":null}
+{"word_id":21392,"language":"zh","term":"哥哥","pinyin_proposed":"gē ge","pronunciation_ru_proposed":"гэ¹ гэ⁰","status":"ready","issue":null}
+{"word_id":21393,"language":"zh","term":"妹妹","pinyin_proposed":"mèi mei","pronunciation_ru_proposed":"мэй⁴ мэй⁰","status":"ready","issue":null}
+{"word_id":21394,"language":"zh","term":"奶奶","pinyin_proposed":"nǎi nai","pronunciation_ru_proposed":"най³ най⁰","status":"ready","issue":null}
+{"word_id":21395,"language":"zh","term":"爷爷","pinyin_proposed":"yé ye","pronunciation_ru_proposed":"е² е⁰","status":"ready","issue":null}
+{"word_id":21396,"language":"zh","term":"丈夫","pinyin_proposed":"zhàng fū","pronunciation_ru_proposed":"чжан⁴ фу¹","status":"ready","issue":null}
+{"word_id":21397,"language":"zh","term":"妻子","pinyin_proposed":"qī zi","pronunciation_ru_proposed":"ци¹ цзы⁰","status":"ready","issue":null}
+{"word_id":21398,"language":"zh","term":"家庭","pinyin_proposed":"jiā tíng","pronunciation_ru_proposed":"цзя¹ тин²","status":"ready","issue":null}
+{"word_id":21399,"language":"zh","term":"朋友","pinyin_proposed":"péng you","pronunciation_ru_proposed":"пэн² ю⁰","status":"ready","issue":null}
+{"word_id":21400,"language":"zh","term":"邻居","pinyin_proposed":"lín jū","pronunciation_ru_proposed":"линь² цзюй¹","status":"ready","issue":null}
+{"word_id":21401,"language":"zh","term":"人","pinyin_proposed":"rén","pronunciation_ru_proposed":"жэнь²","status":"ready","issue":null}
+{"word_id":21402,"language":"zh","term":"男人","pinyin_proposed":"nán rén","pronunciation_ru_proposed":"нань² жэнь²","status":"ready","issue":null}
+{"word_id":21403,"language":"zh","term":"女人","pinyin_proposed":"nǚ rén","pronunciation_ru_proposed":"нюй³ жэнь²","status":"ready","issue":null}
+{"word_id":21404,"language":"zh","term":"婴儿","pinyin_proposed":"yīng ér","pronunciation_ru_proposed":"ин¹ эр²","status":"ready","issue":null}
+{"word_id":21405,"language":"zh","term":"男孩","pinyin_proposed":"nán hái","pronunciation_ru_proposed":"нань² хай²","status":"ready","issue":null}
+{"word_id":21406,"language":"zh","term":"女孩","pinyin_proposed":"nǚ hái","pronunciation_ru_proposed":"нюй³ хай²","status":"ready","issue":null}
+{"word_id":21407,"language":"zh","term":"老师","pinyin_proposed":"lǎo shī","pronunciation_ru_proposed":"лао³ ши¹","status":"ready","issue":null}
+{"word_id":21408,"language":"zh","term":"医生","pinyin_proposed":"yī shēng","pronunciation_ru_proposed":"и¹ шэн¹","status":"ready","issue":null}
+{"word_id":21409,"language":"zh","term":"同事","pinyin_proposed":"tóng shì","pronunciation_ru_proposed":"тун² ши⁴","status":"ready","issue":null}
+{"word_id":21410,"language":"zh","term":"陌生人","pinyin_proposed":"mò shēng rén","pronunciation_ru_proposed":"мо⁴ шэн¹ жэнь²","status":"ready","issue":null}
+{"word_id":21411,"language":"zh","term":"零","pinyin_proposed":"líng","pronunciation_ru_proposed":"лин²","status":"ready","issue":null}
+{"word_id":21412,"language":"zh","term":"一","pinyin_proposed":"yī","pronunciation_ru_proposed":"и¹","status":"ready","issue":null}
+{"word_id":21413,"language":"zh","term":"二","pinyin_proposed":"èr","pronunciation_ru_proposed":"эр⁴","status":"ready","issue":null}
+{"word_id":21414,"language":"zh","term":"三","pinyin_proposed":"sān","pronunciation_ru_proposed":"сань¹","status":"ready","issue":null}
+{"word_id":21415,"language":"zh","term":"四","pinyin_proposed":"sì","pronunciation_ru_proposed":"сы⁴","status":"ready","issue":null}
+{"word_id":21416,"language":"zh","term":"五","pinyin_proposed":"wǔ","pronunciation_ru_proposed":"у³","status":"ready","issue":null}
+{"word_id":21417,"language":"zh","term":"六","pinyin_proposed":"liù","pronunciation_ru_proposed":"лю⁴","status":"ready","issue":null}
+{"word_id":21418,"language":"zh","term":"七","pinyin_proposed":"qī","pronunciation_ru_proposed":"ци¹","status":"ready","issue":null}
+{"word_id":21419,"language":"zh","term":"八","pinyin_proposed":"bā","pronunciation_ru_proposed":"ба¹","status":"ready","issue":null}
+{"word_id":21420,"language":"zh","term":"九","pinyin_proposed":"jiǔ","pronunciation_ru_proposed":"цзю³","status":"ready","issue":null}
+{"word_id":21421,"language":"zh","term":"十","pinyin_proposed":"shí","pronunciation_ru_proposed":"ши²","status":"ready","issue":null}
+{"word_id":21422,"language":"zh","term":"百","pinyin_proposed":"bǎi","pronunciation_ru_proposed":"бай³","status":"ready","issue":null}
+{"word_id":21423,"language":"zh","term":"今天","pinyin_proposed":"jīn tiān","pronunciation_ru_proposed":"цзинь¹ тянь¹","status":"ready","issue":null}
+{"word_id":21424,"language":"zh","term":"明天","pinyin_proposed":"míng tiān","pronunciation_ru_proposed":"мин² тянь¹","status":"ready","issue":null}
+{"word_id":21425,"language":"zh","term":"昨天","pinyin_proposed":"zuó tiān","pronunciation_ru_proposed":"цзо² тянь¹","status":"ready","issue":null}
+{"word_id":21426,"language":"zh","term":"早上","pinyin_proposed":"zǎo shang","pronunciation_ru_proposed":"цзао³ шан⁰","status":"ready","issue":null}
+{"word_id":21427,"language":"zh","term":"下午","pinyin_proposed":"xià wǔ","pronunciation_ru_proposed":"ся⁴ у³","status":"ready","issue":null}
+{"word_id":21428,"language":"zh","term":"晚上","pinyin_proposed":"wǎn shang","pronunciation_ru_proposed":"вань³ шан⁰","status":"ready","issue":null}
+{"word_id":21429,"language":"zh","term":"夜晚","pinyin_proposed":"yè wǎn","pronunciation_ru_proposed":"е⁴ вань³","status":"ready","issue":null}
+{"word_id":21430,"language":"zh","term":"天","pinyin_proposed":"tiān","pronunciation_ru_proposed":"тянь¹","status":"ready","issue":null}
+{"word_id":21431,"language":"zh","term":"星期","pinyin_proposed":"xīng qī","pronunciation_ru_proposed":"син¹ ци¹","status":"ready","issue":null}
+{"word_id":21432,"language":"zh","term":"月","pinyin_proposed":"yuè","pronunciation_ru_proposed":"юэ⁴","status":"ready","issue":null}
+{"word_id":21433,"language":"zh","term":"年","pinyin_proposed":"nián","pronunciation_ru_proposed":"нянь²","status":"ready","issue":null}
+{"word_id":21434,"language":"zh","term":"小时","pinyin_proposed":"xiǎo shí","pronunciation_ru_proposed":"сяо³ ши²","status":"ready","issue":null}
+{"word_id":21435,"language":"zh","term":"分钟","pinyin_proposed":"fēn zhōng","pronunciation_ru_proposed":"фэнь¹ чжун¹","status":"ready","issue":null}
+{"word_id":21436,"language":"zh","term":"房子","pinyin_proposed":"fáng zi","pronunciation_ru_proposed":"фан² цзы⁰","status":"ready","issue":null}
+{"word_id":21437,"language":"zh","term":"公寓","pinyin_proposed":"gōng yù","pronunciation_ru_proposed":"гун¹ юй⁴","status":"ready","issue":null}
+{"word_id":21438,"language":"zh","term":"房间","pinyin_proposed":"fáng jiān","pronunciation_ru_proposed":"фан² цзянь¹","status":"ready","issue":null}
+{"word_id":21439,"language":"zh","term":"厨房","pinyin_proposed":"chú fáng","pronunciation_ru_proposed":"чу² фан²","status":"ready","issue":null}
+{"word_id":21440,"language":"zh","term":"卧室","pinyin_proposed":"wò shì","pronunciation_ru_proposed":"во⁴ ши⁴","status":"ready","issue":null}
+{"word_id":21441,"language":"zh","term":"浴室","pinyin_proposed":"yù shì","pronunciation_ru_proposed":"юй⁴ ши⁴","status":"ready","issue":null}
+{"word_id":21442,"language":"zh","term":"门","pinyin_proposed":"mén","pronunciation_ru_proposed":"мэнь²","status":"ready","issue":null}
+{"word_id":21443,"language":"zh","term":"窗户","pinyin_proposed":"chuāng hu","pronunciation_ru_proposed":"чуан¹ ху⁰","status":"ready","issue":null}
+{"word_id":21444,"language":"zh","term":"墙","pinyin_proposed":"qiáng","pronunciation_ru_proposed":"цян²","status":"ready","issue":null}
+{"word_id":21445,"language":"zh","term":"地板","pinyin_proposed":"dì bǎn","pronunciation_ru_proposed":"ди⁴ бань³","status":"needs_review","issue":"Исправлено de на dì; финальная словарно-аудио проверка."}
+{"word_id":21446,"language":"zh","term":"天花板","pinyin_proposed":"tiān huā bǎn","pronunciation_ru_proposed":"тянь¹ хуа¹ бань³","status":"ready","issue":null}
+{"word_id":21447,"language":"zh","term":"屋顶","pinyin_proposed":"wū dǐng","pronunciation_ru_proposed":"у¹ дин³","status":"ready","issue":null}
+{"word_id":21448,"language":"zh","term":"桌子","pinyin_proposed":"zhuō zi","pronunciation_ru_proposed":"чжо¹ цзы⁰","status":"ready","issue":null}
+{"word_id":21449,"language":"zh","term":"椅子","pinyin_proposed":"yǐ zi","pronunciation_ru_proposed":"и³ цзы⁰","status":"ready","issue":null}
+{"word_id":21450,"language":"zh","term":"床","pinyin_proposed":"chuáng","pronunciation_ru_proposed":"чуан²","status":"ready","issue":null}
+{"word_id":21451,"language":"zh","term":"沙发","pinyin_proposed":"shā fā","pronunciation_ru_proposed":"ша¹ фа¹","status":"ready","issue":null}
+{"word_id":21452,"language":"zh","term":"衣柜","pinyin_proposed":"yī guì","pronunciation_ru_proposed":"и¹ гуй⁴","status":"ready","issue":null}
+{"word_id":21453,"language":"zh","term":"镜子","pinyin_proposed":"jìng zi","pronunciation_ru_proposed":"цзин⁴ цзы⁰","status":"ready","issue":null}
+{"word_id":21454,"language":"zh","term":"灯","pinyin_proposed":"dēng","pronunciation_ru_proposed":"дэн¹","status":"ready","issue":null}
+{"word_id":21455,"language":"zh","term":"钥匙","pinyin_proposed":"yào shi","pronunciation_ru_proposed":"яо⁴ ши⁰","status":"ready","issue":null}
+{"word_id":21456,"language":"zh","term":"毛巾","pinyin_proposed":"máo jīn","pronunciation_ru_proposed":"мао² цзинь¹","status":"needs_review","issue":"Проверить тон второго слога и произношение в связной речи."}
+{"word_id":21457,"language":"zh","term":"肥皂","pinyin_proposed":"féi zào","pronunciation_ru_proposed":"фэй² цзао⁴","status":"needs_review","issue":"Проверить второй слог и ударное выделение."}
+{"word_id":21458,"language":"zh","term":"马桶","pinyin_proposed":"mǎ tǒng","pronunciation_ru_proposed":"ма³ тун³","status":"ready","issue":null}
+{"word_id":21459,"language":"zh","term":"淋浴器","pinyin_proposed":"lín yù qì","pronunciation_ru_proposed":"линь² юй⁴ ци⁴","status":"needs_review","issue":"Сверить естественную передачу названия предмета с разговорным путём произношения."}
+{"word_id":21460,"language":"zh","term":"花园","pinyin_proposed":"huā yuán","pronunciation_ru_proposed":"хуа¹ юань²","status":"ready","issue":null}
+{"word_id":21461,"language":"zh","term":"水","pinyin_proposed":"shuǐ","pronunciation_ru_proposed":"шуй³","status":"ready","issue":null}
+{"word_id":21462,"language":"zh","term":"茶","pinyin_proposed":"chá","pronunciation_ru_proposed":"ча²","status":"ready","issue":null}
+{"word_id":21463,"language":"zh","term":"咖啡","pinyin_proposed":"kā fēi","pronunciation_ru_proposed":"ка¹ фэй¹","status":"ready","issue":null}
+{"word_id":21464,"language":"zh","term":"牛奶","pinyin_proposed":"niú nǎi","pronunciation_ru_proposed":"ню² най³","status":"ready","issue":null}
+{"word_id":21465,"language":"zh","term":"果汁","pinyin_proposed":"guǒ zhī","pronunciation_ru_proposed":"го³ чжи¹","status":"ready","issue":null}
+{"word_id":21466,"language":"zh","term":"面包","pinyin_proposed":"miàn bāo","pronunciation_ru_proposed":"мянь⁴ бао¹","status":"ready","issue":null}
+{"word_id":21467,"language":"zh","term":"米饭","pinyin_proposed":"mǐ fàn","pronunciation_ru_proposed":"ми³ фань⁴","status":"ready","issue":null}
+{"word_id":21468,"language":"zh","term":"意大利面","pinyin_proposed":"yì dà lì miàn","pronunciation_ru_proposed":"и⁴ да⁴ ли⁴ мянь⁴","status":"ready","issue":null}
+{"word_id":21469,"language":"zh","term":"土豆","pinyin_proposed":"tǔ dòu","pronunciation_ru_proposed":"ту³ доу⁴","status":"ready","issue":null}
+{"word_id":21470,"language":"zh","term":"洋葱","pinyin_proposed":"yáng cōng","pronunciation_ru_proposed":"ян² цун¹","status":"ready","issue":null}
+{"word_id":21471,"language":"zh","term":"西红柿","pinyin_proposed":"xī hóng shì","pronunciation_ru_proposed":"си¹ хун² ши⁴","status":"ready","issue":null}
+{"word_id":21472,"language":"zh","term":"胡萝卜","pinyin_proposed":"hú luó bo","pronunciation_ru_proposed":"ху² ло² бо⁰","status":"needs_review","issue":"Проверить нейтральный тон последнего слога в конкретной разновидности."}
+{"word_id":21473,"language":"zh","term":"苹果","pinyin_proposed":"píng guǒ","pronunciation_ru_proposed":"пин² го³","status":"ready","issue":null}
+{"word_id":21474,"language":"zh","term":"香蕉","pinyin_proposed":"xiāng jiāo","pronunciation_ru_proposed":"сян¹ цзяо¹","status":"ready","issue":null}
+{"word_id":21475,"language":"zh","term":"橙子","pinyin_proposed":"chéng zi","pronunciation_ru_proposed":"чэн² цзы⁰","status":"ready","issue":null}
+{"word_id":21476,"language":"zh","term":"柠檬","pinyin_proposed":"níng méng","pronunciation_ru_proposed":"нин² мэн²","status":"ready","issue":null}
+{"word_id":21477,"language":"zh","term":"鸡蛋","pinyin_proposed":"jī dàn","pronunciation_ru_proposed":"цзи¹ дань⁴","status":"ready","issue":null}
+{"word_id":21478,"language":"zh","term":"奶酪","pinyin_proposed":"nǎi lào","pronunciation_ru_proposed":"най³ лао⁴","status":"needs_review","issue":"Проверить произношение второго знака в слове «сыр»."}
+{"word_id":21479,"language":"zh","term":"黄油","pinyin_proposed":"huáng yóu","pronunciation_ru_proposed":"хуан² ю²","status":"ready","issue":null}
+{"word_id":21480,"language":"zh","term":"肉","pinyin_proposed":"ròu","pronunciation_ru_proposed":"жоу⁴","status":"ready","issue":null}
+{"word_id":21481,"language":"zh","term":"鸡肉","pinyin_proposed":"jī ròu","pronunciation_ru_proposed":"цзи¹ жоу⁴","status":"ready","issue":null}
+{"word_id":21482,"language":"zh","term":"鱼","pinyin_proposed":"yú","pronunciation_ru_proposed":"юй²","status":"ready","issue":null}
+{"word_id":21483,"language":"zh","term":"汤","pinyin_proposed":"tāng","pronunciation_ru_proposed":"тан¹","status":"ready","issue":null}
+{"word_id":21484,"language":"zh","term":"沙拉","pinyin_proposed":"shā lā","pronunciation_ru_proposed":"ша¹ ла¹","status":"ready","issue":null}
+{"word_id":21485,"language":"zh","term":"盐","pinyin_proposed":"yán","pronunciation_ru_proposed":"янь²","status":"ready","issue":null}
+{"word_id":21486,"language":"zh","term":"糖","pinyin_proposed":"táng","pronunciation_ru_proposed":"тан²","status":"ready","issue":null}
+{"word_id":21487,"language":"zh","term":"油","pinyin_proposed":"yóu","pronunciation_ru_proposed":"ю²","status":"ready","issue":null}
+{"word_id":21488,"language":"zh","term":"面粉","pinyin_proposed":"miàn fěn","pronunciation_ru_proposed":"мянь⁴ фэнь³","status":"ready","issue":null}
+{"word_id":21489,"language":"zh","term":"胡椒","pinyin_proposed":"hú jiāo","pronunciation_ru_proposed":"ху² цзяо¹","status":"ready","issue":null}
+{"word_id":21490,"language":"zh","term":"盘子","pinyin_proposed":"pán zi","pronunciation_ru_proposed":"пань² цзы⁰","status":"ready","issue":null}
+{"word_id":21491,"language":"zh","term":"碗","pinyin_proposed":"wǎn","pronunciation_ru_proposed":"вань³","status":"ready","issue":null}
+{"word_id":21492,"language":"zh","term":"杯子","pinyin_proposed":"bēi zi","pronunciation_ru_proposed":"бэй¹ цзы⁰","status":"ready","issue":null}
+{"word_id":21493,"language":"zh","term":"玻璃杯","pinyin_proposed":"bō lí bēi","pronunciation_ru_proposed":"бо¹ ли² бэй¹","status":"needs_review","issue":"Проверить нейтральный тон слога li и слогоделение."}
+{"word_id":21494,"language":"zh","term":"瓶子","pinyin_proposed":"píng zi","pronunciation_ru_proposed":"пин² цзы⁰","status":"ready","issue":null}
+{"word_id":21495,"language":"zh","term":"勺子","pinyin_proposed":"sháo zi","pronunciation_ru_proposed":"шао² цзы⁰","status":"ready","issue":null}
+{"word_id":21496,"language":"zh","term":"叉子","pinyin_proposed":"chā zi","pronunciation_ru_proposed":"ча¹ цзы⁰","status":"ready","issue":null}
+{"word_id":21497,"language":"zh","term":"刀","pinyin_proposed":"dāo","pronunciation_ru_proposed":"дао¹","status":"ready","issue":null}
+{"word_id":21498,"language":"zh","term":"平底锅","pinyin_proposed":"píng dǐ guō","pronunciation_ru_proposed":"пин² ди³ го¹","status":"ready","issue":null}
+{"word_id":21499,"language":"zh","term":"锅","pinyin_proposed":"guō","pronunciation_ru_proposed":"го¹","status":"ready","issue":null}
+{"word_id":21500,"language":"zh","term":"烤箱","pinyin_proposed":"kǎo xiāng","pronunciation_ru_proposed":"као³ сян¹","status":"ready","issue":null}
+{"word_id":21501,"language":"zh","term":"冰箱","pinyin_proposed":"bīng xiāng","pronunciation_ru_proposed":"бин¹ сян¹","status":"ready","issue":null}
+{"word_id":21502,"language":"zh","term":"炉灶","pinyin_proposed":"lú zào","pronunciation_ru_proposed":"лу² цзао⁴","status":"ready","issue":null}
+{"word_id":21503,"language":"zh","term":"水壶","pinyin_proposed":"shuǐ hú","pronunciation_ru_proposed":"шуй³ ху²","status":"ready","issue":null}
+{"word_id":21504,"language":"zh","term":"饭","pinyin_proposed":"fàn","pronunciation_ru_proposed":"фань⁴","status":"ready","issue":null}
+{"word_id":21505,"language":"zh","term":"早饭","pinyin_proposed":"zǎo fàn","pronunciation_ru_proposed":"цзао³ фань⁴","status":"ready","issue":null}
+{"word_id":21506,"language":"zh","term":"午饭","pinyin_proposed":"wǔ fàn","pronunciation_ru_proposed":"у³ фань⁴","status":"ready","issue":null}
+{"word_id":21507,"language":"zh","term":"晚饭","pinyin_proposed":"wǎn fàn","pronunciation_ru_proposed":"вань³ фань⁴","status":"ready","issue":null}
+{"word_id":21508,"language":"zh","term":"做饭","pinyin_proposed":"zuò fàn","pronunciation_ru_proposed":"цзо⁴ фань⁴","status":"ready","issue":null}
+{"word_id":21509,"language":"zh","term":"煮","pinyin_proposed":"zhǔ","pronunciation_ru_proposed":"чжу³","status":"ready","issue":null}
+{"word_id":21510,"language":"zh","term":"煎","pinyin_proposed":"jiān","pronunciation_ru_proposed":"цзянь¹","status":"ready","issue":null}
+{"word_id":21511,"language":"zh","term":"衬衫","pinyin_proposed":"chèn shān","pronunciation_ru_proposed":"чэнь⁴ шань¹","status":"needs_review","issue":"Проверить употребление и ударение второго слога в речи."}
+{"word_id":21512,"language":"zh","term":"T恤","pinyin_proposed":"T xù","pronunciation_ru_proposed":"ти¹ сюй⁴","status":"ready","issue":null}
+{"word_id":21513,"language":"zh","term":"裤子","pinyin_proposed":"kù zi","pronunciation_ru_proposed":"ку⁴ цзы⁰","status":"ready","issue":null}
+{"word_id":21514,"language":"zh","term":"牛仔裤","pinyin_proposed":"niú zǎi kù","pronunciation_ru_proposed":"ню² цзай³ ку⁴","status":"needs_review","issue":"В 牛仔裤 второй слог читается zǎi, а не zǐ, как в автоматическом выводе."}
+{"word_id":21515,"language":"zh","term":"连衣裙","pinyin_proposed":"lián yī qún","pronunciation_ru_proposed":"лянь² и¹ цюнь²","status":"ready","issue":null}
+{"word_id":21516,"language":"zh","term":"裙子","pinyin_proposed":"qún zi","pronunciation_ru_proposed":"цюнь² цзы⁰","status":"ready","issue":null}
+{"word_id":21517,"language":"zh","term":"夹克","pinyin_proposed":"jiā kè","pronunciation_ru_proposed":"цзя¹ кэ⁴","status":"ready","issue":null}
+{"word_id":21518,"language":"zh","term":"大衣","pinyin_proposed":"dà yī","pronunciation_ru_proposed":"да⁴ и¹","status":"ready","issue":null}
+{"word_id":21519,"language":"zh","term":"毛衣","pinyin_proposed":"máo yī","pronunciation_ru_proposed":"мао² и¹","status":"ready","issue":null}
+{"word_id":21520,"language":"zh","term":"鞋","pinyin_proposed":"xié","pronunciation_ru_proposed":"се²","status":"ready","issue":null}
+{"word_id":21521,"language":"zh","term":"靴子","pinyin_proposed":"xuē zi","pronunciation_ru_proposed":"сюэ¹ цзы⁰","status":"ready","issue":null}
+{"word_id":21522,"language":"zh","term":"袜子","pinyin_proposed":"wà zi","pronunciation_ru_proposed":"ва⁴ цзы⁰","status":"ready","issue":null}
+{"word_id":21523,"language":"zh","term":"帽子","pinyin_proposed":"mào zi","pronunciation_ru_proposed":"мао⁴ цзы⁰","status":"ready","issue":null}
+{"word_id":21524,"language":"zh","term":"鸭舌帽","pinyin_proposed":"yā shé mào","pronunciation_ru_proposed":"я¹ шэ² мао⁴","status":"ready","issue":null}
+{"word_id":21525,"language":"zh","term":"手套","pinyin_proposed":"shǒu tào","pronunciation_ru_proposed":"шоу³ тао⁴","status":"ready","issue":null}
+{"word_id":21526,"language":"zh","term":"围巾","pinyin_proposed":"wéi jīn","pronunciation_ru_proposed":"вэй² цзинь¹","status":"ready","issue":null}
+{"word_id":21527,"language":"zh","term":"腰带","pinyin_proposed":"yāo dài","pronunciation_ru_proposed":"яо¹ дай⁴","status":"ready","issue":null}
+{"word_id":21528,"language":"zh","term":"包","pinyin_proposed":"bāo","pronunciation_ru_proposed":"бао¹","status":"ready","issue":null}
+{"word_id":21529,"language":"zh","term":"钱包","pinyin_proposed":"qián bāo","pronunciation_ru_proposed":"цянь² бао¹","status":"ready","issue":null}
+{"word_id":21530,"language":"zh","term":"雨伞","pinyin_proposed":"yǔ sǎn","pronunciation_ru_proposed":"юй³ сань³","status":"ready","issue":null}
+{"word_id":21531,"language":"zh","term":"手表","pinyin_proposed":"shǒu biǎo","pronunciation_ru_proposed":"шоу³ бяо³","status":"ready","issue":null}
+{"word_id":21532,"language":"zh","term":"眼镜","pinyin_proposed":"yǎn jìng","pronunciation_ru_proposed":"янь³ цзин⁴","status":"ready","issue":null}
+{"word_id":21533,"language":"zh","term":"戒指","pinyin_proposed":"jiè zhǐ","pronunciation_ru_proposed":"цзе⁴ чжи³","status":"ready","issue":null}
+{"word_id":21534,"language":"zh","term":"口袋","pinyin_proposed":"kǒu dài","pronunciation_ru_proposed":"коу³ дай⁴","status":"ready","issue":null}
+{"word_id":21535,"language":"zh","term":"纽扣","pinyin_proposed":"niǔ kòu","pronunciation_ru_proposed":"ню³ коу⁴","status":"ready","issue":null}
+{"word_id":21536,"language":"zh","term":"头","pinyin_proposed":"tóu","pronunciation_ru_proposed":"тоу²","status":"ready","issue":null}
+{"word_id":21537,"language":"zh","term":"脸","pinyin_proposed":"liǎn","pronunciation_ru_proposed":"лянь³","status":"ready","issue":null}
+{"word_id":21538,"language":"zh","term":"眼睛","pinyin_proposed":"yǎn jing","pronunciation_ru_proposed":"янь³ цзин⁰","status":"ready","issue":null}
+{"word_id":21539,"language":"zh","term":"耳朵","pinyin_proposed":"ěr duo","pronunciation_ru_proposed":"эр³ до⁰","status":"ready","issue":null}
+{"word_id":21540,"language":"zh","term":"鼻子","pinyin_proposed":"bí zi","pronunciation_ru_proposed":"би² цзы⁰","status":"ready","issue":null}
+{"word_id":21541,"language":"zh","term":"嘴","pinyin_proposed":"zuǐ","pronunciation_ru_proposed":"цзуй³","status":"ready","issue":null}
+{"word_id":21542,"language":"zh","term":"牙齿","pinyin_proposed":"yá chǐ","pronunciation_ru_proposed":"я² чи³","status":"ready","issue":null}
+{"word_id":21543,"language":"zh","term":"手","pinyin_proposed":"shǒu","pronunciation_ru_proposed":"шоу³","status":"ready","issue":null}
+{"word_id":21544,"language":"zh","term":"手指","pinyin_proposed":"shǒu zhǐ","pronunciation_ru_proposed":"шоу³ чжи³","status":"ready","issue":null}
+{"word_id":21545,"language":"zh","term":"腿","pinyin_proposed":"tuǐ","pronunciation_ru_proposed":"туй³","status":"ready","issue":null}
+{"word_id":21546,"language":"zh","term":"膝盖","pinyin_proposed":"xī gài","pronunciation_ru_proposed":"си¹ гай⁴","status":"ready","issue":null}
+{"word_id":21547,"language":"zh","term":"后背","pinyin_proposed":"hòu bèi","pronunciation_ru_proposed":"хоу⁴ бэй⁴","status":"ready","issue":null}
+{"word_id":21548,"language":"zh","term":"胃","pinyin_proposed":"wèi","pronunciation_ru_proposed":"вэй⁴","status":"ready","issue":null}
+{"word_id":21549,"language":"zh","term":"心脏","pinyin_proposed":"xīn zàng","pronunciation_ru_proposed":"синь¹ цзан⁴","status":"ready","issue":null}
+{"word_id":21550,"language":"zh","term":"头发","pinyin_proposed":"tóu fa","pronunciation_ru_proposed":"тоу² фа⁰","status":"needs_review","issue":"В бытовой речи последний слог часто нейтральный; источники различаются."}
+{"word_id":21551,"language":"zh","term":"皮肤","pinyin_proposed":"pí fū","pronunciation_ru_proposed":"пи² фу¹","status":"ready","issue":null}
+{"word_id":21552,"language":"zh","term":"血","pinyin_proposed":"xuè","pronunciation_ru_proposed":"сюэ⁴","status":"ready","issue":null}
+{"word_id":21553,"language":"zh","term":"健康","pinyin_proposed":"jiàn kāng","pronunciation_ru_proposed":"цзянь⁴ кан¹","status":"ready","issue":null}
+{"word_id":21554,"language":"zh","term":"疼痛","pinyin_proposed":"téng tòng","pronunciation_ru_proposed":"тэн² тун⁴","status":"ready","issue":null}
+{"word_id":21555,"language":"zh","term":"发烧","pinyin_proposed":"fā shāo","pronunciation_ru_proposed":"фа¹ шао¹","status":"ready","issue":null}
+{"word_id":21556,"language":"zh","term":"咳嗽","pinyin_proposed":"ké sòu","pronunciation_ru_proposed":"кэ² соу⁴","status":"needs_review","issue":"Исправлено автоматическое hāi на ké; финальная словарно-аудио проверка."}
+{"word_id":21557,"language":"zh","term":"药","pinyin_proposed":"yào","pronunciation_ru_proposed":"яо⁴","status":"ready","issue":null}
+{"word_id":21558,"language":"zh","term":"医院","pinyin_proposed":"yī yuàn","pronunciation_ru_proposed":"и¹ юань⁴","status":"ready","issue":null}
+{"word_id":21559,"language":"zh","term":"药店","pinyin_proposed":"yào diàn","pronunciation_ru_proposed":"яо⁴ дянь⁴","status":"ready","issue":null}
+{"word_id":21560,"language":"zh","term":"救护车","pinyin_proposed":"jiù hù chē","pronunciation_ru_proposed":"цзю⁴ ху⁴ чэ¹","status":"ready","issue":null}
+{"word_id":21561,"language":"zh","term":"醒来","pinyin_proposed":"xǐng lái","pronunciation_ru_proposed":"син³ лай²","status":"ready","issue":null}
+{"word_id":21562,"language":"zh","term":"起床","pinyin_proposed":"qǐ chuáng","pronunciation_ru_proposed":"ци³ чуан²","status":"ready","issue":null}
+{"word_id":21563,"language":"zh","term":"洗","pinyin_proposed":"xǐ","pronunciation_ru_proposed":"си³","status":"ready","issue":null}
+{"word_id":21564,"language":"zh","term":"穿衣服","pinyin_proposed":"chuān yī fu","pronunciation_ru_proposed":"чуань¹ и¹ фу⁰","status":"ready","issue":null}
+{"word_id":21565,"language":"zh","term":"刷牙","pinyin_proposed":"shuā yá","pronunciation_ru_proposed":"шуа¹ я²","status":"ready","issue":null}
+{"word_id":21566,"language":"zh","term":"梳头","pinyin_proposed":"shū tóu","pronunciation_ru_proposed":"шу¹ тоу²","status":"ready","issue":null}
+{"word_id":21567,"language":"zh","term":"吃早饭","pinyin_proposed":"chī zǎo fàn","pronunciation_ru_proposed":"чи¹ цзао³ фань⁴","status":"ready","issue":null}
+{"word_id":21568,"language":"zh","term":"上班","pinyin_proposed":"shàng bān","pronunciation_ru_proposed":"шан⁴ бань¹","status":"ready","issue":null}
+{"word_id":21569,"language":"zh","term":"上学","pinyin_proposed":"shàng xué","pronunciation_ru_proposed":"шан⁴ сюэ²","status":"ready","issue":null}
+{"word_id":21570,"language":"zh","term":"回家","pinyin_proposed":"huí jiā","pronunciation_ru_proposed":"хуэй² цзя¹","status":"ready","issue":null}
+{"word_id":21571,"language":"zh","term":"休息一下","pinyin_proposed":"xiū xi yī xià","pronunciation_ru_proposed":"сю¹ си⁰ и¹ ся⁴","status":"ready","issue":null}
+{"word_id":21572,"language":"zh","term":"泡澡","pinyin_proposed":"pào zǎo","pronunciation_ru_proposed":"пао⁴ цзао³","status":"ready","issue":null}
+{"word_id":21573,"language":"zh","term":"洗淋浴","pinyin_proposed":"xǐ lín yù","pronunciation_ru_proposed":"си³ линь² юй⁴","status":"ready","issue":null}
+{"word_id":21574,"language":"zh","term":"上床睡觉","pinyin_proposed":"shàng chuáng shuì jiào","pronunciation_ru_proposed":"шан⁴ чуан² шуй⁴ цзяо⁴","status":"ready","issue":null}
+{"word_id":21575,"language":"zh","term":"睡觉","pinyin_proposed":"shuì jiào","pronunciation_ru_proposed":"шуй⁴ цзяо⁴","status":"needs_review","issue":"Исправлено jué на jiào; финальная словарно-аудио проверка."}
+{"word_id":21576,"language":"zh","term":"吃","pinyin_proposed":"chī","pronunciation_ru_proposed":"чи¹","status":"ready","issue":null}
+{"word_id":21577,"language":"zh","term":"喝","pinyin_proposed":"hē","pronunciation_ru_proposed":"хэ¹","status":"ready","issue":null}
+{"word_id":21578,"language":"zh","term":"打扫","pinyin_proposed":"dǎ sǎo","pronunciation_ru_proposed":"да³ сао³","status":"ready","issue":null}
+{"word_id":21579,"language":"zh","term":"收拾","pinyin_proposed":"shōu shi","pronunciation_ru_proposed":"шоу¹ ши⁰","status":"needs_review","issue":"Часто shōushi; сверить нейтральный тон второго слога."}
+{"word_id":21580,"language":"zh","term":"洗衣服","pinyin_proposed":"xǐ yī fu","pronunciation_ru_proposed":"си³ и¹ фу⁰","status":"ready","issue":null}
+{"word_id":21581,"language":"zh","term":"熨","pinyin_proposed":"yùn","pronunciation_ru_proposed":"юнь⁴","status":"needs_review","issue":"Редкий отдельно стоящий глагол; нужна словарная сверка yùn."}
+{"word_id":21582,"language":"zh","term":"去买东西","pinyin_proposed":"qù mǎi dōng xi","pronunciation_ru_proposed":"цюй⁴ май³ дун¹ си⁰","status":"ready","issue":null}
+{"word_id":21583,"language":"zh","term":"锻炼","pinyin_proposed":"duàn liàn","pronunciation_ru_proposed":"дуань⁴ лянь⁴","status":"ready","issue":null}
+{"word_id":21584,"language":"zh","term":"等","pinyin_proposed":"děng","pronunciation_ru_proposed":"дэн³","status":"ready","issue":null}
+{"word_id":21585,"language":"zh","term":"完成","pinyin_proposed":"wán chéng","pronunciation_ru_proposed":"вань² чэн²","status":"ready","issue":null}
+{"word_id":21586,"language":"zh","term":"去","pinyin_proposed":"qù","pronunciation_ru_proposed":"цюй⁴","status":"ready","issue":null}
+{"word_id":21587,"language":"zh","term":"来","pinyin_proposed":"lái","pronunciation_ru_proposed":"лай²","status":"ready","issue":null}
+{"word_id":21588,"language":"zh","term":"走路","pinyin_proposed":"zǒu lù","pronunciation_ru_proposed":"цзоу³ лу⁴","status":"ready","issue":null}
+{"word_id":21589,"language":"zh","term":"跑","pinyin_proposed":"pǎo","pronunciation_ru_proposed":"пао³","status":"ready","issue":null}
+{"word_id":21590,"language":"zh","term":"停","pinyin_proposed":"tíng","pronunciation_ru_proposed":"тин²","status":"ready","issue":null}
+{"word_id":21591,"language":"zh","term":"到达","pinyin_proposed":"dào dá","pronunciation_ru_proposed":"дао⁴ да²","status":"ready","issue":null}
+{"word_id":21592,"language":"zh","term":"离开","pinyin_proposed":"lí kāi","pronunciation_ru_proposed":"ли² кай¹","status":"ready","issue":null}
+{"word_id":21593,"language":"zh","term":"回来","pinyin_proposed":"huí lái","pronunciation_ru_proposed":"хуэй² лай²","status":"ready","issue":null}
+{"word_id":21594,"language":"zh","term":"转","pinyin_proposed":"zhuǎn","pronunciation_ru_proposed":"чжуань³","status":"ready","issue":null}
+{"word_id":21595,"language":"zh","term":"开车","pinyin_proposed":"kāi chē","pronunciation_ru_proposed":"кай¹ чэ¹","status":"ready","issue":null}
+{"word_id":21596,"language":"zh","term":"骑自行车","pinyin_proposed":"qí zì xíng chē","pronunciation_ru_proposed":"ци² цзы⁴ син² чэ¹","status":"ready","issue":null}
+{"word_id":21597,"language":"zh","term":"汽车","pinyin_proposed":"qì chē","pronunciation_ru_proposed":"ци⁴ чэ¹","status":"ready","issue":null}
+{"word_id":21598,"language":"zh","term":"公共汽车","pinyin_proposed":"gōng gòng qì chē","pronunciation_ru_proposed":"гун¹ гун⁴ ци⁴ чэ¹","status":"ready","issue":null}
+{"word_id":21599,"language":"zh","term":"火车","pinyin_proposed":"huǒ chē","pronunciation_ru_proposed":"хо³ чэ¹","status":"ready","issue":null}
+{"word_id":21600,"language":"zh","term":"出租车","pinyin_proposed":"chū zū chē","pronunciation_ru_proposed":"чу¹ цзу¹ чэ¹","status":"ready","issue":null}
+{"word_id":21601,"language":"zh","term":"自行车","pinyin_proposed":"zì xíng chē","pronunciation_ru_proposed":"цзы⁴ син² чэ¹","status":"ready","issue":null}
+{"word_id":21602,"language":"zh","term":"飞机","pinyin_proposed":"fēi jī","pronunciation_ru_proposed":"фэй¹ цзи¹","status":"ready","issue":null}
+{"word_id":21603,"language":"zh","term":"船","pinyin_proposed":"chuán","pronunciation_ru_proposed":"чуань²","status":"ready","issue":null}
+{"word_id":21604,"language":"zh","term":"机场","pinyin_proposed":"jī chǎng","pronunciation_ru_proposed":"цзи¹ чан³","status":"ready","issue":null}
+{"word_id":21605,"language":"zh","term":"车站","pinyin_proposed":"chē zhàn","pronunciation_ru_proposed":"чэ¹ чжань⁴","status":"ready","issue":null}
+{"word_id":21606,"language":"zh","term":"票","pinyin_proposed":"piào","pronunciation_ru_proposed":"пяо⁴","status":"ready","issue":null}
+{"word_id":21607,"language":"zh","term":"护照","pinyin_proposed":"hù zhào","pronunciation_ru_proposed":"ху⁴ чжао⁴","status":"ready","issue":null}
+{"word_id":21608,"language":"zh","term":"行李箱","pinyin_proposed":"xíng li xiāng","pronunciation_ru_proposed":"син² ли⁰ сян¹","status":"ready","issue":null}
+{"word_id":21609,"language":"zh","term":"旅程","pinyin_proposed":"lǚ chéng","pronunciation_ru_proposed":"люй³ чэн²","status":"ready","issue":null}
+{"word_id":21610,"language":"zh","term":"道路","pinyin_proposed":"dào lù","pronunciation_ru_proposed":"дао⁴ лу⁴","status":"ready","issue":null}
+{"word_id":21611,"language":"zh","term":"城市","pinyin_proposed":"chéng shì","pronunciation_ru_proposed":"чэн² ши⁴","status":"ready","issue":null}
+{"word_id":21612,"language":"zh","term":"小镇","pinyin_proposed":"xiǎo zhèn","pronunciation_ru_proposed":"сяо³ чжэнь⁴","status":"ready","issue":null}
+{"word_id":21613,"language":"zh","term":"村庄","pinyin_proposed":"cūn zhuāng","pronunciation_ru_proposed":"цунь¹ чжуан¹","status":"ready","issue":null}
+{"word_id":21614,"language":"zh","term":"街道","pinyin_proposed":"jiē dào","pronunciation_ru_proposed":"цзе¹ дао⁴","status":"ready","issue":null}
+{"word_id":21615,"language":"zh","term":"广场","pinyin_proposed":"guǎng chǎng","pronunciation_ru_proposed":"гуан³ чан³","status":"ready","issue":null}
+{"word_id":21616,"language":"zh","term":"公园","pinyin_proposed":"gōng yuán","pronunciation_ru_proposed":"гун¹ юань²","status":"ready","issue":null}
+{"word_id":21617,"language":"zh","term":"桥","pinyin_proposed":"qiáo","pronunciation_ru_proposed":"цяо²","status":"ready","issue":null}
+{"word_id":21618,"language":"zh","term":"建筑物","pinyin_proposed":"jiàn zhù wù","pronunciation_ru_proposed":"цзянь⁴ чжу⁴ у⁴","status":"ready","issue":null}
+{"word_id":21619,"language":"zh","term":"学校","pinyin_proposed":"xué xiào","pronunciation_ru_proposed":"сюэ² сяо⁴","status":"ready","issue":null}
+{"word_id":21620,"language":"zh","term":"大学","pinyin_proposed":"dà xué","pronunciation_ru_proposed":"да⁴ сюэ²","status":"ready","issue":null}
+{"word_id":21621,"language":"zh","term":"图书馆","pinyin_proposed":"tú shū guǎn","pronunciation_ru_proposed":"ту² шу¹ гуань³","status":"ready","issue":null}
+{"word_id":21622,"language":"zh","term":"商店","pinyin_proposed":"shāng diàn","pronunciation_ru_proposed":"шан¹ дянь⁴","status":"ready","issue":null}
+{"word_id":21623,"language":"zh","term":"市场","pinyin_proposed":"shì chǎng","pronunciation_ru_proposed":"ши⁴ чан³","status":"ready","issue":null}
+{"word_id":21624,"language":"zh","term":"超市","pinyin_proposed":"chāo shì","pronunciation_ru_proposed":"чао¹ ши⁴","status":"ready","issue":null}
+{"word_id":21625,"language":"zh","term":"餐馆","pinyin_proposed":"cān guǎn","pronunciation_ru_proposed":"цань¹ гуань³","status":"ready","issue":null}
+{"word_id":21626,"language":"zh","term":"咖啡馆","pinyin_proposed":"kā fēi guǎn","pronunciation_ru_proposed":"ка¹ фэй¹ гуань³","status":"ready","issue":null}
+{"word_id":21627,"language":"zh","term":"酒店","pinyin_proposed":"jiǔ diàn","pronunciation_ru_proposed":"цзю³ дянь⁴","status":"ready","issue":null}
+{"word_id":21628,"language":"zh","term":"银行","pinyin_proposed":"yín háng","pronunciation_ru_proposed":"инь² хан²","status":"needs_review","issue":"Многозначный 行; проверено yínháng, требуется финальный аудиоконтроль."}
+{"word_id":21629,"language":"zh","term":"邮局","pinyin_proposed":"yóu jú","pronunciation_ru_proposed":"ю² цзюй²","status":"ready","issue":null}
+{"word_id":21630,"language":"zh","term":"警察","pinyin_proposed":"jǐng chá","pronunciation_ru_proposed":"цзин³ ча²","status":"ready","issue":null}
+{"word_id":21631,"language":"zh","term":"电影院","pinyin_proposed":"diàn yǐng yuàn","pronunciation_ru_proposed":"дянь⁴ ин³ юань⁴","status":"ready","issue":null}
+{"word_id":21632,"language":"zh","term":"博物馆","pinyin_proposed":"bó wù guǎn","pronunciation_ru_proposed":"бо² у⁴ гуань³","status":"ready","issue":null}
+{"word_id":21633,"language":"zh","term":"入口","pinyin_proposed":"rù kǒu","pronunciation_ru_proposed":"жу⁴ коу³","status":"ready","issue":null}
+{"word_id":21634,"language":"zh","term":"出口","pinyin_proposed":"chū kǒu","pronunciation_ru_proposed":"чу¹ коу³","status":"ready","issue":null}
+{"word_id":21635,"language":"zh","term":"电梯","pinyin_proposed":"diàn tī","pronunciation_ru_proposed":"дянь⁴ ти¹","status":"ready","issue":null}
+{"word_id":21636,"language":"zh","term":"钱","pinyin_proposed":"qián","pronunciation_ru_proposed":"цянь²","status":"ready","issue":null}
+{"word_id":21637,"language":"zh","term":"价格","pinyin_proposed":"jià gé","pronunciation_ru_proposed":"цзя⁴ гэ²","status":"ready","issue":null}
+{"word_id":21638,"language":"zh","term":"硬币","pinyin_proposed":"yìng bì","pronunciation_ru_proposed":"ин⁴ би⁴","status":"ready","issue":null}
+{"word_id":21639,"language":"zh","term":"纸币","pinyin_proposed":"zhǐ bì","pronunciation_ru_proposed":"чжи³ би⁴","status":"ready","issue":null}
+{"word_id":21640,"language":"zh","term":"银行卡","pinyin_proposed":"yín háng kǎ","pronunciation_ru_proposed":"инь² хан² ка³","status":"ready","issue":null}
+{"word_id":21641,"language":"zh","term":"现金","pinyin_proposed":"xiàn jīn","pronunciation_ru_proposed":"сянь⁴ цзинь¹","status":"ready","issue":null}
+{"word_id":21642,"language":"zh","term":"收据","pinyin_proposed":"shōu jù","pronunciation_ru_proposed":"шоу¹ цзюй⁴","status":"ready","issue":null}
+{"word_id":21643,"language":"zh","term":"零钱","pinyin_proposed":"líng qián","pronunciation_ru_proposed":"лин² цянь²","status":"ready","issue":null}
+{"word_id":21644,"language":"zh","term":"折扣","pinyin_proposed":"zhé kòu","pronunciation_ru_proposed":"чжэ² коу⁴","status":"ready","issue":null}
+{"word_id":21645,"language":"zh","term":"账单","pinyin_proposed":"zhàng dān","pronunciation_ru_proposed":"чжан⁴ дань¹","status":"ready","issue":null}
+{"word_id":21646,"language":"zh","term":"买","pinyin_proposed":"mǎi","pronunciation_ru_proposed":"май³","status":"ready","issue":null}
+{"word_id":21647,"language":"zh","term":"卖","pinyin_proposed":"mài","pronunciation_ru_proposed":"май⁴","status":"ready","issue":null}
+{"word_id":21648,"language":"zh","term":"付款","pinyin_proposed":"fù kuǎn","pronunciation_ru_proposed":"фу⁴ куань³","status":"ready","issue":null}
+{"word_id":21649,"language":"zh","term":"花钱","pinyin_proposed":"huā qián","pronunciation_ru_proposed":"хуа¹ цянь²","status":"ready","issue":null}
+{"word_id":21650,"language":"zh","term":"花费","pinyin_proposed":"huā fèi","pronunciation_ru_proposed":"хуа¹ фэй⁴","status":"ready","issue":null}
+{"word_id":21651,"language":"zh","term":"便宜","pinyin_proposed":"pián yi","pronunciation_ru_proposed":"пянь² и⁰","status":"needs_review","issue":"Несколько возможных словарных прочтений; по переводу выбрано pián yi. Проверить употребление."}
+{"word_id":21652,"language":"zh","term":"贵","pinyin_proposed":"guì","pronunciation_ru_proposed":"гуй⁴","status":"ready","issue":null}
+{"word_id":21653,"language":"zh","term":"免费","pinyin_proposed":"miǎn fèi","pronunciation_ru_proposed":"мянь³ фэй⁴","status":"ready","issue":null}
+{"word_id":21654,"language":"zh","term":"营业中","pinyin_proposed":"yíng yè zhōng","pronunciation_ru_proposed":"ин² е⁴ чжун¹","status":"ready","issue":null}
+{"word_id":21655,"language":"zh","term":"关门了","pinyin_proposed":"guān mén le","pronunciation_ru_proposed":"гуань¹ мэнь² лэ⁰","status":"ready","issue":null}
+{"word_id":21656,"language":"zh","term":"尺寸","pinyin_proposed":"chǐ cùn","pronunciation_ru_proposed":"чи³ цунь⁴","status":"ready","issue":null}
+{"word_id":21657,"language":"zh","term":"颜色","pinyin_proposed":"yán sè","pronunciation_ru_proposed":"янь² сэ⁴","status":"ready","issue":null}
+{"word_id":21658,"language":"zh","term":"订单","pinyin_proposed":"dìng dān","pronunciation_ru_proposed":"дин⁴ дань¹","status":"ready","issue":null}
+{"word_id":21659,"language":"zh","term":"顾客","pinyin_proposed":"gù kè","pronunciation_ru_proposed":"гу⁴ кэ⁴","status":"ready","issue":null}
+{"word_id":21660,"language":"zh","term":"队伍","pinyin_proposed":"duì wǔ","pronunciation_ru_proposed":"дуй⁴ у³","status":"ready","issue":null}
+{"word_id":21661,"language":"zh","term":"工作","pinyin_proposed":"gōng zuò","pronunciation_ru_proposed":"гун¹ цзо⁴","status":"ready","issue":null}
+{"word_id":21662,"language":"zh","term":"职业","pinyin_proposed":"zhí yè","pronunciation_ru_proposed":"чжи² е⁴","status":"ready","issue":null}
+{"word_id":21663,"language":"zh","term":"办公室","pinyin_proposed":"bàn gōng shì","pronunciation_ru_proposed":"бань⁴ гун¹ ши⁴","status":"ready","issue":null}
+{"word_id":21664,"language":"zh","term":"公司","pinyin_proposed":"gōng sī","pronunciation_ru_proposed":"гун¹ сы¹","status":"ready","issue":null}
+{"word_id":21665,"language":"zh","term":"会议","pinyin_proposed":"huì yì","pronunciation_ru_proposed":"хуэй⁴ и⁴","status":"ready","issue":null}
+{"word_id":21666,"language":"zh","term":"经理","pinyin_proposed":"jīng lǐ","pronunciation_ru_proposed":"цзин¹ ли³","status":"ready","issue":null}
+{"word_id":21667,"language":"zh","term":"员工","pinyin_proposed":"yuán gōng","pronunciation_ru_proposed":"юань² гун¹","status":"ready","issue":null}
+{"word_id":21668,"language":"zh","term":"生意","pinyin_proposed":"shēng yi","pronunciation_ru_proposed":"шэн¹ и⁰","status":"ready","issue":null}
+{"word_id":21669,"language":"zh","term":"电脑","pinyin_proposed":"diàn nǎo","pronunciation_ru_proposed":"дянь⁴ нао³","status":"ready","issue":null}
+{"word_id":21670,"language":"zh","term":"笔记本电脑","pinyin_proposed":"bǐ jì běn diàn nǎo","pronunciation_ru_proposed":"би³ цзи⁴ бэнь³ дянь⁴ нао³","status":"ready","issue":null}
+{"word_id":21671,"language":"zh","term":"键盘","pinyin_proposed":"jiàn pán","pronunciation_ru_proposed":"цзянь⁴ пань²","status":"ready","issue":null}
+{"word_id":21672,"language":"zh","term":"屏幕","pinyin_proposed":"píng mù","pronunciation_ru_proposed":"пин² му⁴","status":"ready","issue":null}
+{"word_id":21673,"language":"zh","term":"打印机","pinyin_proposed":"dǎ yìn jī","pronunciation_ru_proposed":"да³ инь⁴ цзи¹","status":"ready","issue":null}
+{"word_id":21674,"language":"zh","term":"文件","pinyin_proposed":"wén jiàn","pronunciation_ru_proposed":"вэнь² цзянь⁴","status":"ready","issue":null}
+{"word_id":21675,"language":"zh","term":"电子邮件","pinyin_proposed":"diàn zǐ yóu jiàn","pronunciation_ru_proposed":"дянь⁴ цзы³ ю² цзянь⁴","status":"ready","issue":null}
+{"word_id":21676,"language":"zh","term":"信","pinyin_proposed":"xìn","pronunciation_ru_proposed":"синь⁴","status":"ready","issue":null}
+{"word_id":21677,"language":"zh","term":"书","pinyin_proposed":"shū","pronunciation_ru_proposed":"шу¹","status":"ready","issue":null}
+{"word_id":21678,"language":"zh","term":"笔记本","pinyin_proposed":"bǐ jì běn","pronunciation_ru_proposed":"би³ цзи⁴ бэнь³","status":"ready","issue":null}
+{"word_id":21679,"language":"zh","term":"笔","pinyin_proposed":"bǐ","pronunciation_ru_proposed":"би³","status":"ready","issue":null}
+{"word_id":21680,"language":"zh","term":"铅笔","pinyin_proposed":"qiān bǐ","pronunciation_ru_proposed":"цянь¹ би³","status":"ready","issue":null}
+{"word_id":21681,"language":"zh","term":"纸","pinyin_proposed":"zhǐ","pronunciation_ru_proposed":"чжи³","status":"ready","issue":null}
+{"word_id":21682,"language":"zh","term":"课","pinyin_proposed":"kè","pronunciation_ru_proposed":"кэ⁴","status":"ready","issue":null}
+{"word_id":21683,"language":"zh","term":"作业","pinyin_proposed":"zuò yè","pronunciation_ru_proposed":"цзо⁴ е⁴","status":"ready","issue":null}
+{"word_id":21684,"language":"zh","term":"考试","pinyin_proposed":"kǎo shì","pronunciation_ru_proposed":"као³ ши⁴","status":"ready","issue":null}
+{"word_id":21685,"language":"zh","term":"学习","pinyin_proposed":"xué xí","pronunciation_ru_proposed":"сюэ² си²","status":"ready","issue":null}
+{"word_id":21686,"language":"zh","term":"说话","pinyin_proposed":"shuō huà","pronunciation_ru_proposed":"шо¹ хуа⁴","status":"ready","issue":null}
+{"word_id":21687,"language":"zh","term":"说","pinyin_proposed":"shuō","pronunciation_ru_proposed":"шо¹","status":"ready","issue":null}
+{"word_id":21688,"language":"zh","term":"告诉","pinyin_proposed":"gào su","pronunciation_ru_proposed":"гао⁴ су⁰","status":"ready","issue":null}
+{"word_id":21689,"language":"zh","term":"问","pinyin_proposed":"wèn","pronunciation_ru_proposed":"вэнь⁴","status":"ready","issue":null}
+{"word_id":21690,"language":"zh","term":"回答","pinyin_proposed":"huí dá","pronunciation_ru_proposed":"хуэй² да²","status":"ready","issue":null}
+{"word_id":21691,"language":"zh","term":"听","pinyin_proposed":"tīng","pronunciation_ru_proposed":"тин¹","status":"ready","issue":null}
+{"word_id":21692,"language":"zh","term":"听见","pinyin_proposed":"tīng jiàn","pronunciation_ru_proposed":"тин¹ цзянь⁴","status":"ready","issue":null}
+{"word_id":21693,"language":"zh","term":"读","pinyin_proposed":"dú","pronunciation_ru_proposed":"ду²","status":"ready","issue":null}
+{"word_id":21694,"language":"zh","term":"写","pinyin_proposed":"xiě","pronunciation_ru_proposed":"се³","status":"ready","issue":null}
+{"word_id":21695,"language":"zh","term":"明白","pinyin_proposed":"míng bai","pronunciation_ru_proposed":"мин² бай⁰","status":"ready","issue":null}
+{"word_id":21696,"language":"zh","term":"知道","pinyin_proposed":"zhī dào","pronunciation_ru_proposed":"чжи¹ дао⁴","status":"ready","issue":null}
+{"word_id":21697,"language":"zh","term":"记得","pinyin_proposed":"jì de","pronunciation_ru_proposed":"цзи⁴ дэ⁰","status":"ready","issue":null}
+{"word_id":21698,"language":"zh","term":"忘记","pinyin_proposed":"wàng jì","pronunciation_ru_proposed":"ван⁴ цзи⁴","status":"ready","issue":null}
+{"word_id":21699,"language":"zh","term":"解释","pinyin_proposed":"jiě shì","pronunciation_ru_proposed":"цзе³ ши⁴","status":"ready","issue":null}
+{"word_id":21700,"language":"zh","term":"重复","pinyin_proposed":"zhòng fù","pronunciation_ru_proposed":"чжун⁴ фу⁴","status":"ready","issue":null}
+{"word_id":21701,"language":"zh","term":"翻译","pinyin_proposed":"fān yì","pronunciation_ru_proposed":"фань¹ и⁴","status":"ready","issue":null}
+{"word_id":21702,"language":"zh","term":"语言","pinyin_proposed":"yǔ yán","pronunciation_ru_proposed":"юй³ янь²","status":"ready","issue":null}
+{"word_id":21703,"language":"zh","term":"词","pinyin_proposed":"cí","pronunciation_ru_proposed":"цы²","status":"ready","issue":null}
+{"word_id":21704,"language":"zh","term":"句子","pinyin_proposed":"jù zi","pronunciation_ru_proposed":"цзюй⁴ цзы⁰","status":"ready","issue":null}
+{"word_id":21705,"language":"zh","term":"问题","pinyin_proposed":"wèn tí","pronunciation_ru_proposed":"вэнь⁴ ти²","status":"ready","issue":null}
+{"word_id":21706,"language":"zh","term":"消息","pinyin_proposed":"xiāo xī","pronunciation_ru_proposed":"сяо¹ си¹","status":"ready","issue":null}
+{"word_id":21707,"language":"zh","term":"手机","pinyin_proposed":"shǒu jī","pronunciation_ru_proposed":"шоу³ цзи¹","status":"ready","issue":null}
+{"word_id":21708,"language":"zh","term":"打电话","pinyin_proposed":"dǎ diàn huà","pronunciation_ru_proposed":"да³ дянь⁴ хуа⁴","status":"ready","issue":null}
+{"word_id":21709,"language":"zh","term":"地址","pinyin_proposed":"dì zhǐ","pronunciation_ru_proposed":"ди⁴ чжи³","status":"needs_review","issue":"Исправлено de на dì; финальная словарно-аудио проверка."}
+{"word_id":21710,"language":"zh","term":"名字","pinyin_proposed":"míng zi","pronunciation_ru_proposed":"мин² цзы⁰","status":"ready","issue":null}
+{"word_id":21711,"language":"zh","term":"太阳","pinyin_proposed":"tài yáng","pronunciation_ru_proposed":"тай⁴ ян²","status":"ready","issue":null}
+{"word_id":21712,"language":"zh","term":"星星","pinyin_proposed":"xīng xing","pronunciation_ru_proposed":"син¹ син⁰","status":"ready","issue":null}
+{"word_id":21713,"language":"zh","term":"天空","pinyin_proposed":"tiān kōng","pronunciation_ru_proposed":"тянь¹ кун¹","status":"ready","issue":null}
+{"word_id":21714,"language":"zh","term":"云","pinyin_proposed":"yún","pronunciation_ru_proposed":"юнь²","status":"ready","issue":null}
+{"word_id":21715,"language":"zh","term":"雨","pinyin_proposed":"yǔ","pronunciation_ru_proposed":"юй³","status":"ready","issue":null}
+{"word_id":21716,"language":"zh","term":"雪","pinyin_proposed":"xuě","pronunciation_ru_proposed":"сюэ³","status":"ready","issue":null}
+{"word_id":21717,"language":"zh","term":"风","pinyin_proposed":"fēng","pronunciation_ru_proposed":"фэн¹","status":"ready","issue":null}
+{"word_id":21718,"language":"zh","term":"天气","pinyin_proposed":"tiān qì","pronunciation_ru_proposed":"тянь¹ ци⁴","status":"ready","issue":null}
+{"word_id":21719,"language":"zh","term":"热","pinyin_proposed":"rè","pronunciation_ru_proposed":"жэ⁴","status":"ready","issue":null}
+{"word_id":21720,"language":"zh","term":"冷","pinyin_proposed":"lěng","pronunciation_ru_proposed":"лэн³","status":"ready","issue":null}
+{"word_id":21721,"language":"zh","term":"暖和","pinyin_proposed":"nuǎn huo","pronunciation_ru_proposed":"нуань³ хо⁰","status":"needs_review","issue":"Последний слог часто нейтральный: nuǎnhuo. Проверить словарную норму."}
+{"word_id":21722,"language":"zh","term":"凉","pinyin_proposed":"liáng","pronunciation_ru_proposed":"лян²","status":"needs_review","issue":"Проверить оттенок значения и произношение в конкретном употреблении."}
+{"word_id":21723,"language":"zh","term":"树","pinyin_proposed":"shù","pronunciation_ru_proposed":"шу⁴","status":"ready","issue":null}
+{"word_id":21724,"language":"zh","term":"花","pinyin_proposed":"huā","pronunciation_ru_proposed":"хуа¹","status":"ready","issue":null}
+{"word_id":21725,"language":"zh","term":"草","pinyin_proposed":"cǎo","pronunciation_ru_proposed":"цао³","status":"ready","issue":null}
+{"word_id":21726,"language":"zh","term":"森林","pinyin_proposed":"sēn lín","pronunciation_ru_proposed":"сэнь¹ линь²","status":"ready","issue":null}
+{"word_id":21727,"language":"zh","term":"河","pinyin_proposed":"hé","pronunciation_ru_proposed":"хэ²","status":"ready","issue":null}
+{"word_id":21728,"language":"zh","term":"湖","pinyin_proposed":"hú","pronunciation_ru_proposed":"ху²","status":"ready","issue":null}
+{"word_id":21729,"language":"zh","term":"海","pinyin_proposed":"hǎi","pronunciation_ru_proposed":"хай³","status":"ready","issue":null}
+{"word_id":21730,"language":"zh","term":"山","pinyin_proposed":"shān","pronunciation_ru_proposed":"шань¹","status":"ready","issue":null}
+{"word_id":21731,"language":"zh","term":"海滩","pinyin_proposed":"hǎi tān","pronunciation_ru_proposed":"хай³ тань¹","status":"ready","issue":null}
+{"word_id":21732,"language":"zh","term":"动物","pinyin_proposed":"dòng wù","pronunciation_ru_proposed":"дун⁴ у⁴","status":"ready","issue":null}
+{"word_id":21733,"language":"zh","term":"狗","pinyin_proposed":"gǒu","pronunciation_ru_proposed":"гоу³","status":"ready","issue":null}
+{"word_id":21734,"language":"zh","term":"猫","pinyin_proposed":"māo","pronunciation_ru_proposed":"мао¹","status":"ready","issue":null}
+{"word_id":21735,"language":"zh","term":"鸟","pinyin_proposed":"niǎo","pronunciation_ru_proposed":"няо³","status":"ready","issue":null}
+{"word_id":21736,"language":"zh","term":"音乐","pinyin_proposed":"yīn lè","pronunciation_ru_proposed":"инь¹ лэ⁴","status":"ready","issue":null}
+{"word_id":21737,"language":"zh","term":"歌","pinyin_proposed":"gē","pronunciation_ru_proposed":"гэ¹","status":"ready","issue":null}
+{"word_id":21738,"language":"zh","term":"电影","pinyin_proposed":"diàn yǐng","pronunciation_ru_proposed":"дянь⁴ ин³","status":"ready","issue":null}
+{"word_id":21739,"language":"zh","term":"游戏","pinyin_proposed":"yóu xì","pronunciation_ru_proposed":"ю² си⁴","status":"ready","issue":null}
+{"word_id":21740,"language":"zh","term":"运动","pinyin_proposed":"yùn dòng","pronunciation_ru_proposed":"юнь⁴ дун⁴","status":"ready","issue":null}
+{"word_id":21741,"language":"zh","term":"足球","pinyin_proposed":"zú qiú","pronunciation_ru_proposed":"цзу² цю²","status":"ready","issue":null}
+{"word_id":21742,"language":"zh","term":"游泳池","pinyin_proposed":"yóu yǒng chí","pronunciation_ru_proposed":"ю² юн³ чи²","status":"ready","issue":null}
+{"word_id":21743,"language":"zh","term":"音乐会","pinyin_proposed":"yīn lè huì","pronunciation_ru_proposed":"инь¹ лэ⁴ хуэй⁴","status":"ready","issue":null}
+{"word_id":21744,"language":"zh","term":"画","pinyin_proposed":"huà","pronunciation_ru_proposed":"хуа⁴","status":"needs_review","issue":"Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID."}
+{"word_id":21745,"language":"zh","term":"照相机","pinyin_proposed":"zhào xiāng jī","pronunciation_ru_proposed":"чжао⁴ сян¹ цзи¹","status":"ready","issue":null}
+{"word_id":21746,"language":"zh","term":"假期","pinyin_proposed":"jià qī","pronunciation_ru_proposed":"цзя⁴ ци¹","status":"needs_review","issue":"В значении «отпуск» 假 читается jià, а не jiǎ."}
+{"word_id":21747,"language":"zh","term":"周末","pinyin_proposed":"zhōu mò","pronunciation_ru_proposed":"чжоу¹ мо⁴","status":"ready","issue":null}
+{"word_id":21748,"language":"zh","term":"聚会","pinyin_proposed":"jù huì","pronunciation_ru_proposed":"цзюй⁴ хуэй⁴","status":"ready","issue":null}
+{"word_id":21749,"language":"zh","term":"生日","pinyin_proposed":"shēng rì","pronunciation_ru_proposed":"шэн¹ жи⁴","status":"ready","issue":null}
+{"word_id":21750,"language":"zh","term":"业余爱好","pinyin_proposed":"yè yú ài hǎo","pronunciation_ru_proposed":"е⁴ юй² ай⁴ хао³","status":"ready","issue":null}
+{"word_id":21751,"language":"zh","term":"空闲时间","pinyin_proposed":"kōng xián shí jiān","pronunciation_ru_proposed":"кун¹ сянь² ши² цзянь¹","status":"needs_review","issue":"Различить kōngxián и kòngxián по контексту."}
+{"word_id":21752,"language":"zh","term":"玩","pinyin_proposed":"wán","pronunciation_ru_proposed":"вань²","status":"ready","issue":null}
+{"word_id":21753,"language":"zh","term":"唱歌","pinyin_proposed":"chàng gē","pronunciation_ru_proposed":"чан⁴ гэ¹","status":"ready","issue":null}
+{"word_id":21754,"language":"zh","term":"跳舞","pinyin_proposed":"tiào wǔ","pronunciation_ru_proposed":"тяо⁴ у³","status":"ready","issue":null}
+{"word_id":21755,"language":"zh","term":"游泳","pinyin_proposed":"yóu yǒng","pronunciation_ru_proposed":"ю² юн³","status":"ready","issue":null}
+{"word_id":21756,"language":"zh","term":"画","pinyin_proposed":"huà","pronunciation_ru_proposed":"хуа⁴","status":"needs_review","issue":"Одинаковая запись для существительного и глагола; проверить контекст без слияния Word ID."}
+{"word_id":21757,"language":"zh","term":"看电视","pinyin_proposed":"kàn diàn shì","pronunciation_ru_proposed":"кань⁴ дянь⁴ ши⁴","status":"ready","issue":null}
+{"word_id":21758,"language":"zh","term":"拍照","pinyin_proposed":"pāi zhào","pronunciation_ru_proposed":"пай¹ чжао⁴","status":"ready","issue":null}
+{"word_id":21759,"language":"zh","term":"看望朋友","pinyin_proposed":"kàn wàng péng yǒu","pronunciation_ru_proposed":"кань⁴ ван⁴ пэн² ю³","status":"ready","issue":null}
+{"word_id":21760,"language":"zh","term":"出国旅行","pinyin_proposed":"chū guó lǚ xíng","pronunciation_ru_proposed":"чу¹ го² люй³ син²","status":"ready","issue":null}
+{"word_id":21761,"language":"zh","term":"高兴","pinyin_proposed":"gāo xìng","pronunciation_ru_proposed":"гао¹ син⁴","status":"ready","issue":null}
+{"word_id":21762,"language":"zh","term":"难过","pinyin_proposed":"nán guò","pronunciation_ru_proposed":"нань² го⁴","status":"ready","issue":null}
+{"word_id":21763,"language":"zh","term":"生气","pinyin_proposed":"shēng qì","pronunciation_ru_proposed":"шэн¹ ци⁴","status":"ready","issue":null}
+{"word_id":21764,"language":"zh","term":"害怕","pinyin_proposed":"hài pà","pronunciation_ru_proposed":"хай⁴ па⁴","status":"ready","issue":null}
+{"word_id":21765,"language":"zh","term":"累","pinyin_proposed":"lèi","pronunciation_ru_proposed":"лэй⁴","status":"ready","issue":null}
+{"word_id":21766,"language":"zh","term":"饿","pinyin_proposed":"è","pronunciation_ru_proposed":"è","status":"ready","issue":null}
+{"word_id":21767,"language":"zh","term":"渴","pinyin_proposed":"kě","pronunciation_ru_proposed":"кэ³","status":"ready","issue":null}
+{"word_id":21768,"language":"zh","term":"惊讶","pinyin_proposed":"jīng yà","pronunciation_ru_proposed":"цзин¹ я⁴","status":"ready","issue":null}
+{"word_id":21769,"language":"zh","term":"善良","pinyin_proposed":"shàn liáng","pronunciation_ru_proposed":"шань⁴ лян²","status":"ready","issue":null}
+{"word_id":21770,"language":"zh","term":"友好","pinyin_proposed":"yǒu hǎo","pronunciation_ru_proposed":"ю³ хао³","status":"ready","issue":null}
+{"word_id":21771,"language":"zh","term":"容易","pinyin_proposed":"róng yì","pronunciation_ru_proposed":"жун² и⁴","status":"ready","issue":null}
+{"word_id":21772,"language":"zh","term":"难","pinyin_proposed":"nán","pronunciation_ru_proposed":"нань²","status":"ready","issue":null}
+{"word_id":21773,"language":"zh","term":"漂亮","pinyin_proposed":"piào liang","pronunciation_ru_proposed":"пяо⁴ лян⁰","status":"ready","issue":null}
+{"word_id":21774,"language":"zh","term":"好","pinyin_proposed":"hǎo","pronunciation_ru_proposed":"хао³","status":"needs_review","issue":"Проверить разделение hǎo (хороший) vs hào (любить); контекст указывает hǎo."}
+{"word_id":21775,"language":"zh","term":"坏","pinyin_proposed":"huài","pronunciation_ru_proposed":"хуай⁴","status":"ready","issue":null}
+{"word_id":21776,"language":"zh","term":"大","pinyin_proposed":"dà","pronunciation_ru_proposed":"да⁴","status":"ready","issue":null}
+{"word_id":21777,"language":"zh","term":"小","pinyin_proposed":"xiǎo","pronunciation_ru_proposed":"сяо³","status":"ready","issue":null}
+{"word_id":21778,"language":"zh","term":"长","pinyin_proposed":"cháng","pronunciation_ru_proposed":"чан²","status":"needs_review","issue":"Многозначный иероглиф; значение «длинный» требует cháng."}
+{"word_id":21779,"language":"zh","term":"短","pinyin_proposed":"duǎn","pronunciation_ru_proposed":"дуань³","status":"ready","issue":null}
+{"word_id":21780,"language":"zh","term":"红","pinyin_proposed":"hóng","pronunciation_ru_proposed":"хун²","status":"ready","issue":null}
+{"word_id":21781,"language":"zh","term":"蓝","pinyin_proposed":"lán","pronunciation_ru_proposed":"лань²","status":"ready","issue":null}
+{"word_id":21782,"language":"zh","term":"绿","pinyin_proposed":"lǜ","pronunciation_ru_proposed":"люй⁴","status":"needs_review","issue":"Проверить передачу ü в русской подсказке; не путать с обычным у."}
+{"word_id":21783,"language":"zh","term":"白","pinyin_proposed":"bái","pronunciation_ru_proposed":"бай²","status":"ready","issue":null}
+{"word_id":21784,"language":"zh","term":"黑","pinyin_proposed":"hēi","pronunciation_ru_proposed":"хэй¹","status":"ready","issue":null}
+{"word_id":21785,"language":"zh","term":"黄","pinyin_proposed":"huáng","pronunciation_ru_proposed":"хуан²","status":"ready","issue":null}
+{"word_id":21786,"language":"zh","term":"看见","pinyin_proposed":"kàn jiàn","pronunciation_ru_proposed":"кань⁴ цзянь⁴","status":"ready","issue":null}
+{"word_id":21787,"language":"zh","term":"看","pinyin_proposed":"kàn","pronunciation_ru_proposed":"кань⁴","status":"ready","issue":null}
+{"word_id":21788,"language":"zh","term":"找到","pinyin_proposed":"zhǎo dào","pronunciation_ru_proposed":"чжао³ дао⁴","status":"ready","issue":null}
+{"word_id":21789,"language":"zh","term":"找","pinyin_proposed":"zhǎo","pronunciation_ru_proposed":"чжао³","status":"ready","issue":null}
+{"word_id":21790,"language":"zh","term":"给","pinyin_proposed":"gěi","pronunciation_ru_proposed":"гэй³","status":"ready","issue":null}
+{"word_id":21791,"language":"zh","term":"拿","pinyin_proposed":"ná","pronunciation_ru_proposed":"на²","status":"ready","issue":null}
+{"word_id":21792,"language":"zh","term":"放","pinyin_proposed":"fàng","pronunciation_ru_proposed":"фан⁴","status":"ready","issue":null}
+{"word_id":21793,"language":"zh","term":"带来","pinyin_proposed":"dài lái","pronunciation_ru_proposed":"дай⁴ лай²","status":"ready","issue":null}
+{"word_id":21794,"language":"zh","term":"寄","pinyin_proposed":"jì","pronunciation_ru_proposed":"цзи⁴","status":"ready","issue":null}
+{"word_id":21795,"language":"zh","term":"收到","pinyin_proposed":"shōu dào","pronunciation_ru_proposed":"шоу¹ дао⁴","status":"ready","issue":null}
+{"word_id":21796,"language":"zh","term":"制作","pinyin_proposed":"zhì zuò","pronunciation_ru_proposed":"чжи⁴ цзо⁴","status":"ready","issue":null}
+{"word_id":21797,"language":"zh","term":"做","pinyin_proposed":"zuò","pronunciation_ru_proposed":"цзо⁴","status":"ready","issue":null}
+{"word_id":21798,"language":"zh","term":"用","pinyin_proposed":"yòng","pronunciation_ru_proposed":"юн⁴","status":"ready","issue":null}
+{"word_id":21799,"language":"zh","term":"需要","pinyin_proposed":"xū yào","pronunciation_ru_proposed":"сюй¹ яо⁴","status":"ready","issue":null}
+{"word_id":21800,"language":"zh","term":"想要","pinyin_proposed":"xiǎng yào","pronunciation_ru_proposed":"сян³ яо⁴","status":"ready","issue":null}
+{"word_id":21801,"language":"zh","term":"喜欢","pinyin_proposed":"xǐ huan","pronunciation_ru_proposed":"си³ хуань⁰","status":"ready","issue":null}
+{"word_id":21802,"language":"zh","term":"爱","pinyin_proposed":"ài","pronunciation_ru_proposed":"ай⁴","status":"ready","issue":null}
+{"word_id":21803,"language":"zh","term":"帮助","pinyin_proposed":"bāng zhù","pronunciation_ru_proposed":"бан¹ чжу⁴","status":"ready","issue":null}
+{"word_id":21804,"language":"zh","term":"试","pinyin_proposed":"shì","pronunciation_ru_proposed":"ши⁴","status":"ready","issue":null}
+{"word_id":21805,"language":"zh","term":"开始","pinyin_proposed":"kāi shǐ","pronunciation_ru_proposed":"кай¹ ши³","status":"ready","issue":null}
+{"word_id":21806,"language":"zh","term":"继续","pinyin_proposed":"jì xù","pronunciation_ru_proposed":"цзи⁴ сюй⁴","status":"ready","issue":null}
+{"word_id":21807,"language":"zh","term":"选择","pinyin_proposed":"xuǎn zé","pronunciation_ru_proposed":"сюань³ цзэ²","status":"ready","issue":null}
+{"word_id":21808,"language":"zh","term":"保留","pinyin_proposed":"bǎo liú","pronunciation_ru_proposed":"бао³ лю²","status":"ready","issue":null}
+{"word_id":21809,"language":"zh","term":"弄坏","pinyin_proposed":"nòng huài","pronunciation_ru_proposed":"нун⁴ хуай⁴","status":"ready","issue":null}
+{"word_id":21810,"language":"zh","term":"修理","pinyin_proposed":"xiū lǐ","pronunciation_ru_proposed":"сю¹ ли³","status":"ready","issue":null}
+{"word_id":21811,"language":"zh","term":"这里","pinyin_proposed":"zhè lǐ","pronunciation_ru_proposed":"чжэ⁴ ли³","status":"ready","issue":null}
+{"word_id":21812,"language":"zh","term":"那里","pinyin_proposed":"nà lǐ","pronunciation_ru_proposed":"на⁴ ли³","status":"ready","issue":null}
+{"word_id":21813,"language":"zh","term":"里面","pinyin_proposed":"lǐ miàn","pronunciation_ru_proposed":"ли³ мянь⁴","status":"ready","issue":null}
+{"word_id":21814,"language":"zh","term":"外面","pinyin_proposed":"wài miàn","pronunciation_ru_proposed":"вай⁴ мянь⁴","status":"ready","issue":null}
+{"word_id":21815,"language":"zh","term":"我","pinyin_proposed":"wǒ","pronunciation_ru_proposed":"во³","status":"ready","issue":null}
+{"word_id":21816,"language":"zh","term":"你","pinyin_proposed":"nǐ","pronunciation_ru_proposed":"ни³","status":"ready","issue":null}
+{"word_id":21817,"language":"zh","term":"我们","pinyin_proposed":"wǒ men","pronunciation_ru_proposed":"во³ мэнь⁰","status":"ready","issue":null}
+{"word_id":21818,"language":"zh","term":"他们","pinyin_proposed":"tā men","pronunciation_ru_proposed":"та¹ мэнь⁰","status":"ready","issue":null}
+{"word_id":21819,"language":"zh","term":"在……附近","pinyin_proposed":"zài……fù jìn","pronunciation_ru_proposed":"цзай⁴ …… фу⁴ цзинь⁴","status":"ready","issue":null}
+{"word_id":21820,"language":"zh","term":"这个","pinyin_proposed":"zhè ge","pronunciation_ru_proposed":"чжэ⁴ гэ⁰","status":"ready","issue":null}
+{"word_id":21821,"language":"zh","term":"左边","pinyin_proposed":"zuǒ biān","pronunciation_ru_proposed":"цзо³ бянь¹","status":"ready","issue":null}
+{"word_id":21822,"language":"zh","term":"右边","pinyin_proposed":"yòu biān","pronunciation_ru_proposed":"ю⁴ бянь¹","status":"ready","issue":null}
+{"word_id":21823,"language":"zh","term":"一直往前","pinyin_proposed":"yī zhí wǎng qián","pronunciation_ru_proposed":"и¹ чжи² ван³ цянь²","status":"ready","issue":null}
+{"word_id":21824,"language":"zh","term":"那个","pinyin_proposed":"nà ge","pronunciation_ru_proposed":"на⁴ гэ⁰","status":"ready","issue":null}
+{"word_id":21825,"language":"zh","term":"大家","pinyin_proposed":"dà jiā","pronunciation_ru_proposed":"да⁴ цзя¹","status":"ready","issue":null}
+{"word_id":21826,"language":"zh","term":"哪里","pinyin_proposed":"nǎ lǐ","pronunciation_ru_proposed":"на³ ли³","status":"ready","issue":null}
+{"word_id":21827,"language":"zh","term":"什么时候","pinyin_proposed":"shén me shí hou","pronunciation_ru_proposed":"шэнь² мэ⁰ ши² хоу⁰","status":"ready","issue":null}
+{"word_id":21828,"language":"zh","term":"谁","pinyin_proposed":"shéi","pronunciation_ru_proposed":"шэй²","status":"ready","issue":null}
+{"word_id":21829,"language":"zh","term":"什么","pinyin_proposed":"shén me","pronunciation_ru_proposed":"шэнь² мэ⁰","status":"ready","issue":null}
+{"word_id":21830,"language":"zh","term":"为什么","pinyin_proposed":"wèi shén me","pronunciation_ru_proposed":"вэй⁴ шэнь² мэ⁰","status":"ready","issue":null}
+{"word_id":21831,"language":"zh","term":"怎么","pinyin_proposed":"zěn me","pronunciation_ru_proposed":"цзэнь³ мэ⁰","status":"ready","issue":null}
+{"word_id":21832,"language":"zh","term":"哪","pinyin_proposed":"nǎ","pronunciation_ru_proposed":"на³","status":"ready","issue":null}
+{"word_id":21833,"language":"zh","term":"多少","pinyin_proposed":"duō shǎo","pronunciation_ru_proposed":"до¹ шао³","status":"ready","issue":null}
+{"word_id":21834,"language":"zh","term":"多少钱","pinyin_proposed":"duō shǎo qián","pronunciation_ru_proposed":"до¹ шао³ цянь²","status":"ready","issue":null}
+{"word_id":21835,"language":"zh","term":"谁的","pinyin_proposed":"shéi de","pronunciation_ru_proposed":"шэй² дэ⁰","status":"ready","issue":null}
+{"word_id":21836,"language":"zh","term":"我不明白","pinyin_proposed":"wǒ bù míng bái","pronunciation_ru_proposed":"во³ бу⁴ мин² бай²","status":"ready","issue":null}
+{"word_id":21837,"language":"zh","term":"请说慢一点","pinyin_proposed":"qǐng shuō màn yī diǎn","pronunciation_ru_proposed":"цин³ шо¹ мань⁴ и¹ дянь³","status":"ready","issue":null}
+{"word_id":21838,"language":"zh","term":"你能再说一遍吗？","pinyin_proposed":"nǐ néng zài shuō yī biàn ma？","pronunciation_ru_proposed":"ни³ нэн² цзай⁴ шо¹ и¹ бянь⁴ ма⁰？","status":"ready","issue":null}
+{"word_id":21839,"language":"zh","term":"这是什么意思？","pinyin_proposed":"zhè shì shén me yì si？","pronunciation_ru_proposed":"чжэ⁴ ши⁴ шэнь² мэ⁰ и⁴ сы⁰？","status":"ready","issue":null}
+{"word_id":21840,"language":"zh","term":"这个怎么说？","pinyin_proposed":"zhè ge zěn me shuō？","pronunciation_ru_proposed":"чжэ⁴ гэ⁰ цзэнь³ мэ⁰ шо¹？","status":"ready","issue":null}
+{"word_id":21841,"language":"zh","term":"我需要帮助","pinyin_proposed":"wǒ xū yào bāng zhù","pronunciation_ru_proposed":"во³ сюй¹ яо⁴ бан¹ чжу⁴","status":"ready","issue":null}
+{"word_id":21842,"language":"zh","term":"洗手间在哪里？","pinyin_proposed":"xǐ shǒu jiān zài nǎ lǐ？","pronunciation_ru_proposed":"си³ шоу³ цзянь¹ цзай⁴ на³ ли³？","status":"ready","issue":null}
+{"word_id":21843,"language":"zh","term":"这个要多少钱？","pinyin_proposed":"zhè ge yào duō shǎo qián？","pronunciation_ru_proposed":"чжэ⁴ гэ⁰ яо⁴ до¹ шао³ цянь²？","status":"ready","issue":null}
+{"word_id":21844,"language":"zh","term":"我想要这个","pinyin_proposed":"wǒ xiǎng yào zhè ge","pronunciation_ru_proposed":"во³ сян³ яо⁴ чжэ⁴ гэ⁰","status":"ready","issue":null}
+{"word_id":21845,"language":"zh","term":"可以刷卡吗？","pinyin_proposed":"kě yǐ shuā kǎ ma？","pronunciation_ru_proposed":"кэ³ и³ шуа¹ ка³ ма⁰？","status":"ready","issue":null}
+{"word_id":21846,"language":"zh","term":"请结账","pinyin_proposed":"qǐng jié zhàng","pronunciation_ru_proposed":"цин³ цзе² чжан⁴","status":"ready","issue":null}
+{"word_id":21847,"language":"zh","term":"我有预订","pinyin_proposed":"wǒ yǒu yù dìng","pronunciation_ru_proposed":"во³ ю³ юй⁴ дин⁴","status":"ready","issue":null}
+{"word_id":21848,"language":"zh","term":"请安排两人桌","pinyin_proposed":"qǐng ān pái liǎng rén zhuō","pronunciation_ru_proposed":"цин³ ань¹ пай² лян³ жэнь² чжо¹","status":"ready","issue":null}
+{"word_id":21849,"language":"zh","term":"火车站在哪里？","pinyin_proposed":"huǒ chē zhàn zài nǎ lǐ？","pronunciation_ru_proposed":"хо³ чэ¹ чжань⁴ цзай⁴ на³ ли³？","status":"ready","issue":null}
+{"word_id":21850,"language":"zh","term":"现在几点？","pinyin_proposed":"xiàn zài jǐ diǎn？","pronunciation_ru_proposed":"сянь⁴ цзай⁴ цзи³ дянь³？","status":"ready","issue":null}
+{"word_id":21851,"language":"zh","term":"我迷路了","pinyin_proposed":"wǒ mí lù le","pronunciation_ru_proposed":"во³ ми² лу⁴ лэ⁰","status":"ready","issue":null}
+{"word_id":21852,"language":"zh","term":"叫救护车","pinyin_proposed":"jiào jiù hù chē","pronunciation_ru_proposed":"цзяо⁴ цзю⁴ ху⁴ чэ¹","status":"ready","issue":null}
+{"word_id":21853,"language":"zh","term":"我不舒服","pinyin_proposed":"wǒ bù shū fu","pronunciation_ru_proposed":"во³ бу⁴ шу¹ фу⁰","status":"ready","issue":null}
+{"word_id":21854,"language":"zh","term":"我对……过敏","pinyin_proposed":"wǒ duì……guò mǐn","pronunciation_ru_proposed":"во³ дуй⁴ …… го⁴ минь³","status":"ready","issue":null}
+{"word_id":21855,"language":"zh","term":"我想喝点水","pinyin_proposed":"wǒ xiǎng hē diǎn shuǐ","pronunciation_ru_proposed":"во³ сян³ хэ¹ дянь³ шуй³","status":"ready","issue":null}
+{"word_id":21856,"language":"zh","term":"我不吃肉","pinyin_proposed":"wǒ bù chī ròu","pronunciation_ru_proposed":"во³ бу⁴ чи¹ жоу⁴","status":"ready","issue":null}
+{"word_id":21857,"language":"zh","term":"有无线网络吗？","pinyin_proposed":"yǒu wú xiàn wǎng luò ma？","pronunciation_ru_proposed":"ю³ у² сянь⁴ ван³ ло⁴ ма⁰？","status":"ready","issue":null}
+{"word_id":21858,"language":"zh","term":"密码是什么？","pinyin_proposed":"mì mǎ shì shén me？","pronunciation_ru_proposed":"ми⁴ ма³ ши⁴ шэнь² мэ⁰？","status":"ready","issue":null}
+{"word_id":21859,"language":"zh","term":"没问题","pinyin_proposed":"méi wèn tí","pronunciation_ru_proposed":"мэй² вэнь⁴ ти²","status":"ready","issue":null}
+{"word_id":21860,"language":"zh","term":"我们走吧","pinyin_proposed":"wǒ men zǒu ba","pronunciation_ru_proposed":"во³ мэнь⁰ цзоу³ ба⁰","status":"ready","issue":null}

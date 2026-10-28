@@ -1,0 +1,43 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "lexora-zh-reviewed-pronunciation.jsonl",
+    "sha256": "474f46c382d1f5c806b459543d49118407a6a2204afd89a57099ed562c9ce56c"
+  },
+  "languages": {
+    "zh": {
+      "scheme": "cyrillic-with-tone-numbers-v1",
+      "unique_output_word_ids": 500,
+      "ready": 500
+    }
+  },
+  "source_manifest_sha256": "642c83716329a33b5cd0fcb90fffdb47e2a0948da3a30d33ba6261488baf77ef",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (1).xlsx",
+      "sha256": "b22658141228c27cf4f83faccfa2de9d4d9e3a03e1c19bf819dea2273bf81421",
+      "learning_language": "zh",
+      "translation_language": "ru"
+    }
+  ],
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "method": "Full model review of supplied hints and meanings, dictionary/reference comparisons, targeted corrections; unresolved entries deliberately excluded"
+  },
+  "preserve": [
+    "Word IDs",
+    "terms",
+    "part of speech",
+    "existing Pinyin/transliteration",
+    "IPA",
+    "audio",
+    "translations",
+    "definitions",
+    "topics",
+    "ratings",
+    "history",
+    "timestamps"
+  ]
+}

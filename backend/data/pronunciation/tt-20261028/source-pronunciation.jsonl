@@ -1,0 +1,500 @@
+{"word_id":20861,"language":"tt","term":"сәлам","part_of_speech":"phrase","pronunciation_easy":"сәлә́м","pronunciation_note_ru":"По словарной транскрипции в приветствии слышится сәлә́м (гармонизация гласных).","status":"ready","issue":null}
+{"word_id":20862,"language":"tt","term":"хәерле иртә","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется проверка произношения и ударения в словосочетании хәерле иртә. Требуется словарная проверка ударения и сочетания әе в татарском слове хәерле."}
+{"word_id":20863,"language":"tt","term":"хәерле көн","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется проверка произношения и ударения в словосочетании хәерле көн. Требуется словарная проверка ударения и сочетания әе в татарском слове хәерле."}
+{"word_id":20864,"language":"tt","term":"хәерле кич","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется проверка произношения и ударения в словосочетании хәерле кич. Требуется словарная проверка ударения и сочетания әе в татарском слове хәерле."}
+{"word_id":20865,"language":"tt","term":"тыныч йокы","part_of_speech":"phrase","pronunciation_easy":"тыны́ч йокы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20866,"language":"tt","term":"сау бул","part_of_speech":"phrase","pronunciation_easy":"сау́ бу́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20867,"language":"tt","term":"соңрак күрешербез","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Нужно уточнить ударение в сложной глагольной форме күрешербез."}
+{"word_id":20868,"language":"tt","term":"зинһар","part_of_speech":"other","pronunciation_easy":"зинһа́р","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":20869,"language":"tt","term":"рәхмәт","part_of_speech":"phrase","pronunciation_easy":"рәхмә́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20870,"language":"tt","term":"берни түгел","part_of_speech":"phrase","pronunciation_easy":"берни́ түге́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20871,"language":"tt","term":"гафу итегез","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужна ручная проверка акцентной структуры многословного выражения или формы повелительного наклонения."}
+{"word_id":20872,"language":"tt","term":"гафу үтенәм","part_of_speech":"phrase","pronunciation_easy":"гафу́ үтенә́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20873,"language":"tt","term":"әйе","part_of_speech":"other","pronunciation_easy":"әйе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20874,"language":"tt","term":"юк","part_of_speech":"other","pronunciation_easy":"ю́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20875,"language":"tt","term":"ярый","part_of_speech":"other","pronunciation_easy":"яры́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20876,"language":"tt","term":"рәхим итегез","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужна ручная проверка акцентной структуры многословного выражения или формы повелительного наклонения."}
+{"word_id":20877,"language":"tt","term":"хәлләрегез ничек?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."}
+{"word_id":20878,"language":"tt","term":"хәлем яхшы","part_of_speech":"phrase","pronunciation_easy":"хәле́м яхшы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20879,"language":"tt","term":"танышуыбызга шатмын","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужно уточнить ударение в сложной личной глагольной форме танышуыбызга."}
+{"word_id":20880,"language":"tt","term":"исемегез ничек?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужно уточнить сочетание со словами ничек и именем исемегез."}
+{"word_id":20881,"language":"tt","term":"минем исемем","part_of_speech":"phrase","pronunciation_easy":"мине́м исеме́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20882,"language":"tt","term":"уңышлар","part_of_speech":"phrase","pronunciation_easy":"уңышла́р","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":20883,"language":"tt","term":"котлыйм","part_of_speech":"other","pronunciation_easy":"котлы́йм","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20884,"language":"tt","term":"туган көнең белән","part_of_speech":"phrase","pronunciation_easy":"туга́н көне́ң белә́н","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":20885,"language":"tt","term":"үзеңне сакла","part_of_speech":"phrase","pronunciation_easy":"үзеңне́ са́кла","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":20886,"language":"tt","term":"әни","part_of_speech":"noun","pronunciation_easy":"әни́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20887,"language":"tt","term":"әти","part_of_speech":"noun","pronunciation_easy":"әти́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20888,"language":"tt","term":"әти-әни","part_of_speech":"noun","pronunciation_easy":"әти́-әни́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20889,"language":"tt","term":"бала","part_of_speech":"noun","pronunciation_easy":"бала́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20890,"language":"tt","term":"ул","part_of_speech":"noun","pronunciation_easy":"у́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20891,"language":"tt","term":"кыз","part_of_speech":"noun","pronunciation_easy":"кы́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20892,"language":"tt","term":"абый / эне","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Два варианта родства в одной записи; требуется проверить ударение обоих и акцентную группу."}
+{"word_id":20893,"language":"tt","term":"апа / сеңел","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Два варианта родства в одной записи; требуется проверить ударение обоих и акцентную группу."}
+{"word_id":20894,"language":"tt","term":"әби","part_of_speech":"noun","pronunciation_easy":"әби́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20895,"language":"tt","term":"бабай","part_of_speech":"noun","pronunciation_easy":"баба́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20896,"language":"tt","term":"ир","part_of_speech":"noun","pronunciation_easy":"и́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20897,"language":"tt","term":"хатын","part_of_speech":"noun","pronunciation_easy":"хаты́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20898,"language":"tt","term":"гаилә","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется орфоэпическая сверка сочетания гаи (арабское заимствование)."}
+{"word_id":20899,"language":"tt","term":"дус","part_of_speech":"noun","pronunciation_easy":"ду́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20900,"language":"tt","term":"күрше","part_of_speech":"noun","pronunciation_easy":"күрше́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20901,"language":"tt","term":"кеше","part_of_speech":"noun","pronunciation_easy":"кеше́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20902,"language":"tt","term":"ир кеше","part_of_speech":"noun","pronunciation_easy":"и́р кеше́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20903,"language":"tt","term":"хатын-кыз","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Составное парное слово хатын-кыз; проверить нормативное ударение."}
+{"word_id":20904,"language":"tt","term":"сабый","part_of_speech":"noun","pronunciation_easy":"сабы́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20905,"language":"tt","term":"малай","part_of_speech":"noun","pronunciation_easy":"мала́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20906,"language":"tt","term":"кыз бала","part_of_speech":"noun","pronunciation_easy":"кы́з бала́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20907,"language":"tt","term":"укытучы","part_of_speech":"noun","pronunciation_easy":"укытучы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20908,"language":"tt","term":"табиб","part_of_speech":"noun","pronunciation_easy":"таби́б","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20909,"language":"tt","term":"хезмәттәш","part_of_speech":"noun","pronunciation_easy":"хезмәттә́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20910,"language":"tt","term":"таныш булмаган кеше","part_of_speech":"noun","pronunciation_easy":"таны́ш булмага́н кеше́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20911,"language":"tt","term":"нуль","part_of_speech":"other","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."}
+{"word_id":20912,"language":"tt","term":"бер","part_of_speech":"other","pronunciation_easy":"бе́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20913,"language":"tt","term":"ике","part_of_speech":"other","pronunciation_easy":"ике́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20914,"language":"tt","term":"өч","part_of_speech":"other","pronunciation_easy":"ө́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20915,"language":"tt","term":"дүрт","part_of_speech":"other","pronunciation_easy":"дү́рт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20916,"language":"tt","term":"биш","part_of_speech":"other","pronunciation_easy":"би́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20917,"language":"tt","term":"алты","part_of_speech":"other","pronunciation_easy":"алты́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20918,"language":"tt","term":"җиде","part_of_speech":"other","pronunciation_easy":"җиде́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20919,"language":"tt","term":"сигез","part_of_speech":"other","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."}
+{"word_id":20920,"language":"tt","term":"тугыз","part_of_speech":"other","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."}
+{"word_id":20921,"language":"tt","term":"ун","part_of_speech":"other","pronunciation_easy":"у́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20922,"language":"tt","term":"йөз","part_of_speech":"other","pronunciation_easy":"йө́з","pronunciation_note_ru":"Сохраняйте особые татарские округлённые гласные ө и ү; не произносите их как русские ё/ю.","status":"ready","issue":null}
+{"word_id":20923,"language":"tt","term":"бүген","part_of_speech":"adverb","pronunciation_easy":"бүге́н","pronunciation_note_ru":"Сохраняйте особые татарские округлённые гласные ө и ү; не произносите их как русские ё/ю.","status":"ready","issue":null}
+{"word_id":20924,"language":"tt","term":"иртәгә","part_of_speech":"adverb","pronunciation_easy":"иртәгә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20925,"language":"tt","term":"кичә","part_of_speech":"adverb","pronunciation_easy":"кичә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20926,"language":"tt","term":"иртә","part_of_speech":"noun","pronunciation_easy":"иртә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20927,"language":"tt","term":"төштән соң","part_of_speech":"phrase","pronunciation_easy":"төштә́н со́ң","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":20928,"language":"tt","term":"кич","part_of_speech":"noun","pronunciation_easy":"ки́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20929,"language":"tt","term":"төн","part_of_speech":"noun","pronunciation_easy":"тө́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20930,"language":"tt","term":"тәүлек","part_of_speech":"noun","pronunciation_easy":"тәүле́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20931,"language":"tt","term":"атна","part_of_speech":"noun","pronunciation_easy":"атна́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20932,"language":"tt","term":"ай","part_of_speech":"noun","pronunciation_easy":"а́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20933,"language":"tt","term":"ел","part_of_speech":"noun","pronunciation_easy":"е́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20934,"language":"tt","term":"сәгать","part_of_speech":"noun","pronunciation_easy":"сәга́ть","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20935,"language":"tt","term":"минут","part_of_speech":"noun","pronunciation_easy":"мину́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20936,"language":"tt","term":"йорт","part_of_speech":"noun","pronunciation_easy":"йо́рт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20937,"language":"tt","term":"фатир","part_of_speech":"noun","pronunciation_easy":"фати́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20938,"language":"tt","term":"бүлмә","part_of_speech":"noun","pronunciation_easy":"бүлмә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20939,"language":"tt","term":"аш бүлмәсе","part_of_speech":"noun","pronunciation_easy":"а́ш бүлмәсе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20940,"language":"tt","term":"йокы бүлмәсе","part_of_speech":"noun","pronunciation_easy":"йокы́ бүлмәсе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20941,"language":"tt","term":"юыну бүлмәсе","part_of_speech":"noun","pronunciation_easy":"юыну́ бүлмәсе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20942,"language":"tt","term":"ишек","part_of_speech":"noun","pronunciation_easy":"ише́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20943,"language":"tt","term":"тәрәзә","part_of_speech":"noun","pronunciation_easy":"тәрәзә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20944,"language":"tt","term":"дивар","part_of_speech":"noun","pronunciation_easy":"дива́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20945,"language":"tt","term":"идән","part_of_speech":"noun","pronunciation_easy":"идә́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20946,"language":"tt","term":"түшәм","part_of_speech":"noun","pronunciation_easy":"түшә́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20947,"language":"tt","term":"түбә","part_of_speech":"noun","pronunciation_easy":"түбә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20948,"language":"tt","term":"өстәл","part_of_speech":"noun","pronunciation_easy":"өстә́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20949,"language":"tt","term":"урындык","part_of_speech":"noun","pronunciation_easy":"урынды́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20950,"language":"tt","term":"карават","part_of_speech":"noun","pronunciation_easy":"карава́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20951,"language":"tt","term":"диван","part_of_speech":"noun","pronunciation_easy":"дива́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20952,"language":"tt","term":"кием шкафы","part_of_speech":"noun","pronunciation_easy":"кие́м шкафы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20953,"language":"tt","term":"көзге","part_of_speech":"noun","pronunciation_easy":"көзге́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20954,"language":"tt","term":"лампа","part_of_speech":"noun","pronunciation_easy":"ла́мпа","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20955,"language":"tt","term":"ачкыч","part_of_speech":"noun","pronunciation_easy":"ачкы́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20956,"language":"tt","term":"сөлге","part_of_speech":"noun","pronunciation_easy":"сөлге́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20957,"language":"tt","term":"сабын","part_of_speech":"noun","pronunciation_easy":"сабы́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20958,"language":"tt","term":"унитаз","part_of_speech":"noun","pronunciation_easy":"унита́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20959,"language":"tt","term":"душ","part_of_speech":"noun","pronunciation_easy":"ду́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20960,"language":"tt","term":"бакча","part_of_speech":"noun","pronunciation_easy":"бакча́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20961,"language":"tt","term":"су","part_of_speech":"noun","pronunciation_easy":"су́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20962,"language":"tt","term":"чәй","part_of_speech":"noun","pronunciation_easy":"чә́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20963,"language":"tt","term":"каһвә","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"needs_review","issue":"Требуется проверка заимствованного слова с һ и особой гласной."}
+{"word_id":20964,"language":"tt","term":"сөт","part_of_speech":"noun","pronunciation_easy":"сө́т","pronunciation_note_ru":"Сохраняйте особые татарские округлённые гласные ө и ү; не произносите их как русские ё/ю.","status":"ready","issue":null}
+{"word_id":20965,"language":"tt","term":"сок","part_of_speech":"noun","pronunciation_easy":"со́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20966,"language":"tt","term":"икмәк","part_of_speech":"noun","pronunciation_easy":"икмә́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20967,"language":"tt","term":"дөге","part_of_speech":"noun","pronunciation_easy":"дөге́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20968,"language":"tt","term":"макарон","part_of_speech":"noun","pronunciation_easy":"макаро́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20969,"language":"tt","term":"бәрәңге","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Слово бәрәңге: требуется проверить орфоэпический гласный ряд и ударение."}
+{"word_id":20970,"language":"tt","term":"суган","part_of_speech":"noun","pronunciation_easy":"суга́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20971,"language":"tt","term":"помидор","part_of_speech":"noun","pronunciation_easy":"помидо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20972,"language":"tt","term":"кишер","part_of_speech":"noun","pronunciation_easy":"кише́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20973,"language":"tt","term":"алма","part_of_speech":"noun","pronunciation_easy":"алма́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20974,"language":"tt","term":"банан","part_of_speech":"noun","pronunciation_easy":"бана́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20975,"language":"tt","term":"әфлисун","part_of_speech":"noun","pronunciation_easy":"әфлису́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20976,"language":"tt","term":"лимон","part_of_speech":"noun","pronunciation_easy":"лимо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20977,"language":"tt","term":"йомырка","part_of_speech":"noun","pronunciation_easy":"йомырка́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20978,"language":"tt","term":"сыр","part_of_speech":"noun","pronunciation_easy":"сы́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20979,"language":"tt","term":"атланмай","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется проверка составного слова на единственное словесное ударение."}
+{"word_id":20980,"language":"tt","term":"ит","part_of_speech":"noun","pronunciation_easy":"и́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20981,"language":"tt","term":"тавык ите","part_of_speech":"noun","pronunciation_easy":"тавы́к ите́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20982,"language":"tt","term":"балык","part_of_speech":"noun","pronunciation_easy":"балы́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20983,"language":"tt","term":"аш","part_of_speech":"noun","pronunciation_easy":"а́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20984,"language":"tt","term":"салат","part_of_speech":"noun","pronunciation_easy":"сала́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20985,"language":"tt","term":"тоз","part_of_speech":"noun","pronunciation_easy":"то́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20986,"language":"tt","term":"шикәр","part_of_speech":"noun","pronunciation_easy":"шикә́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20987,"language":"tt","term":"үсемлек мае","part_of_speech":"noun","pronunciation_easy":"үсемле́к мае́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20988,"language":"tt","term":"он","part_of_speech":"noun","pronunciation_easy":"о́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20989,"language":"tt","term":"кара борыч","part_of_speech":"noun","pronunciation_easy":"кара́ боры́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20990,"language":"tt","term":"тәлинкә","part_of_speech":"noun","pronunciation_easy":"тәлинкә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20991,"language":"tt","term":"касә","part_of_speech":"noun","pronunciation_easy":"касә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20992,"language":"tt","term":"чынаяк","part_of_speech":"noun","pronunciation_easy":"чыная́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20993,"language":"tt","term":"стакан","part_of_speech":"noun","pronunciation_easy":"стака́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20994,"language":"tt","term":"шешә","part_of_speech":"noun","pronunciation_easy":"шешә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20995,"language":"tt","term":"кашык","part_of_speech":"noun","pronunciation_easy":"кашы́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20996,"language":"tt","term":"чәнечке","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Слово чәнечке: проверить орфоэпические гласные и ударение."}
+{"word_id":20997,"language":"tt","term":"пычак","part_of_speech":"noun","pronunciation_easy":"пыча́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20998,"language":"tt","term":"таба","part_of_speech":"noun","pronunciation_easy":"таба́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":20999,"language":"tt","term":"кәстрүл","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется словарная проверка адаптированного заимствования и ударения."}
+{"word_id":21000,"language":"tt","term":"мич","part_of_speech":"noun","pronunciation_easy":"ми́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21001,"language":"tt","term":"суыткыч","part_of_speech":"noun","pronunciation_easy":"суыткы́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21002,"language":"tt","term":"аш пешерү плитәсе","part_of_speech":"noun","pronunciation_easy":"а́ш пешерү́ плитәсе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21003,"language":"tt","term":"чәйнек","part_of_speech":"noun","pronunciation_easy":"чәйне́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21004,"language":"tt","term":"аш ашау","part_of_speech":"phrase","pronunciation_easy":"а́ш ашау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21005,"language":"tt","term":"иртәнге аш","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Требуется проверка сложной конструкции иртәнге аш и её акцентов."}
+{"word_id":21006,"language":"tt","term":"төшке аш","part_of_speech":"noun","pronunciation_easy":"төшке́ а́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21007,"language":"tt","term":"кичке аш","part_of_speech":"noun","pronunciation_easy":"кичке́ а́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21008,"language":"tt","term":"пешерү","part_of_speech":"verb","pronunciation_easy":"пешерү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21009,"language":"tt","term":"кайнату","part_of_speech":"verb","pronunciation_easy":"кайнату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21010,"language":"tt","term":"кыздыру","part_of_speech":"verb","pronunciation_easy":"кыздыру́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21011,"language":"tt","term":"күлмәк","part_of_speech":"noun","pronunciation_easy":"күлмә́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21012,"language":"tt","term":"футболка","part_of_speech":"noun","pronunciation_easy":"футбо́лка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21013,"language":"tt","term":"чалбар","part_of_speech":"noun","pronunciation_easy":"чалба́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21014,"language":"tt","term":"джинсы чалбар","part_of_speech":"noun","pronunciation_easy":"джи́нсы чалба́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21015,"language":"tt","term":"хатын-кыз күлмәге","part_of_speech":"noun","pronunciation_easy":"хаты́н-кы́з күлмәге́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21016,"language":"tt","term":"итәк","part_of_speech":"noun","pronunciation_easy":"итә́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21017,"language":"tt","term":"куртка","part_of_speech":"noun","pronunciation_easy":"ку́ртка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21018,"language":"tt","term":"пальто","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21019,"language":"tt","term":"свитер","part_of_speech":"noun","pronunciation_easy":"сви́тер","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21020,"language":"tt","term":"аяк киеме","part_of_speech":"noun","pronunciation_easy":"ая́к кие́ме","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21021,"language":"tt","term":"итек","part_of_speech":"noun","pronunciation_easy":"ите́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21022,"language":"tt","term":"оекбаш","part_of_speech":"noun","pronunciation_easy":"оекба́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21023,"language":"tt","term":"эшләпә","part_of_speech":"noun","pronunciation_easy":"эшләпә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21024,"language":"tt","term":"кепка","part_of_speech":"noun","pronunciation_easy":"ке́пка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21025,"language":"tt","term":"перчатка","part_of_speech":"noun","pronunciation_easy":"перча́тка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21026,"language":"tt","term":"шарф","part_of_speech":"noun","pronunciation_easy":"ша́рф","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21027,"language":"tt","term":"каеш","part_of_speech":"noun","pronunciation_easy":"кае́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21028,"language":"tt","term":"сумка","part_of_speech":"noun","pronunciation_easy":"сумка́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21029,"language":"tt","term":"акча янчыгы","part_of_speech":"noun","pronunciation_easy":"акча́ янчыгы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21030,"language":"tt","term":"кулчатыр","part_of_speech":"noun","pronunciation_easy":"кулчаты́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21031,"language":"tt","term":"кул сәгате","part_of_speech":"noun","pronunciation_easy":"ку́л сәгате́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21032,"language":"tt","term":"күзлек","part_of_speech":"noun","pronunciation_easy":"күзле́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21033,"language":"tt","term":"йөзек","part_of_speech":"noun","pronunciation_easy":"йөзе́к","pronunciation_note_ru":"Сохраняйте особые татарские округлённые гласные ө и ү; не произносите их как русские ё/ю.","status":"ready","issue":null}
+{"word_id":21034,"language":"tt","term":"кесә","part_of_speech":"noun","pronunciation_easy":"кесә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21035,"language":"tt","term":"төймә","part_of_speech":"noun","pronunciation_easy":"төймә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21036,"language":"tt","term":"баш","part_of_speech":"noun","pronunciation_easy":"ба́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21037,"language":"tt","term":"бит","part_of_speech":"noun","pronunciation_easy":"би́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21038,"language":"tt","term":"күз","part_of_speech":"noun","pronunciation_easy":"кү́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21039,"language":"tt","term":"колак","part_of_speech":"noun","pronunciation_easy":"кола́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21040,"language":"tt","term":"борын","part_of_speech":"noun","pronunciation_easy":"боро́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21041,"language":"tt","term":"авыз","part_of_speech":"noun","pronunciation_easy":"авы́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21042,"language":"tt","term":"теш","part_of_speech":"noun","pronunciation_easy":"те́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21043,"language":"tt","term":"кул","part_of_speech":"noun","pronunciation_easy":"ку́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21044,"language":"tt","term":"бармак","part_of_speech":"noun","pronunciation_easy":"барма́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21045,"language":"tt","term":"аяк","part_of_speech":"noun","pronunciation_easy":"ая́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21046,"language":"tt","term":"тез","part_of_speech":"noun","pronunciation_easy":"те́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21047,"language":"tt","term":"арка","part_of_speech":"noun","pronunciation_easy":"арка́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21048,"language":"tt","term":"ашказаны","part_of_speech":"noun","pronunciation_easy":"ашказаны́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21049,"language":"tt","term":"йөрәк","part_of_speech":"noun","pronunciation_easy":"йөрә́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21050,"language":"tt","term":"чәч","part_of_speech":"noun","pronunciation_easy":"чә́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21051,"language":"tt","term":"тире","part_of_speech":"noun","pronunciation_easy":"тире́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21052,"language":"tt","term":"кан","part_of_speech":"noun","pronunciation_easy":"ка́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21053,"language":"tt","term":"сәламәтлек","part_of_speech":"noun","pronunciation_easy":"сәламәтле́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21054,"language":"tt","term":"авырту","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Существительное авырту: возможна неоднозначность по контексту; подтвердить ударение."}
+{"word_id":21055,"language":"tt","term":"югары температура","part_of_speech":"noun","pronunciation_easy":"югары́ температу́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21056,"language":"tt","term":"ютәл","part_of_speech":"noun","pronunciation_easy":"ютә́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21057,"language":"tt","term":"дару","part_of_speech":"noun","pronunciation_easy":"дару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21058,"language":"tt","term":"хастаханә","part_of_speech":"noun","pronunciation_easy":"хастаханә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21059,"language":"tt","term":"даруханә","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Слово даруханә: проверить сложную морфологию и ударение."}
+{"word_id":21060,"language":"tt","term":"ашыгыч ярдәм машинасы","part_of_speech":"noun","pronunciation_easy":"ашыгы́ч ярдә́м машинасы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21061,"language":"tt","term":"уяну","part_of_speech":"phrase","pronunciation_easy":"уяну́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21062,"language":"tt","term":"урыннан тору","part_of_speech":"phrase","pronunciation_easy":"урынна́н тору́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21063,"language":"tt","term":"юу","part_of_speech":"verb","pronunciation_easy":"юу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21064,"language":"tt","term":"киенү","part_of_speech":"phrase","pronunciation_easy":"киенү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21065,"language":"tt","term":"теш чистарту","part_of_speech":"phrase","pronunciation_easy":"те́ш чистарту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21066,"language":"tt","term":"чәч тарау","part_of_speech":"phrase","pronunciation_easy":"чә́ч тарау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21067,"language":"tt","term":"иртәнге аш ашау","part_of_speech":"phrase","pronunciation_easy":"иртәнге́ а́ш ашау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21068,"language":"tt","term":"эшкә бару","part_of_speech":"phrase","pronunciation_easy":"эшкә́ бару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21069,"language":"tt","term":"мәктәпкә бару","part_of_speech":"phrase","pronunciation_easy":"мәктәпкә́ бару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21070,"language":"tt","term":"өйгә кайту","part_of_speech":"phrase","pronunciation_easy":"өйгә́ кайту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21071,"language":"tt","term":"ял итү","part_of_speech":"phrase","pronunciation_easy":"я́л итү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21072,"language":"tt","term":"ваннада юыну","part_of_speech":"phrase","pronunciation_easy":"ваннада́ юыну́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21073,"language":"tt","term":"душта юыну","part_of_speech":"phrase","pronunciation_easy":"душта́ юыну́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21074,"language":"tt","term":"йокларга яту","part_of_speech":"phrase","pronunciation_easy":"йокларга́ яту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21075,"language":"tt","term":"йоклау","part_of_speech":"verb","pronunciation_easy":"йоклау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21076,"language":"tt","term":"ашау","part_of_speech":"verb","pronunciation_easy":"ашау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21077,"language":"tt","term":"эчү","part_of_speech":"verb","pronunciation_easy":"эчү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21078,"language":"tt","term":"чистарту","part_of_speech":"verb","pronunciation_easy":"чистарту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21079,"language":"tt","term":"тәртипкә китерү","part_of_speech":"phrase","pronunciation_easy":"тәртипкә́ китерү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21080,"language":"tt","term":"кер юу","part_of_speech":"phrase","pronunciation_easy":"ке́р юу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21081,"language":"tt","term":"үтүкләү","part_of_speech":"verb","pronunciation_easy":"үтүкләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21082,"language":"tt","term":"кибеткә бару","part_of_speech":"phrase","pronunciation_easy":"кибеткә́ бару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21083,"language":"tt","term":"күнегүләр ясау","part_of_speech":"verb","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Күнегүләр ясау: проверить сочетание и реализацию гласных в длинной форме."}
+{"word_id":21084,"language":"tt","term":"көтү","part_of_speech":"verb","pronunciation_easy":"көтү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21085,"language":"tt","term":"тәмамлау","part_of_speech":"verb","pronunciation_easy":"тәмамлау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21086,"language":"tt","term":"бару","part_of_speech":"verb","pronunciation_easy":"бару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21087,"language":"tt","term":"килү","part_of_speech":"verb","pronunciation_easy":"килү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21088,"language":"tt","term":"җәяү йөрү","part_of_speech":"verb","pronunciation_easy":"җәяү́ йөрү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21089,"language":"tt","term":"йөгерү","part_of_speech":"verb","pronunciation_easy":"йөгерү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21090,"language":"tt","term":"туктау","part_of_speech":"verb","pronunciation_easy":"туктау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21091,"language":"tt","term":"килеп җитү","part_of_speech":"verb","pronunciation_easy":"киле́п җитү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21092,"language":"tt","term":"китү","part_of_speech":"verb","pronunciation_easy":"китү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21093,"language":"tt","term":"кайту","part_of_speech":"verb","pronunciation_easy":"кайту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21094,"language":"tt","term":"борылу","part_of_speech":"verb","pronunciation_easy":"борылу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21095,"language":"tt","term":"машина йөртү","part_of_speech":"verb","pronunciation_easy":"машина́ йөртү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21096,"language":"tt","term":"велосипедта йөрү","part_of_speech":"phrase","pronunciation_easy":"велосипедта́ йөрү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21097,"language":"tt","term":"машина","part_of_speech":"noun","pronunciation_easy":"машина́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21098,"language":"tt","term":"автобус","part_of_speech":"noun","pronunciation_easy":"авто́бус","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21099,"language":"tt","term":"поезд","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Заимствование поезд: проверить татарскую реализацию русской фонетики."}
+{"word_id":21100,"language":"tt","term":"такси","part_of_speech":"noun","pronunciation_easy":"такси́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21101,"language":"tt","term":"велосипед","part_of_speech":"noun","pronunciation_easy":"велосипе́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21102,"language":"tt","term":"очкыч","part_of_speech":"noun","pronunciation_easy":"очкы́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21103,"language":"tt","term":"көймә","part_of_speech":"noun","pronunciation_easy":"көймә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21104,"language":"tt","term":"аэропорт","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21105,"language":"tt","term":"тимер юл станциясе","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Тимер юл станциясе: проверить заимствование станциясе и ударение словосочетания."}
+{"word_id":21106,"language":"tt","term":"билет","part_of_speech":"noun","pronunciation_easy":"биле́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21107,"language":"tt","term":"паспорт","part_of_speech":"noun","pronunciation_easy":"па́спорт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21108,"language":"tt","term":"чемодан","part_of_speech":"noun","pronunciation_easy":"чемода́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21109,"language":"tt","term":"сәфәр","part_of_speech":"noun","pronunciation_easy":"сәфә́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21110,"language":"tt","term":"юл","part_of_speech":"noun","pronunciation_easy":"ю́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21111,"language":"tt","term":"шәһәр","part_of_speech":"noun","pronunciation_easy":"шәһә́р","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":21112,"language":"tt","term":"кечкенә шәһәр","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"needs_review","issue":"Кечкенә шәһәр: проверить акцентную структуру предложения с уточняющим прилагательным."}
+{"word_id":21113,"language":"tt","term":"авыл","part_of_speech":"noun","pronunciation_easy":"авы́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21114,"language":"tt","term":"урам","part_of_speech":"noun","pronunciation_easy":"ура́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21115,"language":"tt","term":"мәйдан","part_of_speech":"noun","pronunciation_easy":"мәйда́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21116,"language":"tt","term":"парк","part_of_speech":"noun","pronunciation_easy":"па́рк","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21117,"language":"tt","term":"күпер","part_of_speech":"noun","pronunciation_easy":"күпе́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21118,"language":"tt","term":"бина","part_of_speech":"noun","pronunciation_easy":"бина́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21119,"language":"tt","term":"мәктәп","part_of_speech":"noun","pronunciation_easy":"мәктә́п","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21120,"language":"tt","term":"университет","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21121,"language":"tt","term":"китапханә","part_of_speech":"noun","pronunciation_easy":"китапханә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21122,"language":"tt","term":"кибет","part_of_speech":"noun","pronunciation_easy":"кибе́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21123,"language":"tt","term":"базар","part_of_speech":"noun","pronunciation_easy":"база́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21124,"language":"tt","term":"супермаркет","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21125,"language":"tt","term":"ресторан","part_of_speech":"noun","pronunciation_easy":"рестора́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21126,"language":"tt","term":"кафе","part_of_speech":"noun","pronunciation_easy":"кафе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21127,"language":"tt","term":"кунакханә","part_of_speech":"noun","pronunciation_easy":"кунакханә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21128,"language":"tt","term":"банк","part_of_speech":"noun","pronunciation_easy":"ба́нк","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21129,"language":"tt","term":"почта бүлекчәсе","part_of_speech":"noun","pronunciation_easy":"почта́ бүлекчәсе́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21130,"language":"tt","term":"полиция","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Полиция: проверить нормативную адаптацию заимствования."}
+{"word_id":21131,"language":"tt","term":"кинотеатр","part_of_speech":"noun","pronunciation_easy":"кинотеа́тр","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21132,"language":"tt","term":"музей","part_of_speech":"noun","pronunciation_easy":"музе́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21133,"language":"tt","term":"керү урыны","part_of_speech":"noun","pronunciation_easy":"керү́ урыны́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21134,"language":"tt","term":"чыгу урыны","part_of_speech":"noun","pronunciation_easy":"чыгу́ урыны́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21135,"language":"tt","term":"лифт","part_of_speech":"noun","pronunciation_easy":"ли́фт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21136,"language":"tt","term":"акча","part_of_speech":"noun","pronunciation_easy":"акча́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21137,"language":"tt","term":"бәя","part_of_speech":"noun","pronunciation_easy":"бәя́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21138,"language":"tt","term":"тәңкә","part_of_speech":"noun","pronunciation_easy":"тәңкә́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21139,"language":"tt","term":"кәгазь акча","part_of_speech":"noun","pronunciation_easy":"кәга́зь акча́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21140,"language":"tt","term":"банк картасы","part_of_speech":"noun","pronunciation_easy":"ба́нк картасы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21141,"language":"tt","term":"кулдагы акча","part_of_speech":"noun","pronunciation_easy":"кулдагы́ акча́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21142,"language":"tt","term":"чек","part_of_speech":"noun","pronunciation_easy":"че́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21143,"language":"tt","term":"кайтарып бирелгән акча","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Сложное причастное сочетание кайтарып бирелгән акча: требуется ручная расстановка ударений."}
+{"word_id":21144,"language":"tt","term":"ташлама","part_of_speech":"noun","pronunciation_easy":"ташлама́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21145,"language":"tt","term":"хисап","part_of_speech":"noun","pronunciation_easy":"хиса́п","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21146,"language":"tt","term":"сатып алу","part_of_speech":"verb","pronunciation_easy":"саты́п алу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21147,"language":"tt","term":"сату","part_of_speech":"verb","pronunciation_easy":"сату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21148,"language":"tt","term":"түләү","part_of_speech":"verb","pronunciation_easy":"түләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21149,"language":"tt","term":"акча тоту","part_of_speech":"verb","pronunciation_easy":"акча́ тоту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21150,"language":"tt","term":"тору","part_of_speech":"verb","pronunciation_easy":"тору́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21151,"language":"tt","term":"арзан","part_of_speech":"adjective","pronunciation_easy":"арза́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21152,"language":"tt","term":"кыйммәт","part_of_speech":"adjective","pronunciation_easy":"кыйммә́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21153,"language":"tt","term":"түләүсез","part_of_speech":"adjective","pronunciation_easy":"түләүсе́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21154,"language":"tt","term":"ачык","part_of_speech":"adjective","pronunciation_easy":"ачы́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21155,"language":"tt","term":"ябык","part_of_speech":"adjective","pronunciation_easy":"ябы́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21156,"language":"tt","term":"үлчәм","part_of_speech":"noun","pronunciation_easy":"үлчә́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21157,"language":"tt","term":"төс","part_of_speech":"noun","pronunciation_easy":"тө́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21158,"language":"tt","term":"заказ","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."}
+{"word_id":21159,"language":"tt","term":"сатып алучы","part_of_speech":"noun","pronunciation_easy":"саты́п алучы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21160,"language":"tt","term":"чират","part_of_speech":"noun","pronunciation_easy":"чира́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21161,"language":"tt","term":"эш","part_of_speech":"noun","pronunciation_easy":"э́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21162,"language":"tt","term":"һөнәр","part_of_speech":"noun","pronunciation_easy":"һөнә́р","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":21163,"language":"tt","term":"офис","part_of_speech":"noun","pronunciation_easy":"о́фис","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21164,"language":"tt","term":"ширкәт","part_of_speech":"noun","pronunciation_easy":"ширкә́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21165,"language":"tt","term":"киңәшмә","part_of_speech":"noun","pronunciation_easy":"киңәшмә́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21166,"language":"tt","term":"җитәкче","part_of_speech":"noun","pronunciation_easy":"җитәкче́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21167,"language":"tt","term":"хезмәткәр","part_of_speech":"noun","pronunciation_easy":"хезмәткә́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21168,"language":"tt","term":"эшмәкәрлек","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Производное эшмәкәрлек: проверить лексическое ударение и гармонию."}
+{"word_id":21169,"language":"tt","term":"компьютер","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21170,"language":"tt","term":"ноутбук","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21171,"language":"tt","term":"клавиатура","part_of_speech":"noun","pronunciation_easy":"клавиату́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21172,"language":"tt","term":"экран","part_of_speech":"noun","pronunciation_easy":"экра́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21173,"language":"tt","term":"принтер","part_of_speech":"noun","pronunciation_easy":"при́нтер","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21174,"language":"tt","term":"документ","part_of_speech":"noun","pronunciation_easy":"докуме́нт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21175,"language":"tt","term":"электрон хат","part_of_speech":"noun","pronunciation_easy":"электро́н ха́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21176,"language":"tt","term":"хат","part_of_speech":"noun","pronunciation_easy":"ха́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21177,"language":"tt","term":"китап","part_of_speech":"noun","pronunciation_easy":"кита́п","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21178,"language":"tt","term":"дәфтәр","part_of_speech":"noun","pronunciation_easy":"дәфтә́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21179,"language":"tt","term":"ручка","part_of_speech":"noun","pronunciation_easy":"ру́чка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21180,"language":"tt","term":"карандаш","part_of_speech":"noun","pronunciation_easy":"каранда́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21181,"language":"tt","term":"кәгазь","part_of_speech":"noun","pronunciation_easy":"кәга́зь","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21182,"language":"tt","term":"дәрес","part_of_speech":"noun","pronunciation_easy":"дәре́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21183,"language":"tt","term":"өй эше","part_of_speech":"noun","pronunciation_easy":"ө́й эше́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21184,"language":"tt","term":"имтихан","part_of_speech":"noun","pronunciation_easy":"имтиха́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21185,"language":"tt","term":"өйрәнү","part_of_speech":"verb","pronunciation_easy":"өйрәнү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21186,"language":"tt","term":"сөйләшү","part_of_speech":"verb","pronunciation_easy":"сөйләшү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21187,"language":"tt","term":"әйтү","part_of_speech":"verb","pronunciation_easy":"әйтү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21188,"language":"tt","term":"сөйләп бирү","part_of_speech":"verb","pronunciation_easy":"сөйлә́п бирү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21189,"language":"tt","term":"сорау бирү","part_of_speech":"verb","pronunciation_easy":"сорау́ бирү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21190,"language":"tt","term":"җавап бирү","part_of_speech":"verb","pronunciation_easy":"җава́п бирү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21191,"language":"tt","term":"тыңлау","part_of_speech":"verb","pronunciation_easy":"тыңлау́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21192,"language":"tt","term":"ишетү","part_of_speech":"verb","pronunciation_easy":"ишетү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21193,"language":"tt","term":"уку","part_of_speech":"verb","pronunciation_easy":"уку́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21194,"language":"tt","term":"язу","part_of_speech":"verb","pronunciation_easy":"язу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21195,"language":"tt","term":"аңлау","part_of_speech":"verb","pronunciation_easy":"аңлау́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21196,"language":"tt","term":"белү","part_of_speech":"verb","pronunciation_easy":"белү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21197,"language":"tt","term":"хәтерләү","part_of_speech":"verb","pronunciation_easy":"хәтерләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21198,"language":"tt","term":"оныту","part_of_speech":"verb","pronunciation_easy":"оныту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21199,"language":"tt","term":"аңлату","part_of_speech":"verb","pronunciation_easy":"аңлату́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21200,"language":"tt","term":"кабатлау","part_of_speech":"verb","pronunciation_easy":"кабатлау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21201,"language":"tt","term":"тәрҗемә итү","part_of_speech":"verb","pronunciation_easy":"тәрҗемә́ итү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21202,"language":"tt","term":"тел","part_of_speech":"noun","pronunciation_easy":"те́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21203,"language":"tt","term":"сүз","part_of_speech":"noun","pronunciation_easy":"сү́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21204,"language":"tt","term":"җөмлә","part_of_speech":"noun","pronunciation_easy":"җөмлә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21205,"language":"tt","term":"сорау","part_of_speech":"noun","pronunciation_easy":"сорау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21206,"language":"tt","term":"хәбәр","part_of_speech":"noun","pronunciation_easy":"хәбә́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21207,"language":"tt","term":"телефон","part_of_speech":"noun","pronunciation_easy":"телефо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21208,"language":"tt","term":"шалтырату","part_of_speech":"verb","pronunciation_easy":"шалтырату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21209,"language":"tt","term":"адрес","part_of_speech":"noun","pronunciation_easy":"адре́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21210,"language":"tt","term":"исем","part_of_speech":"noun","pronunciation_easy":"исе́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21211,"language":"tt","term":"кояш","part_of_speech":"noun","pronunciation_easy":"коя́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21212,"language":"tt","term":"йолдыз","part_of_speech":"noun","pronunciation_easy":"йолды́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21213,"language":"tt","term":"күк","part_of_speech":"noun","pronunciation_easy":"кү́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21214,"language":"tt","term":"болыт","part_of_speech":"noun","pronunciation_easy":"болы́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21215,"language":"tt","term":"яңгыр","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Слово яңгыр: требуется сверка носового ң и ударения."}
+{"word_id":21216,"language":"tt","term":"кар","part_of_speech":"noun","pronunciation_easy":"ка́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21217,"language":"tt","term":"җил","part_of_speech":"noun","pronunciation_easy":"җи́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21218,"language":"tt","term":"һава торышы","part_of_speech":"noun","pronunciation_easy":"һава́ торышы́","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":21219,"language":"tt","term":"кайнар","part_of_speech":"adjective","pronunciation_easy":"кайна́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21220,"language":"tt","term":"салкын","part_of_speech":"adjective","pronunciation_easy":"салкы́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21221,"language":"tt","term":"җылы","part_of_speech":"adjective","pronunciation_easy":"җылы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21222,"language":"tt","term":"салкынча","part_of_speech":"adjective","pronunciation_easy":"салкынча́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21223,"language":"tt","term":"агач","part_of_speech":"noun","pronunciation_easy":"ага́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21224,"language":"tt","term":"чәчәк","part_of_speech":"noun","pronunciation_easy":"чәчә́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21225,"language":"tt","term":"үлән","part_of_speech":"noun","pronunciation_easy":"үлә́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21226,"language":"tt","term":"урман","part_of_speech":"noun","pronunciation_easy":"урма́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21227,"language":"tt","term":"елга","part_of_speech":"noun","pronunciation_easy":"елга́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21228,"language":"tt","term":"күл","part_of_speech":"noun","pronunciation_easy":"кү́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21229,"language":"tt","term":"диңгез","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Требуется грамматическая проверка: форма на -гыз/-гез может быть повелительной, а не обычным словом."}
+{"word_id":21230,"language":"tt","term":"тау","part_of_speech":"noun","pronunciation_easy":"тау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21231,"language":"tt","term":"пляж","part_of_speech":"noun","pronunciation_easy":"пля́ж","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21232,"language":"tt","term":"хайван","part_of_speech":"noun","pronunciation_easy":"хайва́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21233,"language":"tt","term":"эт","part_of_speech":"noun","pronunciation_easy":"э́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21234,"language":"tt","term":"песи","part_of_speech":"noun","pronunciation_easy":"песи́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21235,"language":"tt","term":"кош","part_of_speech":"noun","pronunciation_easy":"ко́ш","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21236,"language":"tt","term":"музыка","part_of_speech":"noun","pronunciation_easy":"му́зыка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21237,"language":"tt","term":"җыр","part_of_speech":"noun","pronunciation_easy":"җы́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21238,"language":"tt","term":"фильм","part_of_speech":"noun","pronunciation_easy":"фи́льм","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21239,"language":"tt","term":"уен","part_of_speech":"noun","pronunciation_easy":"уе́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21240,"language":"tt","term":"спорт","part_of_speech":"noun","pronunciation_easy":"спо́рт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21241,"language":"tt","term":"футбол","part_of_speech":"noun","pronunciation_easy":"футбо́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21242,"language":"tt","term":"бассейн","part_of_speech":"noun","pronunciation_easy":"бассе́йн","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21243,"language":"tt","term":"концерт","part_of_speech":"noun","pronunciation_easy":"конце́рт","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21244,"language":"tt","term":"картина","part_of_speech":"noun","pronunciation_easy":"карти́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21245,"language":"tt","term":"фотоаппарат","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21246,"language":"tt","term":"ял вакыты","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Сложное сочетание ял вакыты: подтвердить акцент в зависимости от синтаксиса."}
+{"word_id":21247,"language":"tt","term":"ял көннәре","part_of_speech":"noun","pronunciation_easy":"я́л көннәре́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21248,"language":"tt","term":"күңел ачу кичәсе","part_of_speech":"noun","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"Күңел ачу кичәсе: сложное словосочетание требует ручной акцентологической проверки."}
+{"word_id":21249,"language":"tt","term":"туган көн","part_of_speech":"noun","pronunciation_easy":"туга́н кө́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21250,"language":"tt","term":"мавыгу","part_of_speech":"noun","pronunciation_easy":"мавыгу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21251,"language":"tt","term":"буш вакыт","part_of_speech":"phrase","pronunciation_easy":"бу́ш вакы́т","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21252,"language":"tt","term":"уйнау","part_of_speech":"verb","pronunciation_easy":"уйнау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21253,"language":"tt","term":"җырлау","part_of_speech":"verb","pronunciation_easy":"җырлау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21254,"language":"tt","term":"бию","part_of_speech":"verb","pronunciation_easy":"бию́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21255,"language":"tt","term":"йөзү","part_of_speech":"verb","pronunciation_easy":"йөзү́","pronunciation_note_ru":"Сохраняйте особые татарские округлённые гласные ө и ү; не произносите их как русские ё/ю.","status":"ready","issue":null}
+{"word_id":21256,"language":"tt","term":"рәсем ясау","part_of_speech":"verb","pronunciation_easy":"рәсе́м ясау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21257,"language":"tt","term":"телевизор карау","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Проверить адаптацию русского заимствования в татарской речи (сегменты, гласные, ударение)."}
+{"word_id":21258,"language":"tt","term":"фотога төшерү","part_of_speech":"phrase","pronunciation_easy":"фотога́ төшерү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21259,"language":"tt","term":"дусларга кунакка бару","part_of_speech":"phrase","pronunciation_easy":"дусларга́ кунакка́ бару́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21260,"language":"tt","term":"чит илгә сәяхәт итү","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Чит илгә сәяхәт итү: сложное словосочетание требует ручной акцентологической проверки."}
+{"word_id":21261,"language":"tt","term":"бәхетле","part_of_speech":"adjective","pronunciation_easy":"бәхетле́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21262,"language":"tt","term":"моңсу","part_of_speech":"adjective","pronunciation_easy":"моңсу́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21263,"language":"tt","term":"ачулы","part_of_speech":"adjective","pronunciation_easy":"ачулы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21264,"language":"tt","term":"курыккан","part_of_speech":"adjective","pronunciation_easy":"курыкка́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21265,"language":"tt","term":"арыган","part_of_speech":"adjective","pronunciation_easy":"арыга́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21266,"language":"tt","term":"ач","part_of_speech":"adjective","pronunciation_easy":"а́ч","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21267,"language":"tt","term":"сусаган","part_of_speech":"adjective","pronunciation_easy":"сусага́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21268,"language":"tt","term":"гаҗәпләнгән","part_of_speech":"adjective","pronunciation_easy":"гаҗәпләнгә́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21269,"language":"tt","term":"игелекле","part_of_speech":"adjective","pronunciation_easy":"игелекле́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21270,"language":"tt","term":"ягымлы","part_of_speech":"adjective","pronunciation_easy":"ягымлы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21271,"language":"tt","term":"җиңел","part_of_speech":"adjective","pronunciation_easy":"җиңе́л","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21272,"language":"tt","term":"авыр","part_of_speech":"adjective","pronunciation_easy":"авы́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21273,"language":"tt","term":"матур","part_of_speech":"adjective","pronunciation_easy":"мату́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21274,"language":"tt","term":"яхшы","part_of_speech":"adjective","pronunciation_easy":"яхшы́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21275,"language":"tt","term":"начар","part_of_speech":"adjective","pronunciation_easy":"нача́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21276,"language":"tt","term":"зур","part_of_speech":"adjective","pronunciation_easy":"зу́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21277,"language":"tt","term":"кечкенә","part_of_speech":"adjective","pronunciation_easy":"кечкенә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21278,"language":"tt","term":"озын","part_of_speech":"adjective","pronunciation_easy":"озы́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21279,"language":"tt","term":"кыска","part_of_speech":"adjective","pronunciation_easy":"кыска́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21280,"language":"tt","term":"кызыл","part_of_speech":"adjective","pronunciation_easy":"кызы́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21281,"language":"tt","term":"зәңгәр","part_of_speech":"adjective","pronunciation_easy":"зәңгә́р","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21282,"language":"tt","term":"яшел","part_of_speech":"adjective","pronunciation_easy":"яше́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21283,"language":"tt","term":"ак","part_of_speech":"adjective","pronunciation_easy":"а́к","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21284,"language":"tt","term":"кара","part_of_speech":"adjective","pronunciation_easy":"кара́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21285,"language":"tt","term":"сары","part_of_speech":"adjective","pronunciation_easy":"сары́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21286,"language":"tt","term":"күрү","part_of_speech":"verb","pronunciation_easy":"күрү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21287,"language":"tt","term":"карау","part_of_speech":"verb","pronunciation_easy":"карау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21288,"language":"tt","term":"табу","part_of_speech":"verb","pronunciation_easy":"табу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21289,"language":"tt","term":"эзләү","part_of_speech":"phrase","pronunciation_easy":"эзләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21290,"language":"tt","term":"бирү","part_of_speech":"verb","pronunciation_easy":"бирү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21291,"language":"tt","term":"алу","part_of_speech":"verb","pronunciation_easy":"алу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21292,"language":"tt","term":"кую","part_of_speech":"verb","pronunciation_easy":"кую́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21293,"language":"tt","term":"алып килү","part_of_speech":"verb","pronunciation_easy":"алы́п килү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21294,"language":"tt","term":"җибәрү","part_of_speech":"verb","pronunciation_easy":"җибәрү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21295,"language":"tt","term":"кабул итү","part_of_speech":"verb","pronunciation_easy":"кабу́л итү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21296,"language":"tt","term":"ясау","part_of_speech":"verb","pronunciation_easy":"ясау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21297,"language":"tt","term":"эшләү","part_of_speech":"verb","pronunciation_easy":"эшләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21298,"language":"tt","term":"куллану","part_of_speech":"verb","pronunciation_easy":"куллану́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21299,"language":"tt","term":"кирәк булу","part_of_speech":"verb","pronunciation_easy":"кирә́к булу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21300,"language":"tt","term":"теләү","part_of_speech":"verb","pronunciation_easy":"теләү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21301,"language":"tt","term":"ошату","part_of_speech":"verb","pronunciation_easy":"ошату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21302,"language":"tt","term":"ярату","part_of_speech":"verb","pronunciation_easy":"ярату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21303,"language":"tt","term":"ярдәм итү","part_of_speech":"verb","pronunciation_easy":"ярдә́м итү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21304,"language":"tt","term":"тырышу","part_of_speech":"verb","pronunciation_easy":"тырышу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21305,"language":"tt","term":"башлау","part_of_speech":"verb","pronunciation_easy":"башлау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21306,"language":"tt","term":"дәвам итү","part_of_speech":"verb","pronunciation_easy":"дәва́м итү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21307,"language":"tt","term":"сайлау","part_of_speech":"verb","pronunciation_easy":"сайлау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21308,"language":"tt","term":"саклау","part_of_speech":"verb","pronunciation_easy":"саклау́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21309,"language":"tt","term":"вату","part_of_speech":"verb","pronunciation_easy":"вату́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21310,"language":"tt","term":"төзәтү","part_of_speech":"verb","pronunciation_easy":"төзәтү́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21311,"language":"tt","term":"монда","part_of_speech":"adverb","pronunciation_easy":"монда́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21312,"language":"tt","term":"анда","part_of_speech":"adverb","pronunciation_easy":"анда́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21313,"language":"tt","term":"эчтә","part_of_speech":"adverb","pronunciation_easy":"эчтә́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21314,"language":"tt","term":"тышта","part_of_speech":"adverb","pronunciation_easy":"тышта́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21315,"language":"tt","term":"мин","part_of_speech":"other","pronunciation_easy":"ми́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21316,"language":"tt","term":"син","part_of_speech":"other","pronunciation_easy":"си́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21317,"language":"tt","term":"без","part_of_speech":"other","pronunciation_easy":"бе́з","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21318,"language":"tt","term":"алар","part_of_speech":"other","pronunciation_easy":"ала́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21319,"language":"tt","term":"янында","part_of_speech":"other","pronunciation_easy":"янында́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21320,"language":"tt","term":"бу","part_of_speech":"other","pronunciation_easy":"бу́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21321,"language":"tt","term":"сулга","part_of_speech":"adverb","pronunciation_easy":"сулга́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21322,"language":"tt","term":"уңга","part_of_speech":"adverb","pronunciation_easy":"уңга́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21323,"language":"tt","term":"турыга","part_of_speech":"phrase","pronunciation_easy":"турыга́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21324,"language":"tt","term":"теге","part_of_speech":"other","pronunciation_easy":"теге́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21325,"language":"tt","term":"һәркем","part_of_speech":"other","pronunciation_easy":"һәрке́м","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":21326,"language":"tt","term":"кайда","part_of_speech":"other","pronunciation_easy":"ка́йда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21327,"language":"tt","term":"кайчан","part_of_speech":"other","pronunciation_easy":"ка́йчан","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21328,"language":"tt","term":"кем","part_of_speech":"other","pronunciation_easy":"ке́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21329,"language":"tt","term":"нәрсә","part_of_speech":"other","pronunciation_easy":"нә́рсә","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21330,"language":"tt","term":"нигә","part_of_speech":"other","pronunciation_easy":"ни́гә","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21331,"language":"tt","term":"ничек","part_of_speech":"other","pronunciation_easy":"ни́чек","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21332,"language":"tt","term":"кайсы","part_of_speech":"other","pronunciation_easy":"ка́йсы","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21333,"language":"tt","term":"ничә","part_of_speech":"phrase","pronunciation_easy":"ни́чә","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21334,"language":"tt","term":"күпме тора?","part_of_speech":"phrase","pronunciation_easy":"кү́пме тора́?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21335,"language":"tt","term":"кемнең","part_of_speech":"other","pronunciation_easy":"ке́мнең","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21336,"language":"tt","term":"мин аңламыйм","part_of_speech":"phrase","pronunciation_easy":"ми́н аңла́мыйм","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21337,"language":"tt","term":"зинһар, әкрен сөйләгез","part_of_speech":"phrase","pronunciation_easy":"зинһа́р, әкре́н сө́йләгез","pronunciation_note_ru":"Татарское һ — придыхательное [h], не твёрдое русское х.","status":"ready","issue":null}
+{"word_id":21338,"language":"tt","term":"кабатлый алмассызмы?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"В вопросительной конструкции кабатлый алмассызмы требуется уточнить ударение при отрицании и вежливом суффиксе."}
+{"word_id":21339,"language":"tt","term":"бу нәрсә аңлата?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"needs_review","issue":"В предложении бу нәрсә аңлата? возможна контекстная акцентуация вопросительного местоимения."}
+{"word_id":21340,"language":"tt","term":"моны ничек әйтергә?","part_of_speech":"phrase","pronunciation_easy":"моны́ ни́чек әйтергә́?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21341,"language":"tt","term":"миңа ярдәм кирәк","part_of_speech":"phrase","pronunciation_easy":"миңа́ ярдә́м кирә́к","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21342,"language":"tt","term":"бәдрәф кайда?","part_of_speech":"phrase","pronunciation_easy":"бәдрә́ф ка́йда?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21343,"language":"tt","term":"бу күпме тора?","part_of_speech":"phrase","pronunciation_easy":"бу́ кү́пме тора́?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21344,"language":"tt","term":"мин моны алыр идем","part_of_speech":"phrase","pronunciation_easy":"ми́н моны́ алы́р иде́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21345,"language":"tt","term":"карта белән түләргә ярыймы?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Түләү формасының ярыймы? и сложное предложение требуют проверки ударения. Нужна ручная проверка акцентной структуры многословного выражения или формы повелительного наклонения."}
+{"word_id":21346,"language":"tt","term":"хисапны бирегез әле","part_of_speech":"phrase","pronunciation_easy":"хисапны́ би́регез әле́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21347,"language":"tt","term":"мин алдан броньладым","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Заимствование броньладым: требуется сверка ударения в адаптированном глаголе. Требуется уточнить место ударения после присоединения татарских аффиксов к заимствованной основе."}
+{"word_id":21348,"language":"tt","term":"ике кешегә өстәл бирегез әле","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужна ручная проверка акцентной структуры многословного выражения или формы повелительного наклонения."}
+{"word_id":21349,"language":"tt","term":"вокзал кайда?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Вокзал в татарском может сохранять русское ударение; требуется проверка контекста."}
+{"word_id":21350,"language":"tt","term":"сәгать ничә?","part_of_speech":"phrase","pronunciation_easy":"сәга́ть ни́чә?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21351,"language":"tt","term":"мин адаштым","part_of_speech":"phrase","pronunciation_easy":"ми́н адашты́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21352,"language":"tt","term":"ашыгыч ярдәм чакырыгыз","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Нужна ручная проверка акцентной структуры многословного выражения или формы повелительного наклонения."}
+{"word_id":21353,"language":"tt","term":"үземне начар хис итәм","part_of_speech":"phrase","pronunciation_easy":"үземне́ нача́р хи́с итә́м","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21354,"language":"tt","term":"минем ... аллергиям бар","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Аллергиям (с татарским суффиксом): требуется уточнить место ударения и фонетическую адаптацию."}
+{"word_id":21355,"language":"tt","term":"миңа су бирегез әле","part_of_speech":"phrase","pronunciation_easy":"миңа́ су́ би́регез әле́","pronunciation_note_ru":"Татарское ң — носовой [ŋ] (как ng в sing), без отдельного звука г.","status":"ready","issue":null}
+{"word_id":21356,"language":"tt","term":"мин ит ашамыйм","part_of_speech":"phrase","pronunciation_easy":"ми́н и́т аша́мыйм","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21357,"language":"tt","term":"вайфай бармы?","part_of_speech":"phrase","pronunciation_easy":"ва́йфай ба́рмы?","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21358,"language":"tt","term":"пароль нинди?","part_of_speech":"phrase","pronunciation_easy":null,"pronunciation_note_ru":null,"status":"needs_review","issue":"Ударение в заимствовании предположительно как в русском; требуется сверка татарской нормы."}
+{"word_id":21359,"language":"tt","term":"кыен түгел","part_of_speech":"phrase","pronunciation_easy":"кые́н түге́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":21360,"language":"tt","term":"әйдә, киттек","part_of_speech":"phrase","pronunciation_easy":"әйдә́, китте́к","pronunciation_note_ru":null,"status":"ready","issue":null}

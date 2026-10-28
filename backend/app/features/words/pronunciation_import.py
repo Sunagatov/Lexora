@@ -21,7 +21,7 @@ class PronunciationImportError(ValueError):
 
 class PronunciationEntry(BaseModel):
     word_id: int = Field(strict=True, gt=0)
-    language: Literal["es"]
+    language: Literal["es", "tt", "tr", "zh", "ar"]
     term: str = Field(min_length=1, max_length=255)
     part_of_speech: str | None
     pronunciation_easy: str | None = Field(max_length=1000)
@@ -38,7 +38,21 @@ def digest(value) -> str:
     ).hexdigest()
 
 
-def read_package(data_path: Path, manifest_path: Path) -> tuple[list[PronunciationEntry], dict]:
+SCHEMES = {
+    "es": "russian-cyrillic-v1",
+    "tr": "russian-cyrillic-v1",
+    "tt": "tatar-cyrillic-stress-v1",
+    "zh": "cyrillic-with-tone-numbers-v1",
+    "ar": "russian-cyrillic-with-length-v1",
+}
+
+
+def read_package(
+    data_path: Path,
+    manifest_path: Path,
+    *,
+    skip_unreviewed: bool = False,
+) -> tuple[list[PronunciationEntry], dict]:
     raw = data_path.read_bytes()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
     if manifest.get("format_version") != "lexora-easy-pronunciation-v1":
@@ -46,26 +60,44 @@ def read_package(data_path: Path, manifest_path: Path) -> tuple[list[Pronunciati
     if hashlib.sha256(raw).hexdigest() != manifest.get("output", {}).get("sha256"):
         raise PronunciationImportError("Pronunciation file does not match the manifest checksum")
     languages = manifest.get("languages", {})
-    if set(languages) != {"es"} or languages["es"].get("scheme") != "russian-cyrillic-v1":
-        raise PronunciationImportError("Expected Spanish Russian-letter pronunciation hints")
+    if len(languages) != 1:
+        raise PronunciationImportError("A pronunciation package must contain exactly one language")
+    language = next(iter(languages))
+    if language not in SCHEMES or languages[language].get("scheme") != SCHEMES[language]:
+        raise PronunciationImportError("Unsupported language or pronunciation scheme")
     entries = [
         PronunciationEntry.model_validate_json(line)
         for line in raw.decode("utf-8-sig").splitlines()
         if line.strip()
     ]
-    if not entries or len(entries) != languages["es"].get("unique_output_word_ids"):
+    if not entries or len(entries) != languages[language].get("unique_output_word_ids"):
         raise PronunciationImportError("Package count does not match the manifest")
     if len({r.word_id for r in entries}) != len(entries):
         raise PronunciationImportError("Duplicate Word IDs in pronunciation package")
+    eligible, deferred = [], []
     for row in entries:
+        if row.language != language:
+            raise PronunciationImportError("Entry language does not match the manifest")
         if (
             row.status != "ready"
             or row.issue
             or not row.pronunciation_easy
             or not row.pronunciation_easy.strip()
         ):
-            raise PronunciationImportError(f"Word ID {row.word_id} still requires review")
-    return entries, manifest
+            if not skip_unreviewed:
+                raise PronunciationImportError(f"Word ID {row.word_id} still requires review")
+            deferred.append(
+                {
+                    "word_id": row.word_id,
+                    "term": row.term,
+                    "issue": row.issue or "Missing reviewed reading",
+                }
+            )
+        else:
+            eligible.append(row)
+    if not eligible:
+        raise PronunciationImportError("No reviewed pronunciation hints to import")
+    return eligible, {**manifest, "deferred_entries": deferred}
 
 
 def build_plan(db: Session, entries: list[PronunciationEntry], *, lock: bool = False) -> dict:

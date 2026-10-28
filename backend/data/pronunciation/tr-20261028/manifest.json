@@ -1,0 +1,44 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "lexora-tr-reviewed-pronunciation.jsonl",
+    "sha256": "77cd114a6e28da800d3338cdca81ae6c864fc506f526394759b0ca9d17faf99d"
+  },
+  "languages": {
+    "tr": {
+      "scheme": "russian-cyrillic-v1",
+      "unique_output_word_ids": 500,
+      "ready": 384,
+      "needs_review": 116
+    }
+  },
+  "source_manifest_sha256": "564009ef80d4f96ff80139dd09c4c3755a66d29e0d2e502e4ebe169d2e64ebfd",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (2).xlsx",
+      "sha256": "43f357e87c7860414107a8856ebb31916ff4ae9245853efb1d3e1f8941ae5d89",
+      "learning_language": "tr",
+      "translation_language": "ru"
+    }
+  ],
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "method": "Full model review of supplied hints and meanings, dictionary/reference comparisons, targeted corrections; unresolved entries deliberately excluded"
+  },
+  "preserve": [
+    "Word IDs",
+    "terms",
+    "part of speech",
+    "existing Pinyin/transliteration",
+    "IPA",
+    "audio",
+    "translations",
+    "definitions",
+    "topics",
+    "ratings",
+    "history",
+    "timestamps"
+  ]
+}
