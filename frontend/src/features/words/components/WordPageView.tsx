@@ -2,6 +2,7 @@ import {LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import type {Word} from '@/features/words/types/wordTypes'
 import {formatIpa} from '@/features/words/model/wordPresenter'
+import {EasyPronunciation} from './EasyPronunciation'
 
 type Props = {
   word: Word
@@ -34,6 +35,13 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       )}
 
       {/* Pronunciation */}
+      {word.pronunciation_easy && (
+        <section className="wpv-section">
+          <h3 className="wpv-section-title">Easy pronunciation · approximate</h3>
+          <EasyPronunciation word={word} />
+          {word.pronunciation_note_ru && <p lang="ru" className="word-pronunciation-note">{word.pronunciation_note_ru}</p>}
+        </section>
+      )}
       {word.pronunciation_ipa && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Pronunciation</h3>

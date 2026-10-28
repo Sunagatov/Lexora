@@ -17,6 +17,8 @@
 
 Specialized AI/product docs:
 
+- `easy-pronunciation.md` owns approximate reading hints and the reviewed Spanish import.
+
 - `multilingual.md` owns learning-language scoping, translation groups, language defaults and migration compatibility.
 
 - `bulk-workbook-import.md` owns the website preview/apply import, flat format and retry/recovery contracts.

@@ -20,6 +20,46 @@
   text-align: right;
 }
 
+.word-list-header.has-pronunciation {
+  grid-template-columns: 22% 22% 1fr 130px;
+}
+
+.word-table.has-pronunciation .word-cell-pronunciation {
+  width: 22%;
+}
+
+.word-easy-pronunciation {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.word-pronunciation-note {
+  margin: 6px 0 0;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.word-card-reading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+
+.word-card .word-card-reading-row .word-term {
+  flex: 0 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.word-card-reading-row .wdp-speak-btn {
+  flex-shrink: 0;
+  align-self: center;
+}
+
 /* Desktop table */
 .word-table-wrap {
   background: var(--surface);

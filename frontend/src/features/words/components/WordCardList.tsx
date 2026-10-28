@@ -6,6 +6,7 @@ import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
+import {EasyPronunciation} from './EasyPronunciation'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {SWIPE_THRESHOLD, useWordSwipe} from '@/features/words/hooks/useWordSwipe'
@@ -59,8 +60,8 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
       <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
         <div className="word-card-grid">
           <div className="word-card-left">
-            <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
-              <span className="word-term" style={{display: 'inline', flex: 'none', marginBottom: 0}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
+            <span className="word-card-reading-row">
+              <span className="word-term" style={{display: 'inline', marginBottom: 0}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
               <button type="button"
                 className={`wdp-speak-btn ripple-btn${isSpeaking ? ' is-speaking' : ''}`}
                 style={{marginLeft: 0}}
@@ -71,6 +72,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
                   {isSpeaking ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/> : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
                 </svg>
               </button>
+              <EasyPronunciation word={word} />
             </span>
             {translation && <span className="word-translation-focus">{translation}</span>}
           </div>

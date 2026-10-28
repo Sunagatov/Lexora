@@ -18,6 +18,8 @@ export type Word = {
   term: string
   language: string
   transliteration?: string | null
+  pronunciation_easy?: string | null
+  pronunciation_note_ru?: string | null
   translation_language?: 'ru' | 'en'
   translation_groups?: Record<string, string[]>
   explanation_groups?: Record<string, {definition?: string | null; notes?: string | null}>

@@ -429,13 +429,15 @@
     display: none;
   }
 
-  .word-list-header {
+  .word-list-header,
+  .word-list-header.has-pronunciation {
     display: grid;
     grid-template-columns: 1fr auto;
     padding: 4px 12px;
   }
 
-  .word-list-header-cell:nth-child(2) {
+  .word-list-header-details,
+  .word-list-header-pronunciation {
     display: none;
   }
 

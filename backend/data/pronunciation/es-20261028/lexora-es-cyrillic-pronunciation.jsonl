@@ -1,0 +1,500 @@
+{"word_id":18861,"language":"es","term":"hola","part_of_speech":"phrase","pronunciation_easy":"о́ла","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18862,"language":"es","term":"buenos días","part_of_speech":"phrase","pronunciation_easy":"буэ́нос ди́ас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18863,"language":"es","term":"buenas tardes","part_of_speech":"phrase","pronunciation_easy":"буэ́нас та́рдэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18864,"language":"es","term":"buenas noches","part_of_speech":"phrase","pronunciation_easy":"буэ́нас но́чэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18865,"language":"es","term":"que descanses","part_of_speech":"phrase","pronunciation_easy":"кэ дэска́нсэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18866,"language":"es","term":"adiós","part_of_speech":"phrase","pronunciation_easy":"адьо́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18867,"language":"es","term":"hasta luego","part_of_speech":"phrase","pronunciation_easy":"а́ста луэ́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18868,"language":"es","term":"por favor","part_of_speech":"other","pronunciation_easy":"пор фабо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18869,"language":"es","term":"gracias","part_of_speech":"phrase","pronunciation_easy":"гра́сьяс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18870,"language":"es","term":"de nada","part_of_speech":"phrase","pronunciation_easy":"дэ на́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18871,"language":"es","term":"perdona","part_of_speech":"phrase","pronunciation_easy":"пэрдо́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18872,"language":"es","term":"lo siento","part_of_speech":"phrase","pronunciation_easy":"ло сье́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18873,"language":"es","term":"sí","part_of_speech":"other","pronunciation_easy":"си́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18874,"language":"es","term":"no","part_of_speech":"other","pronunciation_easy":"но́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18875,"language":"es","term":"vale","part_of_speech":"other","pronunciation_easy":"ба́лэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18876,"language":"es","term":"bienvenido","part_of_speech":"phrase","pronunciation_easy":"бьембэни́до","pronunciation_note_ru":"Испанское n перед b произносится как [m]; «бьем» — приблизительная подсказка.","status":"ready","issue":null}
+{"word_id":18877,"language":"es","term":"¿qué tal?","part_of_speech":"phrase","pronunciation_easy":"кэ́ та́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18878,"language":"es","term":"estoy bien","part_of_speech":"phrase","pronunciation_easy":"эсто́й бье́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18879,"language":"es","term":"encantado de conocerte","part_of_speech":"phrase","pronunciation_easy":"энканта́до дэ коносэ́ртэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18880,"language":"es","term":"¿cómo te llamas?","part_of_speech":"phrase","pronunciation_easy":"ко́мо тэ я́мас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18881,"language":"es","term":"me llamo","part_of_speech":"phrase","pronunciation_easy":"мэ я́мо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18882,"language":"es","term":"buena suerte","part_of_speech":"phrase","pronunciation_easy":"буэ́на суэ́ртэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18883,"language":"es","term":"enhorabuena","part_of_speech":"other","pronunciation_easy":"энорабуэ́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18884,"language":"es","term":"feliz cumpleaños","part_of_speech":"phrase","pronunciation_easy":"фэли́с кумплэа́ньос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18885,"language":"es","term":"cuídate","part_of_speech":"phrase","pronunciation_easy":"куи́датэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18886,"language":"es","term":"la madre","part_of_speech":"noun","pronunciation_easy":"ла ма́дрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18887,"language":"es","term":"el padre","part_of_speech":"noun","pronunciation_easy":"эл па́дрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18888,"language":"es","term":"los padres","part_of_speech":"noun","pronunciation_easy":"лос па́дрэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18889,"language":"es","term":"el niño","part_of_speech":"noun","pronunciation_easy":"эл ни́ньо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18890,"language":"es","term":"el hijo","part_of_speech":"noun","pronunciation_easy":"эл и́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18891,"language":"es","term":"la hija","part_of_speech":"noun","pronunciation_easy":"ла и́ха","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18892,"language":"es","term":"el hermano","part_of_speech":"noun","pronunciation_easy":"эл эрма́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18893,"language":"es","term":"la hermana","part_of_speech":"noun","pronunciation_easy":"ла эрма́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18894,"language":"es","term":"la abuela","part_of_speech":"noun","pronunciation_easy":"ла абуэ́ла","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18895,"language":"es","term":"el abuelo","part_of_speech":"noun","pronunciation_easy":"эл абуэ́ло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18896,"language":"es","term":"el marido","part_of_speech":"noun","pronunciation_easy":"эл мари́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18897,"language":"es","term":"la esposa","part_of_speech":"noun","pronunciation_easy":"ла эспо́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18898,"language":"es","term":"la familia","part_of_speech":"noun","pronunciation_easy":"ла фами́лья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18899,"language":"es","term":"el amigo","part_of_speech":"noun","pronunciation_easy":"эл ами́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18900,"language":"es","term":"el vecino","part_of_speech":"noun","pronunciation_easy":"эл бэси́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18901,"language":"es","term":"la persona","part_of_speech":"noun","pronunciation_easy":"ла пэрсо́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18902,"language":"es","term":"el hombre","part_of_speech":"noun","pronunciation_easy":"эл о́мбрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18903,"language":"es","term":"la mujer","part_of_speech":"noun","pronunciation_easy":"ла мухэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18904,"language":"es","term":"el bebé","part_of_speech":"noun","pronunciation_easy":"эл бэбэ́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18905,"language":"es","term":"el chico","part_of_speech":"noun","pronunciation_easy":"эл чи́ко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18906,"language":"es","term":"la niña","part_of_speech":"noun","pronunciation_easy":"ла ни́нья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18907,"language":"es","term":"el profesor","part_of_speech":"noun","pronunciation_easy":"эл профэсо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18908,"language":"es","term":"el médico","part_of_speech":"noun","pronunciation_easy":"эл мэ́дико","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18909,"language":"es","term":"el compañero de trabajo","part_of_speech":"noun","pronunciation_easy":"эл компанье́ро дэ траба́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18910,"language":"es","term":"el desconocido","part_of_speech":"noun","pronunciation_easy":"эл дэсконоси́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18911,"language":"es","term":"cero","part_of_speech":"other","pronunciation_easy":"сэ́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18912,"language":"es","term":"uno","part_of_speech":"other","pronunciation_easy":"у́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18913,"language":"es","term":"dos","part_of_speech":"other","pronunciation_easy":"до́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18914,"language":"es","term":"tres","part_of_speech":"other","pronunciation_easy":"трэ́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18915,"language":"es","term":"cuatro","part_of_speech":"other","pronunciation_easy":"куа́тро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18916,"language":"es","term":"cinco","part_of_speech":"other","pronunciation_easy":"си́нко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18917,"language":"es","term":"seis","part_of_speech":"other","pronunciation_easy":"сэ́йс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18918,"language":"es","term":"siete","part_of_speech":"other","pronunciation_easy":"сье́тэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18919,"language":"es","term":"ocho","part_of_speech":"other","pronunciation_easy":"о́чо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18920,"language":"es","term":"nueve","part_of_speech":"other","pronunciation_easy":"нуэ́бэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18921,"language":"es","term":"diez","part_of_speech":"other","pronunciation_easy":"дье́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18922,"language":"es","term":"cien","part_of_speech":"other","pronunciation_easy":"сье́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18923,"language":"es","term":"hoy","part_of_speech":"adverb","pronunciation_easy":"о́й","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18924,"language":"es","term":"mañana","part_of_speech":"adverb","pronunciation_easy":"манья́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18925,"language":"es","term":"ayer","part_of_speech":"adverb","pronunciation_easy":"айэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18926,"language":"es","term":"la mañana","part_of_speech":"noun","pronunciation_easy":"ла манья́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18927,"language":"es","term":"la tarde","part_of_speech":"noun","pronunciation_easy":"ла та́рдэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18928,"language":"es","term":"temprano","part_of_speech":"adverb","pronunciation_easy":"тэмпра́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18929,"language":"es","term":"la noche","part_of_speech":"noun","pronunciation_easy":"ла но́чэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18930,"language":"es","term":"el día","part_of_speech":"noun","pronunciation_easy":"эл ди́а","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18931,"language":"es","term":"la semana","part_of_speech":"noun","pronunciation_easy":"ла сэма́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18932,"language":"es","term":"el mes","part_of_speech":"noun","pronunciation_easy":"эл мэ́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18933,"language":"es","term":"el año","part_of_speech":"noun","pronunciation_easy":"эл а́ньо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18934,"language":"es","term":"la hora","part_of_speech":"noun","pronunciation_easy":"ла о́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18935,"language":"es","term":"el minuto","part_of_speech":"noun","pronunciation_easy":"эл мину́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18936,"language":"es","term":"la casa","part_of_speech":"noun","pronunciation_easy":"ла ка́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18937,"language":"es","term":"el piso","part_of_speech":"noun","pronunciation_easy":"эл пи́со","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18938,"language":"es","term":"la habitación","part_of_speech":"noun","pronunciation_easy":"ла абитасьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18939,"language":"es","term":"la cocina","part_of_speech":"noun","pronunciation_easy":"ла коси́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18940,"language":"es","term":"el dormitorio","part_of_speech":"noun","pronunciation_easy":"эл дормито́рьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18941,"language":"es","term":"el cuarto de baño","part_of_speech":"noun","pronunciation_easy":"эл куа́рто дэ ба́ньо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18942,"language":"es","term":"la puerta","part_of_speech":"noun","pronunciation_easy":"ла пуэ́рта","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18943,"language":"es","term":"la ventana","part_of_speech":"noun","pronunciation_easy":"ла бэнта́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18944,"language":"es","term":"la pared","part_of_speech":"noun","pronunciation_easy":"ла парэ́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18945,"language":"es","term":"el suelo","part_of_speech":"noun","pronunciation_easy":"эл суэ́ло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18946,"language":"es","term":"el techo","part_of_speech":"noun","pronunciation_easy":"эл тэ́чо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18947,"language":"es","term":"el tejado","part_of_speech":"noun","pronunciation_easy":"эл тэха́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18948,"language":"es","term":"la mesa","part_of_speech":"noun","pronunciation_easy":"ла мэ́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18949,"language":"es","term":"la silla","part_of_speech":"noun","pronunciation_easy":"ла си́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18950,"language":"es","term":"la cama","part_of_speech":"noun","pronunciation_easy":"ла ка́ма","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18951,"language":"es","term":"el sofá","part_of_speech":"noun","pronunciation_easy":"эл софа́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18952,"language":"es","term":"el armario","part_of_speech":"noun","pronunciation_easy":"эл арма́рьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18953,"language":"es","term":"el espejo","part_of_speech":"noun","pronunciation_easy":"эл эспэ́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18954,"language":"es","term":"la lámpara","part_of_speech":"noun","pronunciation_easy":"ла ла́мпара","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18955,"language":"es","term":"la llave","part_of_speech":"noun","pronunciation_easy":"ла я́бэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18956,"language":"es","term":"la toalla","part_of_speech":"noun","pronunciation_easy":"ла тоа́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18957,"language":"es","term":"el jabón","part_of_speech":"noun","pronunciation_easy":"эл хабо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18958,"language":"es","term":"el inodoro","part_of_speech":"noun","pronunciation_easy":"эл инодо́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18959,"language":"es","term":"la ducha","part_of_speech":"noun","pronunciation_easy":"ла ду́ча","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18960,"language":"es","term":"el jardín","part_of_speech":"noun","pronunciation_easy":"эл харди́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18961,"language":"es","term":"el agua","part_of_speech":"noun","pronunciation_easy":"эл а́гуа","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18962,"language":"es","term":"el té","part_of_speech":"noun","pronunciation_easy":"эл тэ́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18963,"language":"es","term":"el café","part_of_speech":"noun","pronunciation_easy":"эл кафэ́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18964,"language":"es","term":"la leche","part_of_speech":"noun","pronunciation_easy":"ла лэ́чэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18965,"language":"es","term":"el zumo","part_of_speech":"noun","pronunciation_easy":"эл су́мо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18966,"language":"es","term":"el pan","part_of_speech":"noun","pronunciation_easy":"эл па́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18967,"language":"es","term":"el arroz","part_of_speech":"noun","pronunciation_easy":"эл арро́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18968,"language":"es","term":"la pasta","part_of_speech":"noun","pronunciation_easy":"ла па́ста","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18969,"language":"es","term":"la patata","part_of_speech":"noun","pronunciation_easy":"ла пата́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18970,"language":"es","term":"la cebolla","part_of_speech":"noun","pronunciation_easy":"ла сэбо́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18971,"language":"es","term":"el tomate","part_of_speech":"noun","pronunciation_easy":"эл тома́тэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18972,"language":"es","term":"la zanahoria","part_of_speech":"noun","pronunciation_easy":"ла санао́рья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18973,"language":"es","term":"la manzana","part_of_speech":"noun","pronunciation_easy":"ла манса́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18974,"language":"es","term":"el plátano","part_of_speech":"noun","pronunciation_easy":"эл пла́тано","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18975,"language":"es","term":"la naranja","part_of_speech":"noun","pronunciation_easy":"ла нара́нха","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18976,"language":"es","term":"el limón","part_of_speech":"noun","pronunciation_easy":"эл лимо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18977,"language":"es","term":"el huevo","part_of_speech":"noun","pronunciation_easy":"эл уэ́бо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18978,"language":"es","term":"el queso","part_of_speech":"noun","pronunciation_easy":"эл кэ́со","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18979,"language":"es","term":"la mantequilla","part_of_speech":"noun","pronunciation_easy":"ла мантэки́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18980,"language":"es","term":"la carne","part_of_speech":"noun","pronunciation_easy":"ла ка́рнэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18981,"language":"es","term":"el pollo","part_of_speech":"noun","pronunciation_easy":"эл по́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18982,"language":"es","term":"el pescado","part_of_speech":"noun","pronunciation_easy":"эл пэска́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18983,"language":"es","term":"la sopa","part_of_speech":"noun","pronunciation_easy":"ла со́па","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18984,"language":"es","term":"la ensalada","part_of_speech":"noun","pronunciation_easy":"ла энсала́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18985,"language":"es","term":"la sal","part_of_speech":"noun","pronunciation_easy":"ла са́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18986,"language":"es","term":"el azúcar","part_of_speech":"noun","pronunciation_easy":"эл асу́кар","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18987,"language":"es","term":"el aceite","part_of_speech":"noun","pronunciation_easy":"эл асэ́йтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18988,"language":"es","term":"la harina","part_of_speech":"noun","pronunciation_easy":"ла ари́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18989,"language":"es","term":"la pimienta negra","part_of_speech":"noun","pronunciation_easy":"ла пимье́нта нэ́гра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18990,"language":"es","term":"el plato","part_of_speech":"noun","pronunciation_easy":"эл пла́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18991,"language":"es","term":"el cuenco","part_of_speech":"noun","pronunciation_easy":"эл куэ́нко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18992,"language":"es","term":"la taza","part_of_speech":"noun","pronunciation_easy":"ла та́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18993,"language":"es","term":"el vaso","part_of_speech":"noun","pronunciation_easy":"эл ба́со","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18994,"language":"es","term":"la botella","part_of_speech":"noun","pronunciation_easy":"ла ботэ́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18995,"language":"es","term":"la cuchara","part_of_speech":"noun","pronunciation_easy":"ла куча́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18996,"language":"es","term":"el tenedor","part_of_speech":"noun","pronunciation_easy":"эл тэнэдо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18997,"language":"es","term":"el cuchillo","part_of_speech":"noun","pronunciation_easy":"эл кучи́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18998,"language":"es","term":"la sartén","part_of_speech":"noun","pronunciation_easy":"ла сартэ́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":18999,"language":"es","term":"el cazo","part_of_speech":"noun","pronunciation_easy":"эл ка́со","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19000,"language":"es","term":"el horno","part_of_speech":"noun","pronunciation_easy":"эл о́рно","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19001,"language":"es","term":"la nevera","part_of_speech":"noun","pronunciation_easy":"ла нэбэ́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19002,"language":"es","term":"la placa de cocina","part_of_speech":"noun","pronunciation_easy":"ла пла́ка дэ коси́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19003,"language":"es","term":"el hervidor","part_of_speech":"noun","pronunciation_easy":"эл эрбидо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19004,"language":"es","term":"el menú","part_of_speech":"noun","pronunciation_easy":"эл мэну́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19005,"language":"es","term":"el desayuno","part_of_speech":"noun","pronunciation_easy":"эл дэсайу́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19006,"language":"es","term":"la comida","part_of_speech":"noun","pronunciation_easy":"ла коми́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19007,"language":"es","term":"la cena","part_of_speech":"noun","pronunciation_easy":"ла сэ́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19008,"language":"es","term":"cocinar","part_of_speech":"verb","pronunciation_easy":"косина́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19009,"language":"es","term":"hervir","part_of_speech":"verb","pronunciation_easy":"эрби́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19010,"language":"es","term":"freír","part_of_speech":"verb","pronunciation_easy":"фрэи́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19011,"language":"es","term":"la camisa","part_of_speech":"noun","pronunciation_easy":"ла ками́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19012,"language":"es","term":"la camiseta","part_of_speech":"noun","pronunciation_easy":"ла камисэ́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19013,"language":"es","term":"los pantalones","part_of_speech":"noun","pronunciation_easy":"лос пантало́нэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19014,"language":"es","term":"los vaqueros","part_of_speech":"noun","pronunciation_easy":"лос бакэ́рос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19015,"language":"es","term":"el vestido","part_of_speech":"noun","pronunciation_easy":"эл бэсти́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19016,"language":"es","term":"la falda","part_of_speech":"noun","pronunciation_easy":"ла фа́лда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19017,"language":"es","term":"la chaqueta","part_of_speech":"noun","pronunciation_easy":"ла чакэ́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19018,"language":"es","term":"el abrigo","part_of_speech":"noun","pronunciation_easy":"эл абри́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19019,"language":"es","term":"el jersey","part_of_speech":"noun","pronunciation_easy":"эл хэрсэ́й","pronunciation_note_ru":"Испанское jersey: звук j близок к «х», ударение на последнем слоге. Вариант приблизительный.","status":"ready","issue":null}
+{"word_id":19020,"language":"es","term":"los zapatos","part_of_speech":"noun","pronunciation_easy":"лос сапа́тос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19021,"language":"es","term":"las botas","part_of_speech":"noun","pronunciation_easy":"лас бо́тас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19022,"language":"es","term":"los calcetines","part_of_speech":"noun","pronunciation_easy":"лос калсэти́нэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19023,"language":"es","term":"el sombrero","part_of_speech":"noun","pronunciation_easy":"эл сомбрэ́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19024,"language":"es","term":"la gorra","part_of_speech":"noun","pronunciation_easy":"ла го́рра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19025,"language":"es","term":"los guantes","part_of_speech":"noun","pronunciation_easy":"лос гуа́нтэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19026,"language":"es","term":"la bufanda","part_of_speech":"noun","pronunciation_easy":"ла буфа́нда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19027,"language":"es","term":"el cinturón","part_of_speech":"noun","pronunciation_easy":"эл синтуро́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19028,"language":"es","term":"la bolsa","part_of_speech":"noun","pronunciation_easy":"ла бо́лса","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19029,"language":"es","term":"la cartera","part_of_speech":"noun","pronunciation_easy":"ла картэ́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19030,"language":"es","term":"el paraguas","part_of_speech":"noun","pronunciation_easy":"эл пара́гуас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19031,"language":"es","term":"el reloj de pulsera","part_of_speech":"noun","pronunciation_easy":"эл ррэло́х дэ пулсэ́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19032,"language":"es","term":"las gafas","part_of_speech":"noun","pronunciation_easy":"лас га́фас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19033,"language":"es","term":"el anillo","part_of_speech":"noun","pronunciation_easy":"эл ани́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19034,"language":"es","term":"el bolsillo","part_of_speech":"noun","pronunciation_easy":"эл болси́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19035,"language":"es","term":"el botón","part_of_speech":"noun","pronunciation_easy":"эл бото́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19036,"language":"es","term":"la cabeza","part_of_speech":"noun","pronunciation_easy":"ла кабэ́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19037,"language":"es","term":"la cara","part_of_speech":"noun","pronunciation_easy":"ла ка́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19038,"language":"es","term":"el ojo","part_of_speech":"noun","pronunciation_easy":"эл о́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19039,"language":"es","term":"el oído","part_of_speech":"noun","pronunciation_easy":"эл ои́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19040,"language":"es","term":"la nariz","part_of_speech":"noun","pronunciation_easy":"ла нари́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19041,"language":"es","term":"la boca","part_of_speech":"noun","pronunciation_easy":"ла бо́ка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19042,"language":"es","term":"el diente","part_of_speech":"noun","pronunciation_easy":"эл дье́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19043,"language":"es","term":"la mano","part_of_speech":"noun","pronunciation_easy":"ла ма́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19044,"language":"es","term":"el dedo","part_of_speech":"noun","pronunciation_easy":"эл дэ́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19045,"language":"es","term":"la pierna","part_of_speech":"noun","pronunciation_easy":"ла пье́рна","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19046,"language":"es","term":"la rodilla","part_of_speech":"noun","pronunciation_easy":"ла рроди́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19047,"language":"es","term":"la espalda","part_of_speech":"noun","pronunciation_easy":"ла эспа́лда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19048,"language":"es","term":"el estómago","part_of_speech":"noun","pronunciation_easy":"эл эсто́маго","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19049,"language":"es","term":"el corazón","part_of_speech":"noun","pronunciation_easy":"эл корасо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19050,"language":"es","term":"el pelo","part_of_speech":"noun","pronunciation_easy":"эл пэ́ло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19051,"language":"es","term":"la piel","part_of_speech":"noun","pronunciation_easy":"ла пье́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19052,"language":"es","term":"la sangre","part_of_speech":"noun","pronunciation_easy":"ла са́нгрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19053,"language":"es","term":"la salud","part_of_speech":"noun","pronunciation_easy":"ла салу́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19054,"language":"es","term":"el dolor","part_of_speech":"noun","pronunciation_easy":"эл доло́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19055,"language":"es","term":"la fiebre","part_of_speech":"noun","pronunciation_easy":"ла фье́брэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19056,"language":"es","term":"la tos","part_of_speech":"noun","pronunciation_easy":"ла то́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19057,"language":"es","term":"el medicamento","part_of_speech":"noun","pronunciation_easy":"эл мэдикамэ́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19058,"language":"es","term":"el hospital","part_of_speech":"noun","pronunciation_easy":"эл оспита́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19059,"language":"es","term":"la farmacia","part_of_speech":"noun","pronunciation_easy":"ла фарма́сья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19060,"language":"es","term":"la ambulancia","part_of_speech":"noun","pronunciation_easy":"ла амбула́нсья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19061,"language":"es","term":"despertarse","part_of_speech":"verb","pronunciation_easy":"дэспэрта́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19062,"language":"es","term":"levantarse","part_of_speech":"verb","pronunciation_easy":"лэбанта́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19063,"language":"es","term":"lavar","part_of_speech":"verb","pronunciation_easy":"лаба́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19064,"language":"es","term":"vestirse","part_of_speech":"verb","pronunciation_easy":"бэсти́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19065,"language":"es","term":"cepillarse los dientes","part_of_speech":"phrase","pronunciation_easy":"сэпия́рсэ лос дье́нтэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19066,"language":"es","term":"peinarse","part_of_speech":"verb","pronunciation_easy":"пэйна́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19067,"language":"es","term":"desayunar","part_of_speech":"verb","pronunciation_easy":"дэсайуна́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19068,"language":"es","term":"ir al trabajo","part_of_speech":"phrase","pronunciation_easy":"и́р ал траба́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19069,"language":"es","term":"ir al colegio","part_of_speech":"phrase","pronunciation_easy":"и́р ал колэ́хьо","pronunciation_note_ru":"В colegio буква g перед i произносится как х, далее следует краткий переход й; «хьо» условно.","status":"ready","issue":null}
+{"word_id":19070,"language":"es","term":"volver a casa","part_of_speech":"phrase","pronunciation_easy":"болбэ́р а ка́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19071,"language":"es","term":"descansar","part_of_speech":"verb","pronunciation_easy":"дэсканса́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19072,"language":"es","term":"bañarse","part_of_speech":"verb","pronunciation_easy":"банья́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19073,"language":"es","term":"ducharse","part_of_speech":"verb","pronunciation_easy":"дуча́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19074,"language":"es","term":"acostarse","part_of_speech":"verb","pronunciation_easy":"акоста́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19075,"language":"es","term":"dormir","part_of_speech":"verb","pronunciation_easy":"дорми́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19076,"language":"es","term":"comer","part_of_speech":"verb","pronunciation_easy":"комэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19077,"language":"es","term":"beber","part_of_speech":"verb","pronunciation_easy":"бэбэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19078,"language":"es","term":"limpiar","part_of_speech":"verb","pronunciation_easy":"лимпья́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19079,"language":"es","term":"ordenar","part_of_speech":"verb","pronunciation_easy":"ордэна́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19080,"language":"es","term":"lavar la ropa","part_of_speech":"phrase","pronunciation_easy":"лаба́р ла рро́па","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19081,"language":"es","term":"planchar","part_of_speech":"verb","pronunciation_easy":"планча́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19082,"language":"es","term":"ir de compras","part_of_speech":"phrase","pronunciation_easy":"и́р дэ ко́мпрас","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19083,"language":"es","term":"hacer ejercicio","part_of_speech":"phrase","pronunciation_easy":"асэ́р эхэрси́сьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19084,"language":"es","term":"esperar","part_of_speech":"verb","pronunciation_easy":"эспэра́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19085,"language":"es","term":"terminar","part_of_speech":"verb","pronunciation_easy":"тэрмина́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19086,"language":"es","term":"ir","part_of_speech":"verb","pronunciation_easy":"и́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19087,"language":"es","term":"venir","part_of_speech":"verb","pronunciation_easy":"бэни́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19088,"language":"es","term":"caminar","part_of_speech":"verb","pronunciation_easy":"камина́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19089,"language":"es","term":"correr","part_of_speech":"verb","pronunciation_easy":"коррэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19090,"language":"es","term":"parar","part_of_speech":"verb","pronunciation_easy":"пара́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19091,"language":"es","term":"llegar","part_of_speech":"verb","pronunciation_easy":"йэга́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19092,"language":"es","term":"irse","part_of_speech":"verb","pronunciation_easy":"и́рсэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19093,"language":"es","term":"volver","part_of_speech":"verb","pronunciation_easy":"болбэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19094,"language":"es","term":"girar","part_of_speech":"verb","pronunciation_easy":"хира́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19095,"language":"es","term":"conducir","part_of_speech":"verb","pronunciation_easy":"кондуси́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19096,"language":"es","term":"montar en bicicleta","part_of_speech":"phrase","pronunciation_easy":"монта́р эм бисиклэ́та","pronunciation_note_ru":"В связной речи конечное n в en перед b обычно звучит как [m].","status":"ready","issue":null}
+{"word_id":19097,"language":"es","term":"el coche","part_of_speech":"noun","pronunciation_easy":"эл ко́чэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19098,"language":"es","term":"el autobús","part_of_speech":"noun","pronunciation_easy":"эл аутобу́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19099,"language":"es","term":"el tren","part_of_speech":"noun","pronunciation_easy":"эл трэ́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19100,"language":"es","term":"el taxi","part_of_speech":"noun","pronunciation_easy":"эл та́кси","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19101,"language":"es","term":"la bicicleta","part_of_speech":"noun","pronunciation_easy":"ла бисиклэ́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19102,"language":"es","term":"el avión","part_of_speech":"noun","pronunciation_easy":"эл абьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19103,"language":"es","term":"la barca","part_of_speech":"noun","pronunciation_easy":"ла ба́рка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19104,"language":"es","term":"el aeropuerto","part_of_speech":"noun","pronunciation_easy":"эл аэропуэ́рто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19105,"language":"es","term":"la estación","part_of_speech":"noun","pronunciation_easy":"ла эстасьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19106,"language":"es","term":"el billete","part_of_speech":"noun","pronunciation_easy":"эл бийэ́тэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19107,"language":"es","term":"el pasaporte","part_of_speech":"noun","pronunciation_easy":"эл пасапо́ртэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19108,"language":"es","term":"la maleta","part_of_speech":"noun","pronunciation_easy":"ла малэ́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19109,"language":"es","term":"el viaje","part_of_speech":"noun","pronunciation_easy":"эл бья́хэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19110,"language":"es","term":"la carretera","part_of_speech":"noun","pronunciation_easy":"ла каррэтэ́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19111,"language":"es","term":"la ciudad","part_of_speech":"noun","pronunciation_easy":"ла сьюда́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19112,"language":"es","term":"el pueblo","part_of_speech":"noun","pronunciation_easy":"эл пуэ́бло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19113,"language":"es","term":"la aldea","part_of_speech":"noun","pronunciation_easy":"ла алдэ́а","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19114,"language":"es","term":"la calle","part_of_speech":"noun","pronunciation_easy":"ла ка́йэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19115,"language":"es","term":"la plaza","part_of_speech":"noun","pronunciation_easy":"ла пла́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19116,"language":"es","term":"el parque","part_of_speech":"noun","pronunciation_easy":"эл па́ркэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19117,"language":"es","term":"el puente","part_of_speech":"noun","pronunciation_easy":"эл пуэ́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19118,"language":"es","term":"el edificio","part_of_speech":"noun","pronunciation_easy":"эл эдифи́сьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19119,"language":"es","term":"el colegio","part_of_speech":"noun","pronunciation_easy":"эл колэ́хьо","pronunciation_note_ru":"Сочетание ge произносится примерно как «хе»; «хьо» здесь приблизительно передаёт испанское х + очень краткий й. Ориентируйтесь на испанское аудио.","status":"ready","issue":null}
+{"word_id":19120,"language":"es","term":"la universidad","part_of_speech":"noun","pronunciation_easy":"ла унибэрсида́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19121,"language":"es","term":"la biblioteca","part_of_speech":"noun","pronunciation_easy":"ла библьотэ́ка","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19122,"language":"es","term":"la tienda","part_of_speech":"noun","pronunciation_easy":"ла тье́нда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19123,"language":"es","term":"el mercado","part_of_speech":"noun","pronunciation_easy":"эл мэрка́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19124,"language":"es","term":"el supermercado","part_of_speech":"noun","pronunciation_easy":"эл супэрмэрка́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19125,"language":"es","term":"el restaurante","part_of_speech":"noun","pronunciation_easy":"эл ррэстаура́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19126,"language":"es","term":"la cafetería","part_of_speech":"noun","pronunciation_easy":"ла кафэтэри́а","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19127,"language":"es","term":"el hotel","part_of_speech":"noun","pronunciation_easy":"эл отэ́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19128,"language":"es","term":"el banco","part_of_speech":"noun","pronunciation_easy":"эл ба́нко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19129,"language":"es","term":"la oficina de correos","part_of_speech":"noun","pronunciation_easy":"ла офиси́на дэ коррэ́ос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19130,"language":"es","term":"la policía","part_of_speech":"noun","pronunciation_easy":"ла полиси́а","pronunciation_note_ru":"Звук c перед í в Испании межзубный, как английское th в think; «с» — условная кириллическая замена. Буква к здесь не произносится.","status":"ready","issue":null}
+{"word_id":19131,"language":"es","term":"el cine","part_of_speech":"noun","pronunciation_easy":"эл си́нэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19132,"language":"es","term":"el museo","part_of_speech":"noun","pronunciation_easy":"эл мусэ́о","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19133,"language":"es","term":"la entrada","part_of_speech":"noun","pronunciation_easy":"ла энтра́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19134,"language":"es","term":"la salida","part_of_speech":"noun","pronunciation_easy":"ла сали́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19135,"language":"es","term":"el ascensor","part_of_speech":"noun","pronunciation_easy":"эл ассэнсо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19136,"language":"es","term":"el dinero","part_of_speech":"noun","pronunciation_easy":"эл динэ́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19137,"language":"es","term":"el precio","part_of_speech":"noun","pronunciation_easy":"эл прэ́сьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19138,"language":"es","term":"la moneda","part_of_speech":"noun","pronunciation_easy":"ла монэ́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19139,"language":"es","term":"el billete de banco","part_of_speech":"noun","pronunciation_easy":"эл бийэ́тэ дэ ба́нко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19140,"language":"es","term":"la tarjeta de pago","part_of_speech":"noun","pronunciation_easy":"ла тархэ́та дэ па́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19141,"language":"es","term":"el efectivo","part_of_speech":"noun","pronunciation_easy":"эл эфэкти́бо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19142,"language":"es","term":"el recibo","part_of_speech":"noun","pronunciation_easy":"эл ррэси́бо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19143,"language":"es","term":"el cambio","part_of_speech":"noun","pronunciation_easy":"эл ка́мбьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19144,"language":"es","term":"el descuento","part_of_speech":"noun","pronunciation_easy":"эл дэскуэ́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19145,"language":"es","term":"la cuenta","part_of_speech":"noun","pronunciation_easy":"ла куэ́нта","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19146,"language":"es","term":"comprar","part_of_speech":"verb","pronunciation_easy":"компра́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19147,"language":"es","term":"vender","part_of_speech":"verb","pronunciation_easy":"бэндэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19148,"language":"es","term":"pagar","part_of_speech":"verb","pronunciation_easy":"пага́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19149,"language":"es","term":"gastar","part_of_speech":"verb","pronunciation_easy":"гаста́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19150,"language":"es","term":"costar","part_of_speech":"verb","pronunciation_easy":"коста́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19151,"language":"es","term":"barato","part_of_speech":"adjective","pronunciation_easy":"бара́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19152,"language":"es","term":"caro","part_of_speech":"adjective","pronunciation_easy":"ка́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19153,"language":"es","term":"gratis","part_of_speech":"adverb","pronunciation_easy":"гра́тис","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19154,"language":"es","term":"abierto","part_of_speech":"adjective","pronunciation_easy":"абье́рто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19155,"language":"es","term":"cerrado","part_of_speech":"adjective","pronunciation_easy":"сэрра́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19156,"language":"es","term":"la talla","part_of_speech":"noun","pronunciation_easy":"ла та́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19157,"language":"es","term":"el color","part_of_speech":"noun","pronunciation_easy":"эл коло́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19158,"language":"es","term":"el pedido","part_of_speech":"noun","pronunciation_easy":"эл пэди́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19159,"language":"es","term":"el cliente","part_of_speech":"noun","pronunciation_easy":"эл клье́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19160,"language":"es","term":"la cola","part_of_speech":"noun","pronunciation_easy":"ла ко́ла","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19161,"language":"es","term":"el trabajo","part_of_speech":"noun","pronunciation_easy":"эл траба́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19162,"language":"es","term":"la profesión","part_of_speech":"noun","pronunciation_easy":"ла профэсьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19163,"language":"es","term":"la oficina","part_of_speech":"noun","pronunciation_easy":"ла офиси́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19164,"language":"es","term":"la empresa","part_of_speech":"noun","pronunciation_easy":"ла эмпрэ́са","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19165,"language":"es","term":"la reunión","part_of_speech":"noun","pronunciation_easy":"ла ррэуньо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19166,"language":"es","term":"el gerente","part_of_speech":"noun","pronunciation_easy":"эл хэрэ́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19167,"language":"es","term":"el empleado","part_of_speech":"noun","pronunciation_easy":"эл эмплэа́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19168,"language":"es","term":"el negocio","part_of_speech":"noun","pronunciation_easy":"эл нэго́сьо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19169,"language":"es","term":"el ordenador","part_of_speech":"noun","pronunciation_easy":"эл ордэнадо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19170,"language":"es","term":"el ordenador portátil","part_of_speech":"noun","pronunciation_easy":"эл ордэнадо́р порта́тил","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19171,"language":"es","term":"el teclado","part_of_speech":"noun","pronunciation_easy":"эл тэкла́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19172,"language":"es","term":"la pantalla","part_of_speech":"noun","pronunciation_easy":"ла панта́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19173,"language":"es","term":"la impresora","part_of_speech":"noun","pronunciation_easy":"ла импрэсо́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19174,"language":"es","term":"el documento","part_of_speech":"noun","pronunciation_easy":"эл докумэ́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19175,"language":"es","term":"el correo electrónico","part_of_speech":"noun","pronunciation_easy":"эл коррэ́о элэктро́нико","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19176,"language":"es","term":"la carta","part_of_speech":"noun","pronunciation_easy":"ла ка́рта","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19177,"language":"es","term":"el libro","part_of_speech":"noun","pronunciation_easy":"эл ли́бро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19178,"language":"es","term":"el cuaderno","part_of_speech":"noun","pronunciation_easy":"эл куадэ́рно","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19179,"language":"es","term":"el bolígrafo","part_of_speech":"noun","pronunciation_easy":"эл боли́графо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19180,"language":"es","term":"el lápiz","part_of_speech":"noun","pronunciation_easy":"эл ла́пис","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19181,"language":"es","term":"el papel","part_of_speech":"noun","pronunciation_easy":"эл папэ́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19182,"language":"es","term":"la clase","part_of_speech":"noun","pronunciation_easy":"ла кла́сэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19183,"language":"es","term":"los deberes","part_of_speech":"noun","pronunciation_easy":"лос дэбэ́рэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19184,"language":"es","term":"el examen","part_of_speech":"noun","pronunciation_easy":"эл экса́мэн","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19185,"language":"es","term":"aprender","part_of_speech":"verb","pronunciation_easy":"апрэндэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19186,"language":"es","term":"hablar","part_of_speech":"verb","pronunciation_easy":"абла́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19187,"language":"es","term":"decir","part_of_speech":"verb","pronunciation_easy":"дэси́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19188,"language":"es","term":"contar","part_of_speech":"verb","pronunciation_easy":"конта́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19189,"language":"es","term":"preguntar","part_of_speech":"verb","pronunciation_easy":"прэгунта́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19190,"language":"es","term":"responder","part_of_speech":"verb","pronunciation_easy":"ррэспондэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19191,"language":"es","term":"escuchar","part_of_speech":"verb","pronunciation_easy":"эскуча́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19192,"language":"es","term":"oír","part_of_speech":"verb","pronunciation_easy":"ои́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19193,"language":"es","term":"leer","part_of_speech":"verb","pronunciation_easy":"лээ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19194,"language":"es","term":"escribir","part_of_speech":"verb","pronunciation_easy":"эскриби́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19195,"language":"es","term":"entender","part_of_speech":"verb","pronunciation_easy":"энтэндэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19196,"language":"es","term":"saber","part_of_speech":"verb","pronunciation_easy":"сабэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19197,"language":"es","term":"recordar","part_of_speech":"verb","pronunciation_easy":"ррэкорда́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19198,"language":"es","term":"olvidar","part_of_speech":"verb","pronunciation_easy":"олбида́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19199,"language":"es","term":"explicar","part_of_speech":"verb","pronunciation_easy":"эксплика́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19200,"language":"es","term":"repetir","part_of_speech":"verb","pronunciation_easy":"ррэпэти́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19201,"language":"es","term":"traducir","part_of_speech":"verb","pronunciation_easy":"традуси́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19202,"language":"es","term":"el idioma","part_of_speech":"noun","pronunciation_easy":"эл идьо́ма","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19203,"language":"es","term":"la palabra","part_of_speech":"noun","pronunciation_easy":"ла пала́бра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19204,"language":"es","term":"la frase","part_of_speech":"noun","pronunciation_easy":"ла фра́сэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19205,"language":"es","term":"la pregunta","part_of_speech":"noun","pronunciation_easy":"ла прэгу́нта","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19206,"language":"es","term":"el mensaje","part_of_speech":"noun","pronunciation_easy":"эл мэнса́хэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19207,"language":"es","term":"el teléfono","part_of_speech":"noun","pronunciation_easy":"эл тэлэ́фоно","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19208,"language":"es","term":"llamar por teléfono","part_of_speech":"phrase","pronunciation_easy":"яма́р пор тэлэ́фоно","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19209,"language":"es","term":"la dirección","part_of_speech":"noun","pronunciation_easy":"ла дирэксьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19210,"language":"es","term":"el nombre","part_of_speech":"noun","pronunciation_easy":"эл но́мбрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19211,"language":"es","term":"el sol","part_of_speech":"noun","pronunciation_easy":"эл со́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19212,"language":"es","term":"la estrella","part_of_speech":"noun","pronunciation_easy":"ла эстрэ́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19213,"language":"es","term":"el cielo","part_of_speech":"noun","pronunciation_easy":"эл сье́ло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19214,"language":"es","term":"la nube","part_of_speech":"noun","pronunciation_easy":"ла ну́бэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19215,"language":"es","term":"la lluvia","part_of_speech":"noun","pronunciation_easy":"ла йу́бья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19216,"language":"es","term":"la nieve","part_of_speech":"noun","pronunciation_easy":"ла нье́бэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19217,"language":"es","term":"el viento","part_of_speech":"noun","pronunciation_easy":"эл бье́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19218,"language":"es","term":"el tiempo","part_of_speech":"noun","pronunciation_easy":"эл тье́мпо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19219,"language":"es","term":"caliente","part_of_speech":"adjective","pronunciation_easy":"калье́нтэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19220,"language":"es","term":"frío","part_of_speech":"adjective","pronunciation_easy":"фри́о","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19221,"language":"es","term":"templado","part_of_speech":"adjective","pronunciation_easy":"тэмпла́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19222,"language":"es","term":"fresco","part_of_speech":"adjective","pronunciation_easy":"фрэ́ско","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19223,"language":"es","term":"el árbol","part_of_speech":"noun","pronunciation_easy":"эл а́рбол","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19224,"language":"es","term":"la flor","part_of_speech":"noun","pronunciation_easy":"ла фло́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19225,"language":"es","term":"la hierba","part_of_speech":"noun","pronunciation_easy":"ла йэ́рба","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19226,"language":"es","term":"el bosque","part_of_speech":"noun","pronunciation_easy":"эл бо́скэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19227,"language":"es","term":"el río","part_of_speech":"noun","pronunciation_easy":"эл рри́о","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19228,"language":"es","term":"el lago","part_of_speech":"noun","pronunciation_easy":"эл ла́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19229,"language":"es","term":"el mar","part_of_speech":"noun","pronunciation_easy":"эл ма́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19230,"language":"es","term":"la montaña","part_of_speech":"noun","pronunciation_easy":"ла монта́нья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19231,"language":"es","term":"la playa","part_of_speech":"noun","pronunciation_easy":"ла пла́я","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19232,"language":"es","term":"el animal","part_of_speech":"noun","pronunciation_easy":"эл анима́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19233,"language":"es","term":"el perro","part_of_speech":"noun","pronunciation_easy":"эл пэ́рро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19234,"language":"es","term":"el gato","part_of_speech":"noun","pronunciation_easy":"эл га́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19235,"language":"es","term":"el pájaro","part_of_speech":"noun","pronunciation_easy":"эл па́харо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19236,"language":"es","term":"la música","part_of_speech":"noun","pronunciation_easy":"ла му́сика","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19237,"language":"es","term":"la canción","part_of_speech":"noun","pronunciation_easy":"ла кансьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19238,"language":"es","term":"la película","part_of_speech":"noun","pronunciation_easy":"ла пэли́кула","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19239,"language":"es","term":"el juego","part_of_speech":"noun","pronunciation_easy":"эл хуэ́го","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19240,"language":"es","term":"el deporte","part_of_speech":"noun","pronunciation_easy":"эл дэпо́ртэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19241,"language":"es","term":"el fútbol","part_of_speech":"noun","pronunciation_easy":"эл фу́тбол","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19242,"language":"es","term":"la piscina","part_of_speech":"noun","pronunciation_easy":"ла писси́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19243,"language":"es","term":"el concierto","part_of_speech":"noun","pronunciation_easy":"эл консье́рто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19244,"language":"es","term":"el cuadro","part_of_speech":"noun","pronunciation_easy":"эл куа́дро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19245,"language":"es","term":"la cámara","part_of_speech":"noun","pronunciation_easy":"ла ка́мара","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19246,"language":"es","term":"las vacaciones","part_of_speech":"noun","pronunciation_easy":"лас бакасьо́нэс","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19247,"language":"es","term":"el fin de semana","part_of_speech":"noun","pronunciation_easy":"эл фи́н дэ сэма́на","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19248,"language":"es","term":"la fiesta","part_of_speech":"noun","pronunciation_easy":"ла фье́ста","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19249,"language":"es","term":"el cumpleaños","part_of_speech":"noun","pronunciation_easy":"эл кумплэа́ньос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19250,"language":"es","term":"la afición","part_of_speech":"noun","pronunciation_easy":"ла афисьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19251,"language":"es","term":"el tiempo libre","part_of_speech":"phrase","pronunciation_easy":"эл тье́мпо ли́брэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19252,"language":"es","term":"jugar","part_of_speech":"verb","pronunciation_easy":"хуга́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19253,"language":"es","term":"cantar","part_of_speech":"verb","pronunciation_easy":"канта́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19254,"language":"es","term":"bailar","part_of_speech":"verb","pronunciation_easy":"байла́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19255,"language":"es","term":"nadar","part_of_speech":"verb","pronunciation_easy":"нада́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19256,"language":"es","term":"dibujar","part_of_speech":"verb","pronunciation_easy":"дибуха́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19257,"language":"es","term":"ver la televisión","part_of_speech":"phrase","pronunciation_easy":"бэ́р ла тэлэбисьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19258,"language":"es","term":"hacer una foto","part_of_speech":"phrase","pronunciation_easy":"асэ́р у́на фо́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19259,"language":"es","term":"visitar a amigos","part_of_speech":"phrase","pronunciation_easy":"бисита́р а ами́гос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19260,"language":"es","term":"viajar al extranjero","part_of_speech":"phrase","pronunciation_easy":"бьяха́р ал экстранхэ́ро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19261,"language":"es","term":"contento","part_of_speech":"adjective","pronunciation_easy":"контэ́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19262,"language":"es","term":"triste","part_of_speech":"adjective","pronunciation_easy":"три́стэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19263,"language":"es","term":"enfadado","part_of_speech":"adjective","pronunciation_easy":"эмфада́до","pronunciation_note_ru":"Перед f испанский носовой звук становится губно-зубным [ɱ]; русское м здесь только приближение.","status":"ready","issue":null}
+{"word_id":19264,"language":"es","term":"tener miedo","part_of_speech":"phrase","pronunciation_easy":"тэнэ́р мье́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19265,"language":"es","term":"cansado","part_of_speech":"adjective","pronunciation_easy":"канса́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19266,"language":"es","term":"tener hambre","part_of_speech":"phrase","pronunciation_easy":"тэнэ́р а́мбрэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19267,"language":"es","term":"tener sed","part_of_speech":"phrase","pronunciation_easy":"тэнэ́р сэ́д","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19268,"language":"es","term":"sorprendido","part_of_speech":"adjective","pronunciation_easy":"сорпрэнди́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19269,"language":"es","term":"amable","part_of_speech":"adjective","pronunciation_easy":"ама́блэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19270,"language":"es","term":"amigable","part_of_speech":"adjective","pronunciation_easy":"амига́блэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19271,"language":"es","term":"fácil","part_of_speech":"adjective","pronunciation_easy":"фа́сил","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19272,"language":"es","term":"difícil","part_of_speech":"adjective","pronunciation_easy":"дифи́сил","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19273,"language":"es","term":"bonito","part_of_speech":"adjective","pronunciation_easy":"бони́то","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19274,"language":"es","term":"bueno","part_of_speech":"adjective","pronunciation_easy":"буэ́но","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19275,"language":"es","term":"malo","part_of_speech":"adjective","pronunciation_easy":"ма́ло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19276,"language":"es","term":"grande","part_of_speech":"adjective","pronunciation_easy":"гра́ндэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19277,"language":"es","term":"pequeño","part_of_speech":"adjective","pronunciation_easy":"пэкэ́ньо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19278,"language":"es","term":"largo","part_of_speech":"adjective","pronunciation_easy":"ла́рго","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19279,"language":"es","term":"corto","part_of_speech":"adjective","pronunciation_easy":"ко́рто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19280,"language":"es","term":"rojo","part_of_speech":"adjective","pronunciation_easy":"рро́хо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19281,"language":"es","term":"azul","part_of_speech":"adjective","pronunciation_easy":"асу́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19282,"language":"es","term":"verde","part_of_speech":"adjective","pronunciation_easy":"бэ́рдэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19283,"language":"es","term":"blanco","part_of_speech":"adjective","pronunciation_easy":"бла́нко","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19284,"language":"es","term":"negro","part_of_speech":"adjective","pronunciation_easy":"нэ́гро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19285,"language":"es","term":"amarillo","part_of_speech":"adjective","pronunciation_easy":"амари́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19286,"language":"es","term":"ver","part_of_speech":"verb","pronunciation_easy":"бэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19287,"language":"es","term":"mirar","part_of_speech":"verb","pronunciation_easy":"мира́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19288,"language":"es","term":"encontrar","part_of_speech":"verb","pronunciation_easy":"энконтра́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19289,"language":"es","term":"buscar","part_of_speech":"phrase","pronunciation_easy":"буска́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19290,"language":"es","term":"dar","part_of_speech":"verb","pronunciation_easy":"да́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19291,"language":"es","term":"coger","part_of_speech":"verb","pronunciation_easy":"кохэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19292,"language":"es","term":"poner","part_of_speech":"verb","pronunciation_easy":"понэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19293,"language":"es","term":"traer","part_of_speech":"verb","pronunciation_easy":"траэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19294,"language":"es","term":"enviar","part_of_speech":"verb","pronunciation_easy":"эмбья́р","pronunciation_note_ru":"Испанское n перед v (которая звучит как b) произносится как [m].","status":"ready","issue":null}
+{"word_id":19295,"language":"es","term":"recibir","part_of_speech":"verb","pronunciation_easy":"ррэсиби́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19296,"language":"es","term":"fabricar","part_of_speech":"verb","pronunciation_easy":"фабрика́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19297,"language":"es","term":"hacer","part_of_speech":"verb","pronunciation_easy":"асэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19298,"language":"es","term":"usar","part_of_speech":"verb","pronunciation_easy":"уса́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19299,"language":"es","term":"necesitar","part_of_speech":"verb","pronunciation_easy":"нэсэсита́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19300,"language":"es","term":"querer","part_of_speech":"verb","pronunciation_easy":"кэрэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19301,"language":"es","term":"gustar","part_of_speech":"verb","pronunciation_easy":"густа́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19302,"language":"es","term":"amar","part_of_speech":"verb","pronunciation_easy":"ама́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19303,"language":"es","term":"ayudar","part_of_speech":"verb","pronunciation_easy":"айуда́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19304,"language":"es","term":"intentar","part_of_speech":"verb","pronunciation_easy":"интэнта́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19305,"language":"es","term":"empezar","part_of_speech":"verb","pronunciation_easy":"эмпэса́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19306,"language":"es","term":"continuar","part_of_speech":"verb","pronunciation_easy":"континуа́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19307,"language":"es","term":"elegir","part_of_speech":"verb","pronunciation_easy":"элэхи́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19308,"language":"es","term":"conservar","part_of_speech":"verb","pronunciation_easy":"консэрба́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19309,"language":"es","term":"romper","part_of_speech":"verb","pronunciation_easy":"рромпэ́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19310,"language":"es","term":"reparar","part_of_speech":"verb","pronunciation_easy":"ррэпара́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19311,"language":"es","term":"aquí","part_of_speech":"adverb","pronunciation_easy":"аки́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19312,"language":"es","term":"allí","part_of_speech":"adverb","pronunciation_easy":"айи́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19313,"language":"es","term":"dentro","part_of_speech":"adverb","pronunciation_easy":"дэ́нтро","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19314,"language":"es","term":"fuera","part_of_speech":"adverb","pronunciation_easy":"фуэ́ра","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19315,"language":"es","term":"yo","part_of_speech":"other","pronunciation_easy":"йо́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19316,"language":"es","term":"tú","part_of_speech":"other","pronunciation_easy":"ту́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19317,"language":"es","term":"nosotros","part_of_speech":"other","pronunciation_easy":"носо́трос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19318,"language":"es","term":"ellos","part_of_speech":"other","pronunciation_easy":"э́йос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19319,"language":"es","term":"cerca de","part_of_speech":"preposition","pronunciation_easy":"сэ́рка дэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19320,"language":"es","term":"esto","part_of_speech":"other","pronunciation_easy":"э́сто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19321,"language":"es","term":"a la izquierda","part_of_speech":"phrase","pronunciation_easy":"а ла искье́рда","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19322,"language":"es","term":"a la derecha","part_of_speech":"phrase","pronunciation_easy":"а ла дэрэ́ча","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19323,"language":"es","term":"todo recto","part_of_speech":"phrase","pronunciation_easy":"то́до ррэ́кто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19324,"language":"es","term":"aquello","part_of_speech":"other","pronunciation_easy":"акэ́йо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19325,"language":"es","term":"todos","part_of_speech":"other","pronunciation_easy":"то́дос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19326,"language":"es","term":"dónde","part_of_speech":"other","pronunciation_easy":"до́ндэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19327,"language":"es","term":"cuándo","part_of_speech":"other","pronunciation_easy":"куа́ндо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19328,"language":"es","term":"quién","part_of_speech":"other","pronunciation_easy":"кье́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19329,"language":"es","term":"qué","part_of_speech":"other","pronunciation_easy":"кэ́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19330,"language":"es","term":"por qué","part_of_speech":"phrase","pronunciation_easy":"пор кэ́","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19331,"language":"es","term":"cómo","part_of_speech":"other","pronunciation_easy":"ко́мо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19332,"language":"es","term":"cuál","part_of_speech":"other","pronunciation_easy":"куа́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19333,"language":"es","term":"cuántos","part_of_speech":"phrase","pronunciation_easy":"куа́нтос","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19334,"language":"es","term":"cuánto","part_of_speech":"phrase","pronunciation_easy":"куа́нто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19335,"language":"es","term":"de quién","part_of_speech":"phrase","pronunciation_easy":"дэ кье́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19336,"language":"es","term":"no entiendo","part_of_speech":"phrase","pronunciation_easy":"но́ энтье́ндо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19337,"language":"es","term":"hable despacio, por favor","part_of_speech":"phrase","pronunciation_easy":"а́блэ дэспа́сьо пор фабо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19338,"language":"es","term":"¿puede repetirlo?","part_of_speech":"phrase","pronunciation_easy":"пуэ́дэ ррэпэти́рло","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19339,"language":"es","term":"¿qué significa esto?","part_of_speech":"phrase","pronunciation_easy":"кэ́ сигнифи́ка э́сто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19340,"language":"es","term":"¿cómo se dice esto?","part_of_speech":"phrase","pronunciation_easy":"ко́мо сэ ди́сэ э́сто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19341,"language":"es","term":"necesito ayuda","part_of_speech":"phrase","pronunciation_easy":"нэсэси́то айу́да","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19342,"language":"es","term":"¿dónde está el baño?","part_of_speech":"phrase","pronunciation_easy":"до́ндэ эста́ эл ба́ньо","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19343,"language":"es","term":"¿cuánto cuesta?","part_of_speech":"phrase","pronunciation_easy":"куа́нто куэ́ста","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19344,"language":"es","term":"me gustaría esto","part_of_speech":"phrase","pronunciation_easy":"мэ густари́а э́сто","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19345,"language":"es","term":"¿puedo pagar con tarjeta?","part_of_speech":"phrase","pronunciation_easy":"пуэ́до пага́р кон тархэ́та","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19346,"language":"es","term":"la cuenta, por favor","part_of_speech":"phrase","pronunciation_easy":"ла куэ́нта пор фабо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19347,"language":"es","term":"tengo una reserva","part_of_speech":"phrase","pronunciation_easy":"тэ́нго у́на ррэсэ́рба","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19348,"language":"es","term":"una mesa para dos, por favor","part_of_speech":"phrase","pronunciation_easy":"у́на мэ́са па́ра до́с пор фабо́р","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19349,"language":"es","term":"¿dónde está la estación?","part_of_speech":"phrase","pronunciation_easy":"до́ндэ эста́ ла эстасьо́н","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19350,"language":"es","term":"¿qué hora es?","part_of_speech":"phrase","pronunciation_easy":"кэ́ о́ра э́с","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19351,"language":"es","term":"estoy perdido","part_of_speech":"phrase","pronunciation_easy":"эсто́й пэрди́до","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19352,"language":"es","term":"llame a una ambulancia","part_of_speech":"phrase","pronunciation_easy":"я́мэ а у́на амбула́нсья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19353,"language":"es","term":"me encuentro mal","part_of_speech":"phrase","pronunciation_easy":"мэ энкуэ́нтро ма́л","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19354,"language":"es","term":"soy alérgico a...","part_of_speech":"phrase","pronunciation_easy":"со́й алэ́рхико а","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19355,"language":"es","term":"me gustaría un poco de agua","part_of_speech":"phrase","pronunciation_easy":"мэ густари́а ум по́ко дэ а́гуа","pronunciation_note_ru":"В связной речи n в un перед p обычно произносится как [m].","status":"ready","issue":null}
+{"word_id":19356,"language":"es","term":"no como carne","part_of_speech":"phrase","pronunciation_easy":"но́ ко́мо ка́рнэ","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19357,"language":"es","term":"¿hay wifi?","part_of_speech":"phrase","pronunciation_easy":"а́й уи́фи","pronunciation_note_ru":"В Испании встречаются «уи́фи» и «гуи́фи»; здесь записан вариант «уи́фи».","status":"ready","issue":null}
+{"word_id":19358,"language":"es","term":"¿cuál es la contraseña?","part_of_speech":"phrase","pronunciation_easy":"куа́л э́с ла контрасэ́нья","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19359,"language":"es","term":"no hay problema","part_of_speech":"phrase","pronunciation_easy":"но́ а́й проблэ́ма","pronunciation_note_ru":null,"status":"ready","issue":null}
+{"word_id":19360,"language":"es","term":"vamos","part_of_speech":"phrase","pronunciation_easy":"ба́мос","pronunciation_note_ru":null,"status":"ready","issue":null}

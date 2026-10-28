@@ -234,6 +234,9 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         )
 
     old_level = word.knowledge_level
+    if payload.term is not None and payload.term != word.term:
+        word.pronunciation_easy = None
+        word.pronunciation_note_ru = None
     if payload.translation_language == "en":
         fields = {key: getattr(payload, key) for key in ("definition", "notes") if key in payload.model_fields_set}
         if fields:

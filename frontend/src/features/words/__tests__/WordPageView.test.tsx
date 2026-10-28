@@ -19,6 +19,13 @@ it('shows CEFR when no other grammar fields are saved', () => {
   expect(screen.getByText('A1')).toBeTruthy()
 })
 
+it('keeps easy pronunciation, its note and IPA separate', () => {
+  render(<WordPageView word={{...word, pronunciation_easy: 'о́ла', pronunciation_note_ru: 'Русская подсказка', pronunciation_ipa: 'ˈola'}} topics={[]} />)
+  expect(screen.getByText('о́ла')).toBeTruthy()
+  expect(screen.getByText('Русская подсказка')).toBeTruthy()
+  expect(screen.getByText('/ˈola/')).toBeTruthy()
+})
+
 it('omits the grammar section when all its visible fields are empty', () => {
   render(<WordPageView word={{...word, cefr_level: null, part_of_speech: 'noun'}} topics={[]} hidePOS />)
   expect(screen.queryByRole('heading', {name: 'Grammar'})).toBeNull()

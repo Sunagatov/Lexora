@@ -42,6 +42,16 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordTable', () => {
+  it('puts Russian reading hints in their own second column', () => {
+    const {container} = render(<MemoryRouter><WordTable words={[makeWord(1, 'hola', {
+      language: 'es', pronunciation_easy: 'о́ла', pronunciation_note_ru: 'Приблизительно',
+    })]} pendingWordId={null} onUpdate={vi.fn()} /></MemoryRouter>)
+    const row = container.querySelector('.word-row')!
+    expect(row.children).toHaveLength(4)
+    expect(row.children[1].textContent).toBe('о́ла')
+    expect(screen.getByTitle('Приблизительно').getAttribute('lang')).toBe('ru')
+  })
+
   it('shows every saved translation in the desktop word list', () => {
     const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
     render(

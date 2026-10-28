@@ -143,6 +143,8 @@ class WordResponse(BaseModel):
     term: str
     language: str
     transliteration: str | None = None
+    pronunciation_easy: str | None = None
+    pronunciation_note_ru: str | None = None
     translation_groups: dict[str, list[str]] = Field(default_factory=dict)
     explanation_groups: dict[str, dict[str, str | None]] = Field(default_factory=dict)
     definition: str | None
@@ -188,6 +190,8 @@ class WordResponse(BaseModel):
             term=word.term,
             language=word.language,
             transliteration=getattr(word, "transliteration", None),
+            pronunciation_easy=getattr(word, "pronunciation_easy", None),
+            pronunciation_note_ru=getattr(word, "pronunciation_note_ru", None),
             translation_groups=groups,
             explanation_groups={"ru": {"definition": word.definition, "notes": word.notes}, **(getattr(word, "explanation_groups", None) or {})},
             definition=word.definition,

@@ -76,6 +76,10 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
       if (action === 'update') {
         if (Array.isArray(data.topic_ids)) validateTopics(replica, data.topic_ids as number[])
         const updated = {...word, ...data, updated_at: now} as OfflineWord
+        if (updated.term !== word.term) {
+          updated.pronunciation_easy = null
+          updated.pronunciation_note_ru = null
+        }
         checkWord(replica, updated, word)
         Object.assign(word, updated)
       } else if (action === 'delete') {

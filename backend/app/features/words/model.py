@@ -185,6 +185,8 @@ class Word(Base):
     explanation_groups: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), nullable=True)
     definition: Mapped[str | None] = mapped_column(Text(), nullable=True)
     pronunciation_ipa: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    pronunciation_easy: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    pronunciation_note_ru: Mapped[str | None] = mapped_column(Text(), nullable=True)
     pronunciation_audio_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     image_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     part_of_speech_id: Mapped[int | None] = mapped_column(ForeignKey("parts_of_speech.id"), nullable=True)

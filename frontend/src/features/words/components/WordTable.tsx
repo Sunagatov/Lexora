@@ -6,6 +6,7 @@ import {routes} from '@/app/routes'
 import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
+import {EasyPronunciation} from './EasyPronunciation'
 import {smartPreview} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 
@@ -22,6 +23,7 @@ type Props = {
 
 export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const navigation = useWordListNavigation(fromTopicSlug, wordList)
+  const hasPronunciation = words.some(word => word.pronunciation_easy)
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -40,7 +42,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
 
   return (
     <div className="word-table-wrap">
-      <table className="word-table" aria-label="Topic words table">
+      <table className={`word-table${hasPronunciation ? ' has-pronunciation' : ''}`} aria-label="Topic words table">
         <tbody>
           {words.map((word, idx) => {
             const isLast     = idx === words.length - 1
@@ -82,6 +84,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                     </button>
                     </span>
                   </td>
+                  {hasPronunciation && <td className="word-cell-pronunciation"><EasyPronunciation word={word} /></td>}
                   <td className="word-cell-details">
                     <WordSummaryContent word={word} />
                   </td>
@@ -122,7 +125,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                 </tr>
                 {hasExpanded && (
                   <tr className={`word-row-detail ${lc}`}>
-                    <td colSpan={3} style={{
+                    <td colSpan={hasPronunciation ? 4 : 3} style={{
                       padding: 0,
                       borderBottom: isExpanded && !isLast ? '1px solid var(--border)' : 'none',
                     }}>

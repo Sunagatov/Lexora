@@ -1,0 +1,60 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_on": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary.xlsx",
+      "sha256": "1b514b07629b900067c6fa37703f5ecb784a4518c7cb5380fee90b36e899e86d",
+      "learning_language": "es",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-es-cyrillic-pronunciation.jsonl",
+    "sha256": "d9e6bbc131c534f7e68b386aed4958af8613cc0896e429d85d845c32d9f513f0"
+  },
+  "auxiliary_files": [
+    {
+      "filename": "lexora-es-cyrillic-guide.md",
+      "sha256": "9632445e995da7211a4b49595176b3e50d908e34419a9b7730f1b38dc5dec380"
+    },
+    {
+      "filename": "lexora-es-cyrillic-corrections.md",
+      "sha256": "1490d4c22743518b8c7bd7d2a2663a16c615179586391860fe5f01984d62bb86"
+    },
+    {
+      "filename": "lexora-es-cyrillic-corrections.csv",
+      "sha256": "62cec5a751dbc0b1e04e203a248713da33df3be55305485d4fe838bd472a06ba"
+    }
+  ],
+  "languages": {
+    "es": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 500,
+      "needs_review": 0,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "scheme": "russian-cyrillic-v1",
+      "dialect": "European Spanish, central/northern distinction"
+    }
+  },
+  "other_languages_processed": [],
+  "quality_notice": "All 500 entries were checked using systematic phonetic rules and machine IPA comparison; not individually native-audio verified. Not approved for automatic import.",
+  "review": {
+    "date": "2026-10-28",
+    "entries_reviewed_with_orthographic_and_TTS_comparison": 500,
+    "direct_native_audio_verifications": 0,
+    "pronunciation_changes": 6,
+    "additional_pronunciation_notes": 3,
+    "methods": [
+      "exact Lexora Excel identity comparison",
+      "Castilian Spanish phoneme and stress checks",
+      "eSpeak Spanish IPA cross-comparison",
+      "targeted analysis against phonetic teaching references"
+    ],
+    "approved_for_import": false,
+    "review_status": "needs_native_audio_or_teacher_sampling_before_import",
+    "known_approximation": "Spanish interdental theta represented as Cyrillic с with guide warning"
+  }
+}

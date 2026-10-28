@@ -75,6 +75,7 @@ export function WordCollectionView({
   onWordSelect, selectedWordId,
 }: Props) {
   useWordListScrollRestore(isLoading)
+  const hasPronunciation = pageWords.some(word => word.pronunciation_easy)
   const wordList = {
     ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
     offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),
@@ -112,9 +113,10 @@ export function WordCollectionView({
           onLearningSort={onLearningSort}
         />
         {pageWords.length > 0 && (
-          <div className="word-list-header" aria-hidden="true">
+          <div className={`word-list-header${hasPronunciation ? ' has-pronunciation' : ''}`} aria-hidden="true">
             <span className="word-list-header-cell">Word</span>
-            <span className="word-list-header-cell">Translation / details</span>
+            {hasPronunciation && <span className="word-list-header-cell word-list-header-pronunciation">Pronunciation</span>}
+            <span className="word-list-header-cell word-list-header-details">Translation / details</span>
             <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
           </div>
         )}

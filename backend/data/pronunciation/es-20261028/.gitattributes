@@ -1,0 +1,3 @@
+# Keep the supplied package bytes unchanged so its SHA256 manifest remains valid.
+* -text
+*.csv whitespace=cr-at-eol

@@ -80,6 +80,9 @@ def comparable(data: dict) -> dict:
         "example_status",
         "needs_example_enrichment",
         "deleted_via_topic_id",
+        # Import-only reading hints must not invalidate edits from older saved copies.
+        "pronunciation_easy",
+        "pronunciation_note_ru",
     }
     allowed = set(WordResponse.model_fields) | set(TopicResponse.model_fields)
     result = {key: value for key, value in data.items() if key in allowed and key not in excluded}

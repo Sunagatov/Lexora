@@ -52,6 +52,16 @@ function swipeCard(card: HTMLElement, end = 195) {
 }
 
 describe('WordCardList', () => {
+  it('puts the reading hint after the speaker in the same mobile heading row', () => {
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'hola', {language: 'es', pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} />}])
+    const {container} = render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    const hint = container.querySelector('.word-easy-pronunciation')!
+    expect(hint.textContent).toBe('о́ла')
+    expect(hint.parentElement?.className).toBe('word-card-reading-row')
+    expect(hint.previousElementSibling?.getAttribute('aria-label')).toBe('Pronounce hola')
+    expect(hint.parentElement?.nextElementSibling?.className).toBe('word-translation-focus')
+  })
+
   it('saves overlapping swipes in either direction without showing an Undo popup', async () => {
     let finishFirst!: (value: boolean) => void, finishSecond!: (value: boolean) => void
     const onUpdate = vi.fn()
