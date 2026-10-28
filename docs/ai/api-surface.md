@@ -31,6 +31,10 @@ Protected router groups:
   Only that translation group and its definition/notes change. `WordResponse`
   includes `translation_groups`, `explanation_groups` and optional `transliteration`;
   legacy `translation_entries`, `definition`, `notes` retain Russian/default content.
+- Word responses and offline snapshots also include nullable `pronunciation_easy`
+  and `pronunciation_note_ru`. These import-only hints are separate from IPA,
+  audio and transliteration. Normal edits preserve them; a term change clears
+  stale hints. See `easy-pronunciation.md` for the reviewed Spanish import.
 - Offline snapshots include all learning libraries when `X-Lexora-All-Languages: true` is sent; legacy clients receive their selected library only. Each queued edit syncs with
   its own library header, independent of the currently selected UI language.
 - Workbook exports bind their language context in a hidden metadata sheet.
