@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
+from app.features.topics.model import Topic  # noqa: F401 — register Word.topics for standalone imports.
 from app.features.words.model import Word
 
 

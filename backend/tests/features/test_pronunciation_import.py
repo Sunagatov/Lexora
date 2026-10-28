@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 from datetime import UTC
 from pathlib import Path
 
@@ -21,6 +23,20 @@ from app.features.words.schemas import WordResponse, WordUpdate
 from app.shared.db import Base
 
 PACKAGE = Path(__file__).resolve().parents[2] / "data/pronunciation/es-20261028"
+
+
+def test_operator_import_initializes_models_in_a_fresh_process():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from app.features.words.pronunciation_import import build_plan; from sqlalchemy.orm import configure_mappers; configure_mappers()",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def entry(**overrides):
