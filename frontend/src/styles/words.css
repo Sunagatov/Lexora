@@ -758,6 +758,25 @@
   gap: 10px;
 }
 
+.word-card-grid.has-pronunciation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 10px;
+}
+
+.word-card-grid.has-pronunciation .word-card-left {
+  display: contents;
+}
+
+.word-card-grid.has-pronunciation .word-card-reading-row {
+  grid-column: 1 / -1;
+}
+
+.word-card-grid.has-pronunciation .word-card-right {
+  grid-column: 2;
+  grid-row: 2;
+}
+
 .word-card-dropdown-open {
   z-index: 42;
   position: relative;
