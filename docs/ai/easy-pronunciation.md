@@ -7,6 +7,14 @@ desktop column only when the page has hints; mobile cards show the term, speaker
 button and small hint in one wrapping row, with translations below. The word detail
 shows any individual Russian explanation.
 
+The Languages dialog stores a pronunciation display choice per learning language:
+Russian reading hints, Mandarin Pinyin, or saved IPA. Only the list presentation
+changes; it does not translate, generate or overwrite data. A missing chosen field
+stays empty rather than silently showing a different notation. Preferences are
+local to the browser and also work with saved offline words. Changing the notation
+does not clear query data, reset the current page or change ratings. Word details
+continue to show the separately saved representations and Russian guidance.
+
 These are import-only fields in the public API. Responses and offline snapshots
 include them. Rating/content edits preserve them; changing the word itself clears
 stale hints online and offline. They are excluded from offline conflict comparison
@@ -36,7 +44,8 @@ python -m app.scripts.import_pronunciations DATA.jsonl MANIFEST.json --report ap
   --apply --reviewed --expected-plan REVIEWED_SHA256
 ```
 
-The importer supports Spanish, Mandarin, Tatar, Turkish and Arabic. It validates
+The importer supports Spanish, Mandarin, Tatar, Turkish, Arabic, German, French
+and Portuguese. It validates
 the language-specific notation scheme so a Mandarin Pinyin source file cannot be
 mistaken for Russian reading hints. For a partially reviewed package, explicitly
 add `--skip-unreviewed` to preview and apply; deferred IDs and reasons appear in
@@ -57,9 +66,9 @@ by the documented approximation scheme; no claim of native-speaker certification
 
 The four `backend/data/pronunciation/{zh,tt,tr,ar}-20261028/` directories preserve
 the supplied source files alongside separately reviewed JSONL and manifests.
-Each contains 500 stable IDs. Eligible readings: Mandarin 500, Tatar 459,
-Turkish 384 and Arabic 361. The remaining 296 rows retain `needs_review`, a reason
-and a null hint; do not silently import their draft proposals.
+Each contains 500 stable IDs. The initial import accepted Mandarin 500, Tatar 459,
+Turkish 384 and Arabic 361. Its 296 held rows remain in those historical packages;
+their later reviewed resolutions are separate, not silent changes to source files.
 
 `backend/data/pronunciation/README.md` records references, methods and limitations.
 Mandarin imports the Russian hint sidecar, never overwrites existing Pinyin, and
@@ -75,3 +84,24 @@ languages' existing hints must also stay unchanged. Keep the fresh full backup,
 restored rehearsal and per-ID before/after report in the operations repository's
 documented recovery location. Existing schema/UI can serve new content without
 replacing running application images.
+
+## Completed starter-library coverage
+
+`backend/data/pronunciation/completed-20261028/{de,fr,pt,tt,tr,ar}/` contains six
+500-entry packages, exact live identities and checksum manifests. It adds 1,796
+previously missing hints: German/French/Portugal Portuguese 500 each, Tatar 41,
+Turkish 116 and Arabic 139. The other 1,204 hints in these six libraries are copied
+unchanged for a repeatable full-library preview. Spanish and Mandarin remain
+separate and protected. No translations, Pinyin, IPA, topics or progress are changed.
+
+The reviewed guides are approximate. Where lexical stress could not be established
+or varies, the guide leaves it unmarked with an individual note instead of inventing
+an accent (including Tatar Wi-Fi and several Turkish loans). French and Portuguese
+use `~` for a nasal vowel/diphthong, not an extra consonant n/m. Arabic phrases are
+explicitly segmented teaching/citation forms unless a connected form is documented;
+case endings and joins can differ in actual speech. Full formal -iyy is distinguished
+from reduced spoken -ī. None of the entries claims individual native-audio verification.
+
+The package review summaries and decision records list primary references and the
+limits of each notation. Completion means every starter entry has a useful reading
+aid, not that every accent or phonetic detail has been certified by a native speaker.

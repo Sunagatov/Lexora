@@ -1,0 +1,814 @@
+{
+  "20365": {
+    "pronunciation_easy": "ийи́ гэджэлэ́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun plural -ler is stressable; use geceleR, not the synthesizer's initial-stress gece.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20367": {
+    "pronunciation_easy": "со́нра гёрюшю́рюз",
+    "status": "ready",
+    "issue": null,
+    "reason": "Sonra has initial lexical stress; the aorist person ending -üz does not draw stress from görüşür.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20369": {
+    "pronunciation_easy": "тэшэккю́р эдэ́рим",
+    "status": "ready",
+    "issue": null,
+    "reason": "The regular nominal teşekkür reading and aorist eder plus unstressed personal -im support this citation form.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20370": {
+    "pronunciation_easy": "риджа́ эдэ́рим",
+    "status": "ready",
+    "issue": null,
+    "reason": "Rica's final long a and eder plus unstressed personal -im; no need to treat the phrase as an unresolved homograph.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20371": {
+    "pronunciation_easy": "аффэдэ́рсиниз",
+    "status": "ready",
+    "issue": null,
+    "reason": "The aorist has stress before the unstressed personal ending -siniz.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20372": {
+    "pronunciation_easy": "ёзю́р дилэ́рим",
+    "status": "ready",
+    "issue": null,
+    "reason": "Özür final stress; personal -im does not shift the aorist diler's stress.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20374": {
+    "pronunciation_easy": "ха́йыр",
+    "status": "ready",
+    "issue": null,
+    "reason": "The intended interjection no is initial-stressed hayır, distinct from the charity noun reading.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20378": {
+    "pronunciation_easy": "ийи́йим",
+    "status": "ready",
+    "issue": null,
+    "reason": "Predicative -yim is unstressed; retain the lexical stress in iyi.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20379": {
+    "pronunciation_easy": "таныштыымыза́ мэмну́н олду́м",
+    "status": "ready",
+    "issue": null,
+    "reason": "The nominalized participle has possessive and dative morphology, not a personal-predicate ending; cite final dative stress. Soft ğ smooths the adjacent ı vowels.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20381": {
+    "pronunciation_easy": "бэним ады́м",
+    "status": "ready",
+    "issue": null,
+    "reason": "The intended possessive noun adım has a stressable possessive ending; the pronoun is not forced into an independently verified accent pattern.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. ы приблизительно передаёт турецкое ı; не заменяйте его на и. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20384": {
+    "pronunciation_easy": "доу́м гюню́н кутлу́ олсу́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the dictionary doğum /doˈum/ reading and the actual noun/imperative forms in the greeting.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20390": {
+    "pronunciation_easy": "оу́л",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary oğul /oˈuɫ/ supplies the two-vowel citation form; no hard g is inserted.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20394": {
+    "pronunciation_easy": "бюйюканнэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "Sources disagree on compound lexical stress. Preserve the defensible segmental reading while deliberately leaving stress unmarked.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20395": {
+    "pronunciation_easy": "бюйюкбаба",
+    "status": "ready",
+    "issue": null,
+    "reason": "Compound stress varies across supplied/generated references; deliberately leave stress unmarked rather than selecting an unsupported variant.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20398": {
+    "pronunciation_easy": "аилэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary aile /aː.i.ˈle/ or /aːjˈle/ has final stress; source middle stress is incorrect.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20406": {
+    "pronunciation_easy": "кы́з чоджу́у",
+    "status": "ready",
+    "issue": null,
+    "reason": "The intended noun phrase girl, with çocuğu as noun/possessive form; ğ smooths or lengthens the adjacent u vowels.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20407": {
+    "pronunciation_easy": "ёрэтмэ́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary öğretmen /øːɾetˈmɛn/; ğ is not an additional consonant.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20424": {
+    "pronunciation_easy": "йа́рын",
+    "status": "ready",
+    "issue": null,
+    "reason": "The initial-stress tomorrow reading is a documented variant; sources also record final stress, acknowledged in the note.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. Для yarın словари фиксируют начальное и конечное ударение; здесь выбран начальный вариант."
+  },
+  "20427": {
+    "pronunciation_easy": "ёлэдэ́н со́нра",
+    "status": "ready",
+    "issue": null,
+    "reason": "Ablative -den is stressable; sonra keeps its exceptional initial stress.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20429": {
+    "pronunciation_easy": "гэджэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun gece has final citation stress; the synthesizer's initial accent is not a reliable lexical exception.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20448": {
+    "pronunciation_easy": "ма́са",
+    "status": "ready",
+    "issue": null,
+    "reason": "TDK-published stress literature explicitly lists MAsa as a loanword exception; do not accept the dictionary-template final accent.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20449": {
+    "pronunciation_easy": "санда́лйэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "TDK-published literature explicitly lists sanDALye as a lexical stress exception.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20451": {
+    "pronunciation_easy": "канэ́пэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the established penultimate-stress loanword reading kanepe rather than a blanket final-stress rule.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20460": {
+    "pronunciation_easy": "бахчэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "The contextual dictionary's /bɑhˈtʃe/ supports final stress; retain audible h and ç.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20470": {
+    "pronunciation_easy": "соа́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Soft ğ is not a hard g; the adjacent vowels form a smooth citation transition.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20473": {
+    "pronunciation_easy": "элма́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the final-stress common-noun elma reading, not the draft's unsupported initial stress.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20479": {
+    "pronunciation_easy": "тэрэ́йа",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /teˈɾe.jɑː/ supports the first-component compound stress and long final a, without an extra pronounced ı.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20484": {
+    "pronunciation_easy": "сала́та",
+    "status": "ready",
+    "issue": null,
+    "reason": "The lexical loanword salata is penultimate-stressed; both model review and explicit dictionary transcription agree.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20487": {
+    "pronunciation_easy": "сывы́ йа́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Keep the liquid-oil phrase and the long-vowel yağ reading; no consonant g.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20489": {
+    "pronunciation_easy": "кара́бибэр",
+    "status": "ready",
+    "issue": null,
+    "reason": "Compound first-component stress agrees with the contextual dictionary /kaˈɾa.bi.beɾ/; the draft final accent is not justified.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20491": {
+    "pronunciation_easy": "касэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The long-vowel segmental reading is secure, but lexical stress evidence is conflicting/incomplete; leave stress explicitly unmarked.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. В kâse гласная a долгая; начальное k смягчено."
+  },
+  "20504": {
+    "pronunciation_easy": "ё-ю́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "The citation form preserves the ö/ü vowel sequence around soft ğ; the hyphen prevents treating it as one ordinary Russian ё sound.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20506": {
+    "pronunciation_easy": "ёле йэмэи",
+    "status": "ready",
+    "issue": null,
+    "reason": "Phrase accent and contraction readings vary among supplied sources; provide the stable segmental reading without forcing a stress pattern.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20507": {
+    "pronunciation_easy": "акша́м йэмэи",
+    "status": "ready",
+    "issue": null,
+    "reason": "Akşam final stress is clear; avoid forcing a disputed extra accent on the second noun in the compound phrase.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20515": {
+    "pronunciation_easy": "элбисэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The segmental loan reading is clear; sources disagree on lexical stress, so this hint deliberately does not mark it.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция."
+  },
+  "20518": {
+    "pronunciation_easy": "па́лто",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary explicitly gives /ˈpaɫ.to/; do not copy Russian пальто's final stress into Turkish.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20520": {
+    "pronunciation_easy": "айа́ккабы",
+    "status": "ready",
+    "issue": null,
+    "reason": "The compound first-component stress agrees with /ɑˈjɑkkɑbɯ/; source final stress was merely a default.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20521": {
+    "pronunciation_easy": "чизмэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "The intended noun boots is final-stressed çizME, distinct from the negative imperative ÇİZme meaning do not draw.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20523": {
+    "pronunciation_easy": "ша́пка",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary's lexical /ˈʃap.ka/ confirms initial stress; source final stress was a default.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20524": {
+    "pronunciation_easy": "каскэ́т",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain the conventional final-stress French-loan citation reading; the source flag only reflected foreign origin.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20535": {
+    "pronunciation_easy": "дюмэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "Soft ğ lengthens the rounded front vowel. Lexical stress was not independently settled, so omit the accent explicitly.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20541": {
+    "pronunciation_easy": "аы́з",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary's mouth reading /ɑˈɯz/ supports stress on the second vowel; no hard g.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20548": {
+    "pronunciation_easy": "мидэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The long first i and consonants are secure; do not invent a stress mark where the reviewed primary entry does not specify one.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. В mide начальное i долгое."
+  },
+  "20553": {
+    "pronunciation_easy": "салы́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The final-stress derived noun health agrees with /saːˈɫɯk/; preceding a is lengthened by soft ğ.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20554": {
+    "pronunciation_easy": "ары́",
+    "status": "ready",
+    "issue": null,
+    "reason": "For pain use /aːˈɾɯ/; distinguish it from the place-name Ağrı and the draft's initial accent.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20569": {
+    "pronunciation_easy": "окула́ гитмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun's dative -a is stressable; the draft incorrectly kept stress on ku.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20583": {
+    "pronunciation_easy": "эгзэрси́з йапма́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the final-stress exercise noun and regular infinitive; the draft's first-syllable stress was unsupported.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20596": {
+    "pronunciation_easy": "бисиклэтэ́ бинмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun's dative -e is stressable; the source's base-word initial stress must not be frozen before the case ending.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20598": {
+    "pronunciation_easy": "отобю́с",
+    "status": "ready",
+    "issue": null,
+    "reason": "The contextual dictionary explicitly gives /o.tɔ.ˈbys/; keep the conventional final stress.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20600": {
+    "pronunciation_easy": "та́кси",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary's /ˈtak.si/ confirms this loanword's initial stress.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20604": {
+    "pronunciation_easy": "хавалиманы",
+    "status": "ready",
+    "issue": null,
+    "reason": "Compound lexical stress differs across sources; preserve the segments and leave the accent explicitly unmarked.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20620": {
+    "pronunciation_easy": "юнивэ́рситэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary's /y.niˈvæɾ.si.te/ confirms stress on ver, not a generic final accent.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20622": {
+    "pronunciation_easy": "дюкка́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain final stress in dükkân; k is palatal and a long, not ordinary Russian hard ка.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20625": {
+    "pronunciation_easy": "рэстора́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Conventional Turkish restaurant loan has final citation stress; the source review flag alone does not create ambiguity.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20626": {
+    "pronunciation_easy": "кафэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the conventional final-stress café reading; no English coffee phonemes are introduced.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20631": {
+    "pronunciation_easy": "синэ́ма",
+    "status": "ready",
+    "issue": null,
+    "reason": "The contextual dictionary /siˈne.mɑ/ confirms the source penultimate stress.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20637": {
+    "pronunciation_easy": "фийа́т",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary /fiˈjat/ supports the final-stress price reading.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20640": {
+    "pronunciation_easy": "ба́нка карты́",
+    "status": "ready",
+    "issue": null,
+    "reason": "BAnka is an explicit TDK loanword exception; kartı is the possessed noun, not an unrelated form.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20644": {
+    "pronunciation_easy": "индири́м",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /in.diˈɾim/: correct the draft's initial-stress discount reading.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20651": {
+    "pronunciation_easy": "уджу́з",
+    "status": "ready",
+    "issue": null,
+    "reason": "The cheap adjective has final citation stress; the draft's initial accent is not an established exception.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20653": {
+    "pronunciation_easy": "юджрэтси́з",
+    "status": "ready",
+    "issue": null,
+    "reason": "The adjective suffix -siz is stressable; the noun/derived adjective reading agrees with /yd͡ʒ.ɾetˈsiz/.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20668": {
+    "pronunciation_easy": "ишлэтмэ́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Business is a nominalized -me form with final stress, not the negative imperative which would have pre-suffix stress.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20670": {
+    "pronunciation_easy": "ди́зюстю билгисайа́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary's /ˈdi.zys.ty/ and /bil.ɟi.saˈjaɾ/ provide the compound and computer readings.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20675": {
+    "pronunciation_easy": "э́-по́ста",
+    "status": "ready",
+    "issue": null,
+    "reason": "E is the Turkish letter name, and posta retains the lexical loan stress; do not import German or English letter names.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20681": {
+    "pronunciation_easy": "кя́т",
+    "status": "ready",
+    "issue": null,
+    "reason": "Select the documented contracted /ˈcaːt/ citation variant; retain long a and palatal k, without pronouncing ğ as g.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Здесь слитный вариант kâ:t: к мягкое, а долгое. Также встречается раздельное ka-ıt."
+  },
+  "20685": {
+    "pronunciation_easy": "ёрэнмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary /øː.ɾenˈmec/ confirms the infinitive and long initial rounded vowel.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20704": {
+    "pronunciation_easy": "джюмлэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The segmental noun reading is clear, but conflicting/incomplete lexical stress evidence is not forced into an accent.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20707": {
+    "pronunciation_easy": "тэлэфо́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain the conventional final-stress Turkish telephone reading, distinct from foreign stress variants.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20708": {
+    "pronunciation_easy": "тэлэфо́н этмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the Turkish telephone noun plus regular infinitive etmek; phrase focus can vary.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20712": {
+    "pronunciation_easy": "йылды́з",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /jɯɫˈdɯz/: correct the draft's initial stress for the common noun star.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20713": {
+    "pronunciation_easy": "гё́кйюзю",
+    "status": "ready",
+    "issue": null,
+    "reason": "The first-component compound stress agrees with /ˈɟøc.jy.zy/; the y before ü is a real Turkish consonant.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20715": {
+    "pronunciation_easy": "йаму́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /jɑːˈmur/ supports final stress and long a, without hard g.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20717": {
+    "pronunciation_easy": "рюзгя́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "The last vowel carries lexical stress; circumflex â signals a palatal g and the loan's vowel quality.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20718": {
+    "pronunciation_easy": "хава́ дуруму",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the compound phrase's first noun as the primary accent; do not invent another independent stress on durumu.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20720": {
+    "pronunciation_easy": "соу́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary /soˈuk/ supplies the two-vowel citation form; ğ is not a separate consonant.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20723": {
+    "pronunciation_easy": "аа́ч",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary /aˈat͡ʃ/ supplies the careful two-vowel variant; continuous/contracted long-a variants also occur.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20730": {
+    "pronunciation_easy": "да́",
+    "status": "ready",
+    "issue": null,
+    "reason": "One-syllable /daː/ has a long vowel; soft ğ adds no consonant.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20742": {
+    "pronunciation_easy": "йюзмэ́ хавузу",
+    "status": "ready",
+    "issue": null,
+    "reason": "Here swimming is a nominalized -me noun, not a negative command. Mark the compound phrase's first component; leave secondary phrase accent unspecified.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20744": {
+    "pronunciation_easy": "табло",
+    "status": "ready",
+    "issue": null,
+    "reason": "Loanword stress evidence conflicts across the draft and dictionary; preserve the stable segmental guide without a forced accent.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция."
+  },
+  "20745": {
+    "pronunciation_easy": "фотора́ф макинэси",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the dictionary fotoğraf reading and the nominal compound; secondary phrase/loan stress is intentionally not over-specified.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20749": {
+    "pronunciation_easy": "доу́м гюню",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /doˈum/ and compound-first prominence; do not impose the draft's initial accent on doğum.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20756": {
+    "pronunciation_easy": "рэси́м чизмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary /ɾe.ˈsim/ confirms final stress; the draft's initial resim accent was incorrect.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20758": {
+    "pronunciation_easy": "фотора́ф чэкмэ́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "The dictionary photo noun plus regular infinitive; source's foreign-word flag is resolved contextually.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20779": {
+    "pronunciation_easy": "кыса́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /kɯˈsa/: correct the draft's initial stress for short.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20780": {
+    "pronunciation_easy": "кырмызы́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /kɯɾ.mɯˈzɯ/: correct the draft's first-syllable accent for red.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20781": {
+    "pronunciation_easy": "мави",
+    "status": "ready",
+    "issue": null,
+    "reason": "Long initial a and stable segments are known; explicitly leave lexical stress unmarked because source evidence does not settle it independently.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. В mavi начальное a долгое."
+  },
+  "20795": {
+    "pronunciation_easy": "тэсли́м алма́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "Dictionary /tesˈlim/ and regular infinitive almak; correct source first stress on teslim.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20811": {
+    "pronunciation_easy": "бурада",
+    "status": "ready",
+    "issue": null,
+    "reason": "Full and contracted burada/burda readings have differing prominence; leave the exact accent unmarked in the simple guide.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция."
+  },
+  "20812": {
+    "pronunciation_easy": "орада",
+    "status": "ready",
+    "issue": null,
+    "reason": "Full and contracted orada/orda readings have differing prominence; leave the exact accent unmarked in the simple guide.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция."
+  },
+  "20813": {
+    "pronunciation_easy": "ичэридэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The stable segmental locative reading is clear; do not force disputed deictic/phrase stress from a synthesizer.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция."
+  },
+  "20814": {
+    "pronunciation_easy": "дышарыда",
+    "status": "ready",
+    "issue": null,
+    "reason": "The stable segmental locative reading is clear; do not force disputed deictic/phrase stress from a synthesizer.",
+    "pronunciation_note_ru": "Ударение намеренно не отмечено: словарные/разговорные варианты или имеющиеся источники не дают достаточно согласованной картины. Это подсказка по звукам, не точная транскрипция. ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20821": {
+    "pronunciation_easy": "сола́",
+    "status": "ready",
+    "issue": null,
+    "reason": "The direction word is the dative sol-a; the stressable case ending must not be replaced by the draft's initial accent.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20822": {
+    "pronunciation_easy": "са́а",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the continuous long-a realization of sağa; no hard g or extra consonant.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение."
+  },
+  "20823": {
+    "pronunciation_easy": "дю́мдюз",
+    "status": "ready",
+    "issue": null,
+    "reason": "The emphatic reduplicative prefix is stressed, as described in TDK stress guidance.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный."
+  },
+  "20826": {
+    "pronunciation_easy": "нэ́рэдэ",
+    "status": "ready",
+    "issue": null,
+    "reason": "The question word has the documented initial-stress reading, with ner'de as a common contraction.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20830": {
+    "pronunciation_easy": "нэдэ́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Why in this context is the final-stress neden reading; no arbitrary meaning change is made.",
+    "pronunciation_note_ru": "Приблизительное русское чтение стандартного турецкого; для точности используйте аудио."
+  },
+  "20836": {
+    "pronunciation_easy": "анла́мыйорум",
+    "status": "ready",
+    "issue": null,
+    "reason": "The negative -ma/-mı construction is pre-accenting; do not move stress onto the negative vowel or the personal ending.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и."
+  },
+  "20837": {
+    "pronunciation_easy": "лю́тфэн йава́ш кону́шун",
+    "status": "ready",
+    "issue": null,
+    "reason": "Restore initial lexical stress in lütfen; the polite imperative -(y)In is unstressed, leaving prominence on konuş rather than its added vowel.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20838": {
+    "pronunciation_easy": "тэкра́р эдэ́р мисиниз?",
+    "status": "ready",
+    "issue": null,
+    "reason": "The question particle mi and following personal material are unstressed; keep prominence on eder instead.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20840": {
+    "pronunciation_easy": "бу на́сыл сёйлэни́р?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Nasıl has initial stress; söylenir is the passive/aorist form, not a personal suffix case.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. ы приблизительно передаёт турецкое ı; не заменяйте его на и. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20841": {
+    "pronunciation_easy": "йардыма́ ихтийаджы́м ва́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun dative -a and possessive -ım are stressable; the source froze stress on older syllables.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20842": {
+    "pronunciation_easy": "тувалэ́т нэ́рэдэ?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Tuvalet plus the initial-stress question word; preserve the original question and meaning.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20843": {
+    "pronunciation_easy": "нэ када́р туту́йор?",
+    "status": "ready",
+    "issue": null,
+    "reason": "The progressive suffix -yor is pre-accenting; tutuyor's u precedes it. The question word need not receive artificial standalone accent.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20844": {
+    "pronunciation_easy": "буну́ алма́к истэ́рим",
+    "status": "ready",
+    "issue": null,
+    "reason": "Accusative bunu and infinitive almak; aorist personal -im does not draw stress from ister.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20845": {
+    "pronunciation_easy": "ка́ртла ёдэйэбили́р мийим?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Instrumental -la and question mi are unstressed; the ability/aorist verb carries lexical prominence.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20847": {
+    "pronunciation_easy": "рэзэрвасйону́м ва́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "The noun possessive ending -um is stressable; it is not a non-stressing copular personal ending.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20848": {
+    "pronunciation_easy": "ики́ кишили́к бир ма́са лю́тфэн",
+    "status": "ready",
+    "issue": null,
+    "reason": "Keep the TDK lexical exceptions MAsa/LÜTfen; regular numeral/derivation forms are reviewed, not blindly defaulted.",
+    "pronunciation_note_ru": "ё/ю приблизительно передают ö/ü: округлённые передние гласные, без начального й. Настоящая y в написании — отдельный согласный. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20849": {
+    "pronunciation_easy": "истасйо́н нэ́рэдэ?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain the conventional station loan and initial-stress question word; the phrase is not a homograph conflict.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20852": {
+    "pronunciation_easy": "амбула́нс чаы́рын",
+    "status": "ready",
+    "issue": null,
+    "reason": "The polite imperative -(y)In is unstressed; keep prominence on the stem's last vowel, not the imperative suffix. Soft ğ smooths the a/ı sequence.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20853": {
+    "pronunciation_easy": "кэндими́ хаста́ хиссэди́йорум",
+    "status": "ready",
+    "issue": null,
+    "reason": "Accusative self-form, hasta adjective and pre-yor progressive stress; the personal -um is not separately stressed.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20854": {
+    "pronunciation_easy": "... алэржи́м ва́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "Alerji retains final i under the consonantal possessive m; source middle stress was not justified.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20855": {
+    "pronunciation_easy": "бира́з су́ исти́йорум",
+    "status": "ready",
+    "issue": null,
+    "reason": "The affirmative progressive puts stress immediately before -yor; the personal -um is unstressed.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20856": {
+    "pronunciation_easy": "э́т йэ́мийорум",
+    "status": "ready",
+    "issue": null,
+    "reason": "The negative progressive is pre-accenting on ye; source accent on mi incorrectly ignored the negative suffix.",
+    "pronunciation_note_ru": "Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20857": {
+    "pronunciation_easy": "вай-фай ва́р мы?",
+    "status": "ready",
+    "issue": null,
+    "reason": "The question particle mı is unstressed; leave the international Wi-Fi loan's optional emphasis unmarked.",
+    "pronunciation_note_ru": "ы приблизительно передаёт турецкое ı; не заменяйте его на и. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  },
+  "20859": {
+    "pronunciation_easy": "сору́н дэйи́л",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the documented /deˈ(j)il/ negative reading; the contracted /diːl/ variant is also accepted, not a new word.",
+    "pronunciation_note_ru": "ğ здесь не русское г: оно удлиняет гласную, сглаживает переход между гласными или даёт слабое й-подобное скольжение. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла. Полное чтение deyíl; в быстрой речи также встречается односложное di:l с долгим и."
+  },
+  "20860": {
+    "pronunciation_easy": "ха́ди гидэлим",
+    "status": "ready",
+    "issue": null,
+    "reason": "Hadi has a documented initial accent; preserve the actual first-plural optative form, without forcing a disputed synthetic stress on gidelim.",
+    "pronunciation_note_ru": "Отмечено основное ударение словосочетания; второстепенные ударения и редукции намеренно не уточняются. Ударения даны для нейтрального чтения; фразовое выделение зависит от смысла."
+  }
+}

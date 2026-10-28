@@ -3,9 +3,11 @@ import {createPortal} from 'react-dom'
 import {useIsMutating} from '@tanstack/react-query'
 import {useLocation, useNavigate} from 'react-router-dom'
 import {languagePreferences, languageProfile, LEARNING_LANGUAGES, setLanguagePreferences, subscribeLanguages, type LanguagePreferences} from './api'
+import {pronunciationPreferences, setPronunciationPreferences, type PronunciationMode} from './pronunciationPreferences'
 
 function LanguageDialog({onClose}: {onClose: () => void}) {
   const [draft, setDraft] = useState(languagePreferences)
+  const [readings, setReadings] = useState(pronunciationPreferences)
   const ref = useRef<HTMLDialogElement>(null)
   const navigate = useNavigate()
   useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => dialog?.close() }, [])
@@ -19,8 +21,15 @@ function LanguageDialog({onClose}: {onClose: () => void}) {
       onChange={event => setDraft({...draft, translationLanguage: event.target.value as 'ru' | 'en'})}>
       <option value="ru">🇷🇺 Russian</option><option value="en">🇬🇧 English</option>
     </select></label>
+    <label>Pronunciation<select aria-label="Pronunciation display" value={readings[draft.language] ?? 'easy'}
+      onChange={event => setReadings({...readings, [draft.language]: event.target.value as PronunciationMode})}>
+      <option value="easy">Russian reading hints</option>
+      {draft.language === 'zh' && <option value="pinyin">Pinyin with tones</option>}
+      <option value="ipa">IPA (when available)</option>
+    </select></label>
     <div className="modal-actions"><button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
       <button type="button" className="btn btn-primary btn-sm" onClick={() => {
+        setPronunciationPreferences(readings)
         const current = languagePreferences()
         if (draft.language !== current.language || draft.translationLanguage !== current.translationLanguage) {
           setLanguagePreferences(draft)

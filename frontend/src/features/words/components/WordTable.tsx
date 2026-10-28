@@ -7,6 +7,7 @@ import {LEVEL_LABELS, LEVEL_TIPS, levelClass} from '@/features/words/model/wordD
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {EasyPronunciation} from './EasyPronunciation'
+import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
 import {smartPreview} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 
@@ -23,7 +24,8 @@ type Props = {
 
 export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const navigation = useWordListNavigation(fromTopicSlug, wordList)
-  const hasPronunciation = words.some(word => word.pronunciation_easy)
+  const readingMode = usePronunciationMode(words[0]?.language ?? 'en')
+  const hasPronunciation = words.some(word => pronunciationText(word, readingMode))
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)

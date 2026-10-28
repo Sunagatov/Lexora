@@ -4,7 +4,7 @@ These are approximate reading aids for Russian-speaking learners. IPA, Mandarin
 Pinyin and pronunciation audio remain separate, unmodified fields. Do not treat
 `ready` as authorization or a claim of native-speaker certification.
 
-## 28 October 2026 review
+## Initial 28 October 2026 review
 
 | Library | Supplied IDs | Eligible | Held |
 | --- | ---: | ---: | ---: |
@@ -76,3 +76,23 @@ vocabulary corpus. External dictionary snapshots remain outside this repository.
 For import/recovery contracts see
 [`docs/ai/easy-pronunciation.md`](../../../../docs/ai/easy-pronunciation.md).
 Runtime backup locations and operation results belong in Vault.
+
+## Completed starter coverage
+
+`completed-20261028/` contains the subsequent full 500-entry packages for German,
+French, Portugal Portuguese, Tatar, Turkish and Arabic. It adds 1,796 missing hints
+and preserves the 1,204 existing hints in these six libraries exactly. Together with
+the separate Spanish and Mandarin packages this covers all eight 500-word starters.
+Original files and initial held statuses remain preserved as historical evidence.
+
+Each new package has a JSONL, checksum manifest, review summary and decisions.
+The new German/French/Portuguese source packages are retained byte-for-byte too;
+their original workbook/file checksums and all live identities were verified.
+Original `ready` rows were reviewed along with source flags. Existing English,
+Spanish and Mandarin fields are outside this completion import.
+
+These remain learner approximations, not individual native-audio certifications.
+Some uncertain/variable lexical stresses are deliberately left unmarked and
+explained rather than guessed. French/Portuguese `~` means nasalization, not an
+extra n/m; Arabic uses documented citation/segmented forms and explicit connected
+forms where checked. Read each package's notes before treating its spelling as IPA.

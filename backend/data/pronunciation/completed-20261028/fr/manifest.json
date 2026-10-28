@@ -1,0 +1,24 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "pronunciations.jsonl",
+    "sha256": "862bc6b469ed4937beb9a1d68298c1473fca3801fb91c59451f17511aec23f0c"
+  },
+  "languages": {
+    "fr": {
+      "scheme": "russian-cyrillic-v1",
+      "unique_output_word_ids": 500,
+      "ready": 500,
+      "needs_review": 0
+    }
+  },
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "new_hints": 500,
+    "preserved_existing_hints": 0,
+    "method": "Full contextual pronunciation review, targeted primary references and independent checks; approximate learner hints"
+  },
+  "reviewed_context_sha256": "d410fe5e3a7abe181f09cb31605d55908c33ef2a758e4a36cc947ee021a08725"
+}

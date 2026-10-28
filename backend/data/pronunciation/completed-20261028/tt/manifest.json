@@ -1,0 +1,24 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "output": {
+    "filename": "pronunciations.jsonl",
+    "sha256": "49538b4e5754417e9a6e9f3f58cf8b48d82f5d07adad996b5e647e14d88dc106"
+  },
+  "languages": {
+    "tt": {
+      "scheme": "tatar-cyrillic-stress-v1",
+      "unique_output_word_ids": 500,
+      "ready": 500,
+      "needs_review": 0
+    }
+  },
+  "review": {
+    "approved_for_import": false,
+    "operator_review_required": true,
+    "native_audio_verifications": 0,
+    "new_hints": 41,
+    "preserved_existing_hints": 459,
+    "method": "Full contextual pronunciation review, targeted primary references and independent checks; approximate learner hints"
+  },
+  "reviewed_context_sha256": "d410fe5e3a7abe181f09cb31605d55908c33ef2a758e4a36cc947ee021a08725"
+}

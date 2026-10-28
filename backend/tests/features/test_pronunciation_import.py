@@ -190,6 +190,40 @@ def test_reviewed_language_packages_keep_held_readings_out(language, eligible, h
         assert readings["饿"] == "э⁴"
 
 
+@pytest.mark.parametrize(
+    ("language", "new", "first_id"),
+    [
+        ("de", 500, 18361),
+        ("fr", 500, 19361),
+        ("pt", 500, 19861),
+        ("tt", 41, 20861),
+        ("tr", 116, 20361),
+        ("ar", 139, 17861),
+    ],
+)
+def test_completed_packages_cover_all_ids_and_preserve_previously_imported_hints(
+    language, new, first_id
+):
+    directory = PACKAGE.parent / "completed-20261028" / language
+    rows, manifest = read_package(directory / "pronunciations.jsonl", directory / "manifest.json")
+    assert len(rows) == 500
+    assert {row.word_id for row in rows} == set(range(first_id, first_id + 500))
+    assert manifest["deferred_entries"] == []
+    assert manifest["review"]["new_hints"] == new
+    assert manifest["review"]["preserved_existing_hints"] == 500 - new
+    assert manifest["review"]["native_audio_verifications"] == 0
+    if language in {"tt", "tr", "ar"}:
+        previous = PACKAGE.parent / f"{language}-20261028"
+        old, _ = read_package(
+            previous / f"lexora-{language}-reviewed-pronunciation.jsonl",
+            previous / "manifest.json",
+            skip_unreviewed=True,
+        )
+        current = {row.word_id: row for row in rows}
+        for row in old:
+            assert current[row.word_id].model_dump() == row.model_dump()
+
+
 def test_only_hints_change_and_repeat_import_is_noop(database):
     db, word = database
     original = {

@@ -1,0 +1,3 @@
+* -text
+# Preserve intentional original Markdown line breaks.
+source-guide.md whitespace=-blank-at-eol

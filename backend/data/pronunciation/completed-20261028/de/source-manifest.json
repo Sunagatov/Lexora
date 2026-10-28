@@ -1,0 +1,73 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (4).xlsx",
+      "sha256": "a4d1c83f959c583fd43b6261f278397256ed871f06ad7d6ed4d86ef148fe8e41",
+      "learning_language": "de",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-de-cyrillic-pronunciation.jsonl",
+    "sha256": "2539f360d02240e38440e558616439b345effa410cd97e07ab89e6026aef9928"
+  },
+  "other_outputs": [
+    {
+      "filename": "lexora-de-pronunciation-proposals.jsonl",
+      "sha256": "979bae8b5547d95d918e077b8e177e811c7456465c526a0b74f8fe63ff2378c4"
+    },
+    {
+      "filename": "lexora-de-needs-review.csv",
+      "sha256": "4fd2e960d0ecbaad9ab6d392eff26375005d6ab12f09074bc30ca320eadf33f3"
+    },
+    {
+      "filename": "lexora-de-pronunciation-review.xlsx",
+      "sha256": "041603c6cc05979d6e7618b615a68b1d5477098f49c08f5a6fa3fcc594ed0175"
+    },
+    {
+      "filename": "lexora-de-pronunciation-guide.md",
+      "sha256": "c7c0c47a9bc375f6bb62ab672e6d4905dece61eb3075d311948b7205ff27b190"
+    },
+    {
+      "filename": "lexora-de-review-report.md",
+      "sha256": "3f08aa8e7864f5729d685ee77c0d43082cabb9c471d08ecca2fb75f961900138"
+    },
+    {
+      "filename": "lexora-de-codex-handoff.md",
+      "sha256": "1413c1fa112483103393ee7523fb53103232007faabb5f2bc0835369d997c018"
+    },
+    {
+      "filename": "lexora-de-all-500-google-doc-source.txt",
+      "sha256": "5422ef965aa4dd05c89c1b908414527524034092fd984619afd1c81951234e1b"
+    }
+  ],
+  "languages": {
+    "de": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 419,
+      "needs_review": 81,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "scheme": "russian-cyrillic-v1",
+      "dialect": "Standard German (Germany)",
+      "ids_min": 18361,
+      "ids_max": 18860
+    }
+  },
+  "other_languages_processed": [],
+  "verification": {
+    "import_approved": false,
+    "approved_for_import": false,
+    "individually_verified_native_audio": 0,
+    "methods": [
+      "exact source XLSX identity comparison",
+      "eSpeak IPA (German) automatic reference",
+      "phoneme-to-Cyrillic rules",
+      "targeted manual overrides"
+    ],
+    "warning": "All proposed pronunciations are provisional. The status ready is rule-based, NOT native-audio-verified or import approval."
+  }
+}

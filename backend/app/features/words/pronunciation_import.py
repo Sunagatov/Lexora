@@ -21,7 +21,7 @@ class PronunciationImportError(ValueError):
 
 class PronunciationEntry(BaseModel):
     word_id: int = Field(strict=True, gt=0)
-    language: Literal["es", "tt", "tr", "zh", "ar"]
+    language: Literal["es", "tt", "tr", "zh", "ar", "de", "fr", "pt"]
     term: str = Field(min_length=1, max_length=255)
     part_of_speech: str | None
     pronunciation_easy: str | None = Field(max_length=1000)
@@ -44,6 +44,9 @@ SCHEMES = {
     "tt": "tatar-cyrillic-stress-v1",
     "zh": "cyrillic-with-tone-numbers-v1",
     "ar": "russian-cyrillic-with-length-v1",
+    "de": "russian-cyrillic-v1",
+    "fr": "russian-cyrillic-v1",
+    "pt": "russian-cyrillic-v1",
 }
 
 

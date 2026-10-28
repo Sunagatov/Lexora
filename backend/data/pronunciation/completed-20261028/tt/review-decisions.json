@@ -1,0 +1,453 @@
+{
+  "20862": {
+    "pronunciation_easy": "хәерле́ иртә́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Greeting: ordinary adjectival/noun citation stress; әе remains native Tatar orthography, not misleading ordinary Russian replacement.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20863": {
+    "pronunciation_easy": "хәерле́ кө́н",
+    "status": "ready",
+    "issue": null,
+    "reason": "Greeting: native adjective + monosyllabic noun, not an imperative or a compound with guessed stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20864": {
+    "pronunciation_easy": "хәерле́ ки́ч",
+    "status": "ready",
+    "issue": null,
+    "reason": "Greeting: native adjective + monosyllabic noun; preserve the actual native spelling.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20867": {
+    "pronunciation_easy": "соңра́к күреше́рбез",
+    "status": "ready",
+    "issue": null,
+    "reason": "күреш-ер-без: the future-tense vowel in -ер is tonic, personal -без is unstressed; not the draft күрешербе́з.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ө и ү — передние округлённые гласные без начального й. ң — единый носовой звук, как ng в sing, без отдельного г.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20871": {
+    "pronunciation_easy": "гафу́ и́тегез",
+    "status": "ready",
+    "issue": null,
+    "reason": "Polite 2nd-person imperative и́тегез has initial stress; its plural/politeness ending is not a generic final-stress suffix.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20876": {
+    "pronunciation_easy": "рәхи́м и́тегез",
+    "status": "ready",
+    "issue": null,
+    "reason": "Welcome formula: и́тегез is a second-person imperative, not an ordinary final-stressed noun.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20877": {
+    "pronunciation_easy": "хәлләреге́з ни́чек?",
+    "status": "ready",
+    "issue": null,
+    "reason": "хәлләрегез is a noun with possessive ending, not an imperative merely because it ends -гез; interrogative ни́чек is initial-stressed.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20879": {
+    "pronunciation_easy": "танышуыбызга́ ша́тмын",
+    "status": "ready",
+    "issue": null,
+    "reason": "танышуыбызга is a verbal noun with possessive/dative suffixes, final stress; шатмын is predicate шат + unstressed 1sg ending, so ша́тмын.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20880": {
+    "pronunciation_easy": "исемеге́з ни́чек?",
+    "status": "ready",
+    "issue": null,
+    "reason": "исемегез is a possessive noun, not an imperative; níchek retains interrogative first-syllable stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20892": {
+    "pronunciation_easy": "абы́й / эне́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Two kinship alternatives read separately. Do not concatenate the slash into a single phrase or merge Word IDs.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20893": {
+    "pronunciation_easy": "апа́ / сеңе́л",
+    "status": "ready",
+    "issue": null,
+    "reason": "Separate elder/younger-sister alternatives with ordinary citation stress; retain ң.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ң — единый носовой звук, как ng в sing, без отдельного г.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20898": {
+    "pronunciation_easy": "гаилә́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Established native spelling of the family noun; citation final stress. KFU orthography syllabus explicitly lists гаилә among words with diphthongs. This guide retains native spelling instead of inventing a narrow respelling.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. В гаилә сочетание аи произносится слитно; сохраняем татарское написание.",
+    "references": [
+      "https://kpfu.ru/pdf/portal/oop/186789.pdf"
+    ],
+    "native_audio_verified": false
+  },
+  "20903": {
+    "pronunciation_easy": "хатын-кы́з",
+    "status": "ready",
+    "issue": null,
+    "reason": "Use the explicit хатын-кы́з example in the selected contemporary teaching source. Paired-word focus can vary; do not mark two equal primary accents.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. Показан вариант хатын-кы́з из современного учебного источника; логическое выделение частей пары может различаться.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "20963": {
+    "pronunciation_easy": "каһвә́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Established Tatar coffee noun with ordinary citation final stress; preserve һ and ә, not a Russian-looking replacement.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. һ — лёгкое придыхание, не русское х.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20969": {
+    "pronunciation_easy": "бәрәңге́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Established Tatar potato noun; ordinary final citation stress, retain ә and ң.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ң — единый носовой звук, как ng в sing, без отдельного г.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20979": {
+    "pronunciation_easy": "атланма́й",
+    "status": "ready",
+    "issue": null,
+    "reason": "Single compound lexical noun, one final citation accent; this is not a negative verb with -ма.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20996": {
+    "pronunciation_easy": "чәнечке́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Established native fork noun, ordinary final stress; not a verb/imperative.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "20999": {
+    "pronunciation_easy": "кәстрү́л",
+    "status": "ready",
+    "issue": null,
+    "reason": "Fully adapted borrowed noun with one syllabic vowel at the word end; retain the native ü/ү quality.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21005": {
+    "pronunciation_easy": "иртәнге́ а́ш",
+    "status": "ready",
+    "issue": null,
+    "reason": "The official 11th-grade Tatar olympiad answer explicitly places иртәнге stress on the third/final syllable; ash is monosyllabic.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. В сочетании н+г возможна ассимиляция н в носовой ң.",
+    "references": [
+      "https://edu.tatar.ru/upload/storage/org2381/files/11%20%D0%BA%D0%BB%D0%B0%D1%81%D1%81%20%D0%B6%D0%B0%D0%B2%D0%B0%D0%BF%D0%BB%D0%B0%D1%80.pdf"
+    ],
+    "native_audio_verified": false
+  },
+  "21054": {
+    "pronunciation_easy": "авырту́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Meaning is the action/pain noun, not a second-person imperative. -у nominal/action form takes normal final citation stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21059": {
+    "pronunciation_easy": "даруханә́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Established pharmacy noun, one final lexical accent; no negation, question or person-ending exception.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21083": {
+    "pronunciation_easy": "күнегүлә́р ясау́",
+    "status": "ready",
+    "issue": null,
+    "reason": "күнегү-ләр is plural noun with stressed plural suffix; ясау is the action-name form, not imperative яса.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21105": {
+    "pronunciation_easy": "тиме́р ю́л ста́нциясе",
+    "status": "ready",
+    "issue": null,
+    "reason": "Native noun тимер plus monosyllabic юл; recent Russian loan ста́нция retains its original nonfinal stress when possessive -се is attached.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21112": {
+    "pronunciation_easy": "кечкенә́ шәһә́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "Native adjective+noun citation readings; neither ending is a personal predicate or imperative suffix.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. һ — лёгкое придыхание, не русское х.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21143": {
+    "pronunciation_easy": "кайтары́п бирелгә́н акча́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Converb + passive past participle + noun: regular -ып/-гән and noun stress, no negative or personal ending to pull accent back.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21168": {
+    "pronunciation_easy": "эшмәкәрле́к",
+    "status": "ready",
+    "issue": null,
+    "reason": "Derived abstract noun in -лек, not an imperative; regular final citation stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21222": {
+    "pronunciation_easy": "салкы́нча",
+    "status": "ready",
+    "issue": null,
+    "reason": "Primary teacher phonetic analysis explicitly states second-syllable stress for салкынча; do not apply a blind final -ча accent.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://nsportal.ru/user/147388/page/tatar-tele-hm-dbiyaty-dreslre-ochen-kullanmalar"
+    ],
+    "native_audio_verified": false
+  },
+  "21246": {
+    "pronunciation_easy": "я́л вакыты́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Native noun phrase with possessive-final -ы in вакыты; logical emphasis can differ in connected speech.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21248": {
+    "pronunciation_easy": "күңе́л ачу́ кичәсе́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Noun+action noun+possessive noun phrase; ordinary individual citation accents, not one mechanically stressed sentence ending.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й. ң — единый носовой звук, как ng в sing, без отдельного г.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21257": {
+    "pronunciation_easy": "телеви́зор карау́",
+    "status": "ready",
+    "issue": null,
+    "reason": "The teaching reference explicitly lists телеви́зор among source-stress-retaining loans; карау is an action noun, not imperative кара.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21260": {
+    "pronunciation_easy": "чи́т илгә́ сәяхә́т итү́",
+    "status": "ready",
+    "issue": null,
+    "reason": "Native compound phrase; dative илгә and action noun итү have normal suffix stress, not imperative и́т.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://tatarica.org/ru/razdely/narody/tatary/tatarskij-yazyk/udarenie"
+    ],
+    "native_audio_verified": false
+  },
+  "21325": {
+    "pronunciation_easy": "һә́ркем",
+    "status": "ready",
+    "issue": null,
+    "reason": "Native pedagogical Magarif stress table explicitly puts һәркем in the first-syllable group, consistent with determinative pronouns.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. һ — лёгкое придыхание, не русское х.",
+    "references": [
+      "https://magarif-uku.ru/files/uploads/documents/2025/12/9/999184f1ca377dc1f57b245aec400f10.pdf"
+    ],
+    "native_audio_verified": false
+  },
+  "21338": {
+    "pronunciation_easy": "кабатлы́й а́лмассызмы?",
+    "status": "ready",
+    "issue": null,
+    "reason": "кабатлый has the present/converb vowel; ал-ма-с-сыз-мы contains unstressed negation, personal and question endings, so stress remains on ал.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21339": {
+    "pronunciation_easy": "бу́ нә́рсә аңлата́?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Interrogative нә́рсә takes first-syllable accent; аңлата has stressed positive present-tense ending, not an imperative.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ң — единый носовой звук, как ng в sing, без отдельного г.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21345": {
+    "pronunciation_easy": "ка́рта белән түләргә́ яры́ймы?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain source stress in Russian loan ка́рта; белән is a postposition; question -мы is unstressed after present ярый.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21347": {
+    "pronunciation_easy": "ми́н алда́н броньлады́м",
+    "status": "ready",
+    "issue": null,
+    "reason": "Russian monosyllabic бронь becomes an inflected Tatar verb; positive past-tense form броньла-ды-м, with unstressed person -м, not a fixed nonfinal Russian lexical stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21348": {
+    "pronunciation_easy": "ике́ кешегә́ өстә́л би́регез әле",
+    "status": "ready",
+    "issue": null,
+    "reason": "би́регез is a polite second-person imperative; әле is the unstressed request particle here, not an independently stressed lexical item.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э. ө и ү — передние округлённые гласные без начального й.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21349": {
+    "pronunciation_easy": "вокза́л ка́йда?",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain Russian loan stress вокза́л; interrogative ка́йда has first-syllable stress.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21352": {
+    "pronunciation_easy": "ашыгы́ч ярдә́м ча́кырыгыз",
+    "status": "ready",
+    "issue": null,
+    "reason": "ча́кырыгыз is 2nd-person plural imperative with initial stress; the preceding nouns/adjective keep their citation readings.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. ә — передний открытый гласный между русскими а и э.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21354": {
+    "pronunciation_easy": "мине́м … аллерги́ям ба́р",
+    "status": "ready",
+    "issue": null,
+    "reason": "Retain the Russian loan stress on ги in аллергия when adding the nonsyllabic 1sg possessive -м; ellipsis is a missing allergen, not a spoken word.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. Многоточие — место для названия аллергена, его не произносят.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  },
+  "21357": {
+    "pronunciation_easy": "вайфай ба́рмы?",
+    "status": "ready",
+    "issue": null,
+    "reason": "International Wi-Fi has variable loanword prominence; preserve the recognizable syllables without asserting unverified Tatar lexical stress. The established question бар-мы has unstressed -мы.",
+    "pronunciation_note_ru": "Татарская кириллица с подсказкой ударения, не узкая фонетическая транскрипция. Фразовое выделение зависит от контекста. У слова вайфай здесь намеренно не зафиксирован непроверенный акцент заимствования; в бармы выделяется бар.",
+    "references": [
+      "https://www.azatliq.org/amp/31824886.html"
+    ],
+    "native_audio_verified": false
+  }
+}

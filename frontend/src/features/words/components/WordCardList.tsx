@@ -7,6 +7,7 @@ import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {EasyPronunciation} from './EasyPronunciation'
+import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {SWIPE_THRESHOLD, useWordSwipe} from '@/features/words/hooks/useWordSwipe'
@@ -31,6 +32,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
   onSwipe: (word: Word, level: 4 | 5) => void
 }) {
   const [openLevel, setOpenLevel] = useState(false)
+  const readingMode = usePronunciationMode(word.language)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const navigation = useWordListNavigation(fromTopicSlug, wordList)
@@ -58,7 +60,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
       className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? ` swipe-dragging ${offset > 0 ? 'swipe-strong' : 'swipe-parked'}` : ''}`}>
       {offset !== 0 && <span className="swipe-feedback" style={{opacity: Math.min(Math.abs(offset) / SWIPE_THRESHOLD, .95)}} aria-hidden="true">{offset > 0 ? 'Strong →' : '← Parked'}{ready ? ' · Release' : ' · Keep swiping'}</span>}
       <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
-        <div className={`word-card-grid${word.pronunciation_easy ? ' has-pronunciation' : ''}`}>
+        <div className={`word-card-grid${pronunciationText(word, readingMode) ? ' has-pronunciation' : ''}`}>
           <div className="word-card-left">
             <span className="word-card-reading-row">
               <span className="word-term" style={{display: 'inline', marginBottom: 0}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>

@@ -1,0 +1,3440 @@
+{
+  "method": "Full model review of all 500 actual vocabulary entries; targeted primary Duden/IDS pronunciation checks; contextual phrase/meaning review; approximate Russian respelling, not native-audio certification",
+  "native_audio_verifications": 0,
+  "all_source_flags_resolved": 81,
+  "decisions": [
+    {
+      "word_id": 18362,
+      "term": "guten Morgen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "гу́тэн мо́ргэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18363,
+      "term": "guten Tag",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "гу́тэн та́к",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18364,
+      "term": "guten Abend",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "гу́тэ а́бэнт",
+      "after": "гу́тэн а́бэнт",
+      "reason": "Restore final n of guten; the source proposal incorrectly dropped it.",
+      "references": []
+    },
+    {
+      "word_id": 18366,
+      "term": "auf Wiedersehen",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ауф ви́дэрзэ́эн",
+      "after": "ауф ви́дэрзээн",
+      "reason": "One primary lexical stress in Wiedersehen; second element can receive secondary prominence.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Wiedersehen"
+      ]
+    },
+    {
+      "word_id": 18370,
+      "term": "gern geschehen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "гэ́рн гэшэ́эн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18372,
+      "term": "es tut mir leid",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "эс ту́т мир ла́йт",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18375,
+      "term": "okay",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "о́кэй",
+      "after": "окэ́",
+      "reason": "Use the established German oKÉ citation form, not the synthetic initial-stress reading.",
+      "references": [
+        "https://www.larousse.fr/dictionnaires/allemand-francais/okay/292276"
+      ]
+    },
+    {
+      "word_id": 18376,
+      "term": "willkommen",
+      "source_status": "ready",
+      "before": "ви́лкомэн",
+      "proposed_before": "ви́лкомэн",
+      "after": "вилко́мэн",
+      "reason": "Duden marks short stressed o: willkOmmen.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/willkommen"
+      ]
+    },
+    {
+      "word_id": 18377,
+      "term": "wie geht es dir?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ви гэ́т эс ди́р",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18378,
+      "term": "mir geht es gut",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "мир гэ́т эс гу́т",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18379,
+      "term": "schön, dich kennenzulernen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "шён дихь кэ́нэнцулэрнэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18383,
+      "term": "herzlichen Glückwunsch",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "хэ́рцлихьэн глю́квунш",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18384,
+      "term": "alles Gute zum Geburtstag",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "а́лэс гу́тэ цум гэбу́ацтак",
+      "after": "а́лэс гу́тэ цум гэбу́ртстак",
+      "reason": "Repair the source Geburt cluster; keep the written r as an approximation to vocalized r.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Geburtstag"
+      ]
+    },
+    {
+      "word_id": 18385,
+      "term": "pass auf dich auf",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "па́с ауф дихь а́уф",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18404,
+      "term": "Baby",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "бэ́йби",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Baby"
+      ]
+    },
+    {
+      "word_id": 18406,
+      "term": "Mädchen",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "мэ́тхьен",
+      "after": "мэ́тхьэн",
+      "reason": "Keep the ich-Laut and reduced -chen; the hint is not Russian ч.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Maedchen"
+      ]
+    },
+    {
+      "word_id": 18424,
+      "term": "morgen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "мо́ргэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/morgen"
+      ]
+    },
+    {
+      "word_id": 18426,
+      "term": "Morgen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "мо́ргэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18435,
+      "term": "Minute",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "мину́тэ",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Minute"
+      ]
+    },
+    {
+      "word_id": 18451,
+      "term": "Sofa",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "зо́фа",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Sofa"
+      ]
+    },
+    {
+      "word_id": 18452,
+      "term": "Kleiderschrank",
+      "source_status": "ready",
+      "before": "кла́йдэршрангк",
+      "proposed_before": "кла́йдэршрангк",
+      "after": "кла́йдэршранк",
+      "reason": "Do not insert a separate g into the /ŋk/ cluster of Schrank.",
+      "references": []
+    },
+    {
+      "word_id": 18458,
+      "term": "Toilette",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "туалэ́ттэ",
+      "after": "туалэ́тэ",
+      "reason": "Correct German oi reading to the accepted /to̯a/ form; stress -let-.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Toilette"
+      ]
+    },
+    {
+      "word_id": 18463,
+      "term": "Kaffee",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ка́фэ",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Kaffee"
+      ]
+    },
+    {
+      "word_id": 18472,
+      "term": "Karotte",
+      "source_status": "ready",
+      "before": "ка́ротэ",
+      "proposed_before": "ка́ротэ",
+      "after": "каро́тэ",
+      "reason": "Duden kaˈrɔtə: source initial stress was incorrect.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Karotte"
+      ]
+    },
+    {
+      "word_id": 18475,
+      "term": "Orange",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "о́рангэ",
+      "after": "ора́нжэ",
+      "reason": "For the fruit use the accepted German /oˈraŋʒə/ pronunciation; source орангэ was wrong.",
+      "references": [
+        "https://www.duden.de/sprachwissen/sprachratgeber/Die-Aussprache-von-Orange-und-orange"
+      ]
+    },
+    {
+      "word_id": 18481,
+      "term": "Hähnchenfleisch",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "хэ́нхьэнфлайш",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18501,
+      "term": "Kühlschrank",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "кю́лшрангк",
+      "after": "кю́лшранк",
+      "reason": "Preserve stress and ü; remove the extra g in /ŋk/.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Kuehlschrank"
+      ]
+    },
+    {
+      "word_id": 18506,
+      "term": "Mittagessen",
+      "source_status": "ready",
+      "before": "ми́тагэсэн",
+      "proposed_before": "ми́тагэсэн",
+      "after": "ми́так-эсэн",
+      "reason": "Duden /ˈmɪtaːkʔɛsn̩/: retain final /k/ and the boundary before Essen, not a voiced g.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Mittagessen"
+      ]
+    },
+    {
+      "word_id": 18507,
+      "term": "Abendessen",
+      "source_status": "ready",
+      "before": "а́бэндэсэн",
+      "proposed_before": "а́бэндэсэн",
+      "after": "а́бэнт-эсэн",
+      "reason": "Retain final devoiced /t/ at the Abend/Essen boundary.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Abendessen"
+      ]
+    },
+    {
+      "word_id": 18512,
+      "term": "T-Shirt",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "тэ́шэ́рт",
+      "after": "ти́-шёрт",
+      "reason": "Duden /ˈtiːʃœːɐ̯t/: T uses the English letter name, not German тэ.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/T_Shirt"
+      ]
+    },
+    {
+      "word_id": 18514,
+      "term": "Jeans",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "джи́нз",
+      "after": "джи́нс",
+      "reason": "Use German final devoicing; German Jeans ends /s/, not English /z/.",
+      "references": [
+        "https://de.wiktionary.org/wiki/Jeans"
+      ]
+    },
+    {
+      "word_id": 18519,
+      "term": "Pullover",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "пу́ловэр",
+      "after": "пуло́вэр",
+      "reason": "Duden marks PullOver; source first-syllable stress was wrong.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Pullover"
+      ]
+    },
+    {
+      "word_id": 18558,
+      "term": "Krankenhaus",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "кра́нкэнхаус",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Krankenhaus"
+      ]
+    },
+    {
+      "word_id": 18559,
+      "term": "Apotheke",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "а́потхэкэ",
+      "after": "апотэ́кэ",
+      "reason": "Duden ApothEke: stress the long e and pronounce th as /t/, not /th/.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Apotheke"
+      ]
+    },
+    {
+      "word_id": 18565,
+      "term": "sich die Zähne putzen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "зихь ди цэ́нэ пу́цэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18566,
+      "term": "sich die Haare kämmen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "зихь ди ха́рэ кэ́мэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18567,
+      "term": "frühstücken",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "фрю́штюкэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/fruehstuecken"
+      ]
+    },
+    {
+      "word_id": 18577,
+      "term": "trinken",
+      "source_status": "ready",
+      "before": "три́нгкэн",
+      "proposed_before": "три́нгкэн",
+      "after": "три́нкэн",
+      "reason": "No separate g in German /ŋk/; source нгк added a consonant.",
+      "references": []
+    },
+    {
+      "word_id": 18580,
+      "term": "Wäsche waschen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "вэ́шэ ва́шэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18593,
+      "term": "zurückkommen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "цурю́ккомэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/zurueckkommen"
+      ]
+    },
+    {
+      "word_id": 18600,
+      "term": "Taxi",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "та́кси",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Taxi"
+      ]
+    },
+    {
+      "word_id": 18601,
+      "term": "Fahrrad",
+      "source_status": "ready",
+      "before": "фа́ррат",
+      "proposed_before": "фа́ррат",
+      "after": "фа́рат",
+      "reason": "Fahrrad has a single /r/ sound at the morpheme boundary; keep a simple learner rendering.",
+      "references": []
+    },
+    {
+      "word_id": 18610,
+      "term": "Landstraße",
+      "source_status": "ready",
+      "before": "ла́ндстрасэ",
+      "proposed_before": "ла́ндстрасэ",
+      "after": "ла́нтштрасэ",
+      "reason": "Land final d devoices and Straße begins with /ʃtr/ at the compound boundary.",
+      "references": []
+    },
+    {
+      "word_id": 18611,
+      "term": "Großstadt",
+      "source_status": "ready",
+      "before": "гро́сстат",
+      "proposed_before": "гро́сстат",
+      "after": "гро́сштат",
+      "reason": "Stadt retains its root-initial /ʃt/ inside the compound.",
+      "references": []
+    },
+    {
+      "word_id": 18620,
+      "term": "Universität",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "унивэрзитэ́т",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Universitaet"
+      ]
+    },
+    {
+      "word_id": 18621,
+      "term": "Bibliothek",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "би́блиотхэк",
+      "after": "библиотэ́к",
+      "reason": "Duden BibliothEk: final stress and /t/, not source initial stress plus th.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Bibliothek"
+      ]
+    },
+    {
+      "word_id": 18625,
+      "term": "Restaurant",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "рэстора́н",
+      "after": "рэстора́н",
+      "reason": "Select the common French-derived German restaurant reading /ʁɛstoˈʀãː/.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Restaurant"
+      ]
+    },
+    {
+      "word_id": 18626,
+      "term": "Café",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "кафэ́",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18627,
+      "term": "Hotel",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "хо́тэл",
+      "after": "хотэ́л",
+      "reason": "Duden marks short stressed e in HotEl; source initial stress was wrong.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Hotel"
+      ]
+    },
+    {
+      "word_id": 18628,
+      "term": "Bank",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ба́нгк",
+      "after": "ба́нк",
+      "reason": "No separate g in /baŋk/; the same pronunciation serves bank/bench homographs.",
+      "references": []
+    },
+    {
+      "word_id": 18630,
+      "term": "Polizei",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "полицай",
+      "after": "полица́й",
+      "reason": "Mark the stressed diphthong explicitly.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Polizei"
+      ]
+    },
+    {
+      "word_id": 18631,
+      "term": "Kino",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ки́но",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Kino"
+      ]
+    },
+    {
+      "word_id": 18632,
+      "term": "Museum",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "музэ́ум",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Museum"
+      ]
+    },
+    {
+      "word_id": 18642,
+      "term": "Kassenbon",
+      "source_status": "ready",
+      "before": "ка́сэнбон",
+      "proposed_before": "ка́сэнбон",
+      "after": "ка́сэнбонг",
+      "reason": "Duden /ˈkasn̩bɔŋ/: Bon in this compound ends in a velar nasal, not ordinary n.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Kassenbon"
+      ]
+    },
+    {
+      "word_id": 18644,
+      "term": "Rabatt",
+      "source_status": "ready",
+      "before": "ра́бат",
+      "proposed_before": "ра́бат",
+      "after": "раба́т",
+      "reason": "Duden RabAtt: stress is final, not the synthetic initial accent.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Rabatt"
+      ]
+    },
+    {
+      "word_id": 18650,
+      "term": "kosten",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ко́стэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18663,
+      "term": "Büro",
+      "source_status": "ready",
+      "before": "бю́ро",
+      "proposed_before": "бю́ро",
+      "after": "бюро́",
+      "reason": "Use Germany /byˈʁoː/, not the initial-stress Swiss variant.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Buero"
+      ]
+    },
+    {
+      "word_id": 18664,
+      "term": "Firma",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "фи́рма",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Firma"
+      ]
+    },
+    {
+      "word_id": 18666,
+      "term": "Leiter",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ла́йтэр",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18669,
+      "term": "Computer",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "кэмпйу́тэ",
+      "after": "компью́тэр",
+      "reason": "Use Duden German /kɔmˈpjuːtɐ/ instead of the English-mode source.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Computer"
+      ]
+    },
+    {
+      "word_id": 18670,
+      "term": "Laptop",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ла́птап",
+      "after": "лэ́птоп",
+      "reason": "Use German /ˈlɛptɔp/ rather than English /ˈlaptɒp/.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Laptop"
+      ]
+    },
+    {
+      "word_id": 18671,
+      "term": "Tastatur",
+      "source_status": "ready",
+      "before": "та́статур",
+      "proposed_before": "та́статур",
+      "after": "тастату́р",
+      "reason": "Duden TastatUr: final stress, not the source first-syllable accent.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Tastatur"
+      ]
+    },
+    {
+      "word_id": 18675,
+      "term": "E-Mail",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "э́мэ́йл",
+      "after": "и́-мэйл",
+      "reason": "Duden /ˈiːmɛɪ̯l/: initial E is English ee, not German eh.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/E_Mail"
+      ]
+    },
+    {
+      "word_id": 18678,
+      "term": "Notizbuch",
+      "source_status": "ready",
+      "before": "но́тицбух",
+      "proposed_before": "но́тицбух",
+      "after": "ноти́цбух",
+      "reason": "Duden NotIzbuch /noˈtiːtsbuːx/: source first-syllable stress was wrong.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Notizbuch"
+      ]
+    },
+    {
+      "word_id": 18682,
+      "term": "Unterrichtsstunde",
+      "source_status": "ready",
+      "before": "унтэрри́хьцштундэ",
+      "proposed_before": "унтэрри́хьцштундэ",
+      "after": "у́нтэррихьцштундэ",
+      "reason": "Duden /ˈʊntɐrɪçtsʃtʊndə/: primary stress on the first syllable of Unterricht, not richt.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Unterrichtsstunde"
+      ]
+    },
+    {
+      "word_id": 18691,
+      "term": "zuhören",
+      "source_status": "ready",
+      "before": "цухёрэн",
+      "proposed_before": "цухёрэн",
+      "after": "цу́хёрэн",
+      "reason": "Duden zUhören is separable and stresses zu, not the stem vowel.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/zuhoeren"
+      ]
+    },
+    {
+      "word_id": 18696,
+      "term": "wissen / kennen",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ви́сэн кэ́нэн",
+      "after": "ви́сэн / кэ́нэн",
+      "reason": "Preserve the source term’s visible separator between two distinct verbs.",
+      "references": []
+    },
+    {
+      "word_id": 18700,
+      "term": "wiederholen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "видэрхо́лэн",
+      "reason": "Meaning-specific review: повторять; the intended meaning uses stem stress, not the separable ferry/bring-back reading.",
+      "references": []
+    },
+    {
+      "word_id": 18701,
+      "term": "übersetzen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "юбэрзэ́тцэн",
+      "reason": "Meaning-specific review: переводить с языка на язык; the intended meaning uses stem stress, not the separable ferry/bring-back reading.",
+      "references": []
+    },
+    {
+      "word_id": 18707,
+      "term": "Telefon",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "тэлефо́н",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Telefon"
+      ]
+    },
+    {
+      "word_id": 18709,
+      "term": "Adresse",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "адрэ́ссэ",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Adresse"
+      ]
+    },
+    {
+      "word_id": 18728,
+      "term": "See",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "зэ́",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18740,
+      "term": "Sport",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "шпо́рт",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Sport"
+      ]
+    },
+    {
+      "word_id": 18748,
+      "term": "Party",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "па́рти",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Party"
+      ]
+    },
+    {
+      "word_id": 18749,
+      "term": "Geburtstag",
+      "source_status": "ready",
+      "before": "гэбу́ацтак",
+      "proposed_before": "гэбу́ацтак",
+      "after": "гэбу́ртстак",
+      "reason": "Repair the missing rt/st cluster; r can vocalize in speech.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Geburtstag"
+      ]
+    },
+    {
+      "word_id": 18750,
+      "term": "Hobby",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "хо́би",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Hobby"
+      ]
+    },
+    {
+      "word_id": 18766,
+      "term": "hungrig",
+      "source_status": "ready",
+      "before": "ху́нггрихь",
+      "proposed_before": "ху́нггрихь",
+      "after": "ху́нгрихь",
+      "reason": "German /ŋʁ/ has no added g stop; source нггр doubled the consonant.",
+      "references": []
+    },
+    {
+      "word_id": 18768,
+      "term": "überrascht",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "юбэрра́шт",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/ueberrascht"
+      ]
+    },
+    {
+      "word_id": 18792,
+      "term": "legen / stellen",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "лэ́гэн штэ́лэн",
+      "after": "лэ́гэн / штэ́лэн",
+      "reason": "Preserve the source term’s separator between the two verbs.",
+      "references": []
+    },
+    {
+      "word_id": 18796,
+      "term": "herstellen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "хэ́рштэллэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/herstellen"
+      ]
+    },
+    {
+      "word_id": 18809,
+      "term": "kaputtmachen",
+      "source_status": "ready",
+      "before": "ка́путмахэн",
+      "proposed_before": "ка́путмахэн",
+      "after": "капу́тмахэн",
+      "reason": "IDS explicitly gives kaPUTT machen.",
+      "references": [
+        "https://grammis.ids-mannheim.de/verbs/view/400691"
+      ]
+    },
+    {
+      "word_id": 18819,
+      "term": "in der Nähe von",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ин дэр нэ́э фо́н",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18821,
+      "term": "links",
+      "source_status": "ready",
+      "before": "ли́нгкс",
+      "proposed_before": "ли́нгкс",
+      "after": "ли́нкс",
+      "reason": "German /ŋks/ needs no added separate g stop in a learner hint.",
+      "references": []
+    },
+    {
+      "word_id": 18823,
+      "term": "geradeaus",
+      "source_status": "ready",
+      "before": "гэра́дэаус",
+      "proposed_before": "гэра́дэаус",
+      "after": "гэрадэа́ус",
+      "reason": "Duden marks geradeAUs, correcting the source’s primary stress on ra.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/geradeaus"
+      ]
+    },
+    {
+      "word_id": 18837,
+      "term": "sprechen Sie bitte langsam",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "шпрэ́хьэн зи би́тэ ла́нгзам",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18838,
+      "term": "könnten Sie das wiederholen?",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "кёнтэн зи дас видэрхо́лэн",
+      "after": "кёнтэн зи дас видэрхо́лэн?",
+      "reason": "Keep the question punctuation and the translate/repeat context-specific stem stress.",
+      "references": []
+    },
+    {
+      "word_id": 18840,
+      "term": "wie sagt man das?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ви за́кт ман дас",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18842,
+      "term": "wo ist die Toilette?",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "во ист ди то́илэтэ",
+      "after": "во ист ди туалэ́тэ?",
+      "reason": "Correct the phrase’s inconsistent first-stressed synthetic Toilette reading to /toaˈlɛtə/.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/Toilette"
+      ]
+    },
+    {
+      "word_id": 18843,
+      "term": "wie viel kostet das?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ви фи́л ко́стэт дас",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18844,
+      "term": "ich hätte gern das hier",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ихь хэтэ гэ́рн дас хи́р",
+      "after": "ихь хэ́тэ гэ́рн дас хи́р",
+      "reason": "Mark hätte’s lexical stress; avoid treating source secondary stress as an unstressed two-syllable word.",
+      "references": []
+    },
+    {
+      "word_id": 18845,
+      "term": "kann ich mit Karte bezahlen?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "кан ихь мит ка́ртэ бэца́лэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18847,
+      "term": "ich habe eine Reservierung",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ихь хабэ айнэ рэзэрви́рунг",
+      "after": "ихь ха́бэ а́йнэ рэзэрви́рунг",
+      "reason": "Supply lexical stress for habe/eine; sentence focus remains flexible.",
+      "references": []
+    },
+    {
+      "word_id": 18848,
+      "term": "einen Tisch für zwei, bitte",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "айнэн ти́ш фюр цва́й би́тэ",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18849,
+      "term": "wo ist der Bahnhof?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "во ист дэр ба́нхоф",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18850,
+      "term": "wie spät ist es?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ви шпэ́т ист эс",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18851,
+      "term": "ich habe mich verlaufen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ихь хабэ михь фэрла́уфэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18852,
+      "term": "rufen Sie einen Krankenwagen",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ру́фэн зи айнэн кра́нкэнвагэн",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18853,
+      "term": "ich fühle mich krank",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ихь фю́лэ михь кра́нгк",
+      "after": "ихь фю́лэ михь кра́нк",
+      "reason": "Remove the inserted g in /ŋk/.",
+      "references": []
+    },
+    {
+      "word_id": 18854,
+      "term": "ich bin allergisch gegen …",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ихь бин а́лэргиш гэ́гэн",
+      "after": "ихь бин алэ́ргиш гэ́гэн …",
+      "reason": "Duden allErgisch: stress the second syllable, not the first.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/allergisch"
+      ]
+    },
+    {
+      "word_id": 18855,
+      "term": "ich hätte gern etwas Wasser",
+      "source_status": "needs_review",
+      "before": null,
+      "proposed_before": "ихь хэтэ гэ́рн э́твас ва́сэр",
+      "after": "ихь хэ́тэ гэ́рн э́твас ва́сэр",
+      "reason": "Mark lexical stress in hätte.",
+      "references": []
+    },
+    {
+      "word_id": 18856,
+      "term": "ich esse kein Fleisch",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ихь э́сэ ка́йн фла́йш",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    },
+    {
+      "word_id": 18857,
+      "term": "gibt es WLAN?",
+      "source_status": "ready",
+      "before": "ги́пт эс вэ́ла́н",
+      "proposed_before": "ги́пт эс вэ́ла́н",
+      "after": "ги́пт эс вэ́лан?",
+      "reason": "Duden /ˈveːlaːn/: primary stress on W’s name, not two separate primary accents.",
+      "references": [
+        "https://www.duden.de/rechtschreibung/WLAN"
+      ]
+    },
+    {
+      "word_id": 18858,
+      "term": "wie lautet das Passwort?",
+      "source_status": "needs_review",
+      "before": null,
+      "after": "ви ла́утэт дас па́сворт",
+      "reason": "Full contextual review: conventional German citation reading, lexical stress and phrase constituent pronunciation; source’s generic loanword/phrase flag does not establish a real ambiguity.",
+      "references": []
+    }
+  ],
+  "primary_checks": [
+    {
+      "word": "Abendessen",
+      "url": "https://www.duden.de/rechtschreibung/Abendessen",
+      "pronunciation_guides": [
+        "[STRESS:A]bendessen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Adresse",
+      "url": "https://www.duden.de/rechtschreibung/Adresse",
+      "pronunciation_guides": [
+        "Adr[STRESS:e]sse"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Apotheke",
+      "url": "https://www.duden.de/rechtschreibung/Apotheke",
+      "pronunciation_guides": [
+        "Apoth[STRESS:e]ke"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Arbeit",
+      "url": "https://www.duden.de/rechtschreibung/Arbeit",
+      "pronunciation_guides": [
+        "[STRESS:A]rbeit"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Armbanduhr",
+      "url": "https://www.duden.de/rechtschreibung/Armbanduhr",
+      "pronunciation_guides": [
+        "[STRESS:A]rmbanduhr"
+      ],
+      "ipa": [
+        "[ˈarmbantʔuːɐ̯]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Aufzug",
+      "url": "https://www.duden.de/rechtschreibung/Aufzug",
+      "pronunciation_guides": [
+        "[STRESS:Au]fzug"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Ausgang",
+      "url": "https://www.duden.de/rechtschreibung/Ausgang",
+      "pronunciation_guides": [
+        "[STRESS:Au]sgang"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Baby",
+      "url": "https://www.duden.de/rechtschreibung/Baby",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈbeːbi]",
+        "[ˈbɛɪ̯bi]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Backofen",
+      "url": "https://www.duden.de/rechtschreibung/Backofen",
+      "pronunciation_guides": [
+        "B[STRESS:a]ckofen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Badezimmer",
+      "url": "https://www.duden.de/rechtschreibung/Badezimmer",
+      "pronunciation_guides": [
+        "B[STRESS:a]dezimmer"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bahnhof",
+      "url": "https://www.duden.de/rechtschreibung/Bahnhof",
+      "pronunciation_guides": [
+        "B[STRESS:a]hnhof"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Banane",
+      "url": "https://www.duden.de/rechtschreibung/Banane",
+      "pronunciation_guides": [
+        "Ban[STRESS:a]ne"
+      ],
+      "ipa": [
+        "[baˈnaːnə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bank",
+      "url": "https://www.duden.de/rechtschreibung/Bank",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Bargeld",
+      "url": "https://www.duden.de/rechtschreibung/Bargeld",
+      "pronunciation_guides": [
+        "B[STRESS:a]rgeld"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Besprechung",
+      "url": "https://www.duden.de/rechtschreibung/Besprechung",
+      "pronunciation_guides": [
+        "Bespr[STRESS:e]chung"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bestellung",
+      "url": "https://www.duden.de/rechtschreibung/Bestellung",
+      "pronunciation_guides": [
+        "Best[STRESS:e]llung"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bibliothek",
+      "url": "https://www.duden.de/rechtschreibung/Bibliothek",
+      "pronunciation_guides": [
+        "Biblioth[STRESS:e]k"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bildschirm",
+      "url": "https://www.duden.de/rechtschreibung/Bildschirm",
+      "pronunciation_guides": [
+        "B[STRESS:i]ldschirm"
+      ],
+      "ipa": [
+        "[ˈbɪltʃɪrm]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bleistift",
+      "url": "https://www.duden.de/rechtschreibung/Bleistift",
+      "pronunciation_guides": [
+        "Bl[STRESS:ei]stift"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bratpfanne",
+      "url": "https://www.duden.de/rechtschreibung/Bratpfanne",
+      "pronunciation_guides": [
+        "Br[STRESS:a]tpfanne"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Brille",
+      "url": "https://www.duden.de/rechtschreibung/Brille",
+      "pronunciation_guides": [
+        "Br[STRESS:i]lle"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Bruder",
+      "url": "https://www.duden.de/rechtschreibung/Bruder",
+      "pronunciation_guides": [
+        "Br[STRESS:u]der"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Brücke",
+      "url": "https://www.duden.de/rechtschreibung/Bruecke",
+      "pronunciation_guides": [
+        "Br[STRESS:ü]cke"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Butter",
+      "url": "https://www.duden.de/rechtschreibung/Butter",
+      "pronunciation_guides": [
+        "B[STRESS:u]tter"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Büro",
+      "url": "https://www.duden.de/rechtschreibung/Buero",
+      "pronunciation_guides": [
+        "Bür[STRESS:o]"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Café",
+      "url": "https://www.duden.de/rechtschreibung/Caf%C3%A9",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Computer",
+      "url": "https://www.duden.de/rechtschreibung/Computer",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[kɔmˈpjuːtɐ]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Dokument",
+      "url": "https://www.duden.de/rechtschreibung/Dokument",
+      "pronunciation_guides": [
+        "Dokum[STRESS:e]nt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Drucker",
+      "url": "https://www.duden.de/rechtschreibung/Drucker",
+      "pronunciation_guides": [
+        "Dr[STRESS:u]cker"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Dusche",
+      "url": "https://www.duden.de/rechtschreibung/Dusche",
+      "pronunciation_guides": [
+        "D[STRESS:u]sche"
+      ],
+      "ipa": [
+        "[ˈduːʃə]",
+        "[ˈdʊʃə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "E-Mail",
+      "url": "https://www.duden.de/rechtschreibung/E_Mail",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈiːmɛɪ̯l]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Ehefrau",
+      "url": "https://www.duden.de/rechtschreibung/Ehefrau",
+      "pronunciation_guides": [
+        "[STRESS:E]hefrau"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Ehemann",
+      "url": "https://www.duden.de/rechtschreibung/Ehemann",
+      "pronunciation_guides": [
+        "[STRESS:E]hemann"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Eingang",
+      "url": "https://www.duden.de/rechtschreibung/Eingang",
+      "pronunciation_guides": [
+        "[STRESS:Ei]ngang"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Eltern",
+      "url": "https://www.duden.de/rechtschreibung/Eltern",
+      "pronunciation_guides": [
+        "[STRESS:E]ltern"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fahrkarte",
+      "url": "https://www.duden.de/rechtschreibung/Fahrkarte",
+      "pronunciation_guides": [
+        "F[STRESS:a]hrkarte"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fahrrad",
+      "url": "https://www.duden.de/rechtschreibung/Fahrrad",
+      "pronunciation_guides": [
+        "F[STRESS:a]hrrad"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Familie",
+      "url": "https://www.duden.de/rechtschreibung/Familie",
+      "pronunciation_guides": [
+        "Fam[STRESS:i]lie"
+      ],
+      "ipa": [
+        "[faˈmiːli̯ə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fenster",
+      "url": "https://www.duden.de/rechtschreibung/Fenster",
+      "pronunciation_guides": [
+        "F[STRESS:e]nster"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fieber",
+      "url": "https://www.duden.de/rechtschreibung/Fieber",
+      "pronunciation_guides": [
+        "F[STRESS:ie]ber"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Finger",
+      "url": "https://www.duden.de/rechtschreibung/Finger",
+      "pronunciation_guides": [
+        "F[STRESS:i]nger"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Firma",
+      "url": "https://www.duden.de/rechtschreibung/Firma",
+      "pronunciation_guides": [
+        "F[STRESS:i]rma"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Flasche",
+      "url": "https://www.duden.de/rechtschreibung/Flasche",
+      "pronunciation_guides": [
+        "Fl[STRESS:a]sche"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fleisch",
+      "url": "https://www.duden.de/rechtschreibung/Fleisch",
+      "pronunciation_guides": [
+        "Fl[STRESS:ei]sch"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Flughafen",
+      "url": "https://www.duden.de/rechtschreibung/Flughafen",
+      "pronunciation_guides": [
+        "Fl[STRESS:u]ghafen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Flugzeug",
+      "url": "https://www.duden.de/rechtschreibung/Flugzeug",
+      "pronunciation_guides": [
+        "Fl[STRESS:u]gzeug"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Freizeit",
+      "url": "https://www.duden.de/rechtschreibung/Freizeit",
+      "pronunciation_guides": [
+        "Fr[STRESS:ei]zeit"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fremder",
+      "url": "https://www.duden.de/rechtschreibung/Fremder",
+      "pronunciation_guides": [
+        "Fr[STRESS:e]mder"
+      ],
+      "ipa": [
+        "[ˈfrɛmdɐ]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Freund",
+      "url": "https://www.duden.de/rechtschreibung/Freund",
+      "pronunciation_guides": [
+        "Fr[STRESS:eu]nd"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Frühstück",
+      "url": "https://www.duden.de/rechtschreibung/Fruehstueck",
+      "pronunciation_guides": [
+        "Fr[STRESS:ü]hstück"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Fußball",
+      "url": "https://www.duden.de/rechtschreibung/Fuszball",
+      "pronunciation_guides": [
+        "F[STRESS:u]ßball"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Garten",
+      "url": "https://www.duden.de/rechtschreibung/Garten",
+      "pronunciation_guides": [
+        "G[STRESS:a]rten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Geburtstag",
+      "url": "https://www.duden.de/rechtschreibung/Geburtstag",
+      "pronunciation_guides": [
+        "Geb[STRESS:u]rtstag"
+      ],
+      "ipa": [
+        "[…ˈbʊrts…]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Gebäude",
+      "url": "https://www.duden.de/rechtschreibung/Gebaeude",
+      "pronunciation_guides": [
+        "Geb[STRESS:äu]de"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Geldbörse",
+      "url": "https://www.duden.de/rechtschreibung/Geldboerse",
+      "pronunciation_guides": [
+        "G[STRESS:e]ldbörse"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Geldschein",
+      "url": "https://www.duden.de/rechtschreibung/Geldschein",
+      "pronunciation_guides": [
+        "G[STRESS:e]ldschein"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Gemälde",
+      "url": "https://www.duden.de/rechtschreibung/Gemaelde",
+      "pronunciation_guides": [
+        "Gem[STRESS:ä]lde"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Geschäft",
+      "url": "https://www.duden.de/rechtschreibung/Geschaeft",
+      "pronunciation_guides": [
+        "Gesch[STRESS:ä]ft"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Gesicht",
+      "url": "https://www.duden.de/rechtschreibung/Gesicht",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Gesundheit",
+      "url": "https://www.duden.de/rechtschreibung/Gesundheit",
+      "pronunciation_guides": [
+        "Ges[STRESS:u]ndheit"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Großmutter",
+      "url": "https://www.duden.de/rechtschreibung/Groszmutter",
+      "pronunciation_guides": [
+        "Gr[STRESS:o]ßmutter"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Großstadt",
+      "url": "https://www.duden.de/rechtschreibung/Groszstadt",
+      "pronunciation_guides": [
+        "Gr[STRESS:o]ßstadt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Großvater",
+      "url": "https://www.duden.de/rechtschreibung/Groszvater",
+      "pronunciation_guides": [
+        "Gr[STRESS:o]ßvater"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Gürtel",
+      "url": "https://www.duden.de/rechtschreibung/Guertel",
+      "pronunciation_guides": [
+        "G[STRESS:ü]rtel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Handschuhe",
+      "url": "https://www.duden.de/rechtschreibung/Handschuhe",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Handtuch",
+      "url": "https://www.duden.de/rechtschreibung/Handtuch",
+      "pronunciation_guides": [
+        "H[STRESS:a]ndtuch"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Hausaufgaben",
+      "url": "https://www.duden.de/rechtschreibung/Hausaufgaben",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Himmel",
+      "url": "https://www.duden.de/rechtschreibung/Himmel",
+      "pronunciation_guides": [
+        "H[STRESS:i]mmel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Hobby",
+      "url": "https://www.duden.de/rechtschreibung/Hobby",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈhɔbi]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Hosentasche",
+      "url": "https://www.duden.de/rechtschreibung/Hosentasche",
+      "pronunciation_guides": [
+        "H[STRESS:o]sentasche"
+      ],
+      "ipa": [
+        "[ˈhoːzn̩taʃə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Hotel",
+      "url": "https://www.duden.de/rechtschreibung/Hotel",
+      "pronunciation_guides": [
+        "Hot[STRESS:e]l"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Husten",
+      "url": "https://www.duden.de/rechtschreibung/Husten",
+      "pronunciation_guides": [
+        "H[STRESS:u]sten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Hähnchenfleisch",
+      "url": "https://www.duden.de/rechtschreibung/Haehnchenfleisch",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Jeans",
+      "url": "https://www.duden.de/rechtschreibung/Jeans",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Kaffee",
+      "url": "https://www.duden.de/rechtschreibung/Kaffee",
+      "pronunciation_guides": [
+        "K[STRESS:a]ffee"
+      ],
+      "ipa": [
+        "[kaˈfeː]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kamera",
+      "url": "https://www.duden.de/rechtschreibung/Kamera",
+      "pronunciation_guides": [
+        "K[STRESS:a]mera"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Karotte",
+      "url": "https://www.duden.de/rechtschreibung/Karotte",
+      "pronunciation_guides": [
+        "Kar[STRESS:o]tte"
+      ],
+      "ipa": [
+        "[kaˈrɔtə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kartoffel",
+      "url": "https://www.duden.de/rechtschreibung/Kartoffel",
+      "pronunciation_guides": [
+        "Kart[STRESS:o]ffel"
+      ],
+      "ipa": [
+        "[karˈtɔfl̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kassenbon",
+      "url": "https://www.duden.de/rechtschreibung/Kassenbon",
+      "pronunciation_guides": [
+        "K[STRESS:a]ssenbon"
+      ],
+      "ipa": [
+        "[ˈkasn̩bɔŋ]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kino",
+      "url": "https://www.duden.de/rechtschreibung/Kino",
+      "pronunciation_guides": [
+        "K[STRESS:i]no"
+      ],
+      "ipa": [
+        "[ˈkiːno]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kleiderschrank",
+      "url": "https://www.duden.de/rechtschreibung/Kleiderschrank",
+      "pronunciation_guides": [
+        "Kl[STRESS:ei]derschrank"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kochtopf",
+      "url": "https://www.duden.de/rechtschreibung/Kochtopf",
+      "pronunciation_guides": [
+        "K[STRESS:o]chtopf"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Koffer",
+      "url": "https://www.duden.de/rechtschreibung/Koffer",
+      "pronunciation_guides": [
+        "K[STRESS:o]ffer"
+      ],
+      "ipa": [
+        "[ˈkɔfɐ]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kollege",
+      "url": "https://www.duden.de/rechtschreibung/Kollege",
+      "pronunciation_guides": [
+        "Koll[STRESS:e]ge"
+      ],
+      "ipa": [
+        "[kɔˈleːɡə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Konzert",
+      "url": "https://www.duden.de/rechtschreibung/Konzert",
+      "pronunciation_guides": [
+        "Konz[STRESS:e]rt"
+      ],
+      "ipa": [
+        "[kɔnˈtsɛrt]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Krankenhaus",
+      "url": "https://www.duden.de/rechtschreibung/Krankenhaus",
+      "pronunciation_guides": [
+        "Kr[STRESS:a]nkenhaus"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Krankenwagen",
+      "url": "https://www.duden.de/rechtschreibung/Krankenwagen",
+      "pronunciation_guides": [
+        "Kr[STRESS:a]nkenwagen"
+      ],
+      "ipa": [
+        "[ˈkraŋkn̩vaːɡn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kugelschreiber",
+      "url": "https://www.duden.de/rechtschreibung/Kugelschreiber",
+      "pronunciation_guides": [
+        "K[STRESS:u]gelschreiber"
+      ],
+      "ipa": [
+        "[ˈkuːɡl̩ʃraɪ̯bɐ]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Kühlschrank",
+      "url": "https://www.duden.de/rechtschreibung/Kuehlschrank",
+      "pronunciation_guides": [
+        "K[STRESS:ü]hlschrank"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Landstraße",
+      "url": "https://www.duden.de/rechtschreibung/Landstrasze",
+      "pronunciation_guides": [
+        "L[STRESS:a]ndstraße"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Laptop",
+      "url": "https://www.duden.de/rechtschreibung/Laptop",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈlɛp…]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Lehrer",
+      "url": "https://www.duden.de/rechtschreibung/Lehrer",
+      "pronunciation_guides": [
+        "L[STRESS:e]hrer"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Leiter",
+      "url": "https://www.duden.de/rechtschreibung/Leiter",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Löffel",
+      "url": "https://www.duden.de/rechtschreibung/Loeffel",
+      "pronunciation_guides": [
+        "L[STRESS:ö]ffel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Mahlzeit",
+      "url": "https://www.duden.de/rechtschreibung/Mahlzeit",
+      "pronunciation_guides": [
+        "M[STRESS:a]hlzeit"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Mantel",
+      "url": "https://www.duden.de/rechtschreibung/Mantel",
+      "pronunciation_guides": [
+        "M[STRESS:a]ntel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Medikament",
+      "url": "https://www.duden.de/rechtschreibung/Medikament",
+      "pronunciation_guides": [
+        "Medikam[STRESS:e]nt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Messer",
+      "url": "https://www.duden.de/rechtschreibung/Messer",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Minute",
+      "url": "https://www.duden.de/rechtschreibung/Minute",
+      "pronunciation_guides": [
+        "Min[STRESS:u]te"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Mitarbeiter",
+      "url": "https://www.duden.de/rechtschreibung/Mitarbeiter",
+      "pronunciation_guides": [
+        "M[STRESS:i]tarbeiter"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Mittagessen",
+      "url": "https://www.duden.de/rechtschreibung/Mittagessen",
+      "pronunciation_guides": [
+        "M[STRESS:i]ttagessen"
+      ],
+      "ipa": [
+        "[ˈmɪtaːkʔɛsn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Morgen",
+      "url": "https://www.duden.de/rechtschreibung/Morgen",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Museum",
+      "url": "https://www.duden.de/rechtschreibung/Museum",
+      "pronunciation_guides": [
+        "Mus[STRESS:e]um"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Mutter",
+      "url": "https://www.duden.de/rechtschreibung/Mutter",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Mädchen",
+      "url": "https://www.duden.de/rechtschreibung/Maedchen",
+      "pronunciation_guides": [
+        "M[STRESS:ä]dchen"
+      ],
+      "ipa": [
+        "[ˈmɛːtçən]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Nachbar",
+      "url": "https://www.duden.de/rechtschreibung/Nachbar",
+      "pronunciation_guides": [
+        "N[STRESS:a]chbar"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Nachmittag",
+      "url": "https://www.duden.de/rechtschreibung/Nachmittag",
+      "pronunciation_guides": [
+        "N[STRESS:a]chmittag"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Nachricht",
+      "url": "https://www.duden.de/rechtschreibung/Nachricht",
+      "pronunciation_guides": [
+        "N[STRESS:a]chricht"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Notizbuch",
+      "url": "https://www.duden.de/rechtschreibung/Notizbuch",
+      "pronunciation_guides": [
+        "Not[STRESS:i]zbuch"
+      ],
+      "ipa": [
+        "[noˈtiːtsbuːx]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Nudeln",
+      "url": "https://www.duden.de/rechtschreibung/Nudeln",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Orange",
+      "url": "https://www.duden.de/rechtschreibung/Orange",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Papier",
+      "url": "https://www.duden.de/rechtschreibung/Papier",
+      "pronunciation_guides": [
+        "Pap[STRESS:ie]r"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Party",
+      "url": "https://www.duden.de/rechtschreibung/Party",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈpaːɐ̯ti]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Person",
+      "url": "https://www.duden.de/rechtschreibung/Person",
+      "pronunciation_guides": [
+        "Pers[STRESS:o]n"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Pfeffer",
+      "url": "https://www.duden.de/rechtschreibung/Pfeffer",
+      "pronunciation_guides": [
+        "Pf[STRESS:e]ffer"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Polizei",
+      "url": "https://www.duden.de/rechtschreibung/Polizei",
+      "pronunciation_guides": [
+        "Poliz[STRESS:ei]"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Postamt",
+      "url": "https://www.duden.de/rechtschreibung/Postamt",
+      "pronunciation_guides": [
+        "P[STRESS:o]stamt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Prüfung",
+      "url": "https://www.duden.de/rechtschreibung/Pruefung",
+      "pronunciation_guides": [
+        "Pr[STRESS:ü]fung"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Pullover",
+      "url": "https://www.duden.de/rechtschreibung/Pullover",
+      "pronunciation_guides": [
+        "Pull[STRESS:o]ver"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Rabatt",
+      "url": "https://www.duden.de/rechtschreibung/Rabatt",
+      "pronunciation_guides": [
+        "Rab[STRESS:a]tt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Rechnung",
+      "url": "https://www.duden.de/rechtschreibung/Rechnung",
+      "pronunciation_guides": [
+        "R[STRESS:e]chnung"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Regenschirm",
+      "url": "https://www.duden.de/rechtschreibung/Regenschirm",
+      "pronunciation_guides": [
+        "R[STRESS:e]genschirm"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Reisepass",
+      "url": "https://www.duden.de/rechtschreibung/Reisepass",
+      "pronunciation_guides": [
+        "R[STRESS:ei]sepass"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Restaurant",
+      "url": "https://www.duden.de/rechtschreibung/Restaurant",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[rɛstoˈrɑ̃ː]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Rücken",
+      "url": "https://www.duden.de/rechtschreibung/Ruecken",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Schlafzimmer",
+      "url": "https://www.duden.de/rechtschreibung/Schlafzimmer",
+      "pronunciation_guides": [
+        "Schl[STRESS:a]fzimmer"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schlüssel",
+      "url": "https://www.duden.de/rechtschreibung/Schluessel",
+      "pronunciation_guides": [
+        "Schl[STRESS:ü]ssel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schmerz",
+      "url": "https://www.duden.de/rechtschreibung/Schmerz",
+      "pronunciation_guides": [
+        "Schm[STRESS:e]rz"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schnee",
+      "url": "https://www.duden.de/rechtschreibung/Schnee",
+      "pronunciation_guides": [
+        "Schn[STRESS:ee]"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schuhe",
+      "url": "https://www.duden.de/rechtschreibung/Schuhe",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Schule",
+      "url": "https://www.duden.de/rechtschreibung/Schule",
+      "pronunciation_guides": [
+        "Sch[STRESS:u]le"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schwester",
+      "url": "https://www.duden.de/rechtschreibung/Schwester",
+      "pronunciation_guides": [
+        "Schw[STRESS:e]ster"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schwimmbad",
+      "url": "https://www.duden.de/rechtschreibung/Schwimmbad",
+      "pronunciation_guides": [
+        "Schw[STRESS:i]mmbad"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Schüssel",
+      "url": "https://www.duden.de/rechtschreibung/Schuessel",
+      "pronunciation_guides": [
+        "Sch[STRESS:ü]ssel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "See",
+      "url": "https://www.duden.de/rechtschreibung/See",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Socken",
+      "url": "https://www.duden.de/rechtschreibung/Socken",
+      "pronunciation_guides": [
+        "S[STRESS:o]cken"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Sofa",
+      "url": "https://www.duden.de/rechtschreibung/Sofa",
+      "pronunciation_guides": [
+        "S[STRESS:o]fa"
+      ],
+      "ipa": [
+        "[ˈzoːfa]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Spiegel",
+      "url": "https://www.duden.de/rechtschreibung/Spiegel",
+      "pronunciation_guides": [
+        "Sp[STRESS:ie]gel"
+      ],
+      "ipa": [
+        "[ˈʃpiːɡl̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Sport",
+      "url": "https://www.duden.de/rechtschreibung/Sport",
+      "pronunciation_guides": [
+        "Sp[STRESS:o]rt"
+      ],
+      "ipa": [
+        "[ʃpɔrt]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Sprache",
+      "url": "https://www.duden.de/rechtschreibung/Sprache",
+      "pronunciation_guides": [
+        "Spr[STRESS:a]che"
+      ],
+      "ipa": [
+        "[ˈʃpraːxə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Stiefel",
+      "url": "https://www.duden.de/rechtschreibung/Stiefel",
+      "pronunciation_guides": [
+        "St[STRESS:ie]fel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Strand",
+      "url": "https://www.duden.de/rechtschreibung/Strand",
+      "pronunciation_guides": [
+        "Str[STRESS:a]nd"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Straße",
+      "url": "https://www.duden.de/rechtschreibung/Strasze",
+      "pronunciation_guides": [
+        "Str[STRESS:a]ße"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Stunde",
+      "url": "https://www.duden.de/rechtschreibung/Stunde",
+      "pronunciation_guides": [
+        "St[STRESS:u]nde"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Supermarkt",
+      "url": "https://www.duden.de/rechtschreibung/Supermarkt",
+      "pronunciation_guides": [
+        "S[STRESS:u]permarkt"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "T-Shirt",
+      "url": "https://www.duden.de/rechtschreibung/T_Shirt",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈtiːʃœːɐ̯t]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Tasche",
+      "url": "https://www.duden.de/rechtschreibung/Tasche",
+      "pronunciation_guides": [
+        "T[STRESS:a]sche"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Tastatur",
+      "url": "https://www.duden.de/rechtschreibung/Tastatur",
+      "pronunciation_guides": [
+        "Tastat[STRESS:u]r"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Taxi",
+      "url": "https://www.duden.de/rechtschreibung/Taxi",
+      "pronunciation_guides": [
+        "T[STRESS:a]xi"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Telefon",
+      "url": "https://www.duden.de/rechtschreibung/Telefon",
+      "pronunciation_guides": [
+        "T[STRESS:e]lefon"
+      ],
+      "ipa": [
+        "[ˈteːləfoːn]",
+        "[teləˈfoːn]",
+        "[ˈtɛl…]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Teller",
+      "url": "https://www.duden.de/rechtschreibung/Teller",
+      "pronunciation_guides": [
+        "T[STRESS:e]ller"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Tochter",
+      "url": "https://www.duden.de/rechtschreibung/Tochter",
+      "pronunciation_guides": [
+        "T[STRESS:o]chter"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Toilette",
+      "url": "https://www.duden.de/rechtschreibung/Toilette",
+      "pronunciation_guides": [
+        "Toil[STRESS:e]tte"
+      ],
+      "ipa": [
+        "[to̯a…]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Tomate",
+      "url": "https://www.duden.de/rechtschreibung/Tomate",
+      "pronunciation_guides": [
+        "Tom[STRESS:a]te"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Universität",
+      "url": "https://www.duden.de/rechtschreibung/Universitaet",
+      "pronunciation_guides": [
+        "Universit[STRESS:ä]t"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Unterrichtsstunde",
+      "url": "https://www.duden.de/rechtschreibung/Unterrichtsstunde",
+      "pronunciation_guides": [
+        "[STRESS:U]nterrichtsstunde"
+      ],
+      "ipa": [
+        "[ˈʊntɐrɪçtsʃtʊndə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Urlaub",
+      "url": "https://www.duden.de/rechtschreibung/Urlaub",
+      "pronunciation_guides": [
+        "[STRESS:U]rlaub"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "WLAN",
+      "url": "https://www.duden.de/rechtschreibung/WLAN",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈveːlaːn]",
+        "[ˈveːlan]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Warteschlange",
+      "url": "https://www.duden.de/rechtschreibung/Warteschlange",
+      "pronunciation_guides": [
+        "W[STRESS:a]rteschlange"
+      ],
+      "ipa": [
+        "[ˈvartəʃlaŋə]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Wasser",
+      "url": "https://www.duden.de/rechtschreibung/Wasser",
+      "pronunciation_guides": [
+        "W[STRESS:a]sser"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Wasserkocher",
+      "url": "https://www.duden.de/rechtschreibung/Wasserkocher",
+      "pronunciation_guides": [
+        "W[STRESS:a]sserkocher"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Wechselgeld",
+      "url": "https://www.duden.de/rechtschreibung/Wechselgeld",
+      "pronunciation_guides": [
+        "W[STRESS:e]chselgeld"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Wetter",
+      "url": "https://www.duden.de/rechtschreibung/Wetter",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Wochenende",
+      "url": "https://www.duden.de/rechtschreibung/Wochenende",
+      "pronunciation_guides": [
+        "W[STRESS:o]chenende"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Wohnung",
+      "url": "https://www.duden.de/rechtschreibung/Wohnung",
+      "pronunciation_guides": [
+        "W[STRESS:o]hnung"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Zahlungskarte",
+      "url": "https://www.duden.de/rechtschreibung/Zahlungskarte",
+      "error": "HTTPError"
+    },
+    {
+      "word": "Zimmer",
+      "url": "https://www.duden.de/rechtschreibung/Zimmer",
+      "pronunciation_guides": [
+        "Z[STRESS:i]mmer"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Zitrone",
+      "url": "https://www.duden.de/rechtschreibung/Zitrone",
+      "pronunciation_guides": [
+        "Zitr[STRESS:o]ne"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Zucker",
+      "url": "https://www.duden.de/rechtschreibung/Zucker",
+      "pronunciation_guides": [
+        "Z[STRESS:u]cker"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "Zwiebel",
+      "url": "https://www.duden.de/rechtschreibung/Zwiebel",
+      "pronunciation_guides": [
+        "Zw[STRESS:ie]bel"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "abbiegen",
+      "url": "https://www.duden.de/rechtschreibung/abbiegen",
+      "pronunciation_guides": [
+        "[STRESS:a]bbiegen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "allergisch",
+      "url": "https://www.duden.de/rechtschreibung/allergisch",
+      "pronunciation_guides": [
+        "all[STRESS:e]rgisch"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "anfangen",
+      "url": "https://www.duden.de/rechtschreibung/anfangen",
+      "pronunciation_guides": [
+        "[STRESS:a]nfangen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "anhalten",
+      "url": "https://www.duden.de/rechtschreibung/anhalten",
+      "pronunciation_guides": [
+        "[STRESS:a]nhalten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "ankommen",
+      "url": "https://www.duden.de/rechtschreibung/ankommen",
+      "pronunciation_guides": [
+        "[STRESS:a]nkommen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "anrufen",
+      "url": "https://www.duden.de/rechtschreibung/anrufen",
+      "pronunciation_guides": [
+        "[STRESS:a]nrufen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "antworten",
+      "url": "https://www.duden.de/rechtschreibung/antworten",
+      "pronunciation_guides": [
+        "[STRESS:a]ntworten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "aufräumen",
+      "url": "https://www.duden.de/rechtschreibung/aufraeumen",
+      "pronunciation_guides": [
+        "[STRESS:au]fräumen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "aufstehen",
+      "url": "https://www.duden.de/rechtschreibung/aufstehen",
+      "pronunciation_guides": [
+        "[STRESS:au]fstehen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "aufwachen",
+      "url": "https://www.duden.de/rechtschreibung/aufwachen",
+      "pronunciation_guides": [
+        "[STRESS:au]fwachen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "ausgeben",
+      "url": "https://www.duden.de/rechtschreibung/ausgeben",
+      "pronunciation_guides": [
+        "[STRESS:au]sgeben"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "beenden",
+      "url": "https://www.duden.de/rechtschreibung/beenden",
+      "pronunciation_guides": [
+        "be[STRESS:e]nden"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "behalten",
+      "url": "https://www.duden.de/rechtschreibung/behalten",
+      "pronunciation_guides": [
+        "beh[STRESS:a]lten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "bekommen",
+      "url": "https://www.duden.de/rechtschreibung/bekommen",
+      "pronunciation_guides": [
+        "bek[STRESS:o]mmen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "benutzen",
+      "url": "https://www.duden.de/rechtschreibung/benutzen",
+      "pronunciation_guides": [
+        "ben[STRESS:u]tzen",
+        "ben[STRESS:ü]tzen"
+      ],
+      "ipa": [
+        "[bəˈnʊtsn̩]",
+        "[bəˈnʏtsn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "bezahlen",
+      "url": "https://www.duden.de/rechtschreibung/bezahlen",
+      "pronunciation_guides": [
+        "bez[STRESS:a]hlen"
+      ],
+      "ipa": [
+        "[bəˈtsaːlən]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "braten",
+      "url": "https://www.duden.de/rechtschreibung/braten",
+      "pronunciation_guides": [
+        "br[STRESS:a]ten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "brauchen",
+      "url": "https://www.duden.de/rechtschreibung/brauchen",
+      "pronunciation_guides": [
+        "br[STRESS:au]chen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "bringen",
+      "url": "https://www.duden.de/rechtschreibung/bringen",
+      "pronunciation_guides": [
+        "br[STRESS:i]ngen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "bügeln",
+      "url": "https://www.duden.de/rechtschreibung/buegeln",
+      "pronunciation_guides": [
+        "b[STRESS:ü]geln"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "draußen",
+      "url": "https://www.duden.de/rechtschreibung/drauszen",
+      "pronunciation_guides": [
+        "dr[STRESS:au]ßen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "drinnen",
+      "url": "https://www.duden.de/rechtschreibung/drinnen",
+      "pronunciation_guides": [
+        "dr[STRESS:i]nnen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "durstig",
+      "url": "https://www.duden.de/rechtschreibung/durstig",
+      "pronunciation_guides": [
+        "d[STRESS:u]rstig"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "duschen",
+      "url": "https://www.duden.de/rechtschreibung/duschen",
+      "pronunciation_guides": [],
+      "ipa": [
+        "[ˈduːʃn̩]",
+        "[ˈdʊʃn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "einfach",
+      "url": "https://www.duden.de/rechtschreibung/einfach",
+      "error": "HTTPError"
+    },
+    {
+      "word": "erklären",
+      "url": "https://www.duden.de/rechtschreibung/erklaeren",
+      "pronunciation_guides": [
+        "erkl[STRESS:ä]ren"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "erzählen",
+      "url": "https://www.duden.de/rechtschreibung/erzaehlen",
+      "pronunciation_guides": [
+        "erz[STRESS:ä]hlen"
+      ],
+      "ipa": [
+        "[ɛɐ̯ˈtsɛːlən]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "fernsehen",
+      "url": "https://www.duden.de/rechtschreibung/fernsehen",
+      "pronunciation_guides": [
+        "f[STRESS:e]rnsehen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "finden",
+      "url": "https://www.duden.de/rechtschreibung/finden",
+      "pronunciation_guides": [
+        "f[STRESS:i]nden"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "fortsetzen",
+      "url": "https://www.duden.de/rechtschreibung/fortsetzen",
+      "pronunciation_guides": [
+        "f[STRESS:o]rtsetzen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "fragen",
+      "url": "https://www.duden.de/rechtschreibung/fragen",
+      "pronunciation_guides": [
+        "fr[STRESS:a]gen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "freundlich",
+      "url": "https://www.duden.de/rechtschreibung/freundlich",
+      "pronunciation_guides": [
+        "fr[STRESS:eu]ndlich"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "frühstücken",
+      "url": "https://www.duden.de/rechtschreibung/fruehstuecken",
+      "pronunciation_guides": [
+        "fr[STRESS:ü]hstücken"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "geradeaus",
+      "url": "https://www.duden.de/rechtschreibung/geradeaus",
+      "pronunciation_guides": [
+        "gerade[STRESS:au]s"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "geschlossen",
+      "url": "https://www.duden.de/rechtschreibung/geschlossen",
+      "error": "HTTPError"
+    },
+    {
+      "word": "gestern",
+      "url": "https://www.duden.de/rechtschreibung/gestern",
+      "pronunciation_guides": [
+        "g[STRESS:e]stern"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "geöffnet",
+      "url": "https://www.duden.de/rechtschreibung/geoeffnet",
+      "pronunciation_guides": [
+        "ge[STRESS:ö]ffnet"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "glücklich",
+      "url": "https://www.duden.de/rechtschreibung/gluecklich",
+      "error": "HTTPError"
+    },
+    {
+      "word": "günstig",
+      "url": "https://www.duden.de/rechtschreibung/guenstig",
+      "pronunciation_guides": [
+        "g[STRESS:ü]nstig"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "helfen",
+      "url": "https://www.duden.de/rechtschreibung/helfen",
+      "pronunciation_guides": [
+        "h[STRESS:e]lfen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "herstellen",
+      "url": "https://www.duden.de/rechtschreibung/herstellen",
+      "pronunciation_guides": [
+        "h[STRESS:e]rstellen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "hundert",
+      "url": "https://www.duden.de/rechtschreibung/hundert",
+      "pronunciation_guides": [
+        "h[STRESS:u]ndert"
+      ],
+      "ipa": [
+        "[ˈhʊndɐt]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "hungrig",
+      "url": "https://www.duden.de/rechtschreibung/hungrig",
+      "pronunciation_guides": [
+        "h[STRESS:u]ngrig"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "kaputtmachen",
+      "url": "https://www.duden.de/rechtschreibung/kaputt_machen",
+      "pronunciation_guides": [
+        "kap[STRESS:u]tt machen",
+        "kap[STRESS:u]ttmachen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "kaufen",
+      "url": "https://www.duden.de/rechtschreibung/kaufen",
+      "pronunciation_guides": [
+        "k[STRESS:au]fen"
+      ],
+      "ipa": [
+        "[ˈkaʊ̯fn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "kochen",
+      "url": "https://www.duden.de/rechtschreibung/kochen",
+      "pronunciation_guides": [
+        "k[STRESS:o]chen"
+      ],
+      "ipa": [
+        "[ˈkɔxn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "kommen",
+      "url": "https://www.duden.de/rechtschreibung/kommen",
+      "pronunciation_guides": [
+        "k[STRESS:o]mmen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "kosten",
+      "url": "https://www.duden.de/rechtschreibung/kosten",
+      "error": "HTTPError"
+    },
+    {
+      "word": "kostenlos",
+      "url": "https://www.duden.de/rechtschreibung/kostenlos",
+      "pronunciation_guides": [
+        "k[STRESS:o]stenlos"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "lernen",
+      "url": "https://www.duden.de/rechtschreibung/lernen",
+      "pronunciation_guides": [
+        "l[STRESS:e]rnen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "lieben",
+      "url": "https://www.duden.de/rechtschreibung/lieben",
+      "pronunciation_guides": [
+        "l[STRESS:ie]ben"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "machen",
+      "url": "https://www.duden.de/rechtschreibung/machen",
+      "pronunciation_guides": [
+        "m[STRESS:a]chen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "morgen",
+      "url": "https://www.duden.de/rechtschreibung/morgen",
+      "pronunciation_guides": [
+        "m[STRESS:o]rgen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "nehmen",
+      "url": "https://www.duden.de/rechtschreibung/nehmen",
+      "pronunciation_guides": [
+        "n[STRESS:e]hmen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "okay",
+      "url": "https://www.duden.de/rechtschreibung/okay",
+      "error": "HTTPError"
+    },
+    {
+      "word": "putzen",
+      "url": "https://www.duden.de/rechtschreibung/putzen",
+      "pronunciation_guides": [
+        "p[STRESS:u]tzen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "rechts",
+      "url": "https://www.duden.de/rechtschreibung/rechts",
+      "error": "HTTPError"
+    },
+    {
+      "word": "rennen",
+      "url": "https://www.duden.de/rechtschreibung/rennen",
+      "pronunciation_guides": [
+        "r[STRESS:e]nnen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "reparieren",
+      "url": "https://www.duden.de/rechtschreibung/reparieren",
+      "pronunciation_guides": [
+        "repar[STRESS:ie]ren"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schauen",
+      "url": "https://www.duden.de/rechtschreibung/schauen",
+      "pronunciation_guides": [
+        "sch[STRESS:au]en"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schicken",
+      "url": "https://www.duden.de/rechtschreibung/schicken",
+      "error": "HTTPError"
+    },
+    {
+      "word": "schlafen",
+      "url": "https://www.duden.de/rechtschreibung/schlafen",
+      "pronunciation_guides": [
+        "schl[STRESS:a]fen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schlecht",
+      "url": "https://www.duden.de/rechtschreibung/schlecht",
+      "pronunciation_guides": [
+        "schl[STRESS:e]cht"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schreiben",
+      "url": "https://www.duden.de/rechtschreibung/schreiben",
+      "pronunciation_guides": [
+        "schr[STRESS:ei]ben"
+      ],
+      "ipa": [
+        "[ˈʃraɪ̯bn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schwarz",
+      "url": "https://www.duden.de/rechtschreibung/schwarz",
+      "pronunciation_guides": [
+        "schw[STRESS:a]rz"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schwierig",
+      "url": "https://www.duden.de/rechtschreibung/schwierig",
+      "pronunciation_guides": [
+        "schw[STRESS:ie]rig"
+      ],
+      "ipa": [
+        "[ˈʃviːrɪç]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "schwimmen",
+      "url": "https://www.duden.de/rechtschreibung/schwimmen",
+      "pronunciation_guides": [
+        "schw[STRESS:i]mmen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "sieben",
+      "url": "https://www.duden.de/rechtschreibung/sieben",
+      "error": "HTTPError"
+    },
+    {
+      "word": "singen",
+      "url": "https://www.duden.de/rechtschreibung/singen",
+      "pronunciation_guides": [
+        "s[STRESS:i]ngen"
+      ],
+      "ipa": [
+        "[ˈzɪŋən]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "spielen",
+      "url": "https://www.duden.de/rechtschreibung/spielen",
+      "pronunciation_guides": [
+        "sp[STRESS:ie]len"
+      ],
+      "ipa": [
+        "[ˈʃpiːlən]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "sprechen",
+      "url": "https://www.duden.de/rechtschreibung/sprechen",
+      "pronunciation_guides": [
+        "spr[STRESS:e]chen"
+      ],
+      "ipa": [
+        "[ˈʃprɛçn̩]"
+      ],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "suchen",
+      "url": "https://www.duden.de/rechtschreibung/suchen",
+      "pronunciation_guides": [
+        "s[STRESS:u]chen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "tanzen",
+      "url": "https://www.duden.de/rechtschreibung/tanzen",
+      "pronunciation_guides": [
+        "t[STRESS:a]nzen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "traurig",
+      "url": "https://www.duden.de/rechtschreibung/traurig",
+      "pronunciation_guides": [
+        "tr[STRESS:au]rig"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "trinken",
+      "url": "https://www.duden.de/rechtschreibung/trinken",
+      "pronunciation_guides": [
+        "tr[STRESS:i]nken"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "vergessen",
+      "url": "https://www.duden.de/rechtschreibung/vergessen",
+      "pronunciation_guides": [],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "verkaufen",
+      "url": "https://www.duden.de/rechtschreibung/verkaufen",
+      "pronunciation_guides": [
+        "verk[STRESS:au]fen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "verstehen",
+      "url": "https://www.duden.de/rechtschreibung/verstehen",
+      "pronunciation_guides": [
+        "verst[STRESS:e]hen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "versuchen",
+      "url": "https://www.duden.de/rechtschreibung/versuchen",
+      "pronunciation_guides": [
+        "vers[STRESS:u]chen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "warten",
+      "url": "https://www.duden.de/rechtschreibung/warten",
+      "pronunciation_guides": [
+        "w[STRESS:a]rten"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "waschen",
+      "url": "https://www.duden.de/rechtschreibung/waschen",
+      "pronunciation_guides": [
+        "w[STRESS:a]schen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "weggehen",
+      "url": "https://www.duden.de/rechtschreibung/weggehen",
+      "pronunciation_guides": [
+        "w[STRESS:e]ggehen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "welcher",
+      "url": "https://www.duden.de/rechtschreibung/welcher",
+      "error": "HTTPError"
+    },
+    {
+      "word": "wessen",
+      "url": "https://www.duden.de/rechtschreibung/wessen",
+      "pronunciation_guides": [
+        "w[STRESS:e]ssen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "wiederholen",
+      "url": "https://www.duden.de/rechtschreibung/wiederholen",
+      "error": "HTTPError"
+    },
+    {
+      "word": "willkommen",
+      "url": "https://www.duden.de/rechtschreibung/willkommen",
+      "pronunciation_guides": [
+        "willk[STRESS:o]mmen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "wollen",
+      "url": "https://www.duden.de/rechtschreibung/wollen",
+      "error": "HTTPError"
+    },
+    {
+      "word": "wählen",
+      "url": "https://www.duden.de/rechtschreibung/waehlen",
+      "pronunciation_guides": [
+        "w[STRESS:ä]hlen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "wütend",
+      "url": "https://www.duden.de/rechtschreibung/wuetend",
+      "pronunciation_guides": [
+        "w[STRESS:ü]tend"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "zeichnen",
+      "url": "https://www.duden.de/rechtschreibung/zeichnen",
+      "pronunciation_guides": [
+        "z[STRESS:ei]chnen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "zuhören",
+      "url": "https://www.duden.de/rechtschreibung/zuhoeren",
+      "pronunciation_guides": [
+        "z[STRESS:u]hören"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "zurückkommen",
+      "url": "https://www.duden.de/rechtschreibung/zurueckkommen",
+      "pronunciation_guides": [
+        "zur[STRESS:ü]ckkommen"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "überrascht",
+      "url": "https://www.duden.de/rechtschreibung/ueberrascht",
+      "pronunciation_guides": [
+        "überr[STRESS:a]scht"
+      ],
+      "ipa": [],
+      "method": "Duden primary entry pronunciation markup; no audio listening"
+    },
+    {
+      "word": "übersetzen",
+      "url": "https://www.duden.de/rechtschreibung/uebersetzen",
+      "error": "HTTPError"
+    }
+  ]
+}

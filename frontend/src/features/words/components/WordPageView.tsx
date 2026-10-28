@@ -38,7 +38,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       {word.pronunciation_easy && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Easy pronunciation · approximate</h3>
-          <EasyPronunciation word={word} />
+          <EasyPronunciation word={word} mode="easy" />
           {word.pronunciation_note_ru && <p lang="ru" className="word-pronunciation-note">{word.pronunciation_note_ru}</p>}
         </section>
       )}

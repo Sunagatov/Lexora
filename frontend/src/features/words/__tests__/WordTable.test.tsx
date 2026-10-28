@@ -1,8 +1,9 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {WordTable} from '@/features/words/components/WordTable'
 import type {Word} from '@/features/words/types/wordTypes'
+import {setPronunciationPreferences} from '@/features/languages/pronunciationPreferences'
 
 function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word {
   return {
@@ -42,6 +43,23 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordTable', () => {
+  it('switches the pronunciation column without replacing words or changing ratings', () => {
+    const word = makeWord(1, '你好', {language: 'zh', pronunciation_easy: 'ни³ хао³', transliteration: 'nǐ hǎo', pronunciation_ipa: 'ni xau'})
+    const update = vi.fn()
+    const {container} = render(<MemoryRouter><WordTable words={[word]} pendingWordId={null} onUpdate={update} /></MemoryRouter>)
+    const originalRow = container.querySelector('.word-row')
+    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('ни³ хао³')
+    act(() => setPronunciationPreferences({zh: 'pinyin'}))
+    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('nǐ hǎo')
+    expect(screen.getByTitle('Pinyin with tone marks').getAttribute('lang')).toBe('zh-Latn')
+    act(() => setPronunciationPreferences({zh: 'ipa'}))
+    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('ni xau')
+    expect(container.querySelector('.word-row')).toBe(originalRow)
+    expect(word.knowledge_level).toBe(1)
+    expect(update).not.toHaveBeenCalled()
+    act(() => setPronunciationPreferences({}))
+  })
+
   it('puts Russian reading hints in their own second column', () => {
     const {container} = render(<MemoryRouter><WordTable words={[makeWord(1, 'hola', {
       language: 'es', pronunciation_easy: 'о́ла', pronunciation_note_ru: 'Приблизительно',

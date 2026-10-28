@@ -1,0 +1,16 @@
+{
+  "17866": {
+    "pronunciation_easy": "и́ла-л-ликъа́:ʼ",
+    "reason": "Connected إلى اللقاء elides hamzat al-waṣl of the article and shortens the preposition's long vowel before the consonant cluster. Halpern explicitly gives 'i-lal-li-qaa' in §5.5. This is a joined reading rather than separate dictionary words 'ilā / al-liqāʔ'.",
+    "pronunciation_note_ru": "В слитной речи إلى اللقاء читается примерно «илал-лика:ʼ»: начальная гласная артикля исчезает, а предшествующая долгота сокращается. Конечная хамза может быть очень слабой."
+  },
+  "17880": {
+    "pronunciation_easy": "ма́-смука?",
+    "reason": "In connected ما اسمك؟, ism starts with hamzat al-waṣl, so the independent i is elided: /ma‿s.mu.ka/, not an extra fully pronounced 'mā ismuka'. Wiktionary phrase entry supplies this exact connected IPA. The female form differs only in the final vowel.",
+    "pronunciation_note_ru": "Это слитное чтение вопроса, обращённого к мужчине: /ma‿s.mu.ka/. Начальное и в اسمك после ما не произносится отдельно. К женщине: «ма-смуки?»."
+  },
+  "18348": {
+    "pronunciation_easy": "та́:вила лишахса́йн мин фа́длика",
+    "reason": "لشخصين is li-šaḵ-ṣayn. Final ṣayn contains a diphthong followed by a consonant, hence a superheavy CVVC syllable: the stress belongs on -ṣayn, not šaḵ. The attached li- is not stressed. This follows Halpern's superheavy-final rule and his definition that VV can be a diphthong."
+  }
+}

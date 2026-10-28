@@ -1,0 +1,69 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_at": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (6)(1).xlsx",
+      "sha256": "117140c2a009dc0dce8816f8dab0d73267d7d81eca2481e0325de1e2bb17ca87",
+      "learning_language": "pt",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-pt-cyrillic-pronunciation.jsonl",
+    "sha256": "9c69700c00850928bdb5b5f30d9a66331d7b2338ecb0633ada17131718dc4472"
+  },
+  "other_outputs": [
+    {
+      "filename": "lexora-pt-pronunciation-proposals.jsonl",
+      "sha256": "b8cb9e2f165ce99048ffc3423032ccf77c0d5205d13b5ee849acff0d4078a93f"
+    },
+    {
+      "filename": "lexora-pt-needs-review.csv",
+      "sha256": "935819918a851d48f728a0717fab414767c1ded48b532a0037b9406ad9023536"
+    },
+    {
+      "filename": "lexora-pt-pronunciation-review.xlsx",
+      "sha256": "d3d7f7d1b613588fd21e45823a858cf3564c7b3050c33ac49b9cc57389e4a02d"
+    },
+    {
+      "filename": "lexora-pt-pronunciation-guide.md",
+      "sha256": "81840bb6ef5894f63a26c9c928bb23a6646cc2ee3f393d5c988929860bac8798"
+    },
+    {
+      "filename": "lexora-pt-review-report.md",
+      "sha256": "29fd7d142a5b45d185ec89e4ff8c0e9325e2453e5acdb4a18ece9abde36d174d"
+    },
+    {
+      "filename": "lexora-pt-codex-handoff.md",
+      "sha256": "ae45921e994bff565c50142fefe70f80343c5dfc2886ce4b9c8ae299cfa51320"
+    },
+    {
+      "filename": "lexora-pt-all-500-google-doc-source.txt",
+      "sha256": "64758591cb08bb0950ae6e663635b7c56b3533d342f0cc657bc41928b85f0dce"
+    }
+  ],
+  "languages": {
+    "pt": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 395,
+      "needs_review": 105,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "ids_min": 19861,
+      "ids_max": 20360,
+      "scheme": "russian-cyrillic-v1",
+      "dialect": "European Portuguese (pt-PT)"
+    }
+  },
+  "other_languages_processed": [],
+  "verification": {
+    "approved_for_import": false,
+    "native_audio_verified": 0,
+    "machine_ipa_eSpeak_checked": 500,
+    "provisional_ready_is_NOT_linguistic_approval": true,
+    "review_status": "awaiting_independent_pt_pt_audio_or_teacher_review"
+  },
+  "quality_notice": "Machine-generated Cyrillic hints are approximate; 0 native-audio verifications. Import blocked."
+}

@@ -1,0 +1,69 @@
+{
+  "format_version": "lexora-easy-pronunciation-v1",
+  "generated_on": "2026-10-28",
+  "input_workbooks": [
+    {
+      "filename": "lexora-vocabulary (5)(2).xlsx",
+      "sha256": "02255b02cc507ffa91f7ee4f0d8cbdad5032907afeffc256065d791c1f07eb0a",
+      "learning_language": "fr",
+      "translation_language": "ru"
+    }
+  ],
+  "output": {
+    "filename": "lexora-fr-cyrillic-pronunciation.jsonl",
+    "sha256": "3009b2b5bd9dcbde23c01a0f5e81646e9d3d021aa788525833332a408bb11bd3"
+  },
+  "auxiliary_files": [
+    {
+      "filename": "lexora-fr-pronunciation-proposals.jsonl",
+      "sha256": "3331de0701289e8ee2d37895a4f5bca5413e445a03e23ba69295c6c960cfb41f"
+    },
+    {
+      "filename": "lexora-fr-needs-review.csv",
+      "sha256": "2f7ee749e6491d904a992fdb6bde8baf9fd0a8d7385360c642deee998589703e"
+    },
+    {
+      "filename": "lexora-fr-pronunciation-review.xlsx",
+      "sha256": "0375afb791c65094903a345d7c27bb0c428ff0026f5518800a196948d721011e"
+    },
+    {
+      "filename": "lexora-fr-pronunciation-guide.md",
+      "sha256": "d392796742bceb2bcd9d92f2aa3e09b711422219111eead228364db3347600a2"
+    },
+    {
+      "filename": "lexora-fr-review-report.md",
+      "sha256": "cb84369566d8b401d0cdc6915b6c5a82aea6e49e35325e2703ceddb144ce7261"
+    },
+    {
+      "filename": "lexora-fr-codex-handoff.md",
+      "sha256": "2b9240d053832554872237f1d6fa0c0d0b7df8a3915cf0452a9b79bfbaebb8a3"
+    },
+    {
+      "filename": "lexora-fr-all-500-google-doc-source.txt",
+      "sha256": "2f4853b34d80c8209be49397d419cd309d7a9a8ba52bf49681f5092a8ab444a3"
+    }
+  ],
+  "languages": {
+    "fr": {
+      "unique_input_word_ids": 500,
+      "unique_output_word_ids": 500,
+      "ready": 402,
+      "needs_review": 98,
+      "duplicate_id_occurrences": 0,
+      "conflicting_id_occurrences": 0,
+      "ids_min": 19361,
+      "ids_max": 19860,
+      "scheme": "russian-cyrillic-v1",
+      "dialect": "Standard French (France)"
+    }
+  },
+  "verification": {
+    "approved_for_import": false,
+    "entries_with_native_audio_verification": 0,
+    "espeak_IPA_rule_based_check_count": 500,
+    "reviewed_by_native_speaker": false,
+    "review_status": "requires_audio_dictionary_and_teacher_review"
+  },
+  "quality_notice": "All output pronunciation hints are machine-generated proposals and may contain errors. Ready is provisional and NOT import approval.",
+  "other_languages_processed": []
+}
