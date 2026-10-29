@@ -14,6 +14,7 @@ from app.features.words.repository_queries import with_word_details
 from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
     EXTRA_EMPTY_ROWS,
+    PRONUNCIATION_COLUMNS,
     InvalidWorkbookError,
     _add_dynamic_row_colors,
     _add_validations,
@@ -37,7 +38,7 @@ def _translation_entries_for_export(word: Word, target: str = "ru") -> str:
 
 def _example_entries_for_export(word: Word) -> str | None:
     if word.example_items:
-        return "\n".join(item.value for item in word.example_items)
+        return "\n\n".join(item.value for item in word.example_items)
     return None
 
 
@@ -102,7 +103,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
 
     if not topics:
         ws = workbook.create_sheet("Vocabulary")
-        for idx, (_, header) in enumerate(EXPORT_COLUMNS, start=1):
+        for idx, (_, header) in enumerate([*EXPORT_COLUMNS, *PRONUNCIATION_COLUMNS], start=1):
             ws.cell(row=1, column=idx, value=header)
         _set_column_widths(ws)
         _apply_base_styling(ws, 2)
@@ -116,7 +117,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
             meta_mappings.append((sheet_title, topic.id, topic.name))
             ws = workbook.create_sheet(sheet_title)
 
-            for idx, (_, header) in enumerate(EXPORT_COLUMNS, start=1):
+            for idx, (_, header) in enumerate([*EXPORT_COLUMNS, *PRONUNCIATION_COLUMNS], start=1):
                 ws.cell(row=1, column=idx, value=header)
 
             row_idx = 2
@@ -134,6 +135,8 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
                 ws.cell(row=row_idx, column=10, value=word.register)
                 ws.cell(row=row_idx, column=11, value=(word.explanation_groups or {}).get("en", {}).get("notes") if translation_language(db) == "en" else word.notes)
                 ws.cell(row=row_idx, column=12, value=word.id)
+                for column, (name, _) in enumerate(PRONUNCIATION_COLUMNS, start=13):
+                    ws.cell(row=row_idx, column=column, value=getattr(word, name))
                 row_idx += 1
 
             last_row = max(2, row_idx + EXTRA_EMPTY_ROWS - 1)

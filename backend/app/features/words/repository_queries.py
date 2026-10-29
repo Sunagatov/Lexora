@@ -12,6 +12,7 @@ from app.features.words.model import (
     WordVerbForm,
     word_topics,
 )
+from app.features.words.pinyin import SEPARATORS, TONES, pinyin_key
 
 
 def with_word_details(stmt):
@@ -50,11 +51,11 @@ def words_for_topics_stmt(topic_ids: list[int]):
     return active_words_stmt().where(Word.id.in_(word_ids))
 
 
-def apply_word_search(stmt, search: str, target: str = "ru"):
+def apply_word_search(stmt, search: str, target: str = "ru", *, include_pinyin: bool = False):
     needle = f"%{search}%"
     definition = Word.explanation_groups["en"]["definition"].as_string() if target == "en" else Word.definition
     notes = Word.explanation_groups["en"]["notes"].as_string() if target == "en" else Word.notes
-    return stmt.where(
+    matches = (
         Word.term.ilike(needle)
         | definition.ilike(needle)
         | Word.transliteration.ilike(needle)
@@ -66,6 +67,16 @@ def apply_word_search(stmt, search: str, target: str = "ru"):
             WordVerbForm.past_simple.ilike(needle) | WordVerbForm.past_participle.ilike(needle)
         ))
     )
+    key = pinyin_key(search)
+    if include_pinyin and key and key.isascii() and key.isalpha():
+        # SQL replace works on PostgreSQL and the local SQLite fallback.
+        reading = func.lower(Word.transliteration)
+        for source, replacement in TONES.items():
+            reading = func.replace(reading, source, replacement)
+        for separator in SEPARATORS:
+            reading = func.replace(reading, separator, "")
+        matches = matches | ((Word.language == "zh") & reading.like(f"%{key}%"))
+    return stmt.where(matches)
 
 
 def ordered_word_stmt(stmt, sort: str = "term-asc", then_sort: str | None = None):

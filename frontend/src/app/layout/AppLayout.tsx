@@ -5,6 +5,7 @@ import {AppFooter} from '@/app/layout/AppFooter'
 import {UsageTracker} from '@/features/stats/components/UsageTracker'
 import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import {routes} from '@/app/routes'
+import {LanguageRouteContext} from '@/features/languages/LanguageRouteContext'
 
 export type AppLayoutOutletContext = {
   drawerOpen: boolean
@@ -28,6 +29,7 @@ export function AppLayout() {
 
   return (
     <div className="app-shell">
+      <LanguageRouteContext />
       <UsageTracker />
       <AppHeader hasDrawer={hasDrawer} drawerOpen={drawerOpen}
         onOpenDrawer={hasDrawer ? () => setDrawerOpen(open => !open) : undefined} />

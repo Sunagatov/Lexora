@@ -148,7 +148,8 @@ describe('WordPage — draft reset on word navigation', () => {
     const router = buildRouter('/words/1')
     const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
     render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
-    await screen.findByText('Word not found.')
+    await screen.findByText('Word not found in this language library.')
+    expect(screen.getByRole('button', {name: '← All words'})).toBeTruthy()
     expect(screen.queryByRole('button', {name: 'Retry'})).toBeNull()
   })
 

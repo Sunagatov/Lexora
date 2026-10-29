@@ -20,6 +20,7 @@ from app.features.words.workbook.format import (
     LISTS_SHEET_NAME,
     MAX_WORKBOOK_BYTES,
     META_SHEET_NAME,
+    PRONUNCIATION_COLUMNS,
     InvalidWorkbookError,
 )
 from app.features.words.workbook.import_rules import _validate_part_of_speech
@@ -163,6 +164,12 @@ def _parse_row(values: dict) -> dict:
         for name in ("definition", "pattern", "notes", "cefr_level", "register")
         if (value := _text(values.get(name))) is not None
     }
+    limits = {"pronunciation_ipa": 255, "pronunciation_audio_url": 512}
+    for name, _ in PRONUNCIATION_COLUMNS:
+        if value := _text(values.get(name)):
+            if len(value) > limits.get(name, 4000):
+                raise InvalidWorkbookError(f"{name} is too long")
+            fields[name] = value
     if "cefr_level" in fields:
         fields["cefr_level"] = fields["cefr_level"].upper()
     for name, allowed in (("cefr_level", CEFR_LEVELS), ("register", REGISTER_VALUES)):

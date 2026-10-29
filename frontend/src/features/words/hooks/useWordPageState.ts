@@ -143,7 +143,13 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   }, [editing, wordIdForEffect, word])
 
   function set(field: keyof EditState, value: string | string[]) {
-    setDraft((d) => (d ? {...d, [field]: value} : d))
+    setDraft((d) => {
+      if (!d) return d
+      if (field === 'term' && typeof value === 'string' && value.trim() !== d.term.trim()) {
+        return {...d, term: value, pronunciation_ipa: '', transliteration: ''}
+      }
+      return {...d, [field]: value}
+    })
   }
 
   function save() {

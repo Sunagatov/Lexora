@@ -6,7 +6,7 @@ import {ApiError} from '@/shared/api/apiError'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {bootstrapSession} from '@/features/auth/api/authApi'
 import {initializeOffline, syncOffline} from '@/features/offline/offline'
-import {displayTranslations, languagePreferences, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
+import {displayTranslations, languagePreferences, languageProfile, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
 import {setRequestContext} from '@/shared/api/http'
 
 const queryClient = new QueryClient({
@@ -41,6 +41,14 @@ function replaceRoute(pathname: string) {
 export function Providers({children}: PropsWithChildren) {
   const preferences = useSyncExternalStore(subscribeLanguages, languagePreferences)
   const [authReady, setAuthReady] = useState(false)
+
+  useEffect(() => {
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+    if (icon) {
+      icon.type = 'image/png'
+      icon.href = languageProfile(preferences.language).favicon
+    }
+  }, [preferences.language])
 
   useEffect(() => {
     let cancelled = false

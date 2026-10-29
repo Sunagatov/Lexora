@@ -15,7 +15,20 @@ from app.features.words.workbook.workbook_styling import _set_column_widths as _
 
 MAX_WORKBOOK_BYTES = 10 * 1024 * 1024
 
+PRONUNCIATION_COLUMNS = [
+    ("transliteration", "Pinyin / transliteration"),
+    ("pronunciation_ipa", "Pronunciation (IPA)"),
+    ("pronunciation_easy", "Russian reading hint"),
+    ("pronunciation_note_ru", "Pronunciation note (RU)"),
+    ("pronunciation_audio_url", "Pronunciation audio URL"),
+]
+
 HEADER_ALIASES: dict[str, set[str]] = {
+    "transliteration": {"pinyin / transliteration", "pinyin", "transliteration"},
+    "pronunciation_ipa": {"pronunciation (ipa)", "ipa"},
+    "pronunciation_easy": {"russian reading hint", "pronunciation_easy"},
+    "pronunciation_note_ru": {"pronunciation note (ru)", "pronunciation_note_ru"},
+    "pronunciation_audio_url": {"pronunciation audio url", "pronunciation_audio_url"},
     "topics": {"topics", "topic names"},
     "topic_ids": {"topic ids"},
     "knowledge_level": {"knowledge", "level"},

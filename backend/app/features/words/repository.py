@@ -34,6 +34,7 @@ from app.features.words.model import (
     word_topics,
 )
 from app.features.words.progress import record_level_change
+from app.features.words.pronunciation import PRONUNCIATION_FIELDS, pronunciation_after_rename
 from app.features.words.repository_queries import (
     active_words_stmt,
     apply_cefr_filter,
@@ -107,7 +108,7 @@ def _filtered_word_stmt(
             selected = words_for_topics_stmt(list(selected_ids))
             stmt = stmt.where(Word.id.in_(selected.with_only_columns(Word.id)))
     if search:
-        stmt = apply_word_search(stmt, search, translation_language(db))
+        stmt = apply_word_search(stmt, search, translation_language(db), include_pinyin=learning_language(db) == "zh")
     if pos or positions:
         stmt = apply_pos_filter(stmt, [*(positions or []), *([pos] if pos else [])])
     if cefr or cefr_levels:
@@ -234,15 +235,18 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         )
 
     old_level = word.knowledge_level
+    stale = {}
     if payload.term is not None and payload.term != word.term:
-        word.pronunciation_easy = None
-        word.pronunciation_note_ru = None
+        before = {"term": word.term, **{name: getattr(word, name, None) for name in PRONUNCIATION_FIELDS}}
+        stale = pronunciation_after_rename(before, payload.model_dump(exclude_unset=True))
+    for name in stale:
+        setattr(word, name, None)
     if payload.translation_language == "en":
         fields = {key: getattr(payload, key) for key in ("definition", "notes") if key in payload.model_fields_set}
         if fields:
             groups = word.explanation_groups or {}
             word.explanation_groups = {**groups, "en": {**groups.get("en", {}), **fields}}
-    for field, value in _word_attribute_updates(db, payload).items():
+    for field, value in {**_word_attribute_updates(db, payload), **stale}.items():
         setattr(word, field, value)
 
     _sync_entry_tables_for_update(db, word, payload)

@@ -3,12 +3,13 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime
 
-from app.features.words.constants import KNOWLEDGE_LEVELS
-
 from openpyxl import Workbook
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+
+from app.features.words.constants import KNOWLEDGE_LEVELS
 
 LISTS_SHEET_NAME = "Lists"
 META_SHEET_NAME = "__lexora_meta"
@@ -96,6 +97,11 @@ def _set_column_widths(ws) -> None:
         "J": 14,
         "K": 28,
         "L": 12,
+        "M": 28,
+        "N": 28,
+        "O": 32,
+        "P": 52,
+        "Q": 40,
     }
     for column, width in widths.items():
         ws.column_dimensions[column].width = width
@@ -103,7 +109,7 @@ def _set_column_widths(ws) -> None:
 
 
 def _apply_base_styling(ws, last_row: int) -> None:
-    for row in ws.iter_rows(min_row=1, max_row=last_row, min_col=1, max_col=len(EXPORT_COLUMNS)):
+    for row in ws.iter_rows(min_row=1, max_row=last_row, min_col=1, max_col=max(ws.max_column, len(EXPORT_COLUMNS))):
         for cell in row:
             cell.border = THIN_BORDER
             cell.alignment = Alignment(vertical="top", wrap_text=True)
@@ -114,7 +120,7 @@ def _apply_base_styling(ws, last_row: int) -> None:
         cell.alignment = Alignment(vertical="center", horizontal="center")
 
     ws.freeze_panes = "A2"
-    ws.auto_filter.ref = f"A1:K{last_row}"
+    ws.auto_filter.ref = f"A1:{get_column_letter(ws.max_column)}{last_row}"
 
 
 def _add_dynamic_row_colors(ws, last_row: int) -> None:

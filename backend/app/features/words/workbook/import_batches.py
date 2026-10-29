@@ -11,6 +11,7 @@ from app.features.languages.catalog import learning_language, translation_langua
 from app.features.topics.model import Topic
 from app.features.words.domain import lock_word_identities
 from app.features.words.model import PartsOfSpeech, Word, WordExample, WordTranslation
+from app.features.words.pronunciation import PRONUNCIATION_FIELDS
 from app.features.words.repository_queries import with_word_details
 from app.features.words.workbook.format import InvalidWorkbookError
 from app.features.words.workbook.import_models import WorkbookImportBatch
@@ -104,6 +105,7 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
             "cefr_level",
             "register",
             "notes",
+            *PRONUNCIATION_FIELDS,
         ):
             if name in ("definition", "notes") and translation_language(db) == "en":
                 groups = word.explanation_groups or {}

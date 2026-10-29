@@ -10,9 +10,15 @@ from sqlalchemy.orm import Session, selectinload
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.words.model import Word
+from app.features.words.pronunciation import PRONUNCIATION_FIELDS, pronunciation_after_rename
 from app.features.words.workbook.import_source import issue
-from app.features.words.workbook.sync import canonical_json, content_state
+from app.features.words.workbook.sync import canonical_json
+from app.features.words.workbook.sync import content_state as base_content_state
 from app.shared.text import normalize_term, slugify
+
+
+def content_state(word: Word, target: str) -> dict:
+    return {**base_content_state(word, target), **{name: getattr(word, name) for name in PRONUNCIATION_FIELDS}}
 
 
 def build_import_plan(
@@ -220,12 +226,15 @@ def build_import_plan(
                         "cefr_level",
                         "register",
                         "notes",
+                        *PRONUNCIATION_FIELDS,
                     )
                 },
             }
         )
         incoming = entry.pop("incoming")
         after.update(incoming)
+        if before:
+            after.update(pronunciation_after_rename(before, incoming))
         if (
             before
             and before["part_of_speech"] != after["part_of_speech"]

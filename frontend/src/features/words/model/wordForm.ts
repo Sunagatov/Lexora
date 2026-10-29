@@ -37,6 +37,21 @@ function splitMultiline(value: string): string[] {
 }
 
 function splitExamples(value: string): string[] {
+  const blocks = value.trim().split(/\r?\n\s*\r?\n/)
+  return blocks.flatMap(block => {
+    const lines = splitMultiline(block)
+    const source = lines[0]?.match(/^([A-Z]{2}):/i)?.[1].toUpperCase()
+    // Blank lines preserve boundaries, including EN source + RU + EN gloss.
+    if (source && lines.slice(1).every(line => /^(RU|EN):/i.test(line))
+      && lines.filter(line => /^RU:/i.test(line)).length <= 1
+      && lines.filter(line => /^EN:/i.test(line)).length <= (source === 'EN' ? 2 : 1)) {
+      return [lines.join('\n')]
+    }
+    return splitLegacyExamples(block)
+  })
+}
+
+function splitLegacyExamples(value: string): string[] {
   const examples: string[] = []
   for (const line of splitMultiline(value)) {
     const previous = examples[examples.length - 1]
@@ -72,7 +87,7 @@ export function toEditState(word: Word): EditState {
     past_participle: toStr(word.verb_form?.past_participle),
     present_participle: toStr(word.verb_form?.present_participle),
     third_person: toStr(word.verb_form?.third_person),
-    example: word.example_entries.length ? word.example_entries.join('\n') : '',
+    example: word.example_entries.length ? word.example_entries.join('\n\n') : '',
     synonyms: word.synonym_entries.length ? word.synonym_entries.join('\n') : '',
     antonyms: word.antonym_entries.length ? word.antonym_entries.join('\n') : '',
     collocations: word.collocation_entries.length ? word.collocation_entries.join('\n') : '',

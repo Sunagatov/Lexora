@@ -50,7 +50,10 @@ export function WordPage() {
       <button type="button" className="btn btn-ghost" onClick={s.retry}>Retry</button>
     </div>
   </div></div>
-  if (!s.word) return <div className="word-page-loading">Word not found.</div>
+  if (!s.word) return <div className="word-page"><div className="word-page-inner">
+    <p role="alert">Word not found in this language library.</p>
+    <button type="button" className="word-page-back-btn" onClick={() => navigate(routes.home, {replace: true})}>← All words</button>
+  </div></div>
 
   const {word, topics, topic, draft, set, editing} = s
   const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window

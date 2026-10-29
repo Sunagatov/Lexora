@@ -1,5 +1,10 @@
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 
+function pinyinSearchKey(value: string): string {
+  return value.toLowerCase().normalize('NFC').replace(/u:/g, 'v').replace(/[üǖǘǚǜ]/g, 'v')
+    .normalize('NFD').replace(/\p{M}/gu, '').replace(/[\s'’\-1-5]/g, '')
+}
+
 export type SortOption = 'term-asc' | 'term-desc' | 'level-asc' | 'level-desc' | 'cefr-asc' | 'cefr-desc' | 'newest' | 'oldest'
 export const WORD_SORT_OPTIONS = ['term-asc', 'term-desc', 'level-asc', 'level-desc', 'cefr-asc', 'cefr-desc', 'newest', 'oldest'] as const
 export const DEFAULT_WORD_SORT: SortOption = 'level-asc'
@@ -119,6 +124,7 @@ export function filterAndSort(
   const positions = selectedValues(posFilter)
   const cefrs = selectedValues(cefrFilter)
   const needle = search.toLowerCase().trim()
+  const pinyinNeedle = pinyinSearchKey(needle)
   const frozenSet = frozenIds ? new Set(frozenIds) : null
 
   const result = words.filter((w) => {
@@ -129,6 +135,7 @@ export function filterAndSort(
     if (completeness === 'complete' && !isComplete(w)) return false
     if (completeness === 'incomplete' && isComplete(w)) return false
     if (!needle) return true
+    if (w.language === 'zh' && /^[a-z]+$/.test(pinyinNeedle) && pinyinSearchKey(w.transliteration ?? '').includes(pinyinNeedle)) return true
     return [w.term, w.transliteration, w.translation_entries?.join(' '), w.part_of_speech, w.pattern, w.example_entries?.join(' '), w.notes, w.definition, w.verb_form?.past_simple, w.verb_form?.past_participle]
       .some((v) => v?.toLowerCase().trim().includes(needle))
   })

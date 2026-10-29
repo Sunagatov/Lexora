@@ -1,13 +1,13 @@
 export const LEARNING_LANGUAGES = [
-  {code: 'en', name: 'English', locale: 'en-GB', direction: 'ltr', icon: '🇬🇧'},
-  {code: 'zh', name: 'Mandarin Chinese', locale: 'zh-CN', direction: 'ltr', icon: '🇨🇳'},
-  {code: 'es', name: 'Spanish', locale: 'es-ES', direction: 'ltr', icon: '🇪🇸'},
-  {code: 'de', name: 'German', locale: 'de-DE', direction: 'ltr', icon: '🇩🇪'},
-  {code: 'tr', name: 'Turkish', locale: 'tr-TR', direction: 'ltr', icon: '🇹🇷'},
-  {code: 'tt', name: 'Tatar', locale: 'tt-RU', direction: 'ltr', icon: '🇷🇺'},
-  {code: 'ar', name: 'Arabic', locale: 'ar-SA', direction: 'rtl', icon: '🇸🇦'},
-  {code: 'fr', name: 'French', locale: 'fr-FR', direction: 'ltr', icon: '🇫🇷'},
-  {code: 'pt', name: 'Portuguese', locale: 'pt-PT', direction: 'ltr', icon: '🇵🇹'},
+  {code: 'en', name: 'English', locale: 'en-GB', direction: 'ltr', icon: '🇬🇧', favicon: new URL('../../assets/flags/en.png', import.meta.url).href},
+  {code: 'zh', name: 'Mandarin Chinese', locale: 'zh-CN', direction: 'ltr', icon: '🇨🇳', favicon: new URL('../../assets/flags/zh.png', import.meta.url).href},
+  {code: 'es', name: 'Spanish', locale: 'es-ES', direction: 'ltr', icon: '🇪🇸', favicon: new URL('../../assets/flags/es.png', import.meta.url).href},
+  {code: 'de', name: 'German', locale: 'de-DE', direction: 'ltr', icon: '🇩🇪', favicon: new URL('../../assets/flags/de.png', import.meta.url).href},
+  {code: 'tr', name: 'Turkish', locale: 'tr-TR', direction: 'ltr', icon: '🇹🇷', favicon: new URL('../../assets/flags/tr.png', import.meta.url).href},
+  {code: 'tt', name: 'Tatar', locale: 'tt-RU', direction: 'ltr', icon: '🇷🇺', favicon: new URL('../../assets/flags/tt.png', import.meta.url).href},
+  {code: 'ar', name: 'Arabic', locale: 'ar-SA', direction: 'rtl', icon: '🇸🇦', favicon: new URL('../../assets/flags/ar.png', import.meta.url).href},
+  {code: 'fr', name: 'French', locale: 'fr-FR', direction: 'ltr', icon: '🇫🇷', favicon: new URL('../../assets/flags/fr.png', import.meta.url).href},
+  {code: 'pt', name: 'Portuguese', locale: 'pt-PT', direction: 'ltr', icon: '🇵🇹', favicon: new URL('../../assets/flags/pt.png', import.meta.url).href},
 ] as const
 export type LearningLanguage = typeof LEARNING_LANGUAGES[number]['code']
 export type LanguagePreferences = {language: LearningLanguage; translationLanguage: 'ru' | 'en'}

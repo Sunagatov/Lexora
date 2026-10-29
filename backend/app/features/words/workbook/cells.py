@@ -98,10 +98,18 @@ def _ordered_unique(values: list[str]) -> list[str]:
     return result
 
 
-def _split_examples_cell(value: str | None) -> list[str]:
+def _split_examples_cell(value: str | None, *, grouped: bool = False) -> list[str]:
     """Keep each source sentence with its Russian and optional English translations."""
+    paragraphs = re.split(r'\n\s*\n', value or '')
+    if len(paragraphs) > 1:
+        return _ordered_unique([example for block in paragraphs for example in _split_examples_cell(block, grouped=True)])
     lines = [line.strip() for line in (value or '').splitlines() if line.strip()]
     labels = r'EN|RU|ZH|ES|DE|TR|TT|AR|FR|PT'
+    # English source + Russian translation + an English gloss is one saved block.
+    if len(lines) == 3 and all(re.match(rf'^{label}:\s*\S', line, re.IGNORECASE)
+                               for line, label in zip(lines, ('EN', 'RU', 'EN'))) and (
+                                   grouped or lines[0][3:].strip() == lines[2][3:].strip()):
+        return ['\n'.join(lines)]
     if not any(re.match(rf'^({labels}):', line, re.IGNORECASE) for line in lines):
         if any(re.search('[А-Яа-яЁё]', line) and not re.search('[A-Za-z]', line) for line in lines):
             raise InvalidWorkbookError('Unlabelled Russian example; use EN: / RU: pairs')

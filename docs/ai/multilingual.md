@@ -43,12 +43,25 @@ Pronunciation uses the word's learning locale. English verb-form fields are only
 shown for English; other grammar belongs in pattern/notes. CEFR remains optional;
 HSK and language-specific proficiency scales are not introduced here.
 
+Mandarin search also accepts Pinyin without tone marks or spaces (`ni hao`,
+`nihao`), numbered input (`ni3hao3`), and `v`/`u:` for `ü`. Saved Pinyin is not
+rewritten. Both server search and topic-list filtering use these reading keys.
+Renaming a word clears its old pronunciation hints, Pinyin, IPA and audio unless
+a different replacement is supplied in the same update. Other edits preserve them.
+
 ## Frontend and offline
 
 Preferences persist for the last-used setup, while already-open tabs keep their
 own selected language. Library changes clear QueryClient and remount scoped views,
 then navigate to All words. Translation-only changes retain the route. Switching
 is disabled while a mutation is pending or a word edit form is open.
+
+History entries remember their learning library, so browser Back/Forward restores
+the library as well as the word/topic route. Missing word pages link to All words.
+
+The browser-tab favicon follows the selected learning language and its saved
+preference on reload. It uses local flag PNGs rendered from the bundled Noto
+font, including offline; translation-only changes do not change the icon.
 
 The current client opts into complete snapshots using `X-Lexora-All-Languages: true`;
 older clients receive their selected library only. Complete snapshots retain every language and translation group. Local list/topic/

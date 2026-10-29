@@ -11,7 +11,7 @@ from app.features.languages.catalog import learning_language, translation_langua
 from app.features.topics.model import Topic
 from app.features.words.model import Word
 from app.features.words.repository_queries import with_word_details
-from app.features.words.workbook.format import EXPORT_COLUMNS
+from app.features.words.workbook.format import EXPORT_COLUMNS, PRONUNCIATION_COLUMNS
 from app.features.words.workbook.language import add_language_metadata
 
 
@@ -19,7 +19,8 @@ def build_flat_workbook(db: Session, *, template: bool = False) -> bytes:
     book = Workbook()
     sheet = book.active
     sheet.title = "Words"
-    sheet.append([header for _, header in EXPORT_COLUMNS] + ["Topic IDs", "Topics"])
+    sheet.append([header for _, header in EXPORT_COLUMNS] + ["Topic IDs", "Topics"]
+                 + [header for _, header in PRONUNCIATION_COLUMNS])
     topics = list(
         db.scalars(select(Topic).where(Topic.deleted_at.is_(None), Topic.language == learning_language(db)).order_by(Topic.name)).all()
     )
@@ -33,7 +34,7 @@ def build_flat_workbook(db: Session, *, template: bool = False) -> bytes:
                     word.term,
                     "\n".join(item.value for item in word.translation_items if (item.language or "ru") == translation_language(db)),
                     word.pattern,
-                    "\n".join(item.value for item in word.example_items),
+                    "\n\n".join(item.value for item in word.example_items),
                     word.countability,
                     word.part_of_speech.name if word.part_of_speech else None,
                     (word.explanation_groups or {}).get("en", {}).get("definition") if translation_language(db) == "en" else word.definition,
@@ -43,6 +44,7 @@ def build_flat_workbook(db: Session, *, template: bool = False) -> bytes:
                     word.id,
                     "\n".join(str(topic.id) for topic in word.topics if topic.deleted_at is None),
                     None,
+                    *(getattr(word, name) for name, _ in PRONUNCIATION_COLUMNS),
                 ]
             )
     topic_sheet = book.create_sheet("Topics")

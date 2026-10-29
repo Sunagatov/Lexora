@@ -199,8 +199,9 @@ export function WordPageEditForm({
             )}
           </div>
         </FormField>
-        <FormField label="Examples (one per line)">
+        <FormField label="Examples">
           <textarea className="wp-input wp-textarea" rows={4} value={draft.example} onChange={(event) => onFieldChange('example', event.target.value)} />
+          <p className="wp-label">Use a blank line between examples. Keep labelled translations together.</p>
         </FormField>
         <FormField label="Synonyms (one per line)">
           <textarea className="wp-input wp-textarea" rows={3} value={draft.synonyms} onChange={(event) => onFieldChange('synonyms', event.target.value)} />

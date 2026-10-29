@@ -13,6 +13,14 @@ and their `__lexora_meta` IDs remain accepted.
 - `Words`: existing export columns plus `Topic IDs` and `Topics`. Separate
   translations, examples and topic references with newlines. Semicolons also
   separate translations/topic references; commas can be part of a topic name.
+- Flat and topic exports also include `Pinyin / transliteration`,
+  `Pronunciation (IPA)`, `Russian reading hint`, `Pronunciation note (RU)` and
+  `Pronunciation audio URL`. Reviewed content imports preserve blank/omitted
+  pronunciation cells, show changed readings in the preview/recovery record,
+  and invalidate an unchanged old reading when its word is renamed. Preview again
+  after upgrading: previews created before these fields were supported are stale.
+- Separate example blocks with blank lines, retaining the native/RU/EN lines
+  inside each block. Older single-line and EN/RU formats remain accepted.
 - `Topics`: `Topic ID`, `Topic`, `Parent ID`, `Description`. Existing IDs/names are
   references only. A referenced new name with a blank ID creates a topic. Parent
   ID must be an existing active topic. Imports do not rename, reparent or delete
