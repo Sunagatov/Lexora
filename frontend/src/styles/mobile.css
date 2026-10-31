@@ -431,7 +431,7 @@
 
   .word-list-header,
   .word-list-header.has-pronunciation {
-    display: grid;
+    display: none;
     grid-template-columns: 1fr auto;
     padding: 4px 12px;
   }

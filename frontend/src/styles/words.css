@@ -43,23 +43,6 @@
   color: var(--text-2);
 }
 
-.word-card-reading-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 6px;
-}
-
-.word-card .word-card-reading-row .word-term {
-  flex: 0 1 auto;
-  overflow-wrap: anywhere;
-}
-
-.word-card-reading-row .wdp-speak-btn {
-  flex-shrink: 0;
-  align-self: center;
-}
-
 /* Desktop table */
 .word-table-wrap {
   background: var(--surface);
@@ -427,9 +410,7 @@
   margin: 0;
   padding: 0;
   transition: background 0.1s;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: block;
 }
 
 .word-card-body-tap:hover { background: transparent; }
@@ -731,7 +712,7 @@
   position: relative;
 }
 
-/* Remove colored backgrounds based on level - use subtle shadow instead */
+/* Keep knowledge colours separate from the violet active-card highlight. */
 .word-card.level-unset { background: var(--surface); }
 .word-card.level-1 { background: #fef2f2; border-left: 3px solid #fca5a5; }
 .word-card.level-3 { background: #f5f3ff; border-left: 3px solid #c4b5fd; }
@@ -769,62 +750,21 @@
   justify-content: space-between;
 }
 
-.word-card-grid {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.word-card-grid.has-pronunciation {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 4px 10px;
-}
-
-.word-card-grid.has-pronunciation .word-card-left {
-  display: contents;
-}
-
-.word-card-grid.has-pronunciation .word-card-reading-row {
-  grid-column: 1 / -1;
-}
-
-.word-card-grid.has-pronunciation .word-card-right {
-  grid-column: 2;
-  grid-row: 2;
-}
-
 .word-card-dropdown-open {
   z-index: 42;
   position: relative;
 }
 
-.word-card-left {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.word-card-right {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
 .word-card .word-term {
+  display: block;
+  min-height: 32px;
   min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 1.28rem;
   font-weight: 650;
   line-height: 1.16;
   margin: 0;
-  margin-bottom: 3px;
   color: #0f172a;
-  flex: 1;
   letter-spacing: -0.02em;
 }
 
@@ -975,10 +915,11 @@
 }
 
 .word-card-footer {
+  clear: both;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   margin-top: 4px;
   min-height: 16px;
 }
@@ -1048,8 +989,6 @@
     border-radius: 6px;
     font-size: 0.64rem;
     font-weight: 600;
-    background: #eef2ff;
-    color: #4f46e5;
     border: none;
   }
 
@@ -1174,6 +1113,100 @@
   .word-card .word-preview-text {
     font-size: 0.78rem;
   }
+}
+
+/* Fixed actions reserve only their own top corner, not a full text column. */
+.word-card-actions {
+  float: right;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 2px 8px;
+}
+
+.word-card-speak {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  flex: none;
+}
+
+.word-card-speak:hover,
+.word-card-speak.is-speaking {
+  background: transparent;
+  color: var(--accent);
+  transform: none;
+  box-shadow: none;
+}
+
+.word-card .word-card-translations {
+  display: block;
+  clear: both;
+  margin: 4px 0 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-2);
+}
+
+:root[color-scheme="dark"] .word-card .word-card-translations {
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.word-card .word-card-translations.is-expanded {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.word-card .word-card-level-wrap {
+  margin-left: auto;
+  gap: 8px;
+}
+
+.word-card .word-card-expand-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  align-self: center;
+  color: var(--text-2);
+  flex: none;
+}
+
+.word-card .level-badge-btn {
+  height: 28px;
+  min-height: 28px;
+  font-size: 0.72rem;
+}
+
+.word-card .word-term {
+  font-weight: 650;
+}
+
+.word-card .header-badge-pos {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.word-card .header-badge {
+  height: 20px;
+  min-width: 26px;
+  font-size: 0.65rem;
+}
+
+:root[color-scheme="dark"] .word-card .header-badge-pos {
+  background: #1e3a5f;
+  color: #bae6fd;
 }
 
 /* Smart Review progress */

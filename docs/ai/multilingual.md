@@ -66,6 +66,14 @@ Missing word pages link to All words. Header branding and the favicon reflect th
 selected learning language, without providing another language picker.
 
 Favorites is one list per learning language, independent of topics and knowledge.
+Mobile cards keep audio and Favorites at the top-right, pronunciation below the
+term, and separate CEFR/part-of-speech badges in the footer beside the rating.
+Translations preview one line; the labelled disclosure arrow reveals the entire
+saved translation text, including a single long translation. Its control and the
+other actions are siblings of the word link, so they never open the detail page.
+The mobile list omits the redundant table column headings. Desktop rows retain
+their existing full translations and details expansion.
+
 Hearts appear on cards, rows and word details; the sidebar entry is below Daily
 Word Mix. Removing a heart patches only that flag and keeps the current list page
 in place until navigation or filter changes. Lists reuse normal sorting, search,

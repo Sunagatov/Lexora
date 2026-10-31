@@ -7,7 +7,6 @@ import {routes} from '@/app/routes'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {EasyPronunciation} from './EasyPronunciation'
-import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
 import {lexicalChips} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {SWIPE_THRESHOLD, useWordSwipe} from '@/features/words/hooks/useWordSwipe'
@@ -34,8 +33,8 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
   onSwipe: (word: Word, level: 4 | 5) => void
 }) {
   const [openLevel, setOpenLevel] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const preferences = usePreferences()
-  const readingMode = usePronunciationMode(word.language)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const navigation = useWordListNavigation(fromTopicSlug, wordList)
@@ -56,64 +55,78 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
 
   const lc = levelClass(word.knowledge_level)
   const translation = word.translation_entries.join(' · ')
+  const translationId = `word-card-translations-${word.id}`
+  const chips = lexicalChips(word)
+  const cefr = chips.find(chip => chip.type === 'cefr')
+  const pos = chips.find(chip => chip.type === 'pos')
 
   return (
     <article {...swipe}
       style={{'--swipe-x': `${offset}px`, '--swipe-angle': `${offset / 30}deg`} as CSSProperties}
       className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? ` swipe-dragging ${offset > 0 ? 'swipe-strong' : 'swipe-parked'}` : ''}`}>
-      <FavoriteButton word={word} />
+      <div className="word-card-actions">
+        <button type="button"
+          className={`word-card-speak${isSpeaking ? ' is-speaking' : ''}`}
+          onClick={speak}
+          aria-label={`Pronounce ${word.term}`}>
+          <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h3l4-3v10l-4-3H3z"/>
+            {isSpeaking ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/> : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
+          </svg>
+        </button>
+        <FavoriteButton word={word} />
+      </div>
       {offset !== 0 && <span className="swipe-feedback" style={{opacity: Math.min(Math.abs(offset) / SWIPE_THRESHOLD, .95)}} aria-hidden="true">{offset > 0 ? 'Strong →' : '← Parked'}{ready ? ' · Release' : ' · Keep swiping'}</span>}
       <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
-        <div className={`word-card-grid${preferences.pronunciation && pronunciationText(word, readingMode) ? ' has-pronunciation' : ''}`}>
-          <div className="word-card-left">
-            <span className="word-card-reading-row">
-              <span className="word-term" style={{display: 'inline', marginBottom: 0}}><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
-              <button type="button"
-                className={`wdp-speak-btn ripple-btn${isSpeaking ? ' is-speaking' : ''}`}
-                style={{marginLeft: 0}}
-                onClick={speak}
-                aria-label={`Pronounce ${word.term}`}>
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 6h3l4-3v10l-4-3H3z"/>
-                  {isSpeaking ? <path d="M11 6.5a2.5 2.5 0 0 1 0 3"/> : <path d="M12.2 5.2a4 4 0 0 1 0 5.6"/>}
-                </svg>
-              </button>
-              <EasyPronunciation word={word} />
-            </span>
-            {translation && <span className="word-translation-focus">{translation}</span>}
-          </div>
-          <div className="word-card-right">
-            {(() => { const chips = lexicalChips(word); const cefr = chips.find(c => c.type === 'cefr'); const pos = chips.find(c => c.type === 'pos'); return (cefr || pos) ? <div className="word-summary-badges">{cefr && <span className={`header-badge header-badge-cefr header-badge-cefr-${cefr.label.toLowerCase()}`}>{cefr.label}</span>}{pos && <span className="header-badge header-badge-pos">{pos.label}</span>}</div> : null })()}
-            <div className="word-card-level-wrap">
-              <button
-                type="button"
-                className={`level-badge level-badge-btn ${lc}`}
-                disabled={pendingWordId === word.id}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  if (openLevel) { setOpenLevel(false); return }
-                  setLevelAnchor(e.currentTarget)
-                  setOpenLevel(true)
-                }}
-              >
-                {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <polyline points="2,3.5 5,6.5 8,3.5" />
-                </svg>
-              </button>
-              {openLevel && levelAnchor && (
-                <LevelDropdown
-                  current={word.knowledge_level as WordKnowledgeLevel | null}
-                  anchor={levelAnchor}
-                  onSelect={(level) => { onUpdate(word.id, level); setOpenLevel(false) }}
-                  onClose={() => setOpenLevel(false)}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <span className="word-term"><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
+        <EasyPronunciation word={word} />
+        {translation && <span id={translationId} className={`word-translation-focus word-card-translations${expanded ? ' is-expanded' : ''}`}>{translation}</span>}
       </Link>
+      <div className="word-card-footer">
+        {(cefr || pos) && <div className="word-summary-badges">
+          {cefr && <span className={`header-badge header-badge-cefr header-badge-cefr-${cefr.label.toLowerCase()}`}>{cefr.label}</span>}
+          {pos && <span className="header-badge header-badge-pos">{pos.label}</span>}
+        </div>}
+        <div className="word-card-level-wrap">
+          <button
+            type="button"
+            className={`level-badge level-badge-btn ${lc}`}
+            disabled={pendingWordId === word.id}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              if (openLevel) { setOpenLevel(false); return }
+              setLevelAnchor(e.currentTarget)
+              setOpenLevel(true)
+            }}
+          >
+            {LEVEL_LABELS[word.knowledge_level ?? 0] ?? 'Unset'}
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <polyline points="2,3.5 5,6.5 8,3.5" />
+            </svg>
+          </button>
+          {openLevel && levelAnchor && (
+            <LevelDropdown
+              current={word.knowledge_level as WordKnowledgeLevel | null}
+              anchor={levelAnchor}
+              onSelect={(level) => { onUpdate(word.id, level); setOpenLevel(false) }}
+              onClose={() => setOpenLevel(false)}
+            />
+          )}
+          {translation && preferences.translations && <button
+            type="button"
+            className={`word-card-expand-btn${expanded ? ' is-expanded' : ''}`}
+            aria-expanded={expanded}
+            aria-controls={translationId}
+            aria-label={`${expanded ? 'Collapse' : 'Expand'} translations for ${word.term}`}
+            onClick={() => setExpanded(value => !value)}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2,4 6,8 10,4" />
+            </svg>
+          </button>}
+        </div>
+      </div>
     </article>
   )
 }

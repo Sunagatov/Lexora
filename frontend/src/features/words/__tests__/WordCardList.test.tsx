@@ -52,14 +52,17 @@ function swipeCard(card: HTMLElement, end = 195) {
 }
 
 describe('WordCardList', () => {
-  it('puts the reading hint after the speaker in the same mobile heading row', () => {
+  it('keeps audio outside the word link and puts the reading hint below the term', () => {
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'hola', {language: 'es', pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} />}])
     const {container} = render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
     const hint = container.querySelector('.word-easy-pronunciation')!
     expect(hint.textContent).toBe('о́ла')
-    expect(hint.parentElement?.className).toBe('word-card-reading-row')
-    expect(hint.previousElementSibling?.getAttribute('aria-label')).toBe('Pronounce hola')
-    expect(hint.parentElement?.nextElementSibling?.className).toBe('word-translation-focus')
+    expect(hint.closest('a')?.className).toBe('word-card-body-tap')
+    expect(hint.previousElementSibling?.textContent).toBe('hola')
+    const speaker = screen.getByRole('button', {name: 'Pronounce hola'})
+    expect(speaker.closest('a')).toBeNull()
+    expect(speaker.parentElement?.className).toBe('word-card-actions')
+    expect(container.querySelector('a button')).toBeNull()
   })
 
   it('saves overlapping swipes in either direction without showing an Undo popup', async () => {
@@ -116,16 +119,40 @@ describe('WordCardList', () => {
     expect(router.state.location.pathname).toBe('/')
     expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
   })
-  it('shows every saved translation in the mobile word list', () => {
+  it('expands and collapses all translations independently without navigation or changing the rating', () => {
     const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
+    const onUpdate = vi.fn()
     const router = createMemoryRouter([{
       path: '/',
-      element: <WordCardList words={[makeWord(1, 'cold', {translation_entries: translations})]} pendingWordId={null} onUpdate={vi.fn()} />,
+      element: <WordCardList words={[makeWord(1, 'cold', {translation_entries: translations}), makeWord(2, 'warm')]} pendingWordId={null} onUpdate={onUpdate} />,
     }])
 
     render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
 
-    expect(screen.getByText(translations.join(' · '))).toBeTruthy()
+    const content = screen.getByText(translations.join(' · '))
+    expect(content.classList.contains('is-expanded')).toBe(false)
+    const toggle = screen.getByRole('button', {name: 'Expand translations for cold'})
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(toggle.getAttribute('aria-controls')).toBe(content.id)
+    fireEvent.click(toggle)
+    expect(content.classList.contains('is-expanded')).toBe(true)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByRole('button', {name: 'Expand translations for warm'}).getAttribute('aria-expanded')).toBe('false')
+    expect(router.state.location.pathname).toBe('/')
+    expect(onUpdate).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', {name: 'Collapse translations for cold'}))
+    expect(content.classList.contains('is-expanded')).toBe(false)
+  })
+
+  it('can expand a single long translation but does not show an empty expander', () => {
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[
+      makeWord(1, 'long', {translation_entries: ['Один длинный перевод, который не помещается на одной строке карточки.']}),
+      makeWord(2, 'empty', {translation_entries: []}),
+    ]} pendingWordId={null} onUpdate={vi.fn()} />}])
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button', {name: 'Expand translations for long'}))
+    expect(screen.getByRole('button', {name: 'Collapse translations for long'}).getAttribute('aria-expanded')).toBe('true')
+    expect(screen.queryByRole('button', {name: 'Expand translations for empty'})).toBeNull()
   })
 
   it('closes the level dropdown without navigating to the word page', () => {

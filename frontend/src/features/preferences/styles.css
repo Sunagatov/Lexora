@@ -436,21 +436,6 @@
   position: relative;
   flex: none;
 }
-.word-card > .favorite-control {
-  position: absolute;
-  right: 8px;
-  top: 5px;
-  z-index: 3;
-}
-.word-card .word-card-right {
-  padding-top: 27px;
-}
-.word-card-grid.has-pronunciation .word-card-reading-row {
-  padding-right: 36px;
-}
-.word-card-grid.has-pronunciation .word-card-right {
-  padding-top: 0;
-}
 .favorite-error {
   font-size: 11px;
   color: #d44c6b;
