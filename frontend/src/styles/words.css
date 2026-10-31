@@ -1,7 +1,7 @@
 /* Column header — sticky above the table */
 .word-list-header {
   display: grid;
-  grid-template-columns: 22% 1fr 130px;
+  grid-template-columns: 22% 1fr 190px;
   align-items: center;
   padding: 8px 20px 8px 21px;
   border-bottom: 1px solid var(--border);
@@ -21,7 +21,7 @@
 }
 
 .word-list-header.has-pronunciation {
-  grid-template-columns: 22% 22% 1fr 130px;
+  grid-template-columns: 22% 22% 1fr 190px;
 }
 
 .word-table.has-pronunciation .word-cell-pronunciation {
@@ -169,6 +169,23 @@
   width: 22%;
 }
 
+.word-table-term {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.word-table-term .word-term {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.word-table-term .wdp-speak-btn {
+  flex: none;
+}
+
 .word-cell-word .wdp-speak-btn {
   margin-left: 6px;
   vertical-align: middle;
@@ -180,13 +197,14 @@
 }
 
 .word-cell-knowledge {
-  width: 130px;
+  width: 190px;
 }
 
 .word-level-wrap {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 6px;
 }
 

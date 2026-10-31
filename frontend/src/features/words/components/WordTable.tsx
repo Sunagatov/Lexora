@@ -67,13 +67,13 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                   onClick={onWordSelect ? () => onWordSelect(word.id) : undefined}
                 >
                   <td className="word-cell-word">
-                    <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                    <span className="word-table-term">
                     {onWordSelect ? (
-                      <span className="word-term word-term-link" style={{display: 'inline', flex: 'none'}}>
+                      <span className="word-term word-term-link">
                         <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
                       </span>
                     ) : (
-                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)} style={{display: 'inline', flex: 'none'}}>
+                      <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
                         <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
                       </Link>
                     )}
@@ -94,7 +94,6 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                     <WordSummaryContent word={word} />
                   </td>
                   <td className="word-cell-knowledge">
-                    <FavoriteButton word={word} />
                     <div className="word-level-wrap">
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}
@@ -119,6 +118,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                           className="word-table-expand-btn"
                           onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : word.id) }}
                           aria-expanded={isExpanded}
+                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${word.term}`}
                         >
                           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
                             style={{transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s'}}>
@@ -126,6 +126,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                           </svg>
                         </button>
                       )}
+                      <FavoriteButton word={word} />
                     </div>
                   </td>
                 </tr>

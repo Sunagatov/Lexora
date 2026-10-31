@@ -451,10 +451,6 @@
 .word-card-grid.has-pronunciation .word-card-right {
   padding-top: 0;
 }
-.word-cell-knowledge > .favorite-control {
-  float: right;
-  margin-left: 5px;
-}
 .favorite-error {
   font-size: 11px;
   color: #d44c6b;

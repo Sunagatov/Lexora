@@ -11,6 +11,7 @@ import { TrashPage } from '@/features/trash/routes/TrashPage'
 import { AccountIcon } from './AccountIcon'
 import { AccountData } from './AccountData'
 import { AccountOffline } from './AccountOffline'
+import { accountReturnTarget } from './accountNavigation'
 import {
   DEFAULT_PREFERENCES,
   flushPreferences,
@@ -78,22 +79,10 @@ export function AccountPage() {
   const mobile = useIsMobile(768)
   const selected = SECTIONS.find((item) => item.id === section)
   const title = section === 'trash' ? 'Trash' : (selected?.title ?? 'My Lexora')
-  const returnTo =
-    typeof location.state?.returnTo === 'string' &&
-    location.state.returnTo.startsWith('/') &&
-    !location.state.returnTo.startsWith('//') &&
-    !location.state.returnTo.startsWith('/account')
-      ? location.state.returnTo
-      : routes.home
-  const sameLanguage =
-    !location.state?.returnLanguage || location.state.returnLanguage === values.language
-  const goBack = () =>
-    navigate(sameLanguage ? returnTo : routes.home, {
-      state: {
-        learningLanguage: values.language,
-        wordListScrollTop: sameLanguage ? location.state?.returnScrollTop : 0,
-      },
-    })
+  const goBack = () => {
+    const target = accountReturnTarget(location.state, values.language)
+    navigate(target.to, {state: target.state})
+  }
   const state = location.state
   if (!section && !mobile) return <Navigate to="/account/study" replace state={state} />
   return (

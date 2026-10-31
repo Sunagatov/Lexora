@@ -1,6 +1,7 @@
 import {render, screen, fireEvent} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
+import type {MemoryRouterProps} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {AppHeader} from '@/app/layout/AppHeader'
 import {routes} from '@/app/routes'
@@ -18,10 +19,10 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-function renderHeader(queryClient: QueryClient) {
+function renderHeader(queryClient: QueryClient, initialEntries?: MemoryRouterProps['initialEntries']) {
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={initialEntries}>
         <AppHeader />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -51,5 +52,17 @@ describe('AppHeader personal area', () => {
     expect(clearSpy).not.toHaveBeenCalled()
     expect(navigate).toHaveBeenCalledWith(routes.account, {state: expect.objectContaining({returnTo: '/'})})
     expect(screen.queryByRole('button', {name: 'Sign out'})).toBeNull()
+  })
+
+  it('toggles back from an account section to the saved list state', () => {
+    const returnTo = '/?search=word&page=2&pageSize=100&level=1&sort=term-desc'
+    renderHeader(new QueryClient(), [{pathname: '/account/appearance', state: {
+      returnTo, returnLanguage: 'en', returnScrollTop: 320,
+      returnState: {fromTopicSlug: 'people'},
+    }}])
+    fireEvent.click(screen.getByRole('button', {name: 'My Lexora'}))
+    expect(navigate).toHaveBeenCalledWith(returnTo, {state: {
+      fromTopicSlug: 'people', learningLanguage: 'en', wordListScrollTop: 320,
+    }})
   })
 })

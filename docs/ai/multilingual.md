@@ -74,6 +74,8 @@ filters and pagination. Offline copies retain the flag and use the same filters.
 My Lexora also owns Statistics, Import/Export, Trash, Offline, study defaults and
 appearance. Desktop uses section navigation; mobile uses an overview and section
 pages. Returning to the same library restores the captured word-list URL/scroll.
+Clicking the header account icon again also returns to that saved list, including
+when a different account section is open.
 Offline copies remain device-local even though display/study preferences sync.
 
 The browser-tab favicon follows the selected learning language and its saved

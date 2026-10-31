@@ -4,6 +4,7 @@ import {routes} from '@/app/routes'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 import {languagePreferences, languageProfile, subscribeLanguages} from '@/features/languages/api'
 import {AccountIcon} from '@/features/preferences/AccountIcon'
+import {accountReturnTarget} from '@/features/preferences/accountNavigation'
 import {useIsMutating} from '@tanstack/react-query'
 
 type Props = {
@@ -20,6 +21,20 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}:
   const accountActive = location.pathname.startsWith(routes.account)
   const pending = useIsMutating() > 0
 
+  function toggleAccount() {
+    if (accountActive) {
+      const target = accountReturnTarget(location.state, language.language)
+      navigate(target.to, {state: target.state})
+      return
+    }
+    navigate(routes.account, {state: {
+      returnTo: location.pathname + location.search + location.hash,
+      returnLanguage: language.language,
+      returnState: location.state,
+      returnScrollTop: document.querySelector('.word-collection-scroll, .all-words-page')?.scrollTop ?? 0,
+    }})
+  }
+
   return (
     <header className="app-header">
       <div className="app-header-left">
@@ -32,8 +47,8 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}:
       <div className="app-header-actions">
         <button type="button" className={`app-header-account${accountActive ? ' is-active' : ''}`} aria-label="My Lexora" aria-current={accountActive ? 'page' : undefined}
           disabled={pending || location.pathname.endsWith('/edit')}
-          title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : 'My Lexora'}
-          onClick={() => navigate(routes.account, {state: accountActive ? location.state : {returnTo: location.pathname + location.search, returnLanguage: language.language, returnScrollTop: document.querySelector('.word-collection-scroll, .all-words-page')?.scrollTop ?? 0}})}>
+          title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : accountActive ? 'Back to words' : 'My Lexora'}
+          onClick={toggleAccount}>
           <AccountIcon name="account" />
         </button>
         {hasDrawer && (
