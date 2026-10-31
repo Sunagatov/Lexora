@@ -12,3 +12,4 @@
 @import './styles/mobile.css';
 @import './features/offline/styles.css';
 @import './features/languages/styles.css';
+@import './features/preferences/styles.css';

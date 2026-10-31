@@ -199,6 +199,7 @@ class Word(Base):
     notes: Mapped[str | None] = mapped_column(Text(), nullable=True)
     source: Mapped[str] = mapped_column(String(10), nullable=False, server_default=text("'manual'"))
     is_active: Mapped[bool] = mapped_column(Boolean(), default=True, server_default=text("true"))
+    is_favorite: Mapped[bool] = mapped_column(Boolean(), default=False, server_default=text("false"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -1,4 +1,7 @@
 import {useEffect, useRef, useState} from 'react'
+import {useLocation, useNavigate} from 'react-router-dom'
+import {routes} from '@/app/routes'
+import {AccountIcon} from '@/features/preferences/AccountIcon'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 type Props = {
@@ -23,6 +26,8 @@ export function TopicSidebarHeader({
   smartQueue,
 }: Props) {
   const [searchOpen, setSearchOpen] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -72,6 +77,7 @@ export function TopicSidebarHeader({
       </div>
 
       <div className="sidebar-search-wrap">
+        <button type="button" className={`sidebar-favorites${location.pathname === routes.favorites ? ' is-active' : ''}`} onClick={() => navigate(routes.favorites)} aria-label="Favorites"><AccountIcon name="heart" /><span>Favorites</span></button>
         {isMobile ? (
           searchOpen ? (
             <div className="sidebar-search-mobile-row">

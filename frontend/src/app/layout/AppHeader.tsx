@@ -1,10 +1,10 @@
-import {useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router-dom'
+import {useSyncExternalStore} from 'react'
 import {routes} from '@/app/routes'
-import {useLogoutAction} from '@/features/auth/hooks/useLogoutAction'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
-import {useTheme} from '@/shared/hooks/useTheme'
-import {OfflineStatus} from '@/features/offline/OfflineButton'
-import {LanguagePicker} from '@/features/languages/LanguagePicker'
+import {languagePreferences, languageProfile, subscribeLanguages} from '@/features/languages/api'
+import {AccountIcon} from '@/features/preferences/AccountIcon'
+import {useIsMutating} from '@tanstack/react-query'
 
 type Props = {
   hasDrawer?: boolean
@@ -14,26 +14,27 @@ type Props = {
 
 export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}: Props) {
   const navigate = useNavigate()
-  const {logoutPending, handleLogout} = useLogoutAction()
-  const {isDark, toggle} = useTheme()
+  const location = useLocation()
+  const language = useSyncExternalStore(subscribeLanguages, languagePreferences)
+  const profile = languageProfile(language.language)
+  const accountActive = location.pathname.startsWith(routes.account)
+  const pending = useIsMutating() > 0
 
   return (
     <header className="app-header">
       <div className="app-header-left">
         <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
-          <span aria-hidden="true">📚</span>
+          <img className="app-header-language-flag" src={profile.favicon} alt="" />
           Lexora
         </button>
-        <LanguagePicker />
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
-        <OfflineStatus />
-        <button type="button" className="app-header-theme-toggle" onClick={toggle} aria-label="Toggle dark mode">
-          {isDark ? '☀️' : '🌙'}
-        </button>
-        <button type="button" className="app-header-logout" onClick={handleLogout} disabled={logoutPending}>
-          {logoutPending ? 'Signing out…' : 'Sign out'}
+        <button type="button" className={`app-header-account${accountActive ? ' is-active' : ''}`} aria-label="My Lexora" aria-current={accountActive ? 'page' : undefined}
+          disabled={pending || location.pathname.endsWith('/edit')}
+          title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : 'My Lexora'}
+          onClick={() => navigate(routes.account, {state: accountActive ? location.state : {returnTo: location.pathname + location.search, returnLanguage: language.language, returnScrollTop: document.querySelector('.word-collection-scroll, .all-words-page')?.scrollTop ?? 0}})}>
+          <AccountIcon name="account" />
         </button>
         {hasDrawer && (
           <button type="button" className="app-header-burger" onClick={onOpenDrawer}

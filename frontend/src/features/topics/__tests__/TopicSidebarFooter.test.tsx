@@ -28,20 +28,11 @@ describe('TopicSidebarFooter', () => {
         newTopicParentId=""
         topicOptions={[makeTopic(1, 'Inbox')]}
         createPending
-        workbookBusy={false}
-        importInputRef={{current: null}}
-        statsActive={false}
-        trashActive={false}
         onNewTopicNameChange={vi.fn()}
         onNewTopicParentIdChange={vi.fn()}
         onCreate={onCreate}
         onCancel={vi.fn()}
         onStartAdd={vi.fn()}
-        onOpenStats={vi.fn()}
-        onOpenTrash={vi.fn()}
-        onExport={vi.fn()}
-        onImportClick={vi.fn()}
-        onImportChange={vi.fn()}
       />,
     )
 

@@ -20,7 +20,7 @@ function numericMap(values: Record<number, number> = {}) {
   return new Map(Object.entries(values).map(([id, count]) => [Number(id), count]))
 }
 
-export function VocabularyPage() {
+export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean}) {
   const navigate = useNavigate()
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
@@ -32,7 +32,7 @@ export function VocabularyPage() {
   const topicState = useTopicState(topics)
   const topicCounts = useMemo(() => numericMap(sidebarQuery.data?.topic_counts), [sidebarQuery.data])
   const topicProgress = useMemo(() => numericMap(sidebarQuery.data?.topic_progress), [sidebarQuery.data])
-  const s = useVocabulary()
+  const s = useVocabulary(favoritesOnly)
   const update = useWordUpdate(() => {})
   const [actionError, setActionError] = useState<string | null>(null)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
@@ -67,7 +67,7 @@ export function VocabularyPage() {
         sidebarWidth={sidebarWidth} sidebarCollapsed={collapsed}
         isResizing={isResizing} handleSidebarResizeDown={handleSidebarResizeDown}
         sidebarProps={{
-          topics, topicCounts, topicProgress, totalWords: total,
+          topics, topicCounts, topicProgress, totalWords: sidebarQuery.data?.total_words ?? total,
           topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
           selectedTopicId: null, isSmartReview: false, smartQueue: null,
           onSelect: id => { setDrawerOpen(false); topicState.selectTopic(id) },
@@ -83,7 +83,7 @@ export function VocabularyPage() {
           </div>}
           <div className={`word-collection-split${panelWordId !== null && !isMobile ? ' has-panel' : ''}`}>
             <WordCollectionView
-              collectionTitle="All words"
+              collectionTitle={favoritesOnly ? 'Favorites' : 'All words'}
               wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
               sortBy={s.sortBy} setSortBy={s.setSortBy}
               thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}
@@ -102,7 +102,7 @@ export function VocabularyPage() {
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}
               isLoading={s.wordsQuery.isLoading || s.wordsQuery.isPlaceholderData}
-              emptyMessage={s.wordsQuery.isError ? 'Could not load this page. Try the previous page or Retry.' : hasFilters ? 'No words match the current filters.' : 'No words yet. Use Add word to start your library.'}
+              emptyMessage={s.wordsQuery.isError ? 'Could not load this page. Try the previous page or Retry.' : hasFilters ? 'No words match the current filters.' : favoritesOnly ? 'No favorites in this language yet. Tap the heart on a word or phrase to save it here.' : 'No words yet. Use Add word to start your library.'}
               onWordSelect={isMobile ? undefined : setPanelWordId} selectedWordId={panelWordId}
             />
             {panelWordId !== null && !isMobile && <WordDetailPanel wordId={panelWordId} words={words}

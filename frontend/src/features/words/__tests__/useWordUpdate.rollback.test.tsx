@@ -193,6 +193,25 @@ describe('useWordUpdate rollback', () => {
     expect(queryClient.getQueryData(queryKeys.word(1))).toEqual(updated)
   })
 
+  it('keeps a newer favorite when an older rating response arrives', async () => {
+    const word = {...makeWord(1, 'run', 1), is_favorite: false}
+    const key = [...queryKeys.wordList, {page: 1}]
+    queryClient.setQueryData(key, {words: [word]})
+    queryClient.setQueryData(queryKeys.word(1), word)
+    let finish!: (value: Word) => void
+    vi.mocked(api.updateWordKnowledgeLevel).mockImplementationOnce(() => new Promise(resolve => {finish = resolve}))
+    const {result} = renderHook(() => useWordUpdate(onMutate), {wrapper})
+    let save!: Promise<Word>
+    act(() => {save = result.current.updateLevelAsync(1, 4)})
+    await waitFor(() => expect(api.updateWordKnowledgeLevel).toHaveBeenCalled())
+    queryClient.setQueryData(key, {words: [{...word, knowledge_level: 4, is_favorite: true}]})
+    queryClient.setQueryData(queryKeys.word(1), {...word, is_favorite: true})
+    await act(async () => {finish({...word, knowledge_level: 4}); await save})
+    expect(queryClient.getQueryData<WordListResponse>(key)?.words[0].is_favorite).toBe(true)
+    expect(queryClient.getQueryData<Word>(queryKeys.word(1))?.is_favorite).toBe(true)
+    expect(queryClient.getQueryData<Word>(queryKeys.word(1))?.knowledge_level).toBe(4)
+  })
+
   it('restores a failed optimistic level in a paginated page without rolling back other saved words', async () => {
     const first = makeWord(1, 'run', 1)
     const second = makeWord(2, 'walk', 1)

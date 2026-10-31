@@ -13,6 +13,7 @@ export type ConfusableEntry = {
 }
 
 export type Word = {
+  is_favorite?: boolean
   id: number
   topic_ids: number[]
   term: string

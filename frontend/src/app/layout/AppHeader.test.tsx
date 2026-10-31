@@ -1,4 +1,4 @@
-import {render, screen, fireEvent, waitFor} from '@testing-library/react'
+import {render, screen, fireEvent} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -28,7 +28,7 @@ function renderHeader(queryClient: QueryClient) {
   )
 }
 
-describe('AppHeader logout', () => {
+describe('AppHeader personal area', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -37,9 +37,7 @@ describe('AppHeader logout', () => {
     vi.restoreAllMocks()
   })
 
-  it('calls logout, clears cached data, and navigates to login', async () => {
-    vi.mocked(authApi.logout).mockResolvedValue(true)
-
+  it('opens My Lexora without signing out or clearing the vocabulary cache', () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
@@ -48,12 +46,10 @@ describe('AppHeader logout', () => {
 
     renderHeader(queryClient)
 
-    fireEvent.click(screen.getByRole('button', {name: 'Sign out'}))
-
-    await waitFor(() => {
-      expect(authApi.logout).toHaveBeenCalledTimes(1)
-    })
-    expect(clearSpy).toHaveBeenCalledTimes(1)
-    expect(navigate).toHaveBeenCalledWith(routes.login, {replace: true})
+    fireEvent.click(screen.getByRole('button', {name: 'My Lexora'}))
+    expect(authApi.logout).not.toHaveBeenCalled()
+    expect(clearSpy).not.toHaveBeenCalled()
+    expect(navigate).toHaveBeenCalledWith(routes.account, {state: expect.objectContaining({returnTo: '/'})})
+    expect(screen.queryByRole('button', {name: 'Sign out'})).toBeNull()
   })
 })

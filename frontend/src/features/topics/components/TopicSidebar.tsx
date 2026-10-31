@@ -1,8 +1,6 @@
 import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react'
-import {useLocation, useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import {routes} from '@/app/routes'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
 import {buildSidebarGroups, isPosGroup, type TopicTreeNode} from '@/features/topics/model/topicSidebarModel'
 import {TopicSidebarFooter} from '@/features/topics/components/TopicSidebarFooter'
@@ -13,7 +11,6 @@ import {TopicButton} from '@/features/topics/components/TopicButton'
 import {SORT_LABELS, type SortMode} from '@/features/topics/model/topicSort'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {TopicEditModal} from '@/features/topics/components/TopicEditModal'
-import {WorkbookImportDialog} from '@/features/words/components/WorkbookImportDialog'
 import type {TopicUpdatePayload} from '@/features/topics/api/topicsApi'
 
 type Props = {
@@ -153,7 +150,6 @@ export function TopicSidebar({
   isCollapsed = false, onToggleCollapsed,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
-  const location = useLocation()
   const [posSortOpen, setPosSortOpen] = useState(false)
   const [topicsSortOpen, setTopicsSortOpen] = useState(false)
   const posSortRef = useRef<HTMLButtonElement>(null)
@@ -164,21 +160,17 @@ export function TopicSidebar({
     onSelect(id)
   }
   const lastAutoExpandedTopicIdRef = useRef<number | null>(null)
-  const navigate    = useNavigate()
   const selectedTopic = useMemo(
     () => topics.find((t) => t.id === selectedTopicId) ?? null,
     [topics, selectedTopicId],
   )
   const {
-    importFile, closeImport, onImportApplied,
-    importInputRef,
     addingTopic,
     newTopicName,
     changeNewTopicName,
     newTopicParentId,
     setNewTopicParentId,
     topicError,
-    workbookBusy,
     deleteTopicId,
     openDeleteTopic,
     closeDeleteTopic,
@@ -191,8 +183,6 @@ export function TopicSidebar({
     createTopicMutation,
     deleteTopicMutation,
     updateTopicMutation,
-    handleExportWorkbook,
-    handleImportWorkbookChange,
     startAddTopic,
     cancelAddTopic,
   } = useTopicSidebarActions({
@@ -367,23 +357,13 @@ export function TopicSidebar({
         newTopicParentId={newTopicParentId}
         topicOptions={topicOptions}
         createPending={createTopicMutation.isPending}
-        workbookBusy={workbookBusy}
-        importInputRef={importInputRef}
-        statsActive={location.pathname === routes.stats}
-        trashActive={location.pathname === routes.trash}
         onNewTopicNameChange={changeNewTopicName}
         onNewTopicParentIdChange={setNewTopicParentId}
         onCreate={() => createTopicMutation.mutate()}
         onCancel={cancelAddTopic}
         onStartAdd={startAddTopic}
-        onOpenStats={() => navigate(routes.stats)}
-        onOpenTrash={() => navigate(routes.trash)}
-        onExport={handleExportWorkbook}
-        onImportClick={() => importInputRef.current?.click()}
-        onImportChange={handleImportWorkbookChange}
       />
 
-      {importFile && <WorkbookImportDialog file={importFile} onClose={closeImport} onApplied={onImportApplied} />}
 
       {deleteTopicId !== null && (
         <ConfirmModal

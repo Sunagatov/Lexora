@@ -51,13 +51,30 @@ a different replacement is supplied in the same update. Other edits preserve the
 
 ## Frontend and offline
 
-Preferences persist for the last-used setup, while already-open tabs keep their
-own selected language. Library changes clear QueryClient and remount scoped views,
-then navigate to All words. Translation-only changes retain the route. Switching
-is disabled while a mutation is pending or a word edit form is open.
+Learning and translation selectors live only in My Lexora → Languages. Owner
+preferences sync through `/api/preferences` at login/startup and on focus/reconnect;
+shared list defaults apply across learning libraries. Focus refresh pauses during
+an open word editor or save so a remote language change cannot discard work.
+Library changes clear QueryClient and remount scoped views. Returning to words
+after selecting a different learning language opens All words in that library.
+Switching is disabled while a mutation is pending; the account entry is disabled
+while a word editor is open.
 
 History entries remember their learning library, so browser Back/Forward restores
-the library as well as the word/topic route. Missing word pages link to All words.
+the library as well as the word/topic route and updates the synced language choice.
+Missing word pages link to All words. Header branding and the favicon reflect the
+selected learning language, without providing another language picker.
+
+Favorites is one list per learning language, independent of topics and knowledge.
+Hearts appear on cards, rows and word details; the sidebar entry is below Daily
+Word Mix. Removing a heart patches only that flag and keeps the current list page
+in place until navigation or filter changes. Lists reuse normal sorting, search,
+filters and pagination. Offline copies retain the flag and use the same filters.
+
+My Lexora also owns Statistics, Import/Export, Trash, Offline, study defaults and
+appearance. Desktop uses section navigation; mobile uses an overview and section
+pages. Returning to the same library restores the captured word-list URL/scroll.
+Offline copies remain device-local even though display/study preferences sync.
 
 The browser-tab favicon follows the selected learning language and its saved
 preference on reload. It uses local flag PNGs rendered from the bundled Noto

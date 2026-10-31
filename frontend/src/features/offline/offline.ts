@@ -70,7 +70,7 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
     if (route === '/api/topics/sidebar-stats') return sidebarStats(replica)
     if (route === '/api/words/summary') {
       const level_counts: Record<number, number> = {}
-      const words = scope.words.filter(w => !w.deleted_at)
+      const words = scope.words.filter(w => !w.deleted_at && (params.get('favorites_only') !== 'true' || w.is_favorite))
       words.forEach(w => { const level = w.knowledge_level ?? 0; level_counts[level] = (level_counts[level] ?? 0) + 1 })
       return {total: words.length, level_counts}
     }

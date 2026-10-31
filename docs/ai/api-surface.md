@@ -17,6 +17,26 @@ Protected router groups:
 - `/api/stats`
 - `/api/ai-curation`
 - `/api/offline`
+- `/api/preferences`
+
+## Owner Preferences And Favorites
+
+- `GET /api/preferences` returns validated defaults plus saved global settings;
+  `PATCH /api/preferences` merges only submitted fields. Both require the normal
+  session and CSRF checks. Settings are for the existing single owner, not accounts
+  for multiple people. Unknown fields, invalid values and explicit nulls are rejected.
+- Page size (50/100/200), sorting, language choices, theme, card/gesture/display
+  toggles and per-language pronunciation modes persist in `app_preferences`.
+  Partial updates serialize on its singleton row to preserve unrelated edits.
+- Word responses include `is_favorite`; existing word PUT accepts that flag alone
+  without changing knowledge or topics. `favorites_only=true` filters word lists,
+  ordered IDs and knowledge summaries inside the selected learning library.
+- Excel export accepts repeated `languages`, `favorites_only` and `topic_ids`.
+  One language returns a flat XLSX; multiple return a ZIP of independently
+  importable language-specific XLSX files. Hidden language metadata is preserved.
+  These are vocabulary exports, not backups of owner settings or favorite flags.
+- Migration `20261031_0016` adds favorites and preferences. Downgrade refuses to
+  discard saved settings or favorites.
 
 ## Language Context
 
@@ -63,7 +83,7 @@ Protected router groups:
 - Both endpoints keep normal session and CSRF protection. Offline data never
   supplies authentication to the server. A fresh sign-in may be needed to sync.
 
-The frontend's Save offline control beside New topic explicitly saves the complete
+The frontend's My Lexora → Offline control explicitly saves the complete
 copy in IndexedDB. Word/topic CRUD, Trash restoration, filters, pagination and
 knowledge ratings use that copy and a durable outbox. Temporary IDs and dependent
 topic links are remapped after acknowledged creates. Web Locks serialize writes

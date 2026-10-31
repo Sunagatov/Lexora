@@ -1,5 +1,4 @@
-import {useRef, useState} from 'react'
-import type {ChangeEvent} from 'react'
+import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {ApiError} from '@/shared/api/apiError'
@@ -13,8 +12,6 @@ import {
   invalidateTopicTrashDependencies,
   replaceTopicInLists,
 } from '@/features/topics/model/topicCache'
-import {exportWordsWorkbook} from '@/features/words/api/wordsApi'
-import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 
 type Params = {
   topics: Topic[]
@@ -22,14 +19,9 @@ type Params = {
   canUseSelectedTopicAsParent: boolean
 }
 
-function getWorkbookActionErrorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error ? error.message : fallback
-}
-
 export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTopicAsParent}: Params) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const importInputRef = useRef<HTMLInputElement>(null)
 
   const [deleteTopicId, setDeleteTopicId] = useState<number | null>(null)
   const [deleteTopicError, setDeleteTopicError] = useState<string | null>(null)
@@ -39,8 +31,6 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   const [newTopicParentId, setNewTopicParentId] = useState<number | ''>('')
   const [addingTopic, setAddingTopic] = useState(false)
   const [topicError, setTopicError] = useState<string | null>(null)
-  const [workbookBusy, setWorkbookBusy] = useState(false)
-  const [importFile, setImportFile] = useState<File | null>(null)
 
   const editingTopic = topics.find((topic) => topic.id === editTopicId) ?? null
 
@@ -94,25 +84,6 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     },
   })
 
-  async function handleExportWorkbook() {
-    try {
-      setWorkbookBusy(true)
-      await exportWordsWorkbook()
-    } catch (error) {
-      redirectIfUnauthorized(error)
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) return
-      window.alert(getWorkbookActionErrorMessage(error, 'Failed to export workbook.'))
-    } finally {
-      setWorkbookBusy(false)
-    }
-  }
-
-  function handleImportWorkbookChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-    if (file) setImportFile(file)
-  }
-
   function startAddTopic() {
     setNewTopicParentId(selectedTopic && canUseSelectedTopicAsParent ? selectedTopic.id : '')
     setAddingTopic(true)
@@ -151,10 +122,6 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
   }
 
   return {
-    importFile,
-    closeImport: () => setImportFile(null),
-    onImportApplied: () => invalidateTopicDependencies(queryClient),
-    importInputRef,
     addingTopic,
     setAddingTopic,
     newTopicName,
@@ -163,7 +130,6 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     setNewTopicParentId,
     topicError,
     setTopicError,
-    workbookBusy,
     deleteTopicId,
     openDeleteTopic,
     closeDeleteTopic,
@@ -176,8 +142,6 @@ export function useTopicSidebarActions({topics, selectedTopic, canUseSelectedTop
     createTopicMutation,
     deleteTopicMutation,
     updateTopicMutation,
-    handleExportWorkbook,
-    handleImportWorkbookChange,
     startAddTopic,
     cancelAddTopic,
   }

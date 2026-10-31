@@ -8,6 +8,7 @@ import {bootstrapSession} from '@/features/auth/api/authApi'
 import {initializeOffline, syncOffline} from '@/features/offline/offline'
 import {displayTranslations, languagePreferences, languageProfile, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
 import {setRequestContext} from '@/shared/api/http'
+import {loadPreferences} from '@/features/preferences/api'
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -58,7 +59,8 @@ export function Providers({children}: PropsWithChildren) {
       if (!resetLists) void queryClient.invalidateQueries({queryKey: ['word-list'], refetchType: 'none'})
     }).then(bootstrapSession)
 
-    bootstrapPromise.then((authenticated) => {
+    bootstrapPromise.then(async (authenticated) => {
+      if (authenticated) await loadPreferences()
       if (cancelled) return
       const pathname = window.location.pathname
       if (authenticated && pathname === routes.login) {

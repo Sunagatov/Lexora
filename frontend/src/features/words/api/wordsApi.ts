@@ -49,8 +49,12 @@ function parseErrorDetail(body: unknown, fallback: string): string {
   return fallback
 }
 
-export async function exportWordsWorkbook(template = false): Promise<void> {
-  const response = await fetch(buildApiUrl(template ? '/api/words/import/xlsx/template' : '/api/words/export/xlsx?layout=flat'), {
+export async function exportWordsWorkbook(template = false, options: {languages?: string[]; favoritesOnly?: boolean; topicIds?: number[]} = {}): Promise<void> {
+  const params = new URLSearchParams({layout: 'flat'})
+  for (const language of options.languages ?? []) params.append('languages', language)
+  if (options.favoritesOnly) params.set('favorites_only', 'true')
+  for (const id of options.topicIds ?? []) params.append('topic_ids', String(id))
+  const response = await fetch(buildApiUrl(template ? '/api/words/import/xlsx/template' : `/api/words/export/xlsx?${params}`), {
     method: 'GET',
     credentials: 'include',
     headers: buildRequestHeaders(),
@@ -72,9 +76,11 @@ export async function exportWordsWorkbook(template = false): Promise<void> {
   const disposition = response.headers.get('Content-Disposition') ?? ''
   const filenameStarMatch = disposition.match(/filename\*=UTF-8''([^;]+)/i)
   const filenameMatch = disposition.match(/filename="([^"]+)"/i)
+  const fallbackFilename = response.headers.get('Content-Type')?.includes('application/zip')
+    ? 'lexora-vocabulary-languages.zip' : 'lexora-vocabulary.xlsx'
   const filename = filenameStarMatch?.[1]
     ? decodeURIComponent(filenameStarMatch[1])
-    : filenameMatch?.[1] ?? 'lexora-vocabulary.xlsx'
+    : filenameMatch?.[1] ?? fallbackFilename
 
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -87,6 +93,7 @@ export async function exportWordsWorkbook(template = false): Promise<void> {
 }
 
 export type WordListParams = {
+  favoritesOnly?: boolean;
   search?: string; topicId?: number; topicIds?: number[]; pos?: string | string[]; cefr?: string | string[];
   level?: number | number[]; completeness?: string; page?: number; pageSize?: number;
   sort?: SortOption;
@@ -100,10 +107,11 @@ export type WordListResponse = {
 }
 
 export type WordKnowledgeSummary = {total: number; level_counts: Record<number, number>}
-export const fetchWordKnowledgeSummary = () => request<WordKnowledgeSummary>('/api/words/summary')
+export const fetchWordKnowledgeSummary = (favoritesOnly = false) => request<WordKnowledgeSummary>(`/api/words/summary${favoritesOnly ? '?favorites_only=true' : ''}`)
 
 export const fetchWordList = (params: WordListParams = {}): Promise<WordListResponse> => {
   const q = new URLSearchParams()
+  if (params.favoritesOnly) q.set('favorites_only', 'true')
   if (params.search?.trim()) q.set('search', params.search.trim())
   if (params.topicId) q.set('topic_id', String(params.topicId))
   for (const id of params.topicIds ?? []) q.append('topic_ids', String(id))

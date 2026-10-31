@@ -4,11 +4,12 @@ import {queryKeys} from '@/app/queryKeys'
 import {fetchWordList, fetchWordKnowledgeSummary} from '@/features/words/api/wordsApi'
 import {useWordFilterControls} from '@/features/words/hooks/useWordFilterControls'
 
-export function useVocabulary() {
+export function useVocabulary(favoritesOnly = false) {
   const [lastTotalPages, setLastTotalPages] = useState(1)
-  const controls = useWordFilterControls({defaultPageSize: 50})
+  const controls = useWordFilterControls()
   const {wordSearch, levelFilter, posFilter, cefrFilter, topicFilter, sortBy, thenSortBy, completeness, page, pageSize, setPage} = controls
   const listParams = {
+    favoritesOnly,
     search: wordSearch || undefined, level: levelFilter === 'all' ? undefined : levelFilter,
     pos: posFilter ?? undefined, cefr: cefrFilter ?? undefined, topicIds: topicFilter.length ? topicFilter : undefined,
     completeness: completeness === 'all' ? undefined : completeness,
@@ -20,9 +21,9 @@ export function useVocabulary() {
     placeholderData: keepPreviousData,
     // Keep the current review page stable when returning from a word or another tab.
     // New controls/pages use a new key and fetch the current server ordering.
-    refetchOnMount: false, refetchOnWindowFocus: false, refetchOnReconnect: false,
+    refetchOnMount: favoritesOnly ? 'always' : false, refetchOnWindowFocus: false, refetchOnReconnect: false,
   })
-  const summaryQuery = useQuery({queryKey: queryKeys.wordSummary, queryFn: fetchWordKnowledgeSummary})
+  const summaryQuery = useQuery({queryKey: [...queryKeys.wordSummary, favoritesOnly], queryFn: () => fetchWordKnowledgeSummary(favoritesOnly)})
   const totalPages = Math.max(1, wordsQuery.data?.total_pages ?? lastTotalPages)
   useEffect(() => {
     if (wordsQuery.isSuccess && !wordsQuery.isPlaceholderData) setLastTotalPages(totalPages)

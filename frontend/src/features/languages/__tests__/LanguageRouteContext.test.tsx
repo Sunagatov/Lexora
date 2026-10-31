@@ -4,6 +4,11 @@ import {useSyncExternalStore} from 'react'
 import {LanguageRouteContext} from '../LanguageRouteContext'
 import {languagePreferences, onLanguageChange, setLanguagePreferences, subscribeLanguages} from '../api'
 
+vi.mock('@/features/preferences/api', () => ({
+  updatePreferences: (patch: {language: 'en' | 'es' | 'zh'}) =>
+    setLanguagePreferences({...languagePreferences(), ...patch}),
+}))
+
 afterEach(() => {onLanguageChange(() => {});setLanguagePreferences({language: 'en', translationLanguage: 'ru'})})
 
 function Probe() {

@@ -1,12 +1,13 @@
 from io import BytesIO
 from typing import Annotated, Literal
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import Field
 from sqlalchemy.orm import Session
 
-from app.features.languages.catalog import learning_language
+from app.features.languages.catalog import Language, configure_language, learning_language
 from app.features.topics.exceptions import MissingTopicsError
 from app.features.topics.rules import assert_topics_exist
 from app.features.words.ai_review import (
@@ -68,10 +69,11 @@ def list_words(
     cefr_levels: Annotated[list[Literal["A1", "A2", "B1", "B2", "C1", "C2"]] | None, Query()] = None,
     topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,
     include_sequence: bool = False,
+    favorites_only: bool = False,
 ) -> WordListResponse:
     filters = {"topic_id": topic_id, "search": search, "pos": pos, "cefr": cefr,
         "level": level, "completeness": completeness, "levels": levels, "positions": positions,
-        "cefr_levels": cefr_levels, "topic_ids": topic_ids}
+        "cefr_levels": cefr_levels, "topic_ids": topic_ids, "favorites_only": favorites_only}
     words, total = get_all_words(db, page=page, page_size=page_size, sort=sort, then_sort=then_sort, **filters)
     total_pages = (total + page_size - 1) // page_size if total > 0 else 0
     return WordListResponse(
@@ -85,8 +87,8 @@ def list_words(
 
 
 @router.get("/summary", response_model=WordKnowledgeSummary)
-def word_knowledge_summary(db: Annotated[Session, Depends(get_db)]) -> WordKnowledgeSummary:
-    counts = get_word_knowledge_summary(db)
+def word_knowledge_summary(db: Annotated[Session, Depends(get_db)], favorites_only: bool = False) -> WordKnowledgeSummary:
+    counts = get_word_knowledge_summary(db, favorites_only=favorites_only)
     return WordKnowledgeSummary(total=sum(counts.values()), level_counts=counts)
 
 
@@ -109,14 +111,40 @@ def batch_update_words(
 
 
 @router.get("/export/xlsx")
-def export_words_xlsx(layout: Literal["topics", "flat"] = "topics", db: Session = Depends(get_db)) -> StreamingResponse:
-    if layout == "flat":
+def export_words_xlsx(
+    layout: Literal["topics", "flat"] = "topics", db: Session = Depends(get_db),
+    languages: Annotated[list[Language] | None, Query()] = None,
+    favorites_only: bool = False,
+    topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,
+) -> StreamingResponse:
+    media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    selected = list(dict.fromkeys(languages or [learning_language(db)]))
+    if languages is not None or favorites_only or topic_ids:
+        original = dict(db.info)
+        workbooks = []
+        try:
+            for language in selected:
+                configure_language(db, language, original.get("translation_language", "ru"))
+                content = build_flat_workbook(db, favorites_only=favorites_only, topic_ids=topic_ids)
+                workbooks.append((f"lexora-vocabulary-{language}.xlsx", content))
+        finally:
+            db.info.clear()
+            db.info.update(original)
+        if len(workbooks) == 1:
+            filename, content = workbooks[0]
+        else:
+            output = BytesIO()
+            with ZipFile(output, "w", ZIP_DEFLATED) as archive:
+                for name, data in workbooks:
+                    archive.writestr(name, data)
+            filename, content, media_type = "lexora-vocabulary-languages.zip", output.getvalue(), "application/zip"
+    elif layout == "flat":
         filename, content = "lexora-vocabulary.xlsx", build_flat_workbook(db)
     else:
         filename, content = build_words_workbook(db)
     return StreamingResponse(
         BytesIO(content),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        media_type=media_type,
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 

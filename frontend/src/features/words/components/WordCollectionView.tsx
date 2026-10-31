@@ -23,6 +23,7 @@ import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
 import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
 import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
+import {usePreferences} from '@/features/preferences/api'
 
 type Props = {
   collectionTitle?: string
@@ -77,7 +78,8 @@ export function WordCollectionView({
 }: Props) {
   useWordListScrollRestore(isLoading)
   const readingMode = usePronunciationMode(pageWords[0]?.language ?? 'en')
-  const hasPronunciation = pageWords.some(word => pronunciationText(word, readingMode))
+  const preferences = usePreferences()
+  const hasPronunciation = preferences.pronunciation && pageWords.some(word => pronunciationText(word, readingMode))
   const wordList = {
     ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
     offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),

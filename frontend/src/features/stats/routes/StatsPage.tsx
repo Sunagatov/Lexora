@@ -21,6 +21,7 @@ import {formatDuration} from '@/features/stats/model/statsPageModel'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
 import {SkeletonHero} from '@/shared/components/Skeletons'
+import {usePreferences} from '@/features/preferences/api'
 
 function StatsPageSkeleton() {
   return (
@@ -48,6 +49,7 @@ function AnimatedNumber({
   formatter?: (value: number) => string
 }) {
   const [displayValue, setDisplayValue] = useState(0)
+  const {animations} = usePreferences()
 
   useEffect(() => {
     let frame = 0
@@ -60,11 +62,12 @@ function AnimatedNumber({
       if (progress < 1) frame = window.requestAnimationFrame(tick)
     }
 
+    if (!animations) return
     frame = window.requestAnimationFrame(tick)
     return () => window.cancelAnimationFrame(frame)
-  }, [value, duration])
+  }, [value, duration, animations])
 
-  return <span className="number-display">{formatter(displayValue)}</span>
+  return <span className="number-display">{formatter(animations ? displayValue : value)}</span>
 }
 
 function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
@@ -105,7 +108,7 @@ function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
   )
 }
 
-export function StatsPage() {
+export function StatsPage({embedded = false}: {embedded?: boolean}) {
   const navigate = useNavigate()
   const s = useStatsPageState()
 
@@ -114,7 +117,7 @@ export function StatsPage() {
     return (
       <div className="stats-page">
         <div className="stats-inner">
-          <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />
+          {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />}
           <EmptyState
             icon="📈"
             title="Statistics unavailable"
@@ -135,15 +138,15 @@ export function StatsPage() {
   return (
     <div className="stats-page">
       <div className="stats-inner">
-        <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />
-        <div className="stats-topbar">
+        {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />}
+        {!embedded && <div className="stats-topbar">
           <button type="button" className="word-page-back-btn" onClick={() => navigate(-1)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
             Back
           </button>
-        </div>
+        </div>}
 
         <HeroBanner
           totalWords={totalWords}

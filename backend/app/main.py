@@ -19,6 +19,7 @@ from app.features.smart_review.router import router as smart_review_router
 from app.features.trash.router import router as trash_router
 from app.features.stats.router import router as stats_router
 from app.features.offline.router import router as offline_router
+from app.features.preferences.router import router as preferences_router
 from app.features.words.ai_curation.router import router as ai_curation_router
 from app.shared.db import USING_SQLITE_FALLBACK, ensure_database_schema
 from app.shared.logging_utils import (
@@ -145,4 +146,5 @@ app.include_router(smart_review_router, dependencies=[Depends(verify_session), D
 app.include_router(trash_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(stats_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(offline_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
+app.include_router(preferences_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])
 app.include_router(ai_curation_router, dependencies=[Depends(verify_session), Depends(verify_csrf)])

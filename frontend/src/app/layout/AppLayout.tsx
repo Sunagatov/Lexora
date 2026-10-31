@@ -6,6 +6,8 @@ import {UsageTracker} from '@/features/stats/components/UsageTracker'
 import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import {routes} from '@/app/routes'
 import {LanguageRouteContext} from '@/features/languages/LanguageRouteContext'
+import {PreferencesEffects} from '@/features/preferences/PreferencesEffects'
+import {usePreferences} from '@/features/preferences/api'
 
 export type AppLayoutOutletContext = {
   drawerOpen: boolean
@@ -13,22 +15,25 @@ export type AppLayoutOutletContext = {
 }
 
 function isStudyRoute(pathname: string) {
-  return pathname === routes.home || pathname === routes.smartReview || pathname.startsWith('/topics/')
+  return pathname === routes.home || pathname === routes.favorites || pathname === routes.smartReview || pathname.startsWith('/topics/')
 }
 
 export function AppLayout() {
   const location = useLocation()
+  const preferences = usePreferences()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const hasDrawer = isStudyRoute(location.pathname)
-  const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname.startsWith('/topics/')
+  const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname === routes.favorites || location.pathname.startsWith('/topics/')
 
   useEffect(() => {
     setDrawerOpen(false)
-  }, [location.pathname])
+  }, [location.pathname, location.key])
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-hide-translations={!preferences.translations || undefined} data-hide-badges={!preferences.badges || undefined}
+      data-hide-progress={!preferences.summary || undefined} data-neutral-knowledge={!preferences.colours || undefined} data-reduced-motion={!preferences.animations || undefined}>
+      <PreferencesEffects />
       <LanguageRouteContext />
       <UsageTracker />
       <AppHeader hasDrawer={hasDrawer} drawerOpen={drawerOpen}

@@ -9,13 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
-from app.features.words.model import Word
-from app.features.words.repository_queries import with_word_details
+from app.features.words.repository import get_all_words
 from app.features.words.workbook.format import EXPORT_COLUMNS, PRONUNCIATION_COLUMNS
 from app.features.words.workbook.language import add_language_metadata
 
 
-def build_flat_workbook(db: Session, *, template: bool = False) -> bytes:
+def build_flat_workbook(db: Session, *, template: bool = False, favorites_only: bool = False, topic_ids: list[int] | None = None) -> bytes:
     book = Workbook()
     sheet = book.active
     sheet.title = "Words"
@@ -25,9 +24,7 @@ def build_flat_workbook(db: Session, *, template: bool = False) -> bytes:
         db.scalars(select(Topic).where(Topic.deleted_at.is_(None), Topic.language == learning_language(db)).order_by(Topic.name)).all()
     )
     if not template:
-        for word in db.scalars(
-            with_word_details(select(Word).where(Word.deleted_at.is_(None), Word.language == learning_language(db)).order_by(Word.id))
-        ).all():
+        for word in sorted(get_all_words(db, favorites_only=favorites_only, topic_ids=topic_ids), key=lambda word: word.id):
             sheet.append(
                 [
                     word.knowledge_level,

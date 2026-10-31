@@ -5,6 +5,8 @@ export const routes = {
   allWords:    '/words',
   trash:       '/trash',
   stats:       '/stats',
+  account:     '/account',
+  favorites:   '/favorites',
   topic:       (slug: string) => `/topics/${slug}`,
   word:        (id: number)   => `/words/${id}`,
   editWord:    (id: number)   => `/words/${id}/edit`,

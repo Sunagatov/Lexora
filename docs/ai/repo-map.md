@@ -30,6 +30,7 @@ Active backend feature areas:
 - `backend/app/features/health/`
 - `backend/app/features/topics/`
 - `backend/app/features/languages/` — validated learning/translation language catalog and session context.
+- `backend/app/features/preferences/` — validated single-owner settings shared across devices and libraries.
 - `backend/app/features/words/`
 - `backend/app/features/words/suggest/`
 - `backend/app/features/words/ai_curation/`
@@ -68,7 +69,8 @@ Active frontend feature areas:
 - `frontend/src/features/auth/`
 - `frontend/src/features/study/`
 - `frontend/src/features/topics/`
-- `frontend/src/features/languages/` — header selector, per-tab preferences and translation display mapping.
+- `frontend/src/features/languages/` — language context, flags and translation display mapping.
+- `frontend/src/features/preferences/` — My Lexora sections, synced defaults, appearance and library tools.
 - `frontend/src/features/words/`
 - `frontend/src/features/smart-review/`
 - `frontend/src/features/trash/`

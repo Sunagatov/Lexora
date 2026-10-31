@@ -67,10 +67,11 @@ def get_all_words(
     positions: list[str] | None = None,
     cefr_levels: list[str] | None = None,
     topic_ids: list[int] | None = None,
+    favorites_only: bool = False,
 ) -> list[Word] | tuple[list[Word], int]:
     stmt = _filtered_word_stmt(db, topic_id=topic_id, search=search, pos=pos, cefr=cefr,
         level=level, completeness=completeness, levels=levels, positions=positions,
-        cefr_levels=cefr_levels, topic_ids=topic_ids)
+        cefr_levels=cefr_levels, topic_ids=topic_ids, favorites_only=favorites_only)
     if page is not None and page_size is not None:
         total = db.scalar(count_stmt(stmt)) or 0
         stmt = paginate_stmt(ordered_word_stmt(stmt, sort, then_sort), page, page_size)
@@ -97,8 +98,11 @@ def _filtered_word_stmt(
     positions: list[str] | None = None,
     cefr_levels: list[str] | None = None,
     topic_ids: list[int] | None = None,
+    favorites_only: bool = False,
 ):
     stmt = active_words_stmt().where(Word.language == learning_language(db))
+    if favorites_only:
+        stmt = stmt.where(Word.is_favorite.is_(True))
     if topic_id is not None or topic_ids:
         from app.features.topics.api import get_active_subtree_topic_ids
         if topic_id is not None:
@@ -157,11 +161,12 @@ def count_active_words(db: Session) -> int:
     return int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), Word.language == learning_language(db))) or 0)
 
 
-def get_word_knowledge_summary(db: Session) -> dict[int, int]:
+def get_word_knowledge_summary(db: Session, *, favorites_only: bool = False) -> dict[int, int]:
     rows = db.execute(
         select(Word.knowledge_level, func.count())
         .where(Word.deleted_at.is_(None))
         .where(Word.language == learning_language(db))
+        .where(Word.is_favorite.is_(True) if favorites_only else True)
         .group_by(Word.knowledge_level)
     ).all()
     return {int(level or 0): int(count) for level, count in rows}

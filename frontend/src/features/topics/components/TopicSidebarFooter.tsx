@@ -1,7 +1,4 @@
-import {useSyncExternalStore, type ChangeEvent, type RefObject} from 'react'
 import type {Topic} from '@/features/topics/types/topicTypes'
-import {OfflineButton} from '@/features/offline/OfflineButton'
-import {offlineStatus, subscribeOffline} from '@/features/offline/offline'
 
 const SelectChevron = () => (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -16,29 +13,18 @@ type Props = {
   newTopicParentId: number | ''
   topicOptions: Topic[]
   createPending: boolean
-  workbookBusy: boolean
-  importInputRef: RefObject<HTMLInputElement | null>
-  statsActive: boolean
-  trashActive: boolean
   onNewTopicNameChange: (value: string) => void
   onNewTopicParentIdChange: (value: number | '') => void
   onCreate: () => void
   onCancel: () => void
   onStartAdd: () => void
-  onOpenStats: () => void
-  onOpenTrash: () => void
-  onExport: () => void
-  onImportClick: () => void
-  onImportChange: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function TopicSidebarFooter({
   addingTopic, topicError, newTopicName, newTopicParentId, topicOptions, createPending,
-  workbookBusy, importInputRef, statsActive, trashActive, onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
-  onCancel, onStartAdd, onOpenStats, onOpenTrash, onExport, onImportClick, onImportChange,
+  onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
+  onCancel, onStartAdd,
 }: Props) {
-  const offline = useSyncExternalStore(subscribeOffline, offlineStatus)
-  const workbookUnavailable = offline.saved && (offline.offline || offline.pending > 0)
   return (
     <div className="sidebar-footer">
       {addingTopic ? (
@@ -93,62 +79,6 @@ export function TopicSidebarFooter({
           <span className="sidebar-add-topic-text"> New topic</span>
         </button>
       )}
-      <div className="sidebar-footer-actions-grid">
-        <button
-          type="button"
-          className={`sidebar-footer-btn sidebar-footer-btn-primary${statsActive ? ' is-active' : ''}`}
-          title="Statistics"
-          aria-label="Statistics"
-          data-sidebar-tooltip="Statistics"
-          onClick={onOpenStats}
-        >
-          <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="8" width="3" height="7" rx="0.5"/><rect x="6.5" y="4" width="3" height="11" rx="0.5"/><rect x="12" y="1" width="3" height="14" rx="0.5"/></svg>
-          <span className="sidebar-footer-btn-label">Stats</span>
-        </button>
-        <button
-          type="button"
-          className={`sidebar-footer-btn sidebar-footer-btn-primary${trashActive ? ' is-active' : ''}`}
-          title="Trash"
-          aria-label="Trash"
-          data-sidebar-tooltip="Trash"
-          onClick={onOpenTrash}
-        >
-          <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12"/><path d="M5 4V2.5A1.5 1.5 0 0 1 6.5 1h3A1.5 1.5 0 0 1 11 2.5V4"/><path d="M3.5 4l.7 9.8a1.5 1.5 0 0 0 1.5 1.2h4.6a1.5 1.5 0 0 0 1.5-1.2L12.5 4"/></svg>
-          <span className="sidebar-footer-btn-label">Trash</span>
-        </button>
-        <button
-          type="button"
-          className="sidebar-footer-btn sidebar-footer-btn-secondary"
-          title={workbookUnavailable ? 'Connect and sync before exporting Excel' : 'Export Excel workbook'}
-          aria-label="Export Excel workbook"
-          data-sidebar-tooltip="Export workbook"
-          disabled={workbookBusy || workbookUnavailable}
-          onClick={onExport}
-        >
-          <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v8"/><path d="M4.5 6.5 8 10l3.5-3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
-          <span className="sidebar-footer-btn-label">Export</span>
-        </button>
-        <button
-          type="button"
-          className="sidebar-footer-btn sidebar-footer-btn-secondary"
-          title={workbookUnavailable ? 'Connect and sync before importing Excel' : 'Import Excel workbook'}
-          aria-label="Import Excel workbook"
-          data-sidebar-tooltip={workbookBusy ? 'Importing workbook' : 'Import workbook'}
-          disabled={workbookBusy || workbookUnavailable}
-          onClick={onImportClick}
-        >
-          <svg className="sidebar-footer-btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10V2"/><path d="M4.5 5.5 8 2l3.5 3.5"/><path d="M2.5 12v1.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V12"/></svg>
-          <span className="sidebar-footer-btn-label">{workbookBusy ? 'Importing…' : 'Import'}</span>
-        </button>
-        <OfflineButton />
-      </div>
-      <input
-        ref={importInputRef}
-        type="file"
-        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        style={{display: 'none'}}
-        onChange={onImportChange}
-      />
     </div>
   )
 }

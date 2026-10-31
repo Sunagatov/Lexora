@@ -1,4 +1,6 @@
 import {languageProfile} from '@/features/languages/api'
+import {FavoriteButton} from './FavoriteButton'
+import {usePreferences} from '@/features/preferences/api'
 import {Fragment, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
@@ -25,7 +27,8 @@ type Props = {
 export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, onWordSelect, selectedWordId}: Props) {
   const navigation = useWordListNavigation(fromTopicSlug, wordList)
   const readingMode = usePronunciationMode(words[0]?.language ?? 'en')
-  const hasPronunciation = words.some(word => pronunciationText(word, readingMode))
+  const preferences = usePreferences()
+  const hasPronunciation = preferences.pronunciation && words.some(word => pronunciationText(word, readingMode))
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -91,6 +94,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                     <WordSummaryContent word={word} />
                   </td>
                   <td className="word-cell-knowledge">
+                    <FavoriteButton word={word} />
                     <div className="word-level-wrap">
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}

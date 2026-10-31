@@ -1,9 +1,15 @@
-import {act, render, screen} from '@testing-library/react'
+import {act, render as testingRender, screen} from '@testing-library/react'
+import type {ReactElement} from 'react'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {WordTable} from '@/features/words/components/WordTable'
 import type {Word} from '@/features/words/types/wordTypes'
 import {setPronunciationPreferences} from '@/features/languages/pronunciationPreferences'
+
+function render(element: ReactElement) {
+  return testingRender(<QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>)
+}
 
 function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word {
   return {

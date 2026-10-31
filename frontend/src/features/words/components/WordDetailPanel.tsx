@@ -13,6 +13,7 @@ import type {Word} from '@/features/words/types/wordTypes'
 import {SkeletonList} from '@/shared/components/Skeletons'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {ApiError} from '@/shared/api/apiError'
+import {FavoriteButton} from './FavoriteButton'
 
 const CEFR_HERO_CLASS: Record<string, string> = {
   A1: 'wdp-chip-cefr-a', A2: 'wdp-chip-cefr-a',
@@ -132,6 +133,7 @@ export function WordDetailPanel({wordId, words, fromTopicSlug, wordList, onClose
         <span className="wdp-kbd-hint">esc · ←→</span>
 
         <div className="wdp-actions">
+          {word && <FavoriteButton word={word} />}
           {word && (
             <button type="button" className="wdp-edit-btn ripple-btn"
               onClick={event => navigation.openWord(event, wordId, true)}>

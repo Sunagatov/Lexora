@@ -4,7 +4,7 @@ import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import type {WordListResponse} from '@/features/words/api/wordsApi'
 import {queryKeys} from '@/app/queryKeys'
-import {invalidateWordDependencies, patchWordLevel, replaceWordInLists} from '@/features/words/model/wordCache'
+import {invalidateWordDependencies, patchWordLevel} from '@/features/words/model/wordCache'
 import {DEFAULT_WORD_PROGRESS_SOURCE} from '@/features/words/model/wordDomain'
 
 const LEVEL_MUTATION_KEY = ['word-level-update']
@@ -59,7 +59,14 @@ export function useWordUpdate(onMutate: () => void, source = DEFAULT_WORD_PROGRE
       }
     },
 
-    onSuccess: (updated) => replaceWordInLists(queryClient, updated),
+    onSuccess: (updated, {level}) => {
+      // A rating response can predate a concurrent heart or content edit.
+      // Apply only the field this request changed.
+      patchWordLevel(queryClient, updated.id, updated.knowledge_level ?? level)
+      queryClient.setQueryData<Word>(queryKeys.word(updated.id), current =>
+        current ? {...current, knowledge_level: updated.knowledge_level} : updated,
+      )
+    },
 
     onSettled: () => {
       invalidateWordDependencies(queryClient, [], {preserveWordPages: true})

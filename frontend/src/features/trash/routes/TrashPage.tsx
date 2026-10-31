@@ -5,7 +5,7 @@ import {ConfirmModal} from '@/shared/ui/ConfirmModal'
 import {routes} from '@/app/routes'
 import {useTrashPageState} from '@/features/trash/hooks/useTrashPageState'
 
-export function TrashPage() {
+export function TrashPage({embedded = false}: {embedded?: boolean}) {
   const navigate = useNavigate()
   const [speakingId, setSpeakingId] = useState<number | null>(null)
   const {
@@ -43,12 +43,12 @@ export function TrashPage() {
     <div className="trash-page">
       <div className="trash-inner">
         <div className="trash-topbar">
-          <button type="button" className="word-page-back-btn" onClick={() => navigate(routes.smartReview)}>
+          {!embedded && <button type="button" className="word-page-back-btn" onClick={() => navigate(routes.smartReview)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <polyline points="9,2 4,7 9,12" />
             </svg>
             Back
-          </button>
+          </button>}
           {(words.length > 0 || topics.length > 0) && (
             <button type="button" className="trash-purge-btn" disabled={isLoading || loadError} onClick={() => setConfirmPurge(true)}>
               Empty Trash
@@ -56,7 +56,7 @@ export function TrashPage() {
           )}
         </div>
 
-        <h1 className="trash-title">Trash</h1>
+        {!embedded && <h1 className="trash-title">Trash</h1>}
         <p className="trash-subtitle">Items are permanently deleted after {retentionDays} days.</p>
         {isLoading && <p role="status">Loading Trash…</p>}
         {loadError && <div role="alert" className="wp-save-error">

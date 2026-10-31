@@ -1,5 +1,6 @@
 import {useSearchParams} from 'react-router-dom'
 import {PAGE_SIZES, DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
+import {usePreferences} from '@/features/preferences/api'
 import {CEFR_LEVELS, POS_VALUES, LEVELS, WORD_SORT_OPTIONS, parseSelection, parseSecondarySort,
   type SortOption, type KnowledgeFilter, type Selection, type CefrLevel, type PosValue, type CompletenessFilter} from '@/features/words/model/wordDomain'
 
@@ -7,13 +8,14 @@ type Options = {defaultPageSize?: number; syncUrl?: boolean; onControlsChange?: 
 
 export function useWordFilterControls(options: Options = {}) {
   const [params, setParams] = useSearchParams()
-  const defaultSize = options.defaultPageSize ?? DEFAULT_PAGE_SIZE
+  const preferences = usePreferences()
+  const defaultSize = options.defaultPageSize ?? preferences.page_size ?? DEFAULT_PAGE_SIZE
   const wordSearch = params.get('search') ?? ''
   const levelFilter: KnowledgeFilter = parseSelection(params.get('level')?.split(',').map(value => value === '2' ? '3' : value).join(',') ?? null, LEVELS) ?? 'all'
   const posFilter = parseSelection(params.get('pos'), POS_VALUES)
   const cefrFilter = parseSelection(params.get('cefr'), CEFR_LEVELS)
   const rawSort = params.get('sort') as SortOption
-  const sortBy = WORD_SORT_OPTIONS.includes(rawSort) ? rawSort : 'level-asc'
+  const sortBy = WORD_SORT_OPTIONS.includes(rawSort) ? rawSort : preferences.sort
   const thenSortBy = parseSecondarySort(params.get('thenSort'), sortBy)
   const topicFilter = [...new Set((params.get('topics') ?? '').split(',').map(Number).filter(id => Number.isInteger(id) && id !== 0))]
   const rawCompleteness = params.get('completeness')
@@ -42,7 +44,9 @@ export function useWordFilterControls(options: Options = {}) {
   function setLearningSort() {
     setParams(prev => {
       const next = new URLSearchParams(prev)
-      next.delete('sort'); next.delete('thenSort'); next.delete('page')
+      if (preferences.sort === 'level-asc') next.delete('sort')
+      else next.set('sort', 'level-asc')
+      next.delete('thenSort'); next.delete('page')
       return next
     }, {replace: true, flushSync: true})
     options.onControlsChange?.()
@@ -53,7 +57,7 @@ export function useWordFilterControls(options: Options = {}) {
     posFilter, setPosFilter: (value: Selection<PosValue>) => setParam('pos', serialize(value)),
     cefrFilter, setCefrFilter: (value: Selection<CefrLevel>) => setParam('cefr', serialize(value)),
     topicFilter, setTopicFilter: (value: number[]) => setParam('topics', value.join(',')),
-    sortBy, setSortBy: (value: SortOption) => setParam('sort', value === 'level-asc' ? null : value),
+    sortBy, setSortBy: (value: SortOption) => setParam('sort', value === preferences.sort ? null : value),
     thenSortBy, setThenSortBy: (value: SortOption | null) => setParam('thenSort', value === 'cefr-asc' ? null : value ?? 'none'),
     completeness, setCompleteness: (value: CompletenessFilter) => setParam('completeness', value === 'all' ? null : value),
     page, setPage: (value: number) => setParam('page', value === 1 ? null : String(value), false),

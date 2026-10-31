@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react'
 import {LEVEL_LABELS, levelClass} from '@/features/words/model/wordDomain'
 import type {Word} from '@/features/words/types/wordTypes'
+import {FavoriteButton} from './FavoriteButton'
 
 type HeroProps = {
   word: Word
@@ -94,6 +95,7 @@ export function WordPageHero({
           Back
         </button>
         {!editing && (
+          <div className="word-page-actions"><FavoriteButton word={word} />
           <button type="button" className="word-page-edit-btn" onClick={onEdit}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
@@ -101,6 +103,7 @@ export function WordPageHero({
             </svg>
             Edit
           </button>
+          </div>
         )}
       </div>
 

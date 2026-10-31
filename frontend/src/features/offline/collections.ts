@@ -28,6 +28,7 @@ export function visibleWord(replica: Replica, word: Word): Word {
 
 export function listWords(replica: Replica, params: URLSearchParams) {
   let words = replica.words.filter(w => !w.deleted_at && inLanguage(w)).map(w => displayTranslations(visibleWord(replica, w)) as Word)
+  if (params.get('favorites_only') === 'true') words = words.filter(word => word.is_favorite)
   const root = Number(params.get('topic_id'))
   if (root) {
     const ids = subtree(replica, root)

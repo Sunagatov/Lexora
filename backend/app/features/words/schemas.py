@@ -86,6 +86,7 @@ class WordCreate(BaseModel):
 # ── Update ──
 
 class WordUpdate(BaseModel):
+    is_favorite: bool | None = None
     topic_ids: list[int] | None = Field(default=None, min_length=1)
     term: str | None = Field(default=None, min_length=1, max_length=WORD_TERM_MAX_LEN)
     language: Language | None = None
@@ -117,7 +118,7 @@ class WordUpdate(BaseModel):
 
     @model_validator(mode="after")
     def reject_explicit_nulls(self) -> "WordUpdate":
-        for field in ("topic_ids", "term", "is_active"):
+        for field in ("topic_ids", "term", "is_active", "is_favorite"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
         return self
@@ -138,6 +139,7 @@ class ConfusableResponse(BaseModel):
 
 
 class WordResponse(BaseModel):
+    is_favorite: bool = False
     id: int
     topic_ids: list[int]
     term: str
@@ -185,6 +187,7 @@ class WordResponse(BaseModel):
         for item in getattr(word, "translation_items", []):
             groups.setdefault(getattr(item, "language", None) or "ru", []).append(item.value)
         return cls(
+            is_favorite=bool(getattr(word, "is_favorite", False)),
             id=word.id,
             topic_ids=[t.id for t in word.topics if t.deleted_at is None],
             term=word.term,

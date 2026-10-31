@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom'
 import {login} from '@/features/auth/api/authApi'
 import {ApiError} from '@/shared/api/apiError'
 import {routes} from '@/app/routes'
+import {loadPreferences} from '@/features/preferences/api'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')
@@ -17,6 +18,7 @@ export function LoginPage() {
     setError(null)
     try {
       await login(password)
+      await loadPreferences()
       navigate(routes.home)
     } catch (err) {
       setError(err instanceof ApiError && err.status === 401 ? 'Wrong password.' : 'Could not sign in. Please try again.')
