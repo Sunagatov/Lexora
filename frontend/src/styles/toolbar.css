@@ -582,3 +582,11 @@
 @media (prefers-reduced-motion: reduce) {
   .toolbar-inline-search { transition: none; }
 }
+
+/* Keep the Sort menu inside the available viewport on tablet widths. */
+@media (min-width: 481px) and (max-width: 860px) {
+  .toolbar-actions-row .toolbar-sort-dropdown > .toolbar-sort-menu {
+    left: auto;
+    right: 0;
+  }
+}
