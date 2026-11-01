@@ -17,7 +17,6 @@ type Props = {
   topics: Topic[]
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
-  totalWords: number
   topicSearch: string
   setTopicSearch: (v: string) => void
   selectedTopicId: number | null
@@ -144,7 +143,7 @@ function buildDeleteTopicMessage(topics: Topic[], deleteTopicId: number): string
 }
 
 export function TopicSidebar({
-  topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
+    topics, topicCounts, topicProgress, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
   isCollapsed = false, onToggleCollapsed,
@@ -275,8 +274,6 @@ export function TopicSidebar({
       )}
 
       <TopicSidebarHeader
-        topicCount={topics.length}
-        totalWords={totalWords}
         topicSearch={topicSearch}
         setTopicSearch={setTopicSearch}
         isMobile={isMobile}

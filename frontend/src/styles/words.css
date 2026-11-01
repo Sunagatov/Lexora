@@ -1417,3 +1417,40 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* Mobile word-card accessibility: larger touch targets.
+   Keep the existing compact icons and desktop table controls. */
+@media (max-width: 860px) {
+  .word-card .word-card-speak,
+  .word-card .word-favorite,
+  .word-card .word-card-expand-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    flex-shrink: 0;
+    touch-action: manipulation;
+  }
+
+  .word-card .level-badge-btn {
+    box-sizing: border-box;
+    min-width: 44px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 10px;
+    touch-action: manipulation;
+  }
+
+  .word-card .word-card-speak:focus-visible,
+  .word-card .word-favorite:focus-visible,
+  .word-card .word-card-expand-btn:focus-visible,
+  .word-card .level-badge-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}

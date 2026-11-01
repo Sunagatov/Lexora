@@ -1,12 +1,12 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState, useSyncExternalStore} from 'react'
 import {useLocation, useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
+import {useIsMutating} from '@tanstack/react-query'
+import {languagePreferences, subscribeLanguages} from '@/features/languages/api'
 import {AccountIcon} from '@/features/preferences/AccountIcon'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 type Props = {
-  topicCount: number
-  totalWords: number
   topicSearch: string
   setTopicSearch: (value: string) => void
   isMobile: boolean
@@ -16,8 +16,6 @@ type Props = {
 }
 
 export function TopicSidebarHeader({
-  topicCount,
-  totalWords,
   topicSearch,
   setTopicSearch,
   isMobile,
@@ -29,6 +27,26 @@ export function TopicSidebarHeader({
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef<HTMLInputElement>(null)
+  const language = useSyncExternalStore(subscribeLanguages, languagePreferences)
+  const pending = useIsMutating() > 0
+  const editingWord = location.pathname.endsWith('/edit')
+
+  function openMyLexora() {
+    if (pending || editingWord) return
+
+    const returnScrollTop = document.querySelector<HTMLElement>(
+      '.word-collection-scroll, .all-words-page',
+    )?.scrollTop ?? 0
+
+    navigate(routes.account, {
+      state: {
+        returnTo: location.pathname + location.search + location.hash,
+        returnLanguage: language.language,
+        returnState: location.state,
+        returnScrollTop,
+      },
+    })
+  }
 
   useEffect(() => {
     if (!searchOpen) return
@@ -48,12 +66,6 @@ export function TopicSidebarHeader({
 
   return (
     <>
-      <div className="sidebar-counts">
-        <span>{topicCount} topics</span>
-        <span className="sidebar-counts-sep">·</span>
-        <span>{totalWords.toLocaleString()} words</span>
-      </div>
-
       <div className="sidebar-smart-review-wrap">
         <button
           type="button"
@@ -76,8 +88,34 @@ export function TopicSidebarHeader({
         </button>
       </div>
 
+      <nav className="sidebar-quicklinks" aria-label="Quick navigation">
+        <button
+          type="button"
+          className={`sidebar-quicklink${location.pathname === routes.favorites ? ' is-active' : ''}`}
+          onClick={() => navigate(routes.favorites)}
+          aria-label="Favorites"
+          aria-current={location.pathname === routes.favorites ? 'page' : undefined}
+          data-sidebar-tooltip="Favorites"
+          title="Favorites"
+        >
+          <AccountIcon name="heart" />
+          <span>Favorites</span>
+        </button>
+        <button
+          type="button"
+          className="sidebar-quicklink"
+          onClick={openMyLexora}
+          disabled={pending || editingWord}
+          aria-label="My Lexora"
+          data-sidebar-tooltip="My Lexora"
+          title={editingWord ? 'Finish editing before opening My Lexora' : 'My Lexora'}
+        >
+          <AccountIcon name="account" />
+          <span>My Lexora</span>
+        </button>
+      </nav>
+
       <div className="sidebar-search-wrap">
-        <button type="button" className={`sidebar-favorites${location.pathname === routes.favorites ? ' is-active' : ''}`} onClick={() => navigate(routes.favorites)} aria-label="Favorites"><AccountIcon name="heart" /><span>Favorites</span></button>
         {isMobile ? (
           searchOpen ? (
             <div className="sidebar-search-mobile-row">

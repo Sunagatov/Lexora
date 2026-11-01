@@ -45,12 +45,14 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}:
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
-        <button type="button" className={`app-header-account${accountActive ? ' is-active' : ''}`} aria-label="My Lexora" aria-current={accountActive ? 'page' : undefined}
-          disabled={pending || location.pathname.endsWith('/edit')}
-          title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : accountActive ? 'Back to words' : 'My Lexora'}
-          onClick={toggleAccount}>
-          <AccountIcon name="account" />
-        </button>
+        {!hasDrawer && (
+          <button type="button" className={`app-header-account${accountActive ? ' is-active' : ''}`} aria-label="My Lexora" aria-current={accountActive ? 'page' : undefined}
+            disabled={pending || location.pathname.endsWith('/edit')}
+            title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : accountActive ? 'Back to words' : 'My Lexora'}
+            onClick={toggleAccount}>
+            <AccountIcon name="account" />
+          </button>
+        )}
         {hasDrawer && (
           <button type="button" className="app-header-burger" onClick={onOpenDrawer}
             aria-label={drawerOpen ? 'Close sidebar' : 'Open sidebar'} aria-expanded={drawerOpen} aria-controls="mobile-topic-drawer">

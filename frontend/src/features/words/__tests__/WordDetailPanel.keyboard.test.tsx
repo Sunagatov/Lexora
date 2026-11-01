@@ -74,7 +74,6 @@ it('cancels the pending close when the panel unmounts', async () => {
 it('uses arrows for word navigation only when the user is not editing a field', async () => {
   const {onNavigate} = setup()
   await screen.findByRole('heading', {name: 'apple'})
-  fireEvent.click(screen.getByRole('button', {name: 'Toggle search'}))
   for (const field of [screen.getByRole('searchbox'), screen.getByRole('textbox', {name: 'Notes'}),
     screen.getByRole('combobox', {name: 'Test selection'}), screen.getByLabelText('Editable text')]) {
     fireEvent.keyDown(field, {key: 'ArrowRight'})
@@ -104,9 +103,8 @@ it('Escape closes the active toolbar layer before the word detail panel', async 
   expect(screen.queryByText('Filters & sorting')).toBeNull()
   await new Promise(resolve => setTimeout(resolve, 300))
   expect(onClose).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', {name: 'Toggle search'}))
   fireEvent.keyDown(screen.getByRole('searchbox'), {key: 'Escape'})
-  expect(screen.queryByRole('searchbox')).toBeNull()
+  expect(screen.getByRole('searchbox')).toBeTruthy()
   await new Promise(resolve => setTimeout(resolve, 300))
   expect(onClose).not.toHaveBeenCalled()
   fireEvent.keyDown(document.body, {key: 'Escape'})

@@ -58,7 +58,6 @@ export function StudyPage() {
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
-    totalWords: s.totalWords,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
     onSelect: (id: number) => { setDrawerOpen(false); s.selectTopic(id) },

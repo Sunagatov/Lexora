@@ -67,7 +67,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
         sidebarWidth={sidebarWidth} sidebarCollapsed={collapsed}
         isResizing={isResizing} handleSidebarResizeDown={handleSidebarResizeDown}
         sidebarProps={{
-          topics, topicCounts, topicProgress, totalWords: sidebarQuery.data?.total_words ?? total,
+          topics, topicCounts, topicProgress,
           topicSearch: topicState.topicSearch, setTopicSearch: topicState.setTopicSearch,
           selectedTopicId: null, isSmartReview: false, smartQueue: null,
           onSelect: id => { setDrawerOpen(false); topicState.selectTopic(id) },

@@ -54,7 +54,6 @@ it('keeps the latest search results when an older request finishes later', async
     ? oldRequest : Promise.resolve(page(params?.search === 'bravo' ? [bravo] : [alpha])))
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
-  fireEvent.click(screen.getAllByRole('button', {name: 'Toggle search'})[0])
   fireEvent.change(screen.getByRole('searchbox', {name: 'Search words'}), {target: {value: 'alpha'}})
   await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({search: 'alpha'})))
   fireEvent.change(screen.getByRole('searchbox', {name: 'Search words'}), {target: {value: 'bravo'}})

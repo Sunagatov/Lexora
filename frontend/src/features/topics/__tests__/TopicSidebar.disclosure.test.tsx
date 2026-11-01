@@ -54,9 +54,8 @@ function renderSidebar(topics: Topic[], selectedTopicId: number | null = null) {
         <TopicSidebar
           topics={topics}
           topicCounts={new Map()}
-          topicProgress={new Map()}
-          totalWords={0}
-          topicSearch=""
+           topicProgress={new Map()}
+           topicSearch=""
           setTopicSearch={() => {}}
           selectedTopicId={selectedTopicId}
           isSmartReview={false}

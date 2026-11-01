@@ -65,4 +65,18 @@ describe('AppHeader personal area', () => {
       fromTopicSlug: 'people', learningLanguage: 'en', wordListScrollTop: 320,
     }})
   })
+
+  it('uses the hamburger instead of a duplicate account button on study routes', () => {
+    const onOpenDrawer = vi.fn()
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter initialEntries={['/']}>
+          <AppHeader hasDrawer onOpenDrawer={onOpenDrawer} />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    expect(screen.queryByRole('button', {name: 'My Lexora'})).toBeNull()
+    fireEvent.click(screen.getByRole('button', {name: 'Open sidebar'}))
+    expect(onOpenDrawer).toHaveBeenCalledOnce()
+  })
 })
