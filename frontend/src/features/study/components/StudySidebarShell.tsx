@@ -1,11 +1,13 @@
-import {useRef, useState, type ComponentProps, type CSSProperties, type PointerEvent, type TouchEvent} from 'react'
+import {useEffect, useRef, useState, type ComponentProps, type CSSProperties, type PointerEvent, type TouchEvent} from 'react'
 import {TopicSidebar} from '@/features/topics/components/TopicSidebar'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type TopicSidebarProps = ComponentProps<typeof TopicSidebar>
 
 const COLLAPSED_WIDTH = 64
 
 type Props = {
+  overlayOnly?: boolean
   drawerOpen: boolean
   setDrawerOpen: (open: boolean) => void
   sidebarWidth: number
@@ -16,6 +18,7 @@ type Props = {
 }
 
 export function StudySidebarShell({
+  overlayOnly = false,
   drawerOpen,
   setDrawerOpen,
   sidebarWidth,
@@ -29,6 +32,19 @@ export function StudySidebarShell({
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const [swipeOffset, setSwipeOffset] = useState(0)
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
+
+  useEffect(() => {
+    if (!isMobile && !overlayOnly && drawerOpen) setDrawerOpen(false)
+  }, [isMobile, overlayOnly, drawerOpen, setDrawerOpen])
+
+  useEffect(() => {
+    if (!drawerOpen || (!isMobile && !overlayOnly)) return
+    const active = document.activeElement as HTMLElement | null
+    drawerRef.current?.querySelector('button')?.focus({preventScroll: true})
+    return () => { if (active?.isConnected) active.focus({preventScroll: true}) }
+  }, [drawerOpen, isMobile, overlayOnly])
 
   function resetSwipe() {
     touchStartXRef.current = null
@@ -66,12 +82,13 @@ export function StudySidebarShell({
 
   return (
     <>
-      <div className={`mobile-drawer-overlay ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
+      <div className={`mobile-drawer-overlay ${overlayOnly ? 'account-drawer-overlay' : ''} ${drawerOpen ? 'open' : ''}`} onClick={() => setDrawerOpen(false)} />
       <div
+        ref={drawerRef}
         id="mobile-topic-drawer"
         inert={!drawerOpen}
         aria-hidden={!drawerOpen}
-        className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}
+        className={`mobile-drawer ${overlayOnly ? 'account-topic-drawer' : ''} ${drawerOpen ? 'open' : ''}`}
         onKeyDown={event => {
           if (event.key === 'Escape' && !event.defaultPrevented) setDrawerOpen(false)
         }}
@@ -84,7 +101,7 @@ export function StudySidebarShell({
         <TopicSidebar {...sidebarProps} isMobile />
       </div>
 
-      <aside
+      {!overlayOnly && <aside
         className={`desktop-sidebar ${isResizing ? 'is-resizing' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
         style={desktopSidebarStyle}
       >
@@ -98,7 +115,7 @@ export function StudySidebarShell({
             onPointerDown={handleSidebarResizeDown}
           />
         )}
-      </aside>
+      </aside>}
     </>
   )
 }

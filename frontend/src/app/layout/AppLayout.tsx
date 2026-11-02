@@ -23,7 +23,7 @@ export function AppLayout() {
   const preferences = usePreferences()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [quickAddOpen, setQuickAddOpen] = useState(false)
-  const hasDrawer = isStudyRoute(location.pathname)
+  const hasDrawer = isStudyRoute(location.pathname) || location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)
   const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname === routes.favorites || location.pathname.startsWith('/topics/')
 
   useEffect(() => {
@@ -49,6 +49,7 @@ export function AppLayout() {
         type="button"
         className={`fab ${!canAddWord || drawerOpen ? 'fab-hidden' : ''}`}
         aria-label="Add word"
+        disabled={!canAddWord || drawerOpen}
         onClick={() => setQuickAddOpen(true)}
       >
         <span className="fab-tooltip">Add word</span>

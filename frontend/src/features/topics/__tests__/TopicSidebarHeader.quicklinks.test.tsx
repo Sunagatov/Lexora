@@ -12,7 +12,7 @@ vi.mock('react-router-dom', async () => {
   return {...actual, useNavigate: () => navigate}
 })
 
-function renderHeader(isMobile = false) {
+function renderHeader() {
   const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   return render(
     <QueryClientProvider client={queryClient}>
@@ -20,7 +20,6 @@ function renderHeader(isMobile = false) {
         <TopicSidebarHeader
           topicSearch=""
           setTopicSearch={vi.fn()}
-          isMobile={isMobile}
           isSmartReview={false}
           onSelectSmartReview={vi.fn()}
           smartQueue={null}
@@ -36,6 +35,7 @@ describe('TopicSidebarHeader quick navigation', () => {
   it('shows Favorites and My Lexora outside the search container', () => {
     renderHeader()
     const quickLinks = screen.getByRole('navigation', {name: 'Quick navigation'})
+    expect(quickLinks.contains(screen.getByRole('button', {name: 'Daily Word Mix'}))).toBe(true)
     expect(quickLinks.contains(screen.getByRole('button', {name: 'Favorites'}))).toBe(true)
     expect(quickLinks.contains(screen.getByRole('button', {name: 'My Lexora'}))).toBe(true)
     expect(quickLinks.closest('.sidebar-search-wrap')).toBeNull()
@@ -62,8 +62,10 @@ describe('TopicSidebarHeader quick navigation', () => {
     }
   })
 
-  it('exposes the same navigation controls in mobile mode', () => {
-    renderHeader(true)
+  it('keeps topic search visible beside the navigation shortcuts', () => {
+    renderHeader()
+    expect(screen.getByRole('searchbox', {name: 'Search topics'})).toBeTruthy()
+    expect(document.activeElement).not.toBe(screen.getByRole('searchbox', {name: 'Search topics'}))
     expect(screen.getByRole('button', {name: 'Favorites'})).toBeTruthy()
     expect(screen.getByRole('button', {name: 'My Lexora'})).toBeTruthy()
   })

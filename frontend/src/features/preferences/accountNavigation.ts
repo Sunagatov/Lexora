@@ -8,7 +8,7 @@ type AccountNavigationState = {
   returnState?: Record<string, unknown> | null
 }
 
-/** Both the account icon and Back to words restore the same study location. */
+/** Return from My Lexora to the captured study location in the same library. */
 export function accountReturnTarget(
   state: AccountNavigationState | null,
   language: LearningLanguage,

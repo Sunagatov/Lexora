@@ -16,6 +16,7 @@ import {
 } from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {WordFilterPanel} from '@/features/words/components/WordFilterPanel'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type Props = {
   collectionTitle?: string
@@ -84,6 +85,8 @@ export function WordCollectionToolbar({
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
   const [topicSearch, setTopicSearch] = useState('')
+  const [searchFocused, setSearchFocused] = useState(false)
+  const mobile = useIsMobile()
   const searchRef = useRef<HTMLInputElement>(null)
   const sortDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -170,17 +173,26 @@ export function WordCollectionToolbar({
         </div>
       </div>}
 
-      <div className="toolbar-actions-row">
-        <div className={`toolbar-inline-search${wordSearch !== '' ? ' has-query' : ''}`}>
+      <div className={`toolbar-actions-row${searchFocused ? ' is-searching' : ''}`}>
+        <div className="toolbar-inline-search" onBlur={event => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setSearchFocused(false)
+        }}>
           <SearchIcon />
           <input ref={searchRef} type="search" aria-label="Search words"
             placeholder="Search words…"
+            onFocus={() => { setSearchFocused(true); setSortOpen(false) }}
+            onKeyDown={event => {
+              if (event.key === 'Escape') { event.stopPropagation(); setSearchFocused(false); searchRef.current?.blur() }
+            }}
             value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
           {wordSearch !== '' && <button type="button" className="toolbar-search-clear"
             onClick={() => { setWordSearch(''); searchRef.current?.focus({preventScroll: true}) }}
             aria-label="Clear search"><CloseIcon /></button>}
+          {searchFocused && <button type="button" className="toolbar-search-done" onClick={() => {
+            setSearchFocused(false); searchRef.current?.focus({preventScroll: true}); searchRef.current?.blur()
+          }}>Done</button>}
         </div>
-        <div ref={sortDropdownRef} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
+        <div ref={sortDropdownRef} inert={mobile && searchFocused} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
           <button type="button" className="dropdown-trigger word-list-control toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
             aria-haspopup="listbox" aria-expanded={sortOpen} aria-label="Sort words" title={sortLabel}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -197,7 +209,7 @@ export function WordCollectionToolbar({
             </button>)}
           </div>}
         </div>
-        <div className="toolbar-actions-tools">
+        <div className="toolbar-actions-tools" inert={mobile && searchFocused}>
           <button type="button" className={`dropdown-trigger word-list-control toolbar-filter-toggle ${hasActiveFilters || searchActive || filtersOpen ? 'toolbar-filter-toggle-active' : ''}`}
             onClick={() => setFiltersOpen(!filtersOpen)} aria-label="Toggle filters" aria-expanded={filtersOpen}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">

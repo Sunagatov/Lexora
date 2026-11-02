@@ -4,6 +4,12 @@
   object-fit: cover;
   border-radius: 1px;
 }
+.app-header-burger.account-burger { display: flex; align-items: center; }
+.mobile-drawer.account-topic-drawer { display: flex; }
+.mobile-drawer-overlay.account-drawer-overlay.open { display: block; }
+@media (min-width: 861px) {
+  .mobile-drawer.account-topic-drawer { width: 380px; }
+}
 .app-header-account {
   display: flex;
   align-items: center;

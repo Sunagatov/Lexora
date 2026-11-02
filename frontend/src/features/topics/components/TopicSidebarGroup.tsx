@@ -14,13 +14,14 @@ type Props = {
   onCloseSort: () => void
   onSelectSort: (mode: SortMode) => void
   meta?: ReactNode
+  onCreateTopic?: () => void
   children: ReactNode
 }
 
 export function TopicSidebarGroup({
   title, count, collapsed, onToggleCollapsed,
   sortMode, sortButtonRef, sortOpen, onToggleSort, onCloseSort, onSelectSort,
-  meta, children,
+  meta, children, onCreateTopic,
 }: Props) {
   return (
     <div className="sidebar-group">
@@ -40,6 +41,9 @@ export function TopicSidebarGroup({
           </button>
           {sortOpen && <SortMenu options={SORT_OPTIONS} current={sortMode} anchorRef={sortButtonRef} onSelect={onSelectSort} onClose={onCloseSort} />}
         </div>
+        {onCreateTopic && <button type="button" className="sidebar-sort-btn sidebar-create-topic" onClick={onCreateTopic} aria-label="Create topic" title="New topic">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M8 2v12M2 8h12" /></svg>
+        </button>}
       </div>
       {meta && <div className="sidebar-group-meta">{meta}</div>}
       {!collapsed && children}

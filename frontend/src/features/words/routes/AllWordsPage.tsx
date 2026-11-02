@@ -250,7 +250,7 @@ export function AllWordsPage() {
                           </button>
                         </div>
                         {isOpen && (
-                          <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
+                          <LevelDropdown term={word.term} current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
                             onSelect={l => { handleLevelChange(word.id, l); setOpenLevelId(null) }}
                             onClose={() => setOpenLevelId(null)} />
                         )}

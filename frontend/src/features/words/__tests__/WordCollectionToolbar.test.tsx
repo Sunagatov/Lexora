@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 import {WordCollectionToolbar} from '../components/WordCollectionToolbar'
 
@@ -24,22 +24,17 @@ describe('permanent vocabulary search', () => {
     expect(screen.queryByRole('button', {name: 'Toggle search'})).toBeNull()
   })
 
-  it('stays expanded after blur while a query is present and shrinks after clearing', () => {
-    const {container} = render(<Toolbar />)
-    const wrapper = container.querySelector('.toolbar-inline-search')
+  it('keeps the query after focus leaves the search field', () => {
+    render(<Toolbar />)
     const input = screen.getByRole('searchbox', {name: 'Search words'}) as HTMLInputElement
-    expect(wrapper?.classList.contains('has-query')).toBe(false)
 
-    input.focus()
+    act(() => input.focus())
     fireEvent.change(input, {target: {value: 'привет'}})
-    expect(wrapper?.classList.contains('has-query')).toBe(true)
 
-    input.blur()
+    act(() => input.blur())
     expect(input.value).toBe('привет')
-    expect(wrapper?.classList.contains('has-query')).toBe(true)
 
     fireEvent.click(screen.getByRole('button', {name: 'Clear search'}))
-    expect(wrapper?.classList.contains('has-query')).toBe(false)
     expect(input.value).toBe('')
     expect(document.activeElement).toBe(input)
   })
@@ -53,6 +48,20 @@ describe('permanent vocabulary search', () => {
     expect(input.value).toBe('')
     expect(document.activeElement).toBe(input)
     expect(screen.queryByRole('button', {name: 'Clear search'})).toBeNull()
+  })
+
+  it('exits expanded search with Done or Escape without losing the query', () => {
+    render(<Toolbar />)
+    const input = screen.getByRole('searchbox', {name: 'Search words'}) as HTMLInputElement
+    fireEvent.focus(input)
+    fireEvent.change(input, {target: {value: 'hola'}})
+    fireEvent.click(screen.getByRole('button', {name: 'Done'}))
+    expect(input.value).toBe('hola')
+    expect(screen.queryByRole('button', {name: 'Done'})).toBeNull()
+    fireEvent.focus(input)
+    fireEvent.keyDown(input, {key: 'Escape'})
+    expect(input.value).toBe('hola')
+    expect(screen.queryByRole('button', {name: 'Done'})).toBeNull()
   })
 
   it('keeps the query visible when Escape dismisses sorting', () => {

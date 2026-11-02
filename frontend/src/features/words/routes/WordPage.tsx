@@ -80,7 +80,7 @@ export function WordPage() {
   }
 
   return (
-    <div className="word-page">
+    <div className={`word-page${editing ? '' : ' word-page-reading'}`}>
       <WordPageHero
         word={word}
         topicName={topic?.name}

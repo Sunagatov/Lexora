@@ -12,6 +12,7 @@ import {useWordListNavigation, type WordListContext} from '@/features/words/hook
 import {SWIPE_THRESHOLD, useWordSwipe} from '@/features/words/hooks/useWordSwipe'
 import {FavoriteButton} from './FavoriteButton'
 import {usePreferences} from '@/features/preferences/api'
+import {WordActionsMenu} from './WordActionsMenu'
 
 type UpdateLevel = (wordId: number, level: WordKnowledgeLevel) => void | Promise<boolean | void>
 
@@ -33,7 +34,6 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
   onSwipe: (word: Word, level: 4 | 5) => void
 }) {
   const [openLevel, setOpenLevel] = useState(false)
-  const [expanded, setExpanded] = useState(false)
   const preferences = usePreferences()
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
@@ -55,7 +55,6 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
 
   const lc = levelClass(word.knowledge_level)
   const translation = word.translation_entries.join(' · ')
-  const translationId = `word-card-translations-${word.id}`
   const chips = lexicalChips(word)
   const cefr = chips.find(chip => chip.type === 'cefr')
   const pos = chips.find(chip => chip.type === 'pos')
@@ -80,7 +79,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
       <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
         <span className="word-term"><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
         <EasyPronunciation word={word} />
-        {translation && <span id={translationId} className={`word-translation-focus word-card-translations${expanded ? ' is-expanded' : ''}`}>{translation}</span>}
+        {translation && <span className="word-translation-focus word-card-translations">{translation}</span>}
       </Link>
       <div className="word-card-footer">
         {(cefr || pos) && <div className="word-summary-badges">
@@ -91,6 +90,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
           <button
             type="button"
             className={`level-badge level-badge-btn ${lc}`}
+            aria-haspopup="dialog" aria-expanded={openLevel}
             disabled={pendingWordId === word.id}
             onClick={(e) => {
               e.preventDefault()
@@ -107,24 +107,14 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
           </button>
           {openLevel && levelAnchor && (
             <LevelDropdown
+              term={word.term}
               current={word.knowledge_level as WordKnowledgeLevel | null}
               anchor={levelAnchor}
               onSelect={(level) => { onUpdate(word.id, level); setOpenLevel(false) }}
               onClose={() => setOpenLevel(false)}
             />
           )}
-          {translation && preferences.translations && <button
-            type="button"
-            className={`word-card-expand-btn${expanded ? ' is-expanded' : ''}`}
-            aria-expanded={expanded}
-            aria-controls={translationId}
-            aria-label={`${expanded ? 'Collapse' : 'Expand'} translations for ${word.term}`}
-            onClick={() => setExpanded(value => !value)}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="2,4 6,8 10,4" />
-            </svg>
-          </button>}
+          <WordActionsMenu word={word} wordList={wordList} fromTopicSlug={fromTopicSlug} disabled={pendingWordId === word.id} />
         </div>
       </div>
     </article>

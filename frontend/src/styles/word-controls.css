@@ -1,0 +1,108 @@
+/* Knowledge choices use the browser's modal layer for focus containment. */
+.knowledge-picker,
+.word-actions-dialog {
+  padding: 0;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.knowledge-picker { position: fixed; margin: 0; }
+.knowledge-picker::backdrop,
+.word-actions-dialog::backdrop { background: rgba(2, 6, 23, 0.45); }
+.knowledge-picker-content, .word-actions-content { padding: 16px; }
+.knowledge-picker-heading { display: flex; align-items: start; gap: 12px; margin-bottom: 14px; }
+.knowledge-picker-heading > div { min-width: 0; flex: 1; }
+.knowledge-picker h2, .word-actions-dialog h2 { margin: 0; font-size: 1.05rem; line-height: 1.4; overflow-wrap: anywhere; }
+.knowledge-picker p, .word-actions-dialog p { margin: 4px 0 0; color: var(--text-2); font-size: 0.85rem; line-height: 1.5; overflow-wrap: anywhere; }
+.knowledge-picker-close, .word-actions-trigger {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; flex: none;
+  border: 0; border-radius: 8px; padding: 0;
+  background: transparent; color: var(--text-2);
+}
+.knowledge-picker-close { font-size: 24px; }
+.word-actions-trigger:hover, .knowledge-picker-close:hover { background: var(--accent-light); color: var(--accent); transform: none; }
+.knowledge-picker-options { display: flex; flex-direction: column; gap: 8px; }
+.knowledge-picker-option {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 60px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface-2); color: var(--text); text-align: left;
+}
+.knowledge-picker-option:hover { border-color: var(--accent); transform: none; }
+.knowledge-picker-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.knowledge-picker-dot { width: 14px; height: 14px; flex: none; border-radius: 50%; background: var(--text-3); }
+.knowledge-picker-option.level-1 .knowledge-picker-dot { background: #ef4444; }
+.knowledge-picker-option.level-3 .knowledge-picker-dot { background: #8b5cf6; }
+.knowledge-picker-option.level-4 .knowledge-picker-dot { background: #10b981; }
+.knowledge-picker-option.level-5 .knowledge-picker-dot { background: #94a3b8; }
+.level-badge.level-5 { background: #e2e8f0; color: #475569; }
+:root[color-scheme="dark"] .level-badge.level-5 { background: #334155; color: #cbd5e1; }
+.knowledge-picker-copy { flex: 1; }
+.knowledge-picker-copy strong { display: block; font-size: 0.9rem; }
+.knowledge-picker-copy small { display: block; margin-top: 2px; font-size: 0.78rem; color: var(--text-2); }
+.knowledge-picker-check { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--border); border-radius: 50%; }
+[aria-pressed="true"] > .knowledge-picker-check { color: white; background: var(--accent); border-color: var(--accent); }
+.word-actions-dialog { margin: auto; }
+.word-actions-content { display: flex; flex-direction: column; gap: 8px; }
+.word-actions-content h2 { margin-bottom: 4px; }
+.word-actions-content > button, .word-actions-content > a {
+  display: block; padding: 12px; border: 1px solid var(--border); border-radius: 9px;
+  background: transparent; color: var(--text); text-align: left; font: inherit; font-size: 0.9rem; text-decoration: none;
+}
+.word-actions-content > button:hover, .word-actions-content > a:hover { background: var(--surface-2); transform: none; }
+.word-actions-content > .word-action-danger { color: #f87171; }
+:root[color-scheme="light"] .word-actions-content > .word-action-danger { color: #b91c1c; }
+@media (max-width: 860px) {
+  .knowledge-picker {
+    inset: auto 0 0;
+    width: 100%; max-width: none; max-height: calc(100dvh - 16px);
+    margin: 0; border-radius: 20px 20px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .knowledge-picker-content::before { content: ''; display: block; width: 40px; height: 4px; margin: -4px auto 14px; border-radius: 4px; background: var(--text-3); }
+  .knowledge-picker-option { min-height: 64px; }
+}
+
+/* Keep table headings and columns on the same sizing rules. */
+@media (min-width: 861px) {
+  .word-table th {
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px; background: var(--bg); border-bottom: 1px solid var(--border);
+    color: var(--text-3); text-align: left; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .word-table th:last-child { text-align: right; }
+  .word-table td { padding: 12px; }
+  .word-cell-word { width: 30%; }
+  .word-collection-layout > .sticky-controls,
+  .word-collection-scroll > .main-inner { width: 100%; max-width: 1600px; margin-inline: auto; }
+  .word-table.has-pronunciation .word-cell-word { width: 24%; }
+  .word-table.has-pronunciation .word-cell-pronunciation { width: 16%; }
+  .word-cell-knowledge { width: 190px; }
+  .word-summary-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .word-summary-badges { flex-wrap: wrap; }
+  .word-cell-details .word-translation-focus { white-space: normal; overflow-wrap: anywhere; font-style: normal; font-size: 0.9rem; font-weight: 400; }
+  :root[color-scheme="dark"] .word-cell-details .word-translation-focus { font-weight: 400; }
+  .word-table .header-badge-pos { background: #e0f2fe; color: #075985; }
+  :root[color-scheme="dark"] .word-table .header-badge-pos { background: #1e3a5f; color: #bae6fd; }
+  .word-table-open { padding: 0; border: 0; background: transparent; text-align: left; font-family: inherit; }
+  .word-table-open:hover { transform: none; box-shadow: none; }
+  .word-table .word-level-wrap { gap: 4px; }
+  .word-inline-pronunciation { display: none; }
+  .word-table.is-compact .word-cell-word { width: 34%; }
+  .word-table.is-compact .word-inline-pronunciation { display: block; margin-top: 5px; }
+  .word-table.is-compact td, .word-table.is-compact th { padding-inline: 8px; }
+}
+@media (min-width: 861px) and (max-width: 1280px) {
+  .word-collection-split { position: relative; }
+  .word-collection-split > .word-detail-panel {
+    position: absolute; inset: 0 0 0 auto; z-index: 20;
+    width: min(390px, 100%); box-shadow: -12px 0 32px rgba(0, 0, 0, 0.2);
+  }
+}

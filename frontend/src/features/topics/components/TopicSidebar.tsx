@@ -143,7 +143,7 @@ function buildDeleteTopicMessage(topics: Topic[], deleteTopicId: number): string
 }
 
 export function TopicSidebar({
-    topics, topicCounts, topicProgress, topicSearch, setTopicSearch,
+  topics, topicCounts, topicProgress, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
   isCollapsed = false, onToggleCollapsed,
@@ -276,7 +276,6 @@ export function TopicSidebar({
       <TopicSidebarHeader
         topicSearch={topicSearch}
         setTopicSearch={setTopicSearch}
-        isMobile={isMobile}
         isSmartReview={isSmartReview}
         onSelectSmartReview={onSelectSmartReview}
         smartQueue={smartQueue}
@@ -313,34 +312,33 @@ export function TopicSidebar({
           </TopicSidebarGroup>
         )}
 
-        {themeTopics.length > 0 && (
-          <TopicSidebarGroup
-            title="Topics"
-            count={themeTopics.length}
-            collapsed={prefs.topicsCollapsed}
-            onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
-            sortMode={prefs.topicsSort}
-            sortButtonRef={topicsSortRef}
-            sortOpen={topicsSortOpen}
-            onToggleSort={() => setTopicsSortOpen((value) => !value)}
-            onCloseSort={() => setTopicsSortOpen(false)}
-            onSelectSort={(mode) => {
-              prefs.setTopicsSort(mode)
-              setTopicsSortOpen(false)
-            }}
-            meta={topicsMeta}
-          >
-            {renderTopicTree(
-              themeTree,
-              {
-                ...topicButtonSharedProps,
-                onDelete: openDeleteTopic,
-              },
-              expandedTopicIds,
-              !!needle,
-            )}
-          </TopicSidebarGroup>
-        )}
+        <TopicSidebarGroup
+          title="Topics"
+          onCreateTopic={startAddTopic}
+          count={themeTopics.length}
+          collapsed={prefs.topicsCollapsed}
+          onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
+          sortMode={prefs.topicsSort}
+          sortButtonRef={topicsSortRef}
+          sortOpen={topicsSortOpen}
+          onToggleSort={() => setTopicsSortOpen((value) => !value)}
+          onCloseSort={() => setTopicsSortOpen(false)}
+          onSelectSort={(mode) => {
+            prefs.setTopicsSort(mode)
+            setTopicsSortOpen(false)
+          }}
+          meta={topicsMeta}
+        >
+          {renderTopicTree(
+            themeTree,
+            {
+              ...topicButtonSharedProps,
+              onDelete: openDeleteTopic,
+            },
+            expandedTopicIds,
+            !!needle,
+          )}
+        </TopicSidebarGroup>
 
         {posTopics.length === 0 && themeTopics.length === 0 && (
           <div className="sidebar-empty">No topics found.</div>
@@ -359,6 +357,7 @@ export function TopicSidebar({
         onCreate={() => createTopicMutation.mutate()}
         onCancel={cancelAddTopic}
         onStartAdd={startAddTopic}
+        showAddButton={isCollapsed && !isMobile}
       />
 
 

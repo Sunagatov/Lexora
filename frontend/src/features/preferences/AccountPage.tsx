@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams, useOutletContext } from 'react-router-dom'
 import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useIsMutating } from '@tanstack/react-query'
 import { routes } from '@/app/routes'
@@ -11,7 +11,8 @@ import { TrashPage } from '@/features/trash/routes/TrashPage'
 import { AccountIcon } from './AccountIcon'
 import { AccountData } from './AccountData'
 import { AccountOffline } from './AccountOffline'
-import { accountReturnTarget } from './accountNavigation'
+import {AccountSidebar} from './AccountSidebar'
+import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {
   DEFAULT_PREFERENCES,
   flushPreferences,
@@ -72,6 +73,7 @@ export function AccountPage() {
   const { section } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const snapshot = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
   const { values } = snapshot
   const { logoutPending, handleLogout } = useLogoutAction()
@@ -79,19 +81,13 @@ export function AccountPage() {
   const mobile = useIsMobile(768)
   const selected = SECTIONS.find((item) => item.id === section)
   const title = section === 'trash' ? 'Trash' : (selected?.title ?? 'My Lexora')
-  const goBack = () => {
-    const target = accountReturnTarget(location.state, values.language)
-    navigate(target.to, {state: target.state})
-  }
   const state = location.state
   if (!section && !mobile) return <Navigate to="/account/study" replace state={state} />
   return (
-    <div className={`account-layout${section ? ' account-has-section' : ''}`}>
+    <>
+    {drawerOpen && <AccountSidebar onClose={() => setDrawerOpen(false)} />}
+    <div className={`account-layout${section ? ' account-has-section' : ''}`} inert={drawerOpen}>
       <nav className="account-nav" aria-label="My Lexora sections">
-        <button className="account-back" onClick={goBack}>
-          <AccountIcon name="back" />
-          Back to words
-        </button>
         <h2>My Lexora</h2>
         {SECTIONS.map((item) => (
           <Link
@@ -114,13 +110,13 @@ export function AccountPage() {
         </button>
       </nav>
       <div className="account-content">
-        <button
+        {section && <button
           className="account-mobile-back account-back"
-          onClick={section ? () => navigate(routes.account, { state }) : goBack}
+          onClick={() => navigate(routes.account, { state })}
         >
           <AccountIcon name="back" />
-          {section ? 'My Lexora' : 'Back to words'}
-        </button>
+          My Lexora
+        </button>}
         <div className="account-title">
           <h1>{title}</h1>
           {section === 'study' && <p>Shared across all learning languages</p>}
@@ -374,5 +370,6 @@ export function AccountPage() {
         )}
       </div>
     </div>
+    </>
   )
 }

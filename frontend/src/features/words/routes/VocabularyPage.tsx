@@ -25,7 +25,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
   const {collapsed, setCollapsed} = useSidebarCollapsedPref()
-  const isMobile = useIsMobile(768)
+  const isMobile = useIsMobile()
   const topicsQuery = useQuery({queryKey: queryKeys.topics, queryFn: fetchTopics})
   const sidebarQuery = useQuery({queryKey: queryKeys.topicSidebar, queryFn: fetchTopicSidebarStats})
   const topics = useMemo(() => topicsQuery.data ?? [], [topicsQuery.data])
@@ -75,7 +75,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
           isCollapsed: collapsed, onToggleCollapsed: () => setCollapsed(!collapsed),
         }}
       />
-      <div className="main-content">
+      <div className="main-content" inert={drawerOpen && isMobile}>
         <div className="study-topic-panel vocabulary-panel">
           {(loadError || actionError) && <div role="alert" className="wp-save-error">
             {loadError ? 'Failed to load vocabulary. Please try again.' : actionError}

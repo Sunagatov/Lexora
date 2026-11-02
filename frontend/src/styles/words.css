@@ -1,29 +1,3 @@
-/* Column header — sticky above the table */
-.word-list-header {
-  display: grid;
-  grid-template-columns: 22% 1fr 190px;
-  align-items: center;
-  padding: 8px 20px 8px 21px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-}
-
-.word-list-header-cell {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-3);
-}
-
-.word-list-header-knowledge {
-  text-align: right;
-}
-
-.word-list-header.has-pronunciation {
-  grid-template-columns: 22% 22% 1fr 190px;
-}
-
 .word-table.has-pronunciation .word-cell-pronunciation {
   width: 22%;
 }
@@ -576,74 +550,6 @@
   gap: 4px;
 }
 
-.level-dropdown-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-}
-
-.level-dropdown {
-  position: fixed;
-  z-index: 1001;
-  max-height: calc(100dvh - 16px);
-  max-width: calc(100vw - 16px);
-  overflow-y: auto;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 5px;
-  min-width: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.level-dropdown-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  border: none;
-  background: transparent;
-  border-radius: 9px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text);
-  text-align: left;
-  transition: background 0.1s;
-}
-
-.level-dropdown-option:hover { background: var(--surface-2); }
-
-.level-dropdown-option-active { font-weight: 700; }
-
-.level-dropdown-num {
-  width: 18px;
-  height: 18px;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 800;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.level-dropdown-num { color: inherit; }
-
-.level-dropdown-option .level-dropdown-num {
-  background: rgba(0,0,0,0.08);
-}
-
-.level-dropdown-check {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
 /* Level switcher */
 .level-switcher {
   display: flex;
@@ -1149,9 +1055,8 @@
   display: block;
   clear: both;
   margin: 4px 0 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-size: 0.82rem;
   font-weight: 400;
   font-style: normal;
@@ -1161,11 +1066,6 @@
 :root[color-scheme="dark"] .word-card .word-card-translations {
   font-weight: 400;
   color: var(--text-2);
-}
-
-.word-card .word-card-translations.is-expanded {
-  white-space: normal;
-  overflow-wrap: anywhere;
 }
 
 .word-card .word-card-level-wrap {

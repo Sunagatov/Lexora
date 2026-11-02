@@ -49,11 +49,6 @@
 }
 
 /* ── Smart Review (compact single row) ───────────────────────────────────── */
-.sidebar-smart-review-wrap {
-  padding: 8px 12px 4px;
-  flex-shrink: 0;
-}
-
 .sidebar-smart-review-btn {
   width: 100%;
   background: linear-gradient(135deg, rgba(250, 204, 21, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%);
@@ -84,18 +79,6 @@
   border-color: rgba(250, 204, 21, 0.3);
 }
 
-.sidebar-smart-review-title {
-  font-size: 0.85rem;
-  font-weight: 500;
-  flex: 1;
-}
-
-.sidebar-smart-review-count {
-  font-size: 0.72rem;
-  color: var(--sidebar-text-2);
-  flex-shrink: 0;
-}
-
 .sidebar-smart-review-bar {
   position: absolute;
   bottom: 0;
@@ -114,9 +97,9 @@
 /* Compact shortcuts stay accessible when the desktop sidebar is collapsed. */
 .sidebar-quicklinks {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
-  padding: 4px 12px 6px;
+  padding: 8px 12px 6px;
   flex-shrink: 0;
 }
 
@@ -124,6 +107,7 @@
   min-width: 0;
   min-height: 44px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 7px;
@@ -133,16 +117,58 @@
   background: var(--sidebar-subtle);
   color: var(--sidebar-text);
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .sidebar-quicklink span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+}
+
+.sidebar-quicklink.sidebar-smart-review-btn {
+  background: rgba(250, 204, 21, 0.08);
+  border-color: rgba(250, 204, 21, 0.2);
+  text-align: center;
+}
+
+.sidebar-quicklink:hover:not(:disabled) { transform: none; box-shadow: none; }
+.sidebar-quicklink .sidebar-smart-review-emoji { font-size: 20px; line-height: 20px; }
+
+@media (min-width: 360px) and (max-width: 768px) {
+  .mobile-drawer .sidebar-quicklink { flex-direction: row; font-size: 0.78rem; }
+}
+
+.sidebar-search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--sidebar-subtle);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 10px;
+  color: var(--sidebar-text-2);
+}
+.sidebar-search-field:focus-within { border-color: var(--accent); }
+.sidebar-search-field > svg { flex: none; }
+.sidebar-search-field .sidebar-search {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  flex: 1;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+.sidebar-search-field input::-webkit-search-cancel-button { display: none; }
+@media (max-width: 768px) {
+  .sidebar-search-field .sidebar-search { font-size: 16px; }
 }
 
 .sidebar-quicklink svg { flex-shrink: 0; }
@@ -174,18 +200,13 @@
   border-radius: 12px;
 }
 
-.sidebar-collapsed .sidebar-quicklink span { display: none; }
+.sidebar-collapsed .sidebar-quicklink > span:not(.sidebar-smart-review-emoji) { display: none; }
 
 /* ── Search ──────────────────────────────────────────────────────────────── */
 .sidebar-search-wrap {
   padding: 8px 12px 6px;
   flex-shrink: 0;
 }
-
-/* Desktop: always show the input, never show mobile elements */
-.sidebar-search-desktop { display: block; }
-.sidebar-search-toggle  { display: none; }
-.sidebar-search-mobile-row { display: none; }
 
 .sidebar-search {
   width: 100%;
@@ -207,32 +228,6 @@
   background: rgba(99, 102, 241, 0.08);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12), inset 0 0 0 1px rgba(129, 140, 248, 0.35);
 }
-
-/* Mobile: toggle button */
-.sidebar-search-toggle {
-  width: 100%;
-  background: var(--sidebar-subtle);
-  border: 1px solid var(--sidebar-border);
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  cursor: pointer;
-  color: var(--sidebar-text-2);
-  font-size: 0.82rem;
-  font-weight: 500;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.12s, color 0.12s;
-}
-
-.sidebar-search-toggle:hover { background: var(--sidebar-border); color: var(--sidebar-text); }
-
-.sidebar-search-mobile-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.sidebar-search-mobile-row .sidebar-search { flex: 1; }
 
 .sidebar-search-close {
   flex-shrink: 0;
@@ -277,6 +272,8 @@
   align-items: center;
   gap: 2px;
 }
+
+.sidebar-create-topic { min-width: 32px; min-height: 32px; }
 
 .sidebar-group-toggle {
   flex: 1;
@@ -1070,9 +1067,6 @@
 
 /* ── Mobile: switch search to toggle ─────────────────────────────────────── */
 @media (max-width: 860px) {
-  .sidebar-search-desktop  { display: none; }
-  .sidebar-search-toggle   { display: flex; }
-  .sidebar-search-mobile-row { display: flex; }
 
   .desktop-sidebar-resizer {
     display: none;
@@ -1160,7 +1154,6 @@
 
 /* Header: hide search; center smart review button */
 .sidebar-collapsed .sidebar-search-wrap { display: none; }
-.sidebar-collapsed .sidebar-smart-review-wrap { padding: 6px 8px 4px; }
 .sidebar-collapsed .sidebar-smart-review-btn {
   min-height: 44px;
   padding: 10px 0;
@@ -1176,9 +1169,7 @@
   box-shadow: 0 8px 18px rgba(8, 15, 34, 0.34);
 }
 .sidebar-collapsed .sidebar-smart-review-text { display: none; }
-.sidebar-collapsed .sidebar-smart-review-count { display: none; }
 .sidebar-collapsed .sidebar-smart-review-bar { display: none; }
-.sidebar-collapsed .sidebar-smart-review-title { flex: none; }
 
 /* Topic list: compact, centered items */
 .sidebar-collapsed .sidebar-topic-list {

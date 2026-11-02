@@ -12,7 +12,7 @@ function WordTableSkeleton() {
   )
 }
 
-import type {ReactNode} from 'react'
+import {useLayoutEffect, useRef, type ReactNode} from 'react'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilter, Selection} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
@@ -22,8 +22,7 @@ import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
 import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
-import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
-import {usePreferences} from '@/features/preferences/api'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type Props = {
   collectionTitle?: string
@@ -77,9 +76,15 @@ export function WordCollectionView({
   onWordSelect, selectedWordId,
 }: Props) {
   useWordListScrollRestore(isLoading)
-  const readingMode = usePronunciationMode(pageWords[0]?.language ?? 'en')
-  const preferences = usePreferences()
-  const hasPronunciation = preferences.pronunciation && pageWords.some(word => pronunciationText(word, readingMode))
+  const mobile = useIsMobile()
+  const filterKey = JSON.stringify([wordSearch, sortBy, thenSortBy, levelFilter, posFilter, cefrFilter, topicFilter, completeness])
+  const previousFilterKey = useRef(filterKey)
+  useLayoutEffect(() => {
+    if (previousFilterKey.current !== filterKey) {
+      document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'instant'})
+      previousFilterKey.current = filterKey
+    }
+  }, [filterKey])
   const wordList = {
     ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
     offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),
@@ -116,14 +121,6 @@ export function WordCollectionView({
           topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
           onLearningSort={onLearningSort}
         />
-        {pageWords.length > 0 && (
-          <div className={`word-list-header${hasPronunciation ? ' has-pronunciation' : ''}`} aria-hidden="true">
-            <span className="word-list-header-cell">Word</span>
-            {hasPronunciation && <span className="word-list-header-cell word-list-header-pronunciation">Pronunciation</span>}
-            <span className="word-list-header-cell word-list-header-details">Translation / details</span>
-            <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-          </div>
-        )}
       </div>
       <div className="word-collection-scroll">
         <div className="main-inner">
@@ -133,8 +130,9 @@ export function WordCollectionView({
             <div className="empty-state word-collection-empty-state">{emptyMessage}</div>
           ) : (
             <>
-              <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
-              <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+              {mobile
+                ? <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+                : <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />}
             </>
           )}
         </div>

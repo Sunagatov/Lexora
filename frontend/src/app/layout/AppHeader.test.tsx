@@ -38,7 +38,7 @@ describe('AppHeader personal area', () => {
     vi.restoreAllMocks()
   })
 
-  it('opens My Lexora without signing out or clearing the vocabulary cache', () => {
+  it('opens All words without signing out or clearing the vocabulary cache', () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
     })
@@ -47,23 +47,27 @@ describe('AppHeader personal area', () => {
 
     renderHeader(queryClient)
 
-    fireEvent.click(screen.getByRole('button', {name: 'My Lexora'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Lexora'}))
     expect(authApi.logout).not.toHaveBeenCalled()
     expect(clearSpy).not.toHaveBeenCalled()
-    expect(navigate).toHaveBeenCalledWith(routes.account, {state: expect.objectContaining({returnTo: '/'})})
+    expect(navigate).toHaveBeenCalledWith(routes.home)
     expect(screen.queryByRole('button', {name: 'Sign out'})).toBeNull()
   })
 
-  it('toggles back from an account section to the saved list state', () => {
-    const returnTo = '/?search=word&page=2&pageSize=100&level=1&sort=term-desc'
-    renderHeader(new QueryClient(), [{pathname: '/account/appearance', state: {
-      returnTo, returnLanguage: 'en', returnScrollTop: 320,
-      returnState: {fromTopicSlug: 'people'},
+  it.each(['/words/1', '/account/appearance'])('keeps the account shortcut out of the header on %s', path => {
+    renderHeader(new QueryClient(), [path])
+    expect(screen.queryByRole('button', {name: 'My Lexora'})).toBeNull()
+  })
+
+  it('returns from My Lexora to the captured list including its page and scroll position', () => {
+    renderHeader(new QueryClient(), [{pathname: '/account/study', state: {
+      returnTo: '/topics/travel?search=train&page=2', returnLanguage: 'en', returnScrollTop: 480,
+      returnState: {custom: 'kept'},
     }}])
-    fireEvent.click(screen.getByRole('button', {name: 'My Lexora'}))
-    expect(navigate).toHaveBeenCalledWith(returnTo, {state: {
-      fromTopicSlug: 'people', learningLanguage: 'en', wordListScrollTop: 320,
-    }})
+    fireEvent.click(screen.getByRole('button', {name: 'Lexora'}))
+    expect(navigate).toHaveBeenCalledWith('/topics/travel?search=train&page=2', {
+      state: {custom: 'kept', learningLanguage: 'en', wordListScrollTop: 480},
+    })
   })
 
   it('uses the hamburger instead of a duplicate account button on study routes', () => {

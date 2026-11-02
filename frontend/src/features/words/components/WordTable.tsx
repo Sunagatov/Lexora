@@ -1,7 +1,7 @@
 import {languageProfile} from '@/features/languages/api'
 import {FavoriteButton} from './FavoriteButton'
 import {usePreferences} from '@/features/preferences/api'
-import {Fragment, useState} from 'react'
+import {Fragment, useLayoutEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
@@ -12,6 +12,7 @@ import {EasyPronunciation} from './EasyPronunciation'
 import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
 import {smartPreview} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
+import {WordActionsMenu} from './WordActionsMenu'
 
 type Props = {
   words: Word[]
@@ -29,10 +30,21 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
   const readingMode = usePronunciationMode(words[0]?.language ?? 'en')
   const preferences = usePreferences()
   const hasPronunciation = preferences.pronunciation && words.some(word => pronunciationText(word, readingMode))
+  const tableWrapRef = useRef<HTMLDivElement>(null)
+  const [compact, setCompact] = useState(false)
+  const separatePronunciation = hasPronunciation && !compact
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    const element = tableWrapRef.current
+    if (!element || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width <= 900))
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
 
   function speak(id: number, term: string) {
     window.speechSynthesis.cancel()
@@ -46,8 +58,14 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
   }
 
   return (
-    <div className="word-table-wrap">
-      <table className={`word-table${hasPronunciation ? ' has-pronunciation' : ''}`} aria-label="Topic words table">
+    <div ref={tableWrapRef} className="word-table-wrap">
+      <table className={`word-table${separatePronunciation ? ' has-pronunciation' : ''}${compact ? ' is-compact' : ''}`} aria-label="Topic words table">
+        <thead><tr>
+          <th scope="col" className="word-cell-word">Word</th>
+          {separatePronunciation && <th scope="col" className="word-cell-pronunciation">Pronunciation</th>}
+          <th scope="col">Translation / details</th>
+          <th scope="col" className="word-cell-knowledge">Knowledge</th>
+        </tr></thead>
         <tbody>
           {words.map((word, idx) => {
             const isLast     = idx === words.length - 1
@@ -69,9 +87,9 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                   <td className="word-cell-word">
                     <span className="word-table-term">
                     {onWordSelect ? (
-                      <span className="word-term word-term-link">
+                      <button type="button" className="word-term word-term-link word-table-open" onClick={event => {event.stopPropagation(); onWordSelect(word.id)}}>
                         <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
-                      </span>
+                      </button>
                     ) : (
                       <Link className="word-term word-term-link" to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
                         <bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi>
@@ -88,8 +106,9 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                       </svg>
                     </button>
                     </span>
+                    {hasPronunciation && compact && <span className="word-inline-pronunciation"><EasyPronunciation word={word} /></span>}
                   </td>
-                  {hasPronunciation && <td className="word-cell-pronunciation"><EasyPronunciation word={word} /></td>}
+                  {separatePronunciation && <td className="word-cell-pronunciation"><EasyPronunciation word={word} /></td>}
                   <td className="word-cell-details">
                     <WordSummaryContent word={word} />
                   </td>
@@ -97,6 +116,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                     <div className="word-level-wrap">
                       <div className="level-badge-wrap">
                         <button type="button" className={`level-badge level-badge-btn ${lc}`}
+                          aria-haspopup="dialog" aria-expanded={isOpen}
                           disabled={pendingWordIds?.has(word.id) || pendingWordId === word.id}
                           onClick={(e) => { e.stopPropagation(); if (isOpen) { setOpenId(null); return } setLevelAnchor(e.currentTarget); setOpenId(word.id) }}
                         >
@@ -108,7 +128,7 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                         <span className="level-badge-tip">{LEVEL_TIPS[word.knowledge_level ?? 0]}</span>
                       </div>
                       {isOpen && (
-                        <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
+                        <LevelDropdown term={word.term} current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
                           onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
                           onClose={() => setOpenId(null)} />
                       )}
@@ -127,16 +147,17 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                         </button>
                       )}
                       <FavoriteButton word={word} />
+                      <WordActionsMenu word={word} wordList={wordList} fromTopicSlug={fromTopicSlug} disabled={pendingWordIds?.has(word.id) || pendingWordId === word.id} />
                     </div>
                   </td>
                 </tr>
                 {hasExpanded && (
                   <tr className={`word-row-detail ${lc}`}>
-                    <td colSpan={hasPronunciation ? 4 : 3} style={{
+                    <td colSpan={separatePronunciation ? 4 : 3} style={{
                       padding: 0,
                       borderBottom: isExpanded && !isLast ? '1px solid var(--border)' : 'none',
                     }}>
-                      <div className={`word-row-expand-body${isExpanded ? ' is-open' : ''}`}>
+                      <div className={`word-row-expand-body${isExpanded ? ' is-open' : ''}`} aria-hidden={!isExpanded}>
                         <div className="word-row-expand-content">
                           {showExample && (
                             <div className="word-extra">

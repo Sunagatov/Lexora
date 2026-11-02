@@ -18,13 +18,15 @@ type Props = {
   onCreate: () => void
   onCancel: () => void
   onStartAdd: () => void
+  showAddButton?: boolean
 }
 
 export function TopicSidebarFooter({
   addingTopic, topicError, newTopicName, newTopicParentId, topicOptions, createPending,
   onNewTopicNameChange, onNewTopicParentIdChange, onCreate,
-  onCancel, onStartAdd,
+  onCancel, onStartAdd, showAddButton = true,
 }: Props) {
+  if (!addingTopic && !showAddButton) return null
   return (
     <div className="sidebar-footer">
       {addingTopic ? (
@@ -33,6 +35,7 @@ export function TopicSidebarFooter({
             <div className="sidebar-new-topic-parent-wrap">
               <select
                 className="sidebar-new-topic-parent"
+                aria-label="Parent topic"
                 value={newTopicParentId === '' ? '' : String(newTopicParentId)}
                 onChange={(e) => {
                   const value = e.target.value
@@ -64,7 +67,7 @@ export function TopicSidebarFooter({
               <button type="button" className="sidebar-new-topic-save" disabled={!newTopicName.trim() || createPending} onClick={onCreate}>
                 {createPending ? '…' : 'Add'}
               </button>
-              <button type="button" className="sidebar-new-topic-cancel" onClick={onCancel}>
+              <button type="button" className="sidebar-new-topic-cancel" onClick={onCancel} aria-label="Cancel new topic">
                 <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                   <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
                 </svg>

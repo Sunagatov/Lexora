@@ -68,22 +68,44 @@ selected learning language, without providing another language picker.
 Favorites is one list per learning language, independent of topics and knowledge.
 Mobile cards keep audio and Favorites at the top-right, pronunciation below the
 term, and separate CEFR/part-of-speech badges in the footer beside the rating.
-Translations preview one line; the labelled disclosure arrow reveals the entire
-saved translation text, including a single long translation. Its control and the
-other actions are siblings of the word link, so they never open the detail page.
+All translations and pronunciation hints wrap in full, without a disclosure arrow.
+Audio, Favorites, rating and word actions are siblings of the word link, so they
+never open the detail page. Word actions provide editing (including topics), copy,
+and a confirmed move to Trash. A failed deletion leaves cached words intact.
 The mobile list omits the redundant table column headings. Desktop rows retain
 their existing full translations and details expansion.
 
-Hearts appear on cards, rows and word details; the sidebar entry is below Daily
-Word Mix. Removing a heart patches only that flag and keeps the current list page
+Vocabulary search is always visible in the toolbar beside sorting and Filters.
+It does not autofocus on page load; clearing the query keeps focus in the input.
+On focus it widens inside its reserved desktop track; on mobile it occupies the
+controls row until Done, Escape or blur, preserving the query and list position.
+Knowledge choices open a large mobile bottom sheet or an anchored desktop dialog,
+with descriptions and a selected checkmark. Selecting saves immediately; dismissing
+does not change a rating. Only the active mobile/desktop list presentation mounts.
+Desktop tables own their sticky column headers. Narrow desktop content places the
+pronunciation under the term, leaving room for translations and stable actions.
+
+On mobile, the full word reading page scrolls the hero together with its details
+so long terms/translations cannot pin most of the viewport. The application
+header and previous/next navigation remain available; desktop and editing keep
+their existing scrolling layout.
+
+Hearts appear on cards, rows and word details. Daily Mix, Favorites and My Lexora
+share one sidebar shortcut row, with topic search always visible underneath.
+The Topics heading includes sorting and creation; topic search can be cleared
+without closing the sidebar. The account shortcut is absent from the app header.
+Removing a heart patches only that flag and keeps the current list page
 in place until navigation or filter changes. Lists reuse normal sorting, search,
 filters and pagination. Offline copies retain the flag and use the same filters.
 
 My Lexora also owns Statistics, Import/Export, Trash, Offline, study defaults and
 appearance. Desktop uses section navigation; mobile uses an overview and section
 pages. Returning to the same library restores the captured word-list URL/scroll.
-Clicking the header account icon again also returns to that saved list, including
-when a different account section is open.
+The header brand returns from My Lexora to the captured list; switching a learning
+language opens All words for the new library instead. The account header includes
+the sidebar burger on all screen sizes, without a duplicate Back to words action.
+Mobile account subsections retain navigation to the account overview. Open sidebars
+make underlying content inert and return focus when dismissed.
 Offline copies remain device-local even though display/study preferences sync.
 
 The browser-tab favicon follows the selected learning language and its saved
