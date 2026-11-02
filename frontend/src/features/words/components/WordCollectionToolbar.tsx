@@ -97,7 +97,7 @@ export function WordCollectionToolbar({
   const searchActive = wordSearch.trim() !== ''
   const activeFilterCount = levels.length + positions.length + cefrs.length + topicFilter.length + (completeness !== 'all' ? 1 : 0)
   const hasActiveFilters = activeFilterCount > 0
-  const total = topicTotalCount || 1
+  const progressTotal = filteredCount || 1
 
   function handleSortChange(v: SortOption) {
     setSortBy(v)
@@ -137,7 +137,7 @@ export function WordCollectionToolbar({
     ? 'Weak → A1'
     : `${SORT_LABELS[sortBy]}${thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''}`
   const activeLevels = [...ACTIVE_LEVELS, PARKED_LEVEL].filter(level => levelSummary[level] > 0)
-  const legendLevels = activeLevels.filter(level => Number((levelSummary[level] / total * 100).toFixed(2)) > 0)
+  const legendLevels = activeLevels.filter(level => Number((levelSummary[level] / progressTotal * 100).toFixed(2)) > 0)
   const sortOptions = WORD_SORT_OPTIONS
   const appliedFilters = [
     ...levels.map(value => ({key: `level-${value}`, label: LEVEL_LABELS[value], remove: () => setLevelFilter(selectionValue(levels.filter(level => level !== value)) ?? 'all')})),
@@ -160,15 +160,15 @@ export function WordCollectionToolbar({
       {collectionProgress}
       {progressReady && <div className="toolbar-knowledge-progress">
         <div className="toolbar-progress-bar" role="progressbar" aria-label={progressLabel}
-          aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number((levelSummary[4] / total * 100).toFixed(2))}
-          aria-valuetext={`${(levelSummary[4] / total * 100).toFixed(2)}% strong`}>
-          {activeLevels.map(level => <div key={level} className={`toolbar-progress-seg level-${level}`} style={{width: `${levelSummary[level] / total * 100}%`}} />)}
+          aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number((levelSummary[4] / progressTotal * 100).toFixed(2))}
+          aria-valuetext={`${(levelSummary[4] / progressTotal * 100).toFixed(2)}% strong`}>
+          {activeLevels.map(level => <div key={level} className={`toolbar-progress-seg level-${level}`} style={{width: `${levelSummary[level] / progressTotal * 100}%`}} />)}
         </div>
         <div className="toolbar-progress-legend">
           {legendLevels.map(level => <span key={level} className="toolbar-progress-legend-item">
             <span className={`toolbar-progress-dot level-${level}`} />
             <span className="toolbar-progress-legend-label">{LEVEL_LABELS[level]}</span>
-            <span className="toolbar-progress-legend-pct">{(levelSummary[level] / total * 100).toFixed(2)}%</span>
+            <span className="toolbar-progress-legend-pct">{(levelSummary[level] / progressTotal * 100).toFixed(2)}%</span>
           </span>)}
         </div>
       </div>}

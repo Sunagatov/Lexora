@@ -95,7 +95,7 @@ def test_summary_route_and_sort_validation(db):
     with TestClient(app) as client:
         response = client.get("/api/words/summary")
         assert response.status_code == 200
-        assert response.json() == {"total": 1, "level_counts": {"4": 1}}
+        assert response.json() == {"total": 1, "scope_total": 1, "level_counts": {"4": 1}}
         assert client.get("/api/words?sort=unknown").status_code == 422
         response = client.get("/api/words?sort=level-asc&page_size=50")
         assert response.status_code == 200
@@ -107,7 +107,35 @@ def test_summary_route_and_sort_validation(db):
         assert client.get("/api/words").json()["page_size"] == 50
 
 
-def test_combines_or_within_groups_and_and_between_groups_with_topic_subtrees(db):
+def test_summary_route_reflects_filters_in_scope_total(db):
+    db.add_all([
+        Word(term="weak-a1", knowledge_level=1, cefr_level="A1"),
+        Word(term="okay-a1", knowledge_level=3, cefr_level="A1"),
+        Word(term="strong-a1", knowledge_level=4, cefr_level="A1"),
+        Word(term="weak-a2", knowledge_level=1, cefr_level="A2"),
+    ])
+    db.commit()
+    app = FastAPI()
+    app.include_router(router)
+    app.dependency_overrides[get_db] = lambda: db
+    with TestClient(app) as client:
+        response = client.get("/api/words/summary?cefr=A1")
+        assert response.status_code == 200
+        assert response.json() == {
+            "total": 3,
+            "scope_total": 3,
+            "level_counts": {"1": 1, "3": 1, "4": 1},
+        }
+        response = client.get("/api/words/summary?cefr=A1&level=1")
+        assert response.status_code == 200
+        assert response.json() == {
+            "total": 1,
+            "scope_total": 1,
+            "level_counts": {"1": 1},
+        }
+
+
+def test_combines_or_within_groups_and_between_groups_with_topic_subtrees(db):
     parent = Topic(name="Parent", slug="parent")
     child = Topic(name="Child", slug="child", parent_topic=parent)
     other = Topic(name="Other", slug="other")

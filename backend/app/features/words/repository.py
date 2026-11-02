@@ -161,15 +161,17 @@ def count_active_words(db: Session) -> int:
     return int(db.scalar(select(func.count()).select_from(Word).where(Word.deleted_at.is_(None), Word.language == learning_language(db))) or 0)
 
 
-def get_word_knowledge_summary(db: Session, *, favorites_only: bool = False) -> dict[int, int]:
+def get_word_knowledge_summary(db: Session, *, favorites_only: bool = False, **filters) -> dict[int, int]:
+    stmt = _filtered_word_stmt(db, favorites_only=favorites_only, **filters)
     rows = db.execute(
-        select(Word.knowledge_level, func.count())
-        .where(Word.deleted_at.is_(None))
-        .where(Word.language == learning_language(db))
-        .where(Word.is_favorite.is_(True) if favorites_only else True)
+        stmt.with_only_columns(Word.knowledge_level, func.count())
         .group_by(Word.knowledge_level)
     ).all()
     return {int(level or 0): int(count) for level, count in rows}
+
+
+def get_word_knowledge_scope_total(db: Session, *, favorites_only: bool = False, **filters) -> int:
+    return int(db.scalar(count_stmt(_filtered_word_stmt(db, favorites_only=favorites_only, **filters))) or 0)
 
 
 def list_active_word_topic_levels(db: Session) -> list[tuple[int, int | None, int]]:

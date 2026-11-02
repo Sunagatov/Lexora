@@ -278,6 +278,7 @@ class BulkImportResponse(BaseModel):
 
 class WordKnowledgeSummary(BaseModel):
     total: int
+    scope_total: int
     level_counts: dict[int, int]
 
 

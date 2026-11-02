@@ -37,7 +37,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
   const [actionError, setActionError] = useState<string | null>(null)
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
   const words = useMemo(() => s.wordsQuery.isPlaceholderData ? [] : s.wordsQuery.data?.words ?? [], [s.wordsQuery.data, s.wordsQuery.isPlaceholderData])
-  const total = s.summaryQuery.data?.total ?? 0
+  const total = s.summaryQuery.data?.scope_total ?? 0
   const counts = s.summaryQuery.data?.level_counts
   const strong = counts?.[4] ?? 0
   const levelSummary = {1: counts?.[1] ?? 0, 3: (counts?.[2] ?? 0) + (counts?.[3] ?? 0), 4: strong, 5: counts?.[5] ?? 0}
@@ -96,7 +96,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
               onReset={s.resetFilters}
               totalWordsOverall={total} topicTotalCount={total} filteredCount={filteredCount}
               pageStart={pageStart} pageEnd={pageEnd} levelSummary={levelSummary}
-              progressLabel="Whole vocabulary progress"
+              progressLabel={hasFilters ? 'Filtered vocabulary progress' : 'Whole vocabulary progress'}
               progressReady={s.summaryQuery.isSuccess}
               pageWords={words} navigationQuery={s.listParams} navigationIds={s.wordsQuery.data?.ordered_ids} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}

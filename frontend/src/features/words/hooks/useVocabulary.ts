@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {keepPreviousData, useQuery} from '@tanstack/react-query'
 import {queryKeys} from '@/app/queryKeys'
-import {fetchWordList, fetchWordKnowledgeSummary} from '@/features/words/api/wordsApi'
+import {fetchWordList, fetchWordKnowledgeSummary, type WordSummaryParams} from '@/features/words/api/wordsApi'
 import {useWordFilterControls} from '@/features/words/hooks/useWordFilterControls'
 
 export function useVocabulary(favoritesOnly = false) {
@@ -23,7 +23,16 @@ export function useVocabulary(favoritesOnly = false) {
     // New controls/pages use a new key and fetch the current server ordering.
     refetchOnMount: favoritesOnly ? 'always' : false, refetchOnWindowFocus: false, refetchOnReconnect: false,
   })
-  const summaryQuery = useQuery({queryKey: [...queryKeys.wordSummary, favoritesOnly], queryFn: () => fetchWordKnowledgeSummary(favoritesOnly)})
+  const summaryParams: WordSummaryParams = {
+    favoritesOnly,
+    search: listParams.search,
+    level: listParams.level,
+    pos: listParams.pos,
+    cefr: listParams.cefr,
+    topicIds: listParams.topicIds,
+    completeness: listParams.completeness,
+  }
+  const summaryQuery = useQuery({queryKey: [...queryKeys.wordSummary, summaryParams], queryFn: () => fetchWordKnowledgeSummary(summaryParams)})
   const totalPages = Math.max(1, wordsQuery.data?.total_pages ?? lastTotalPages)
   useEffect(() => {
     if (wordsQuery.isSuccess && !wordsQuery.isPlaceholderData) setLastTotalPages(totalPages)

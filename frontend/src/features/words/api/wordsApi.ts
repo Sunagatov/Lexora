@@ -106,11 +106,10 @@ export type WordListResponse = {
   ordered_ids?: number[] | null;
 }
 
-export type WordKnowledgeSummary = {total: number; level_counts: Record<number, number>}
-export const fetchWordKnowledgeSummary = (favoritesOnly = false) => request<WordKnowledgeSummary>(`/api/words/summary${favoritesOnly ? '?favorites_only=true' : ''}`)
+export type WordSummaryParams = Pick<WordListParams, 'favoritesOnly' | 'search' | 'topicId' | 'topicIds' | 'pos' | 'cefr' | 'level' | 'completeness'>
+export type WordKnowledgeSummary = {total: number; scope_total: number; level_counts: Record<number, number>}
 
-export const fetchWordList = (params: WordListParams = {}): Promise<WordListResponse> => {
-  const q = new URLSearchParams()
+function appendWordFilters(q: URLSearchParams, params: WordListParams) {
   if (params.favoritesOnly) q.set('favorites_only', 'true')
   if (params.search?.trim()) q.set('search', params.search.trim())
   if (params.topicId) q.set('topic_id', String(params.topicId))
@@ -122,6 +121,18 @@ export const fetchWordList = (params: WordListParams = {}): Promise<WordListResp
   if (Array.isArray(params.level)) params.level.forEach(value => q.append('levels', String(value)))
   else if (params.level) q.set('level', String(params.level))
   if (params.completeness) q.set('completeness', params.completeness)
+}
+
+export const fetchWordKnowledgeSummary = (params: WordSummaryParams = {}) => {
+  const q = new URLSearchParams()
+  appendWordFilters(q, params)
+  const qs = q.toString()
+  return request<WordKnowledgeSummary>(`/api/words/summary${qs ? `?${qs}` : ''}`)
+}
+
+export const fetchWordList = (params: WordListParams = {}): Promise<WordListResponse> => {
+  const q = new URLSearchParams()
+  appendWordFilters(q, params)
   if (params.page) q.set('page', String(params.page))
   if (params.pageSize) q.set('page_size', String(params.pageSize))
   if (params.sort) q.set('sort', params.sort)

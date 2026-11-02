@@ -74,4 +74,19 @@ describe('permanent vocabulary search', () => {
     expect(screen.queryByRole('listbox', {name: 'Sort options'})).toBeNull()
     expect(input.value).toBe('hello')
   })
+
+  it('measures progress against filtered words instead of the whole library', () => {
+    const change = vi.fn()
+    render(<WordCollectionToolbar
+      wordSearch="" setWordSearch={change} sortBy="level-asc" setSortBy={change}
+      levelFilter="all" setLevelFilter={change} posFilter={null} setPosFilter={change}
+      cefrFilter="A1" setCefrFilter={change} completeness="all" setCompleteness={change}
+      onReset={change} totalWordsOverall={1000} topicTotalCount={1000} filteredCount={20}
+      pageStart={1} pageEnd={20} levelSummary={{1: 10, 3: 0, 4: 10, 5: 0}}
+      progressLabel="Filtered vocabulary progress"
+    />)
+    const progress = screen.getByRole('progressbar', {name: 'Filtered vocabulary progress'})
+    expect(progress.getAttribute('aria-valuenow')).toBe('50')
+    expect(progress.getAttribute('aria-valuetext')).toBe('50.00% strong')
+  })
 })

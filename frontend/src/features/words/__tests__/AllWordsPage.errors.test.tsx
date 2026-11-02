@@ -35,7 +35,7 @@ beforeEach(() => {
   queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   vi.mocked(fetchTopics).mockResolvedValue([])
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha]))
-  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {3: 1}})
+  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, scope_total: 1, level_counts: {3: 1}})
 })
 
 it('renders word cards at tablet widths where CSS hides the table', async () => {
