@@ -28,6 +28,15 @@ Protected router groups:
 - Page size (50/100/200), sorting, language choices, theme, card/gesture/display
   toggles and per-language pronunciation modes persist in `app_preferences`.
   Partial updates serialize on its singleton row to preserve unrelated edits.
+- Shared `word_mix` preferences contain `size` (whole number 1–1000), nonempty
+  `levels` (1/3/4/5), `cefr_levels` (empty means all), `cooldown_days` (0–365) and
+  `balance_topics`. Nested patches merge submitted fields. Reads expose the
+  existing server defaults until customised; unrelated settings saves do not
+  change the generation algorithm. No schema migration is needed for this JSON key.
+  Customised mixes select unique active words inside the current learning language,
+  apply knowledge/CEFR/cooldown filters and optionally distribute choices across
+  topics. Topic selection always includes all topics. Settings apply on the next
+  generation, preserving the existing set, its IDs and completion state.
 - Word responses include `is_favorite`; existing word PUT accepts that flag alone
   without changing knowledge or topics. `favorites_only=true` filters word lists,
   ordered IDs and knowledge summaries inside the selected learning library.

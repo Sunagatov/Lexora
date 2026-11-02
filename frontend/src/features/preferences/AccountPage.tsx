@@ -12,6 +12,7 @@ import { AccountIcon } from './AccountIcon'
 import { AccountData } from './AccountData'
 import { AccountOffline } from './AccountOffline'
 import {AccountSidebar} from './AccountSidebar'
+import {AccountWordMix} from './AccountWordMix'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {
   DEFAULT_PREFERENCES,
@@ -24,6 +25,7 @@ import {
 
 const SECTIONS = [
   { id: 'languages', title: 'Languages', description: 'Learning and translation languages' },
+  { id: 'word-mix', title: 'Daily Word Mix', description: 'Set size, word selection and variety' },
   { id: 'study', title: 'Study preferences', description: 'Word lists, cards and gestures' },
   { id: 'appearance', title: 'Appearance', description: 'Theme and display preferences' },
   { id: 'statistics', title: 'Statistics', description: 'Progress and activity' },
@@ -110,6 +112,7 @@ export function AccountPage() {
         </button>
       </nav>
       <div className="account-content">
+        <div className="account-content-inner">
         {section && <button
           className="account-mobile-back account-back"
           onClick={() => navigate(routes.account, { state })}
@@ -119,7 +122,7 @@ export function AccountPage() {
         </button>}
         <div className="account-title">
           <h1>{title}</h1>
-          {section === 'study' && <p>Shared across all learning languages</p>}
+          {(section === 'study' || section === 'word-mix') && <p>Shared across all learning languages</p>}
           {!section && <p>Your library. Your preferences.</p>}
         </div>
         {!section && (
@@ -150,6 +153,7 @@ export function AccountPage() {
             </button>
           </div>
         )}
+        {section === 'word-mix' && <AccountWordMix preferences={values.word_mix} />}
         {section === 'languages' && (
           <div className="account-surface">
             <label className="account-row account-language-row">
@@ -323,7 +327,7 @@ export function AccountPage() {
             Section not found. <Link to={routes.account}>Open My Lexora</Link>
           </p>
         )}
-        {['study', 'languages', 'appearance'].includes(section ?? '') && (
+        {['study', 'languages', 'appearance', 'word-mix'].includes(section ?? '') && (
           <div className="account-save-row">
             <span
               role="status"
@@ -368,6 +372,7 @@ export function AccountPage() {
             </button>
           </p>
         )}
+        </div>
       </div>
     </div>
     </>

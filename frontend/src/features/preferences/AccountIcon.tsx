@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 export function AccountIcon({ name }: { name: string }) {
   const paths: Record<string, ReactNode> = {
+    'word-mix': <><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-2 5-4m2-4c2-3 3-4 5-4h3m-4-4 4 4-4 4" /></>,
     account: (
       <>
         <circle cx="12" cy="12" r="9" />

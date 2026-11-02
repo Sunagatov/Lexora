@@ -259,21 +259,18 @@ export function TopicSidebar({
 
   return (
     <>
-      {!isMobile && (
-        <button
+      <TopicSidebarHeader
+        collapseControl={!isMobile && <button
           type="button"
           className="sidebar-collapse-btn"
           onClick={onToggleCollapsed}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points={isCollapsed ? '4,2 9,7 4,12' : '9,2 4,7 9,12'} />
           </svg>
-        </button>
-      )}
-
-      <TopicSidebarHeader
+        </button>}
         topicSearch={topicSearch}
         setTopicSearch={setTopicSearch}
         isSmartReview={isSmartReview}

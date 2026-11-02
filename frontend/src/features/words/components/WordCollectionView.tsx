@@ -28,7 +28,6 @@ type Props = {
   collectionTitle?: string
   collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
-  collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
   levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
@@ -64,7 +63,7 @@ type Props = {
 }
 
 export function WordCollectionView({
-  collectionTitle, collectionBreadcrumb, collectionAction, collectionProgress,
+  collectionTitle, collectionBreadcrumb, collectionAction,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
@@ -105,7 +104,7 @@ export function WordCollectionView({
     <div className="word-collection-layout">
       <div className="sticky-controls">
         <WordCollectionToolbar
-          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction} collectionProgress={collectionProgress}
+          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction}
           wordSearch={wordSearch} setWordSearch={setWordSearch}
           sortBy={sortBy} setSortBy={setSortBy}
           levelFilter={levelFilter} setLevelFilter={setLevelFilter}

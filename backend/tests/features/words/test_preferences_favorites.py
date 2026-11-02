@@ -15,7 +15,11 @@ from app.features.languages.catalog import configure_language, learning_language
 from app.features.preferences.model import AppPreferences
 from app.features.preferences.router import router as preferences_router
 from app.features.preferences.schemas import Preferences, PreferencesPatch
-from app.features.preferences.service import get_preferences, update_preferences
+from app.features.preferences.service import (
+    default_word_mix_preferences,
+    get_preferences,
+    update_preferences,
+)
 from app.features.topics.model import Topic
 from app.features.words.model import Word, WordTranslation
 from app.features.words.progress import WordProgressEvent
@@ -43,7 +47,7 @@ def db():
 
 
 def test_preferences_are_global_partial_persistent_and_validate_before_writing(db):
-    assert get_preferences(db) == Preferences()
+    assert get_preferences(db) == Preferences(word_mix=default_word_mix_preferences())
     assert db.scalar(select(func.count()).select_from(AppPreferences)) == 0
     first = update_preferences(
         db, PreferencesPatch(page_size=100, swipes=False, pronunciation_modes={"zh": "pinyin"})

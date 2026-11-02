@@ -11,6 +11,15 @@ import {
   type PronunciationPreferences,
 } from '@/features/languages/pronunciationPreferences'
 import type { SortOption } from '@/features/words/model/wordDomain'
+import type {CefrLevel} from '@/features/words/model/wordDomain'
+
+export type WordMixPreferences = {
+  size: number
+  levels: (1 | 3 | 4 | 5)[]
+  cefr_levels: CefrLevel[]
+  cooldown_days: number
+  balance_topics: boolean
+}
 
 export type Preferences = {
   language: LearningLanguage
@@ -26,6 +35,7 @@ export type Preferences = {
   colours: boolean
   animations: boolean
   pronunciation_modes: PronunciationPreferences
+  word_mix: WordMixPreferences
 }
 export const DEFAULT_PREFERENCES: Preferences = {
   language: 'en',
@@ -41,8 +51,10 @@ export const DEFAULT_PREFERENCES: Preferences = {
   colours: true,
   animations: true,
   pronunciation_modes: {},
+  word_mix: {size: 200, levels: [1], cefr_levels: [], cooldown_days: 1, balance_topics: true},
 }
 const key = 'lexora-owner-preferences-v1'
+type PreferencesPatch = Omit<Partial<Preferences>, 'word_mix'> & {word_mix?: Partial<WordMixPreferences>}
 type Snapshot = { values: Preferences; status: 'saved' | 'saving' | 'error'; error: string }
 function readCache() {
   try {
@@ -60,11 +72,12 @@ let snapshot: Snapshot = {
     translation_language: localLanguages.translationLanguage,
     pronunciation_modes: pronunciationPreferences(),
     ...cached.values,
+    word_mix: cached.values?.word_mix ?? DEFAULT_PREFERENCES.word_mix,
   },
   status: 'saved',
   error: '',
 }
-let pending: Partial<Preferences> = cached.pending ?? {}
+let pending: PreferencesPatch = cached.pending ?? {}
 let saving = false
 let editVersion = 0
 const listeners = new Set<() => void>()
@@ -118,7 +131,7 @@ export async function loadPreferences() {
   }
 }
 
-export function updatePreferences(patch: Partial<Preferences>) {
+export function updatePreferences(patch: PreferencesPatch) {
   editVersion += 1
   const modes = patch.pronunciation_modes
     ? { ...snapshot.values.pronunciation_modes, ...patch.pronunciation_modes }
@@ -126,11 +139,13 @@ export function updatePreferences(patch: Partial<Preferences>) {
   pending = {
     ...pending,
     ...patch,
+    ...(patch.word_mix ? {word_mix: {...pending.word_mix, ...patch.word_mix}} : {}),
     ...(patch.pronunciation_modes
       ? { pronunciation_modes: { ...pending.pronunciation_modes, ...patch.pronunciation_modes } }
       : {}),
   }
-  publish({ ...snapshot.values, ...patch, pronunciation_modes: modes }, 'saving')
+  publish({ ...snapshot.values, ...patch, pronunciation_modes: modes,
+    word_mix: {...snapshot.values.word_mix, ...patch.word_mix} }, 'saving')
   void flushPreferences()
 }
 
@@ -151,6 +166,7 @@ export async function flushPreferences() {
           {
             ...values,
             ...pending,
+            word_mix: {...values.word_mix, ...pending.word_mix},
             pronunciation_modes: { ...values.pronunciation_modes, ...pending.pronunciation_modes },
           },
           Object.keys(pending).length ? 'saving' : 'saved',
@@ -159,6 +175,7 @@ export async function flushPreferences() {
         pending = {
           ...patch,
           ...pending,
+          ...(patch.word_mix || pending.word_mix ? {word_mix: {...patch.word_mix, ...pending.word_mix}} : {}),
           ...(patch.pronunciation_modes || pending.pronunciation_modes
             ? {
                 pronunciation_modes: {

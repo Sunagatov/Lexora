@@ -77,8 +77,16 @@ their existing full translations and details expansion.
 
 Vocabulary search is always visible in the toolbar beside sorting and Filters.
 It does not autofocus on page load; clearing the query keeps focus in the input.
-On focus it widens inside its reserved desktop track; on mobile it occupies the
+Desktop search, sorting and Filters are grouped together with small gaps; search
+widens modestly on focus instead of leaving a wide reserved track. On mobile it occupies the
 controls row until Done, Escape or blur, preserving the query and list position.
+Daily Word Mix uses an All words / Daily Word Mix breadcrumb, a matching count,
+and New set in its heading row. Only the knowledge distribution bar is shown;
+session completion still updates as words are rated, without a separate Reviewed bar.
+Collection headings show only the matching word count, without an unfiltered
+"of N" suffix. Search and sort/filter controls share the same resting border colour.
+The desktop sidebar collapse/expand button sits beside topic search in the header,
+including when collapsed. The application footer does not repeat the Lexora brand.
 Knowledge choices open a large mobile bottom sheet or an anchored desktop dialog,
 with descriptions and a selected checkmark. Selecting saves immediately; dismissing
 does not change a rating. Only the active mobile/desktop list presentation mounts.
@@ -99,7 +107,12 @@ in place until navigation or filter changes. Lists reuse normal sorting, search,
 filters and pagination. Offline copies retain the flag and use the same filters.
 
 My Lexora also owns Statistics, Import/Export, Trash, Offline, study defaults and
-appearance. Desktop uses section navigation; mobile uses an overview and section
+appearance. Daily Word Mix settings live at `/account/word-mix`, shared across
+languages and devices. Size, included knowledge/CEFR levels, recent-review cooldown
+and topic balancing affect the next generated set. All topics in the current
+language are eligible. A custom size accepts whole numbers 1–1000, alongside
+50/100/200/500 presets. Existing generation defaults remain until customised.
+Desktop uses centred, width-constrained section navigation; mobile uses an overview and section
 pages. Returning to the same library restores the captured word-list URL/scroll.
 The header brand returns from My Lexora to the captured list; switching a learning
 language opens All words for the new library instead. The account header includes
@@ -107,6 +120,9 @@ the sidebar burger on all screen sizes, without a duplicate Back to words action
 Mobile account subsections retain navigation to the account overview. Open sidebars
 make underlying content inert and return focus when dismissed.
 Offline copies remain device-local even though display/study preferences sync.
+Saved-mode new sets use the cached mix size, knowledge/CEFR choices and topic
+balancing. Cooldowns use available saved review history, including completed
+items from downloaded sets; they cannot see server history that was not downloaded.
 
 The browser-tab favicon follows the selected learning language and its saved
 preference on reload. It uses local flag PNGs rendered from the bundled Noto

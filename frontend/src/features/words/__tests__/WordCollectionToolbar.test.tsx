@@ -90,4 +90,20 @@ describe('permanent vocabulary search', () => {
     expect(progress.getAttribute('aria-valuenow')).toBe('50')
     expect(progress.getAttribute('aria-valuetext')).toBe('50.00% strong')
   })
+
+  it('shows only the matching count and calculates percentages from that filtered scope', () => {
+    const change = vi.fn()
+    render(<WordCollectionToolbar
+      wordSearch="" setWordSearch={change} sortBy="level-asc" setSortBy={change}
+      levelFilter="all" setLevelFilter={change} posFilter={null} setPosFilter={change}
+      cefrFilter="A1" setCefrFilter={change} completeness="all" setCompleteness={change}
+      onReset={change} totalWordsOverall={7354} topicTotalCount={7354} filteredCount={850}
+      pageStart={1} pageEnd={50} levelSummary={{1: 680, 3: 0, 4: 170, 5: 0}}
+      progressCount={850}
+    />)
+    expect(screen.getByLabelText('850 matching words').textContent).toBe('· 850')
+    expect(screen.queryByText(/7,354/)).toBeNull()
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuetext')).toBe('20.00% strong')
+    expect(screen.getByText('80.00%')).toBeTruthy()
+  })
 })

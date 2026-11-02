@@ -57,6 +57,21 @@ describe('owner preferences sync', () => {
     expect(preferencesSnapshot().values.page_size).toBe(200)
   })
 
+  it('sends only changed mix fields and keeps queued mix edits while a save is in flight', async () => {
+    let completeFirst!: (value: Preferences) => void
+    vi.mocked(networkRequest).mockImplementationOnce(() => new Promise(resolve => {completeFirst = resolve as typeof completeFirst}))
+      .mockResolvedValueOnce({...DEFAULT_PREFERENCES, word_mix: {...DEFAULT_PREFERENCES.word_mix, size: 75, cefr_levels: ['A1']}})
+    updatePreferences({word_mix: {size: 75}})
+    updatePreferences({word_mix: {cefr_levels: ['A1']}})
+    completeFirst({...DEFAULT_PREFERENCES, word_mix: {...DEFAULT_PREFERENCES.word_mix, size: 75}})
+    await waitFor(() => expect(preferencesSnapshot().status).toBe('saved'))
+    expect(preferencesSnapshot().values.word_mix).toMatchObject({size: 75, cefr_levels: ['A1']})
+    const patches = vi.mocked(networkRequest).mock.calls.filter(([, init]) => init?.method === 'PATCH')
+    expect(patches.map(([, init]) => JSON.parse(String(init?.body)))).toEqual([
+      {word_mix: {size: 75}}, {word_mix: {cefr_levels: ['A1']}},
+    ])
+  })
+
   it('ignores a stale read even when a newer edit has finished saving', async () => {
     let completeRead!: (value: Preferences) => void
     vi.mocked(networkRequest)

@@ -99,6 +99,7 @@
   overflow: auto;
   padding: 30px 34px 38px;
 }
+.account-content-inner { width: 100%; max-width: 1040px; margin-inline: auto; }
 .account-title {
   margin-bottom: 24px;
 }
@@ -127,7 +128,7 @@
   border-radius: 12px;
   background: var(--surface);
   overflow: hidden;
-  max-width: 920px;
+  max-width: 100%;
 }
 .account-row {
   display: flex;
@@ -139,6 +140,28 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
+}
+.account-word-mix { display: flex; flex-direction: column; gap: 16px; }
+.account-card-title { margin: 0; padding: 14px 18px; font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--border); }
+.account-mix-size-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.account-mix-custom { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+.account-mix-size-controls input { width: 72px; min-width: 0; padding: 8px; font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; }
+.account-mix-size-controls input[aria-invalid="true"] { border-color: #ef4444; }
+.account-mix-choices { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 440px; }
+.account-mix-choices button { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-2); font: inherit; font-size: 13px; }
+.account-mix-choices button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-light); color: var(--text); }
+.account-mix-choices button[aria-pressed="true"]:disabled { opacity: 1; }
+.account-mix-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; }
+.account-mix-dot.level-3 { background: #7c3aed; }
+.account-mix-dot.level-4 { background: #059669; }
+.account-mix-dot.level-5 { background: #94a3b8; }
+.account-mix-value { font-size: 13px; color: var(--text-2); white-space: nowrap; }
+.account-mix-error { color: #ef4444; margin: 0; padding: 0 18px 12px; font-size: 12px; }
+.account-word-mix > .account-help { margin: 0; }
+.account-word-mix + .account-save-row { max-width: none; justify-content: flex-end; }
+@media (max-width: 1100px) {
+  .account-mix-row { align-items: stretch; flex-direction: column; }
+  .account-mix-choices, .account-mix-size-controls { justify-content: flex-start; max-width: none; }
 }
 .account-row + .account-row {
   border-top: 1px solid var(--border);

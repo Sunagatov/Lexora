@@ -22,7 +22,6 @@ type Props = {
   collectionTitle?: string
   collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
-  collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
   levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
@@ -77,10 +76,10 @@ function toggleValue<T>(values: T[], value: T): T[] {
 }
 
 export function WordCollectionToolbar({
-  collectionTitle = 'All words', collectionBreadcrumb, collectionAction, collectionProgress,
+  collectionTitle = 'All words', collectionBreadcrumb, collectionAction,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
-  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressCount, progressReady = true,
+  onReset, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressCount, progressReady = true,
   thenSortBy = null, setThenSortBy, topicFilter = [], setTopicFilter, topics = [], onLearningSort,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -131,9 +130,7 @@ export function WordCollectionToolbar({
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'
   const formatCount = (count: number) => count.toLocaleString('en-GB')
-  const countLabel = searchActive || hasActiveFilters
-    ? `${formatCount(filteredCount)} of ${formatCount(topicTotalCount)}`
-    : formatCount(topicTotalCount)
+  const countLabel = formatCount(filteredCount)
   const sortLabel = sortBy === 'level-asc' && thenSortBy === 'cefr-asc'
     ? 'Weak → A1'
     : `${SORT_LABELS[sortBy]}${thenSortBy ? ` → ${SORT_LABELS[thenSortBy]}` : ''}`
@@ -154,11 +151,11 @@ export function WordCollectionToolbar({
       <div className="toolbar-heading-row">
         <div className="toolbar-list-heading">
           {collectionBreadcrumb ?? <h1>{collectionTitle}</h1>}
-          <span className="toolbar-list-count" aria-label={`${filteredCount} matching words out of ${topicTotalCount}`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
+          <span className="toolbar-list-count" aria-label={`${filteredCount} matching words`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
         </div>
+        {collectionAction}
       </div>
 
-      {collectionProgress}
       {progressReady && <div className="toolbar-knowledge-progress">
         <div className="toolbar-progress-bar" role="progressbar" aria-label={progressLabel}
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number((levelSummary[4] / progressTotal * 100).toFixed(2))}
@@ -219,7 +216,6 @@ export function WordCollectionToolbar({
             Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
           </button>
         </div>
-        {collectionAction}
       </div>
 
       {/* Filter chips panel */}

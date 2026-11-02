@@ -1,21 +1,60 @@
 from __future__ import annotations
 
 import random
-from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from collections import defaultdict, deque
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.features.languages.catalog import learning_language
+from app.features.preferences.schemas import WordMixPreferences
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.words.model import Word
+
+
+def configured_candidates_stmt(db, preferences: WordMixPreferences):
+    levels = [*preferences.levels, *([2] if 3 in preferences.levels else [])]
+    stmt = select(Word).where(
+        Word.language == learning_language(db), Word.is_active.is_(True),
+        Word.deleted_at.is_(None), Word.knowledge_level.in_(levels),
+    )
+    if preferences.cefr_levels:
+        stmt = stmt.where(Word.cefr_level.in_(preferences.cefr_levels))
+    excluded = cooldown_word_ids(db, cooldown_days=preferences.cooldown_days)
+    if excluded:
+        stmt = stmt.where(Word.id.not_in(excluded))
+    return stmt
+
+
+def pick_configured_words(db, preferences: WordMixPreferences) -> list[Word]:
+    from sqlalchemy.sql.expression import func as sa_func
+    stmt = configured_candidates_stmt(db, preferences).options(selectinload(Word.topics)).order_by(sa_func.random())
+    if not preferences.balance_topics:
+        return list(db.scalars(stmt.limit(preferences.size)).all())
+    # Round-robin topic buckets are a soft balance, so a small library can still fill a set.
+    buckets = defaultdict(deque)
+    for word in db.scalars(stmt).all():
+        buckets[min((topic.id for topic in word.topics), default=0)].append(word)
+    selected = []
+    while buckets and len(selected) < preferences.size:
+        for topic_id in list(buckets):
+            selected.append(buckets[topic_id].popleft())
+            if not buckets[topic_id]:
+                del buckets[topic_id]
+            if len(selected) == preferences.size:
+                break
+    return selected
+
+
+def has_configured_candidates(db, preferences: WordMixPreferences) -> bool:
+    return db.scalar(configured_candidates_stmt(db, preferences).with_only_columns(Word.id).limit(1)) is not None
 
 
 def cooldown_word_ids(db, *, cooldown_days: int) -> set[int]:
     if cooldown_days <= 0:
         return set()
-    cutoff = datetime.now(timezone.utc) - timedelta(days=cooldown_days)
+    cutoff = datetime.now(UTC) - timedelta(days=cooldown_days)
     stmt = (
         select(StudyQueueItem.word_id)
         .join(StudyQueue, StudyQueueItem.queue_id == StudyQueue.id)

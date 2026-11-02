@@ -82,8 +82,9 @@ page membership/order. Paginated word queries are marked stale without refetchin
 for knowledge-only updates, and do not refresh on focus, reconnect, or remount.
 Changing list controls/pages or reloading fetches the current saved ordering.
 The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
-available through the sidebar/menu and keeps its completion progress and New set
-control within the shared toolbar.
+available through the sidebar/menu. Its shared toolbar shows one knowledge
+distribution bar, an All words / Daily Word Mix breadcrumb and New set beside
+the heading; completion continues to be tracked without another progress bar.
 
 The shared Add word action is available on the homepage, bulk vocabulary, and
 topic lists. Its modal preserves drafts after failed saves and prevents duplicate

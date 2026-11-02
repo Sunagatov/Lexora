@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import cast
 
 from sqlalchemy import func, select
@@ -29,8 +29,14 @@ def complete_queue_item(db, item_id: int) -> StudyQueue:
         raise QueueItemNotFoundError
 
     queue: StudyQueue | None = cast(StudyQueue | None, db.get(StudyQueue, item.queue_id))
-    now = datetime.now(timezone.utc)
-    if queue is None or not queue.is_active or queue.expires_at <= now or (getattr(queue, "language", None) or "en") != learning_language(db):
+    now = datetime.now(UTC)
+    if queue is None or not queue.is_active:
+        raise QueueNotActiveError
+    expires_at = queue.expires_at
+    # SQLite reads UTC timestamps back without timezone information.
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
+    if expires_at <= now or (getattr(queue, "language", None) or "en") != learning_language(db):
         raise QueueNotActiveError
 
     word = db.get(Word, item.word_id)
@@ -52,7 +58,7 @@ def deactivate_all_queues(db) -> None:
 
 
 def build_queue(selected_words: list, *, ttl_hours: int) -> StudyQueue:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return StudyQueue(
         generated_at=now,
         expires_at=now + timedelta(hours=ttl_hours),
@@ -90,7 +96,7 @@ def persist_queue(db, queue: StudyQueue, selected_words: list, *, log_audit_even
 
 
 def load_active_queue(db) -> StudyQueue | None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return cast(
         StudyQueue | None,
         db.scalar(
@@ -106,7 +112,7 @@ def load_active_queue(db) -> StudyQueue | None:
 
 def load_active_queue_lightweight(db) -> StudyQueue | None:
     """Load active queue without eager-loading items/words (for regeneration checks)."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return cast(
         StudyQueue | None,
         db.scalar(

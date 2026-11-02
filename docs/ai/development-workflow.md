@@ -33,8 +33,9 @@ words after search and filters, independent of the current page. Server-paginate
 views use the summary response's own total for percentage calculations so separately
 loading word pages cannot distort the percentages. Topic lists and Daily Word Mix
 summarize their complete filtered collections before pagination. `/smart-review`
-remains the separate Daily Word Mix with its session completion progress and
-New set action. The logo opens `/` with cleared filters; `/words` retains bulk
+remains the separate Daily Word Mix, showing one knowledge bar and a New set
+action beside its breadcrumb heading. Session completion is still tracked.
+The logo opens `/` with cleared filters; `/words` retains bulk
 editing. Word changes invalidate both the paginated lists and library summary.
 
 Opening a word stores the source list URL and scroll position in router state.
