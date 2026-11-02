@@ -38,6 +38,7 @@ type Props = {
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
   progressLabel?: string
+  progressCount?: number
   progressReady?: boolean
 }
 
@@ -79,7 +80,7 @@ export function WordCollectionToolbar({
   collectionTitle = 'All words', collectionBreadcrumb, collectionAction, collectionProgress,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
-  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressReady = true,
+  onReset, topicTotalCount, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressCount, progressReady = true,
   thenSortBy = null, setThenSortBy, topicFilter = [], setTopicFilter, topics = [], onLearningSort,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -97,7 +98,7 @@ export function WordCollectionToolbar({
   const searchActive = wordSearch.trim() !== ''
   const activeFilterCount = levels.length + positions.length + cefrs.length + topicFilter.length + (completeness !== 'all' ? 1 : 0)
   const hasActiveFilters = activeFilterCount > 0
-  const progressTotal = filteredCount || 1
+  const progressTotal = (progressCount ?? filteredCount) || 1
 
   function handleSortChange(v: SortOption) {
     setSortBy(v)

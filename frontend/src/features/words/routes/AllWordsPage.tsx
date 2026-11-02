@@ -158,6 +158,7 @@ export function AllWordsPage() {
         levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 3: (s.summaryQuery.data?.level_counts[2] ?? 0) + (s.summaryQuery.data?.level_counts[3] ?? 0), 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
         progressLabel={hasFilters ? 'Filtered vocabulary progress' : 'Whole vocabulary progress'}
         progressReady={s.summaryQuery.isSuccess}
+        progressCount={s.summaryQuery.data?.total}
       />
 
       {(loadError || actionError) && (

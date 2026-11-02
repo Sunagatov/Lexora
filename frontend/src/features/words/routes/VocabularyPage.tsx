@@ -98,6 +98,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
               pageStart={pageStart} pageEnd={pageEnd} levelSummary={levelSummary}
               progressLabel={hasFilters ? 'Filtered vocabulary progress' : 'Whole vocabulary progress'}
               progressReady={s.summaryQuery.isSuccess}
+              progressCount={s.summaryQuery.data?.total}
               pageWords={words} navigationQuery={s.listParams} navigationIds={s.wordsQuery.data?.ordered_ids} page={s.page} totalPages={s.totalPages}
               pageSize={s.pageSize} setPageSize={s.setPageSize} setPage={s.setPage}
               pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}

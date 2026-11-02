@@ -75,15 +75,16 @@ describe('permanent vocabulary search', () => {
     expect(input.value).toBe('hello')
   })
 
-  it('measures progress against filtered words instead of the whole library', () => {
+  it.each([20, 200])('measures filtered progress independently of a list response containing %s words', (listCount) => {
     const change = vi.fn()
     render(<WordCollectionToolbar
       wordSearch="" setWordSearch={change} sortBy="level-asc" setSortBy={change}
       levelFilter="all" setLevelFilter={change} posFilter={null} setPosFilter={change}
       cefrFilter="A1" setCefrFilter={change} completeness="all" setCompleteness={change}
-      onReset={change} totalWordsOverall={1000} topicTotalCount={1000} filteredCount={20}
+      onReset={change} totalWordsOverall={1000} topicTotalCount={1000} filteredCount={listCount}
       pageStart={1} pageEnd={20} levelSummary={{1: 10, 3: 0, 4: 10, 5: 0}}
       progressLabel="Filtered vocabulary progress"
+      progressCount={20}
     />)
     const progress = screen.getByRole('progressbar', {name: 'Filtered vocabulary progress'})
     expect(progress.getAttribute('aria-valuenow')).toBe('50')

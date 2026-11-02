@@ -44,6 +44,7 @@ type Props = {
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
   progressLabel?: string
+  progressCount?: number
   progressReady?: boolean
   pageWords: Word[]
   navigationWords?: Word[]
@@ -67,7 +68,7 @@ export function WordCollectionView({
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
-  pageStart, pageEnd, levelSummary, progressLabel, progressReady,
+  pageStart, pageEnd, levelSummary, progressLabel, progressCount, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, navigationWords, navigationQuery, navigationIds, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
@@ -116,6 +117,7 @@ export function WordCollectionView({
           filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
           levelSummary={levelSummary}
           progressLabel={progressLabel}
+          progressCount={progressCount}
           progressReady={progressReady}
           thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
           topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}

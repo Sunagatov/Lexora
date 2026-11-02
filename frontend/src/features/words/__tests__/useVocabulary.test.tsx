@@ -118,7 +118,7 @@ it('preserves page 2 while its response is loading', async () => {
 
 it('resets the page when filtering, refreshes filtered progress, and resets to defaults', async () => {
   vi.mocked(fetchWordKnowledgeSummary).mockImplementation(async params => params?.cefr === 'A1'
-    ? {total: 40, scope_total: 200, level_counts: {1: 20, 3: 0, 4: 20, 5: 0}}
+    ? {total: 40, scope_total: 40, level_counts: {1: 20, 3: 0, 4: 20, 5: 0}}
     : {total: 200, scope_total: 200, level_counts: {1: 150, 3: 0, 4: 50, 5: 0}})
   setup('/?page=2&pageSize=100&sort=term-desc')
   await waitFor(() => expect(state().total).toBe(200))

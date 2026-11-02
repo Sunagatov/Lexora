@@ -162,7 +162,7 @@ separate merged ratings. Restore the backup to recover the original distinction.
 Deploy backend/migration and frontend together; keep the old image for rollback.
 
 - `GET /api/words` — paginated list with optional `topic_id`, `search`, `pos`, `cefr`, `level`, `completeness`, and `sort` (term/level/CEFR ascending or descending, newest, oldest). Default API sort remains `term-asc`; `level-asc` orders by knowledge, then A1–C2, term, and ID before pagination. Parked/unrated words follow Weak, Okay and Strong. Search includes term, translation, definition, example, pattern, notes, and verb forms.
-- `GET /api/words/summary` — whole-library `total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Level key `0` represents unrated words.
+- `GET /api/words/summary` — filtered `total`, `scope_total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Accepts the same search, knowledge, POS, CEFR, topic/subtree, completeness and Favorites filters as the word list; without filters it covers the selected language's whole library. Both totals cover the matching scope. Level key `0` represents unrated words.
 
 `GET /api/words` also accepts repeated `levels`, `positions`, `cefr_levels`, and
 `topic_ids` parameters. Values within a group are ORed; groups are ANDed.

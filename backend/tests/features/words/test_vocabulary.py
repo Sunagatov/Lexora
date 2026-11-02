@@ -135,6 +135,45 @@ def test_summary_route_reflects_filters_in_scope_total(db):
         }
 
 
+@pytest.mark.parametrize("filters,expected", [
+    ({"cefr": "A1"}, 3),
+    ({"cefr": "A1", "favorites_only": "true"}, 2),
+    ({"cefr_levels": ["A1", "A2"], "levels": [1, 3]}, 3),
+    ({"cefr": "A1", "pos": "noun", "level": 4}, 1),
+    ({"search": "бежать"}, 1),
+    ({"cefr": "C2"}, 0),
+])
+def test_filtered_summary_matches_list_across_pages_and_topic_subtrees(db, filters, expected):
+    parent = Topic(name="Parent", slug="parent")
+    child = Topic(name="Child", slug="child", parent_topic=parent)
+    noun = PartsOfSpeech(name="noun")
+    db.add_all([parent, child, noun])
+    db.flush()
+    strong = Word(term="strong", knowledge_level=4, cefr_level="A1", topics=[parent, child],
+                  part_of_speech=noun, is_favorite=True)
+    strong.translation_items = [WordTranslation(position=0, value="бежать")]
+    db.add_all([
+        strong,
+        Word(term="weak", knowledge_level=1, cefr_level="A1", topics=[child], is_favorite=True),
+        Word(term="okay", knowledge_level=3, cefr_level="A1", topics=[parent]),
+        Word(term="other-level", knowledge_level=1, cefr_level="A2", topics=[child]),
+        Word(term="unrelated", knowledge_level=4, cefr_level="A1"),
+        Word(term="deleted", knowledge_level=4, cefr_level="A1", topics=[parent], deleted_at=datetime.now(UTC)),
+    ])
+    db.commit()
+    app = FastAPI()
+    app.include_router(router)
+    app.dependency_overrides[get_db] = lambda: db
+    params = {**filters, "topic_ids": [parent.id, child.id]}
+    with TestClient(app) as client:
+        summary = client.get("/api/words/summary", params=params)
+        page = client.get("/api/words", params={**params, "page_size": 1})
+        assert summary.status_code == page.status_code == 200
+        counts = summary.json()["level_counts"]
+        assert summary.json()["total"] == summary.json()["scope_total"] == page.json()["total"] == expected
+        assert sum(counts.values()) == expected
+
+
 def test_combines_or_within_groups_and_between_groups_with_topic_subtrees(db):
     parent = Topic(name="Parent", slug="parent")
     child = Topic(name="Child", slug="child", parent_topic=parent)
