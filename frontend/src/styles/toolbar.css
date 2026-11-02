@@ -574,17 +574,12 @@
   .toolbar-filter-panel .toolbar-applied-filters { padding-left: 0; padding-right: 0; }
 }
 
-/* Narrow phones: one full-width search row, stable whether focused or not. */
-@media (max-width: 480px) {
-  .toolbar-inline-search { grid-column: 1 / -1; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .toolbar-inline-search { transition: none; }
 }
 
-/* Keep the Sort menu inside the available viewport on tablet widths. */
-@media (min-width: 481px) and (max-width: 860px) {
+/* Keep the Sort menu inside the available viewport on all narrow screens. */
+@media (max-width: 860px) {
   .toolbar-actions-row .toolbar-sort-dropdown > .toolbar-sort-menu {
     left: auto;
     right: 0;

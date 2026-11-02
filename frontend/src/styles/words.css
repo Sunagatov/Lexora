@@ -1437,13 +1437,21 @@
     touch-action: manipulation;
   }
 
+  /* Keep the knowledge-level pill compact on mobile while giving it a
+     44px touch target. The invisible ::before pad enlarges the hit area
+     without changing the visible 28px pill or its dropdown anchoring. */
   .word-card .level-badge-btn {
-    box-sizing: border-box;
-    min-width: 44px;
-    min-height: 44px;
-    height: 44px;
-    padding: 0 10px;
+    position: relative;
     touch-action: manipulation;
+  }
+
+  .word-card .level-badge-btn::before {
+    content: '';
+    position: absolute;
+    top: calc(50% - 22px);
+    left: -8px;
+    right: -8px;
+    height: 44px;
   }
 
   .word-card .word-card-speak:focus-visible,
