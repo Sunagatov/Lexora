@@ -1,4 +1,5 @@
 import {useEffect, useState, type ReactNode} from 'react'
+import {usePreferences} from '@/features/preferences/api'
 
 // Shared chart components for the Stats page
 
@@ -84,8 +85,10 @@ const STAT_META: Record<string, {icon: string; tone: string}> = {
 
 function CountUpValue({value, duration = 850}: {value: number; duration?: number}) {
   const [displayValue, setDisplayValue] = useState(0)
+  const {animations} = usePreferences()
 
   useEffect(() => {
+    if (!animations) return
     let frame = 0
     const start = performance.now()
 
@@ -98,9 +101,9 @@ function CountUpValue({value, duration = 850}: {value: number; duration?: number
 
     frame = window.requestAnimationFrame(tick)
     return () => window.cancelAnimationFrame(frame)
-  }, [value, duration])
+  }, [value, duration, animations])
 
-  return <>{displayValue.toLocaleString()}</>
+  return <>{(animations ? displayValue : value).toLocaleString()}</>
 }
 
 export function DonutChart({slices, centerLabel, centerSub, size = 140}: {

@@ -16,7 +16,7 @@ import {AccountWordMix} from './AccountWordMix'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {
   DEFAULT_PREFERENCES,
-  flushPreferences,
+  loadPreferences,
   preferencesSnapshot,
   subscribePreferences,
   updatePreferences,
@@ -78,7 +78,7 @@ export function AccountPage() {
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const snapshot = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
   const { values } = snapshot
-  const { logoutPending, handleLogout } = useLogoutAction()
+  const { logoutPending, logoutError, handleLogout } = useLogoutAction()
   const mutationsPending = useIsMutating() > 0
   const mobile = useIsMobile(768)
   const selected = SECTIONS.find((item) => item.id === section)
@@ -149,7 +149,7 @@ export function AccountPage() {
               onClick={handleLogout}
             >
               <AccountIcon name="logout" />
-              Sign out
+              {logoutPending ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
         )}
@@ -322,6 +322,7 @@ export function AccountPage() {
         {section === 'trash' && <TrashPage embedded />}
         {section === 'data' && <AccountData />}
         {section === 'offline' && <AccountOffline />}
+        {logoutError && <p className="account-error" role="alert">{logoutError}</p>}
         {section && !selected && section !== 'trash' && (
           <p>
             Section not found. <Link to={routes.account}>Open My Lexora</Link>
@@ -333,11 +334,11 @@ export function AccountPage() {
               role="status"
               className={snapshot.status === 'error' ? 'account-error' : 'account-saved'}
             >
-              <AccountIcon name="check" />
+              {snapshot.status === 'saved' && <AccountIcon name="check" />}
               {snapshot.status === 'saving'
                 ? 'Saving…'
                 : snapshot.status === 'error'
-                  ? 'Saved on this device; sync needed'
+                  ? 'Settings need attention'
                   : 'Saved'}
             </span>
             {section === 'study' && (
@@ -365,10 +366,10 @@ export function AccountPage() {
             <button
               className="account-text-button"
               onClick={() => {
-                void flushPreferences()
+                void loadPreferences()
               }}
             >
-              Retry sync
+              Retry settings
             </button>
           </p>
         )}

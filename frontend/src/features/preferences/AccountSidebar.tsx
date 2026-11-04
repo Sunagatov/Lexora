@@ -15,9 +15,17 @@ export function AccountSidebar({onClose}: {onClose: () => void}) {
   const state = useTopicState(topics)
   const counts = new Map(Object.entries(stats.data?.topic_counts ?? {}).map(([id, value]) => [Number(id), value]))
   const progress = new Map(Object.entries(stats.data?.topic_progress ?? {}).map(([id, value]) => [Number(id), value]))
+  const topicsStatus = topicsQuery.isError || stats.isError
+    ? <div className="sidebar-empty" role="alert">
+      {topicsQuery.isError ? 'Could not load topics.' : 'Could not load topic progress.'}{' '}
+      <button type="button" className="account-button" disabled={topicsQuery.isFetching || stats.isFetching}
+        onClick={() => { void topicsQuery.refetch(); void stats.refetch() }}>Retry</button>
+    </div>
+    : topicsQuery.isPending ? <div className="sidebar-empty" role="status">Loading topics…</div> : null
   return <StudySidebarShell overlayOnly drawerOpen setDrawerOpen={open => { if (!open) onClose() }}
     sidebarWidth={300} sidebarCollapsed={false} isResizing={false} handleSidebarResizeDown={() => {}}
     sidebarProps={{topics, topicCounts: counts, topicProgress: progress,
+      topicsStatus,
       topicSearch: state.topicSearch, setTopicSearch: state.setTopicSearch,
       selectedTopicId: null, isSmartReview: false, smartQueue: null,
       onSelect: id => { onClose(); state.selectTopic(id) },

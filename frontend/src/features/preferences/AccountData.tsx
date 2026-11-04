@@ -44,6 +44,20 @@ export function AccountData() {
       ).flatMap(({ language, topics }) => topics.map((topic) => ({ ...topic, language }))),
   })
   const unavailable = offline.offline || offline.pending > 0 || !navigator.onLine
+  const topicsById = new Map(topicQuery.data?.map(topic => [topic.id, topic]))
+  const selectedTopicIds = topicIds.filter(id => topicsById.has(id))
+
+  function topicLabel(topic: Topic) {
+    const names = [topic.name]
+    const seen = new Set([topic.id])
+    let parent = topicsById.get(topic.parent_topic_id ?? 0)
+    while (parent && !seen.has(parent.id)) {
+      seen.add(parent.id)
+      names.unshift(parent.name)
+      parent = topicsById.get(parent.parent_topic_id ?? 0)
+    }
+    return names.join(' / ')
+  }
   async function download() {
     setBusy(true)
     setError('')
@@ -51,7 +65,7 @@ export function AccountData() {
       await exportWordsWorkbook(false, {
         languages,
         favoritesOnly: scope === 'favorites',
-        topicIds: scope === 'topics' ? topicIds : undefined,
+        topicIds: scope === 'topics' ? selectedTopicIds : undefined,
       })
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Export failed.')
@@ -63,7 +77,7 @@ export function AccountData() {
     <>
       <div className="account-group-title">Export vocabulary</div>
       <div className="account-surface">
-        <label className="account-row">
+        <label className="account-row account-export-row">
           <span>Languages</span>
           <select
             aria-label="Export languages"
@@ -100,7 +114,7 @@ export function AccountData() {
             ))}
           </fieldset>
         )}
-        <label className="account-row">
+        <label className="account-row account-export-row">
           <span>Words to include</span>
           <select
             aria-label="Words to export"
@@ -145,7 +159,7 @@ export function AccountData() {
                   }
                 />
                 {languages.length > 1 ? `${topic.language.toUpperCase()} · ` : ''}
-                {topic.name}
+                {topicLabel(topic)}
               </label>
             ))}
           </fieldset>
@@ -154,7 +168,8 @@ export function AccountData() {
           <button
             className="account-button"
             disabled={
-              busy || unavailable || !languages.length || (scope === 'topics' && !topicIds.length)
+              busy || unavailable || !languages.length ||
+              (scope === 'topics' && (topicQuery.isFetching || topicQuery.isError || !selectedTopicIds.length))
             }
             onClick={() => {
               void download()

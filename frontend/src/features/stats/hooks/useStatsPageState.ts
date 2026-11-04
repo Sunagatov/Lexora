@@ -10,7 +10,7 @@ import {
 } from '@/features/stats/model/statsPageModel'
 
 export function useStatsPageState() {
-  const {data: stats, isLoading} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
+  const {data: stats, isLoading, refetch} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
 
   const [activityPeriod, setActivityPeriod] = useState<ActivityPeriod>('30')
   const [usagePeriod, setUsagePeriod] = useState<ActivityPeriod>('30')
@@ -38,6 +38,7 @@ export function useStatsPageState() {
   return {
     stats,
     isLoading,
+    retry: () => { void refetch() },
     activityPeriod,
     setActivityPeriod,
     usagePeriod,

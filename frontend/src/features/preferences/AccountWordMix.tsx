@@ -1,11 +1,14 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {CEFR_LEVELS, LEVEL_LABELS, LEVELS} from '@/features/words/model/wordDomain'
 import {updatePreferences, type WordMixPreferences} from './api'
 
 export function AccountWordMix({preferences}: {preferences: WordMixPreferences}) {
   const [size, setSize] = useState(String(preferences.size))
   const [sizeError, setSizeError] = useState('')
-  useEffect(() => { setSize(String(preferences.size)); setSizeError('') }, [preferences.size])
+  const sizeEdited = useRef(false)
+  useEffect(() => {
+    if (!sizeEdited.current) { setSize(String(preferences.size)); setSizeError('') }
+  }, [preferences.size])
 
   function save(patch: Partial<WordMixPreferences>) {
     updatePreferences({word_mix: patch})
@@ -16,6 +19,8 @@ export function AccountWordMix({preferences}: {preferences: WordMixPreferences})
       setSizeError('Enter a whole number from 1 to 1,000.')
       return
     }
+    sizeEdited.current = false
+    setSize(String(value))
     setSizeError('')
     if (value !== preferences.size) save({size: value})
   }
@@ -29,14 +34,14 @@ export function AccountWordMix({preferences}: {preferences: WordMixPreferences})
         <div className="account-mix-size-controls">
           <div className="account-segments" role="group" aria-label="Word mix size presets">
             {[50, 100, 200, 500].map(value => <button type="button" key={value}
-              aria-pressed={preferences.size === value} onClick={() => {setSize(String(value)); setSizeError(''); save({size: value})}}>{value}</button>)}
+              aria-pressed={preferences.size === value} onClick={() => {sizeEdited.current = false; setSize(String(value)); setSizeError(''); save({size: value})}}>{value}</button>)}
           </div>
           <label className="account-mix-custom"><span>Custom</span><input type="number" min="1" max="1000" step="1" aria-label="Custom word mix size"
             aria-invalid={!!sizeError} aria-describedby={sizeError ? 'mix-size-error' : undefined}
-            value={size} onChange={event => {setSize(event.target.value); setSizeError('')}}
+            value={size} onChange={event => {sizeEdited.current = true; setSize(event.target.value); setSizeError('')}}
             onBlur={saveSize} onKeyDown={event => {
               if (event.key === 'Enter') event.currentTarget.blur()
-              if (event.key === 'Escape') {setSize(String(preferences.size)); setSizeError('')}
+              if (event.key === 'Escape') {sizeEdited.current = false; setSize(String(preferences.size)); setSizeError('')}
             }} /></label>
         </div>
       </div>

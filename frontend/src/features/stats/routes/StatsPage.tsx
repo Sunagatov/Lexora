@@ -123,7 +123,10 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
             title="Statistics unavailable"
             description="We couldn't load your statistics right now. Try again in a moment."
             variant="error"
-            actions={[{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
+            actions={[
+              {label: 'Retry', onClick: s.retry},
+              ...(!embedded ? [{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary' as const}] : []),
+            ]}
           />
         </div>
       </div>

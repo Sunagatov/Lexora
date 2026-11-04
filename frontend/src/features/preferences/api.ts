@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { networkRequest } from '@/shared/api/http'
+import { redirectIfUnauthorized } from '@/features/auth/lib/redirectIfUnauthorized'
 import {
   languagePreferences,
   setLanguagePreferences,
@@ -80,6 +81,7 @@ let snapshot: Snapshot = {
 let pending: PreferencesPatch = cached.pending ?? {}
 let saving = false
 let editVersion = 0
+let readVersion = 0
 const listeners = new Set<() => void>()
 export const preferencesSnapshot = () => snapshot
 export function subscribePreferences(listener: () => void) {
@@ -120,14 +122,20 @@ export async function loadPreferences() {
     return
   }
   const version = editVersion
+  const read = ++readVersion
   try {
     const values = await networkRequest<Preferences>('/api/preferences', {
       signal: AbortSignal.timeout(10_000),
     })
-    // A setting may have changed while this read was in flight.
-    if (version === editVersion && !saving && !Object.keys(pending).length) publish(values, 'saved')
-  } catch {
-    /* Cached preferences remain available without a connection. */
+    // Ignore older refreshes and any read overtaken by a local edit.
+    if (read === readVersion && version === editVersion && !saving && !Object.keys(pending).length) {
+      publish(values, 'saved')
+    }
+  } catch (error) {
+    if (read === readVersion && version === editVersion && !saving && !Object.keys(pending).length) {
+      publish(snapshot.values, 'error', 'Could not load settings. Your device settings are still available. Try again.')
+      redirectIfUnauthorized(error)
+    }
   }
 }
 
@@ -190,6 +198,7 @@ export async function flushPreferences() {
           'error',
           error instanceof Error ? error.message : 'Could not sync settings.',
         )
+        redirectIfUnauthorized(error)
         break
       }
     }

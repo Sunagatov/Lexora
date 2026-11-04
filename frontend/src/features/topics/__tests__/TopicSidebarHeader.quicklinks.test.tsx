@@ -1,6 +1,7 @@
 import {fireEvent, render, screen} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
+import type {MemoryRouterProps} from 'react-router-dom'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {routes} from '@/app/routes'
 import {TopicSidebarHeader} from '@/features/topics/components/TopicSidebarHeader'
@@ -12,11 +13,11 @@ vi.mock('react-router-dom', async () => {
   return {...actual, useNavigate: () => navigate}
 })
 
-function renderHeader() {
+function renderHeader(initialEntries: MemoryRouterProps['initialEntries'] = ['/?page=2&search=word']) {
   const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/?page=2&search=word']}>
+      <MemoryRouter initialEntries={initialEntries}>
         <TopicSidebarHeader
           topicSearch=""
           setTopicSearch={vi.fn()}
@@ -68,5 +69,16 @@ describe('TopicSidebarHeader quick navigation', () => {
     expect(document.activeElement).not.toBe(screen.getByRole('searchbox', {name: 'Search topics'}))
     expect(screen.getByRole('button', {name: 'Favorites'})).toBeTruthy()
     expect(screen.getByRole('button', {name: 'My Lexora'})).toBeTruthy()
+  })
+
+  it('returns from the account menu to the saved word list on the second click', () => {
+    renderHeader([{pathname: '/account/study', state: {
+      returnTo: '/topics/travel?page=2&cefr=A1', returnLanguage: 'en', returnScrollTop: 357,
+      returnState: {filtersExpanded: true},
+    }}])
+    fireEvent.click(screen.getByRole('button', {name: 'My Lexora'}))
+    expect(navigate).toHaveBeenCalledWith('/topics/travel?page=2&cefr=A1', {
+      state: {filtersExpanded: true, learningLanguage: 'en', wordListScrollTop: 357},
+    })
   })
 })

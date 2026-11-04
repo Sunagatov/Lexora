@@ -44,3 +44,24 @@ it('saves variety controls and shows all topics without a misleading topic selec
   expect(screen.getByText('All topics')).toBeTruthy()
   expect(screen.queryByRole('combobox', {name: 'Topics'})).toBeNull()
 })
+
+it('keeps an unfinished custom size when synced preferences refresh', () => {
+  const {rerender} = render(<AccountWordMix preferences={defaults} />)
+  const input = screen.getByRole('spinbutton', {name: 'Custom word mix size'}) as HTMLInputElement
+  fireEvent.change(input, {target: {value: '75'}})
+  rerender(<AccountWordMix preferences={{...defaults, size: 500}} />)
+  expect(input.value).toBe('75')
+  fireEvent.blur(input)
+  expect(updatePreferences).toHaveBeenLastCalledWith({word_mix: {size: 75}})
+})
+
+it('lets Escape discard a draft and use the latest synced size', () => {
+  const {rerender} = render(<AccountWordMix preferences={defaults} />)
+  const input = screen.getByRole('spinbutton', {name: 'Custom word mix size'}) as HTMLInputElement
+  fireEvent.change(input, {target: {value: '75'}})
+  rerender(<AccountWordMix preferences={{...defaults, size: 500}} />)
+  fireEvent.keyDown(input, {key: 'Escape'})
+  expect(input.value).toBe('500')
+  fireEvent.blur(input)
+  expect(updatePreferences).not.toHaveBeenCalled()
+})

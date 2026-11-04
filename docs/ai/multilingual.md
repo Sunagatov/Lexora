@@ -55,6 +55,8 @@ Learning and translation selectors live only in My Lexora → Languages. Owner
 preferences sync through `/api/preferences` at login/startup and on focus/reconnect;
 shared list defaults apply across learning libraries. Focus refresh pauses during
 an open word editor or save so a remote language change cannot discard work.
+Overlapping refreshes keep the newest response. Failed reads retain device
+settings and expose Retry settings; that action also retries pending saves.
 Library changes clear QueryClient and remount scoped views. Returning to words
 after selecting a different learning language opens All words in that library.
 Switching is disabled while a mutation is pending; the account entry is disabled
@@ -114,11 +116,22 @@ language are eligible. A custom size accepts whole numbers 1–1000, alongside
 50/100/200/500 presets. Existing generation defaults remain until customised.
 Desktop uses centred, width-constrained section navigation; mobile uses an overview and section
 pages. Returning to the same library restores the captured word-list URL/scroll.
-The header brand returns from My Lexora to the captured list; switching a learning
+The header brand and a second click on the sidebar's My Lexora shortcut return
+to the captured list; switching a learning
 language opens All words for the new library instead. The account header includes
 the sidebar burger on all screen sizes, without a duplicate Back to words action.
 Mobile account subsections retain navigation to the account overview. Open sidebars
 make underlying content inert and return focus when dismissed.
+Failed sign-out requests show an account error and retain the session/cache until
+sign-out succeeds. Statistics load failures offer Retry within the account.
+Expired-session errors from settings reads/saves follow the shared login redirect;
+older refresh failures cannot override a newer successful settings refresh.
+The account's topic drawer shows loading/error states with Retry and preserves
+cached topics on refresh failure, rather than claiming the library is empty.
+Statistics counters respect the Animations setting. An unfinished custom mix size
+survives a settings refresh; Escape restores the latest saved size. Topic exports
+show parent paths and use only still-visible selections after a topic refresh.
+Mobile export selectors use full-width rows so their labels stay readable.
 Offline copies remain device-local even though display/study preferences sync.
 Saved-mode new sets use the cached mix size, knowledge/CEFR choices and topic
 balancing. Cooldowns use available saved review history, including completed

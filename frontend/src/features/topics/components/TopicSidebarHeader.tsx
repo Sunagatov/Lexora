@@ -4,6 +4,7 @@ import {routes} from '@/app/routes'
 import {useIsMutating} from '@tanstack/react-query'
 import {languagePreferences, subscribeLanguages} from '@/features/languages/api'
 import {AccountIcon} from '@/features/preferences/AccountIcon'
+import {accountReturnTarget} from '@/features/preferences/accountNavigation'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 type Props = {
@@ -33,7 +34,8 @@ export function TopicSidebarHeader({
   function openMyLexora() {
     if (pending || editingWord) return
     if (location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)) {
-      navigate(routes.account, {state: location.state})
+      const target = accountReturnTarget(location.state, language.language)
+      navigate(target.to, {state: target.state})
       return
     }
 

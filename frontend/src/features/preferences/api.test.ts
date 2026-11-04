@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from '@testing-library/react'
 import { networkRequest } from '@/shared/api/http'
+import { ApiError } from '@/shared/api/apiError'
+import { redirectIfUnauthorized } from '@/features/auth/lib/redirectIfUnauthorized'
 import {
   DEFAULT_PREFERENCES,
   flushPreferences,
@@ -11,10 +13,12 @@ import {
 } from './api'
 
 vi.mock('@/shared/api/http', () => ({ networkRequest: vi.fn() }))
+vi.mock('@/features/auth/lib/redirectIfUnauthorized', () => ({redirectIfUnauthorized: vi.fn()}))
 
 describe('owner preferences sync', () => {
   beforeEach(async () => {
     vi.mocked(networkRequest).mockReset()
+    vi.mocked(redirectIfUnauthorized).mockClear()
     vi.mocked(networkRequest).mockResolvedValue({ ...DEFAULT_PREFERENCES })
     await flushPreferences()
     await loadPreferences()
@@ -90,6 +94,43 @@ describe('owner preferences sync', () => {
     expect(preferencesSnapshot().values.page_size).toBe(100)
   })
 
+  it('keeps the newest refresh when overlapping reads finish out of order', async () => {
+    let finishOlder!: (value: Preferences) => void
+    vi.mocked(networkRequest)
+      .mockImplementationOnce(() => new Promise(resolve => { finishOlder = resolve as typeof finishOlder }))
+      .mockResolvedValueOnce({ ...DEFAULT_PREFERENCES, page_size: 200 })
+    const older = loadPreferences()
+    await loadPreferences()
+    finishOlder({ ...DEFAULT_PREFERENCES, page_size: 50 })
+    await older
+    expect(preferencesSnapshot().values.page_size).toBe(200)
+  })
+
+  it('reports a failed refresh and recovers on retry without changing cached settings', async () => {
+    vi.mocked(networkRequest).mockRejectedValueOnce(new Error('Service unavailable'))
+    await loadPreferences()
+    expect(preferencesSnapshot().status).toBe('error')
+    expect(preferencesSnapshot().error).toContain('load settings')
+    expect(preferencesSnapshot().values.page_size).toBe(DEFAULT_PREFERENCES.page_size)
+    vi.mocked(networkRequest).mockResolvedValueOnce({ ...DEFAULT_PREFERENCES, page_size: 100 })
+    await loadPreferences()
+    expect(preferencesSnapshot().status).toBe('saved')
+    expect(preferencesSnapshot().values.page_size).toBe(100)
+  })
+
+  it('ignores a failed older refresh after a newer refresh succeeds', async () => {
+    let failOlder!: (error: Error) => void
+    vi.mocked(networkRequest)
+      .mockImplementationOnce(() => new Promise((_, reject) => { failOlder = reject }))
+      .mockResolvedValueOnce({ ...DEFAULT_PREFERENCES, page_size: 200 })
+    const older = loadPreferences()
+    await loadPreferences()
+    failOlder(new Error('Old request timed out'))
+    await older
+    expect(preferencesSnapshot().status).toBe('saved')
+    expect(preferencesSnapshot().values.page_size).toBe(200)
+  })
+
   it('merges pronunciation choices without clearing another language', async () => {
     vi.mocked(networkRequest).mockResolvedValue({
       ...DEFAULT_PREFERENCES,
@@ -104,5 +145,31 @@ describe('owner preferences sync', () => {
     updatePreferences({ pronunciation_modes: { es: 'ipa' } })
     await waitFor(() => expect(preferencesSnapshot().status).toBe('saved'))
     expect(preferencesSnapshot().values.pronunciation_modes).toEqual({ zh: 'pinyin', es: 'ipa' })
+  })
+
+  it.each([401, 403])('handles an expired session during settings refresh (%s)', async status => {
+    const error = new ApiError(status, 'Not authenticated')
+    vi.mocked(networkRequest).mockRejectedValueOnce(error)
+    await loadPreferences()
+    expect(redirectIfUnauthorized).toHaveBeenCalledWith(error)
+  })
+
+  it('handles an expired session during a settings save', async () => {
+    const error = new ApiError(401, 'Not authenticated')
+    vi.mocked(networkRequest).mockRejectedValueOnce(error)
+    updatePreferences({theme: 'light'})
+    await waitFor(() => expect(redirectIfUnauthorized).toHaveBeenCalledWith(error))
+  })
+
+  it('ignores an expired-session error from a superseded refresh', async () => {
+    let failOlder!: (error: Error) => void
+    vi.mocked(networkRequest)
+      .mockImplementationOnce(() => new Promise((_, reject) => {failOlder = reject}))
+      .mockResolvedValueOnce({...DEFAULT_PREFERENCES})
+    const older = loadPreferences()
+    await loadPreferences()
+    failOlder(new ApiError(401, 'Not authenticated'))
+    await older
+    expect(redirectIfUnauthorized).not.toHaveBeenCalled()
   })
 })

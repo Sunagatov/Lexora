@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react'
+import {useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode} from 'react'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
@@ -27,6 +27,7 @@ type Props = {
   smartQueue: StudyQueue | null
   isCollapsed?: boolean
   onToggleCollapsed?: () => void
+  topicsStatus?: ReactNode
 }
 
 type TopicButtonSharedProps = {
@@ -147,6 +148,7 @@ export function TopicSidebar({
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
   isCollapsed = false, onToggleCollapsed,
+  topicsStatus,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
   const [posSortOpen, setPosSortOpen] = useState(false)
@@ -279,6 +281,8 @@ export function TopicSidebar({
       />
 
       <div className="sidebar-topic-list">
+        {topicsStatus}
+        {!(topicsStatus && topics.length === 0) && <>
         {pinnedTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header">
@@ -340,6 +344,7 @@ export function TopicSidebar({
         {posTopics.length === 0 && themeTopics.length === 0 && (
           <div className="sidebar-empty">No topics found.</div>
         )}
+        </>}
       </div>
 
       <TopicSidebarFooter
