@@ -73,6 +73,9 @@
   transform: translateX(0);
 }
 
+/* The off-screen drawer must not cast a shadow across the review card. */
+.mobile-drawer:not(.open) { box-shadow: none; }
+
 .mobile-drawer .topic-item .topic-item-actions { display: none; }
 .mobile-drawer .topic-actions-trigger { display: flex; }
 .mobile-drawer .topic-item:hover { transform: none; }

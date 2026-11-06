@@ -10,7 +10,8 @@ export function useSmartReview(enabled = true) {
   const queryClient = useQueryClient()
   const [failedAction, setFailedAction] = useState<FailedAction | null>(null)
 
-  const query = useQuery({queryKey: queryKeys.smartReview, queryFn: fetchSmartReview, enabled, staleTime: 60_000})
+  const query = useQuery({queryKey: queryKeys.smartReview, queryFn: fetchSmartReview, enabled, staleTime: 60_000,
+    refetchOnWindowFocus: false})
 
   const completeMutation = useMutation({
     mutationFn: completeSmartReviewItem,
@@ -55,6 +56,7 @@ export function useSmartReview(enabled = true) {
       else if (failedAction?.kind === 'refresh') refreshMutation.mutate()
     },
     completeItem: completeMutation.mutate,
+    completeItemAsync: completeMutation.mutateAsync,
     refresh: refreshMutation.mutate,
     isRefreshing: refreshMutation.isPending,
   }

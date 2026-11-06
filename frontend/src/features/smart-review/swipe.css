@@ -1,0 +1,83 @@
+.mix-view-bar { display: flex; align-items: center; gap: 14px; justify-content: space-between; padding: 12px 28px 4px; flex-shrink: 0; }
+.mix-view-bar h1 { font-size: 1.1rem; letter-spacing: -.025em; }
+.mix-view-switch { display: flex; padding: 3px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; }
+.mix-view-switch button { border: 0; padding: 7px 18px; background: transparent; color: var(--text-2); border-radius: 9px; cursor: pointer; font-size: .84rem; }
+.mix-view-switch button[aria-pressed="true"] { background: var(--accent-light); color: var(--accent-dark); font-weight: 700; }
+.mix-swipe { --mix-lavender: #a58ae3; max-width: 540px; width: 100%; margin: 0 auto; padding: 16px 28px max(16px, env(safe-area-inset-bottom)); display: flex; flex: 1; min-height: 0; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+.mix-position { display: flex; align-items: center; gap: 18px; font-size: .82rem; color: var(--text-2); flex-shrink: 0; }
+.mix-position progress { appearance: none; height: 7px; border: 0; border-radius: 20px; overflow: hidden; flex: 1; width: 0; background: var(--surface-2); }
+.mix-position progress::-webkit-progress-bar { background: var(--surface-2); border-radius: 20px; }
+.mix-position progress::-webkit-progress-value { background: var(--mix-lavender); border-radius: 20px; }
+.mix-position progress::-moz-progress-bar { background: var(--mix-lavender); }
+.mix-resume { color: var(--text-2); font-size: .72rem; margin-top: 5px; }
+.mix-card-stage { flex: 1; min-height: 280px; display: flex; padding: 18px 0 10px; isolation: isolate; }
+.mix-card { position: relative; width: 100%; min-width: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 7px 0 -3px var(--surface-2), 0 12px 0 -5px var(--border), 0 12px 24px #0000000a; display: flex; flex-direction: column; padding: 20px; transform: translate(var(--mix-x), var(--mix-y)) rotate(var(--mix-angle)); transition: transform .2s ease, border-color .15s; }
+.mix-card.is-dragging { transition: border-color .15s; border-color: currentColor; }
+.mix-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--text-2); }
+.mix-card-top > span { text-transform: uppercase; letter-spacing: .12em; font-size: .66rem; font-weight: 700; }
+.mix-audio button { border: 0; color: var(--text); background: transparent; cursor: pointer; width: 44px; height: 44px; display: grid; place-items: center; }
+.mix-audio { position: relative; }
+.mix-audio > span { position: absolute; right: 0; font-size: .65rem; white-space: nowrap; color: var(--text-2); }
+.mix-card-word { flex: 1; touch-action: none; user-select: none; padding: 2px 0 16px; display: flex; flex-direction: column; justify-content: center; color: var(--text); overflow-wrap: anywhere; }
+.mix-card-meta { color: var(--text-2); font-size: .8rem; margin-bottom: 14px; }
+.mix-card-word h2 { font-size: clamp(1.8rem, 10.5vw, 3rem); line-height: 1.13; letter-spacing: -.045em; margin-bottom: 12px; }
+.mix-card-word .word-easy-pronunciation { color: var(--text-2); font-size: 1rem; margin-bottom: 14px; }
+.mix-translations { font-size: clamp(1.15rem, 6vw, 1.55rem); font-weight: 650; line-height: 1.4; }
+.mix-gesture-hint { margin-top: 15px; color: var(--text-2); font-size: .64rem; font-weight: 400; }
+.mix-card-example { border-top: 1px solid var(--border); padding-top: 14px; max-height: 135px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; color: var(--text); flex-shrink: 0; }
+.mix-card-example > span { text-transform: uppercase; letter-spacing: .13em; font-size: .63rem; font-weight: 700; color: var(--text-2); }
+.mix-card-example p { font-size: .9rem; white-space: pre-line; margin-top: 6px; overflow-wrap: anywhere; }
+.mix-card-footer { display: flex; justify-content: space-between; gap: 12px; font-size: .66rem; color: var(--text-2); padding-top: 12px; }
+.mix-card-footer a { min-height: 28px; }
+.mix-swipe-preview { position: absolute; top: 14px; left: 12px; right: 12px; padding: 14px; border: 2px solid currentColor; border-radius: 14px; background: var(--surface); text-align: center; pointer-events: none; font-size: 1.2rem; font-weight: 750; box-shadow: var(--shadow-sm); }
+.mix-swipe-preview small { display: block; font-size: .68rem; font-weight: 500; margin-top: 4px; }
+.mix-swipe-threshold { height: 3px; border-radius: 3px; background: var(--surface-2); margin: 8px 12px 12px; flex-shrink: 0; }
+.mix-swipe-threshold span { display: block; height: 100%; background: var(--mix-lavender); border-radius: 3px; }
+.mix-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; flex-shrink: 0; }
+.mix-action { border: 0; border-radius: 13px; min-height: 66px; padding: 7px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: .77rem; font-weight: 650; cursor: pointer; }
+.mix-action > span { font-size: 1.5rem; line-height: 1.1; }
+.mix-parked { color: #7941b6; }
+.mix-okay { color: #a35c08; }
+.mix-skip { color: #5c6070; }
+.mix-strong { color: #15823c; }
+.mix-action.mix-parked { background: #f1e8fc; }
+.mix-action.mix-okay { background: #fff3dd; }
+.mix-action.mix-skip { background: #eeedf1; }
+.mix-action.mix-strong { background: #e3f7e7; }
+.mix-navigation { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; gap: 8px; margin-top: 12px; color: var(--text-2); font-size: .74rem; }
+.mix-navigation > span { font-size: .68rem; }
+.mix-navigation button { min-height: 44px; border: 0; color: var(--text); background: transparent; cursor: pointer; padding: 0 3px; }
+.mix-navigation button span { font-size: 1.35rem; vertical-align: -1px; padding: 0 6px; }
+.mix-swipe button:disabled { opacity: .45; cursor: default; }
+.mix-finished { margin: auto 0; padding: 32px 0 14px; display: flex; flex-direction: column; align-items: stretch; gap: 14px; text-align: center; color: var(--text); }
+.mix-finished-check { background: var(--accent-light); color: var(--accent); width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center; font-size: 2.5rem; margin: 0 auto 8px; }
+.mix-finished h2 { font-size: 1.9rem; letter-spacing: -.04em; }
+.mix-finished > p { color: var(--text-2); font-size: .87rem; }
+.mix-results { display: grid; gap: 10px; margin: 14px auto; text-align: left; }
+.mix-results > div { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 12px; }
+.mix-results dt { min-width: 70px; }
+.mix-results dd { font-size: 1.2rem; font-weight: 750; }
+.mix-results > div::after { content: ''; width: 10px; height: 10px; border-radius: 50%; margin-right: 3px; background: #ae8be0; }
+.mix-result-4::after { background: #7fd68e !important; }
+.mix-result-3::after { background: #edbd65 !important; }
+.mix-skipped-note { background: var(--surface-2); padding: 12px; border-radius: 13px; }
+.mix-finished button { border-radius: 12px; min-height: 48px; padding: 10px; cursor: pointer; }
+.mix-primary { background: #a285dc; color: #fff; border: 1px solid transparent; font-weight: 700; }
+.mix-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.mix-error { padding: 12px; margin-top: 10px; border: 1px solid #e9b0a6; border-radius: 10px; font-size: .8rem; color: var(--text); background: var(--surface); }
+.mix-error button { margin-left: 10px; background: transparent; border: 0; text-decoration: underline; color: var(--accent); min-height: 40px; cursor: pointer; }
+@media (max-width: 600px) {
+  .mix-view-bar { padding: 8px 16px 2px; gap: 6px; }
+  .mix-view-bar h1 { font-size: 1rem; }
+  .mix-view-switch button { padding: 6px 15px; }
+  .mix-swipe { padding: 10px 16px max(10px, env(safe-area-inset-bottom)); }
+  .mix-card { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .mix-card { transition: none; } }
+[data-reduced-motion] .mix-card { transition: none; }
+:root[color-scheme="dark"] .mix-view-switch button[aria-pressed="true"] { color: #dfccff; }
+:root[color-scheme="dark"] .mix-actions .mix-action { background: var(--surface-2); }
+:root[color-scheme="dark"] .mix-parked { color: #d0a8ff; }
+:root[color-scheme="dark"] .mix-okay { color: #f2c36d; }
+:root[color-scheme="dark"] .mix-skip { color: #ced0dc; }
+:root[color-scheme="dark"] .mix-strong { color: #83dea0; }

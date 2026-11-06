@@ -42,6 +42,8 @@ import {EmptyState} from '@/shared/components/EmptyState'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {preferencesSnapshot, subscribePreferences} from '@/features/preferences/api'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {SwipeReview} from './SwipeReview'
+import {languagePreferences} from '@/features/languages/api'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean; topics?: Topic[]}
 
@@ -51,6 +53,15 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const {completeItem, refresh, isRefreshing} = review
   const preferences = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
   const settingsSaving = navigator.onLine && preferences.status === 'saving'
+  const [swipeBusy, setSwipeBusy] = useState(false)
+  const [view, setView] = useState<'list' | 'swipe'>(() => {
+    try { return localStorage.getItem('lexora-word-mix-view') === 'swipe' ? 'swipe' : 'list' }
+    catch { return 'list' }
+  })
+  function selectView(next: 'list' | 'swipe') {
+    setView(next)
+    try { localStorage.setItem('lexora-word-mix-view', next) } catch { /* In-memory selection still works. */ }
+  }
   const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = DEFAULT_PAGE_SIZE
@@ -115,6 +126,14 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
 
   return (
     <div className="study-topic-panel">
+      <div className="mix-view-bar">
+        {view === 'swipe' ? <h1>Daily Word Mix</h1> : <span />}
+        <div className="mix-view-switch" aria-label="Word mix view">
+          <button type="button" aria-pressed={view === 'list'} disabled={swipeBusy} onClick={() => selectView('list')}>List</button>
+          <button type="button" aria-pressed={view === 'swipe'} disabled={swipeBusy} onClick={() => selectView('swipe')}>Swipe</button>
+        </div>
+      </div>
+      {view === 'swipe' ? <SwipeReview key={`${languagePreferences().language}:${queue.id}:${queue.generated_at}`} queue={queue} onBackToList={() => selectView('list')} onBusyChange={setSwipeBusy} /> : <>
       {failedLevel && <div role="alert" className="wp-save-error">
         Failed to save word level. Please try again.
         <button type="button" className="btn btn-ghost" onClick={() => handleUpdate(failedLevel.wordId, failedLevel.level)}>Retry</button>
@@ -164,6 +183,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
           />
         )}
       </div>
+      </>}
     </div>
   )
 }
