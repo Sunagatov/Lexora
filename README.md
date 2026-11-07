@@ -7,6 +7,12 @@ Portuguese in separate libraries. Choose Russian or English translations and
 explanations from the header language selector. New libraries start empty; your
 existing English vocabulary and progress stay in English.
 
+<p>
+  <a href="https://buymeacoffee.com/lucky_1uck">
+    <img src="https://img.shields.io/badge/Support_the_project-FFDD00?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=black" alt="Support the project" width="260" height="40">
+  </a>
+</p>
+
 ## Project Shape
 
 - `backend/` — FastAPI backend, Alembic migrations, and pytest tests.
@@ -39,3 +45,16 @@ Local compose metadata is in `docker-compose.yml`. Run Docker only when you expl
 - Current repo map for agents: `docs/ai/repo-map.md`
 
 Detailed current implementation state for AI agents lives in `docs/ai/`, not in this README.
+
+---
+
+## ☕ Support the project
+
+If Lexora helps you learn languages, you can support its development.
+
+<p>
+  <a href="https://buymeacoffee.com/lucky_1uck">
+    <img src="https://img.shields.io/badge/Support_the_project-FFDD00?style=for-the-badge&amp;logo=buymeacoffee&amp;logoColor=black" alt="Support the project" width="260" height="40">
+  </a>
+</p>
+
