@@ -103,19 +103,19 @@ export function SwipeReview({queue, onBackToList, onBusyChange}: {queue: StudyQu
         <div className="mix-card-stage">
           <article className={`mix-card${hasDrag ? ` is-dragging mix-${preview.className}` : ''}`}
             style={{'--mix-x': `${Math.max(-135, Math.min(135, swipe.drag.x))}px`, '--mix-y': `${Math.max(-100, Math.min(100, swipe.drag.y))}px`, '--mix-angle': `${Math.max(-7, Math.min(7, swipe.drag.x / 25))}deg`} as CSSProperties}>
-            <div className="mix-card-top"><span>{languageProfile(item.word.language).name}</span><PronounceButton key={item.id} word={item.word} /></div>
-            <div className="mix-card-word" {...swipe.events} aria-label="Swipe word card">
-              <div className="mix-card-meta">{[item.word.part_of_speech, item.word.cefr_level].filter(Boolean).join(' · ')}</div>
-              <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
-              <EasyPronunciation word={item.word} />
+            <div className="mix-card-top"><span>{[languageProfile(item.word.language).name, item.word.part_of_speech, item.word.cefr_level].filter(Boolean).join(' · ')}</span><PronounceButton key={item.id} word={item.word} /></div>
+            <div key={item.id} className="mix-card-scroll" tabIndex={0} role="region" aria-label="Word information">
+              <div className="mix-card-word" {...swipe.events} aria-label="Swipe word card">
+                <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
+                <EasyPronunciation word={item.word} />
+              </div>
               <div className="mix-translations" lang={item.word.translation_language ?? 'ru'}>
                 {item.word.translation_entries.length ? item.word.translation_entries.join(' · ') : 'No translation saved'}
               </div>
-              <span className="mix-gesture-hint">{preferences.swipes ? 'Swipe here or use the buttons below' : 'Use the buttons below to review'}</span>
+              {item.word.example_entries[0] && <div className="mix-card-example">
+                <span>Example</span><p>{item.word.example_entries[0]}</p>
+              </div>}
             </div>
-            {item.word.example_entries[0] && <div className="mix-card-example" tabIndex={0} aria-label="Example, scroll for more">
-              <span>Example</span><p>{item.word.example_entries[0]}</p>
-            </div>}
             <div className="mix-card-footer"><span>{LEVEL_LABELS[item.word.knowledge_level ?? 0] ?? 'Not rated'}</span><Link to={routes.word(item.word_id)}>Word details ↗</Link></div>
             {hasDrag && <div className="mix-swipe-preview" aria-live="polite">{preview.arrow} {preview.label}<small>{swipe.action !== null ? 'Release to apply' : 'Keep swiping · Move back to cancel'}</small></div>}
           </article>
