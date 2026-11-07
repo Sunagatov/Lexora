@@ -170,11 +170,11 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
           throw error
         }
       }
-      if (path === '/auth/logout') {
+      if (path === '/auth/logout' || path === '/auth/logout-all') {
         if (status.pending && !window.confirm('You have unsynced changes. Signing out will remove them from this device. Export an offline backup first if you want to keep them. Sign out anyway?')) throw new ApiError(499, 'Sign-out cancelled')
         try { await network(path, init) }
         catch (error) {
-          if (error instanceof ApiError) throw error
+          if (path === '/auth/logout-all' || error instanceof ApiError) throw error
           localStorage.setItem('lexora-offline-logout', '1')
         }
         await withOfflineLock(() => persist())

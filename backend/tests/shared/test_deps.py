@@ -1,6 +1,10 @@
 from types import SimpleNamespace
 
 import pytest
+from fastapi import HTTPException
+from jose import jwt
+
+from app.features.auth.service import create_session
 from app.shared import deps
 from app.shared.auth import (
     AUTH_TYPE_SESSION,
@@ -13,23 +17,21 @@ from app.shared.auth import (
 )
 from app.shared.config import settings
 from app.shared.logging_utils import get_request_context, reset_request_context
-from fastapi import HTTPException
-from jose import jwt
 
 
 def _make_session_token(sub: str = SESSION_SUBJECT_OWNER) -> str:
-    return jwt.encode({"sub": sub}, settings.secret_key, algorithm=deps.ALGORITHM)
+    return jwt.encode({"sub": sub}, settings.secret_key, algorithm="HS256")
 
 
 def _make_request() -> SimpleNamespace:
     return SimpleNamespace(state=SimpleNamespace())
 
 
-def test_verify_session_accepts_valid_owner_token() -> None:
+def test_verify_session_accepts_valid_owner_token(auth_db) -> None:
     reset_request_context()
-    token = _make_session_token()
+    token = create_session(auth_db)
     request = _make_request()
-    deps.verify_session(request=request, session=token)
+    deps.verify_session(request=request, session=token, db=auth_db)
     assert get_request_context()["subject"] == SESSION_SUBJECT_OWNER
     assert get_request_context()["auth_type"] == AUTH_TYPE_SESSION
     assert request.state.subject == SESSION_SUBJECT_OWNER
@@ -37,19 +39,19 @@ def test_verify_session_accepts_valid_owner_token() -> None:
     reset_request_context()
 
 
-def test_verify_session_rejects_missing_cookie() -> None:
+def test_verify_session_rejects_missing_cookie(auth_db) -> None:
     with pytest.raises(HTTPException) as exc_info:
-        deps.verify_session(request=_make_request(), session=None)
+        deps.verify_session(request=_make_request(), session=None, db=auth_db)
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == ERROR_NOT_AUTHENTICATED
 
 
-def test_verify_session_rejects_wrong_subject() -> None:
+def test_verify_session_rejects_wrong_subject(auth_db) -> None:
     token = _make_session_token(sub="someone-else")
 
     with pytest.raises(HTTPException) as exc_info:
-        deps.verify_session(request=_make_request(), session=token)
+        deps.verify_session(request=_make_request(), session=token, db=auth_db)
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == ERROR_INVALID_SESSION

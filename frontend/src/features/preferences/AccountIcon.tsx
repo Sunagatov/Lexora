@@ -31,6 +31,7 @@ export function AccountIcon({ name }: { name: string }) {
         <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1" />
       </>
     ),
+    security: <><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z" /><path d="m8 12 3 3 5-6" /></>,
     statistics: (
       <>
         <path d="M4 20V10m8 10V4m8 16v-7" />

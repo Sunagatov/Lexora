@@ -1,28 +1,20 @@
 import logging
+
 from fastapi import testclient
 
+from app.features.auth.service import create_session
 from app.features.stats import router as stats_router
 from app.features.stats.schemas import StatsResponse
 from app.main import app
-from app.shared.auth import SESSION_COOKIE_NAME, SESSION_SUBJECT_OWNER, build_csrf_token
+from app.shared.auth import SESSION_COOKIE_NAME, build_csrf_token
 from app.shared.config import settings
 from app.shared.logging_utils import CORRELATION_ID_HEADER, REQUEST_ID_HEADER
 
 
-def test_get_session_returns_csrf_token_when_authenticated():
+def test_get_session_returns_csrf_token_when_authenticated(auth_db):
     """GET /auth/session returns csrf_token when session cookie is valid."""
-    from jose import jwt
-    from datetime import datetime, timezone
-    from app.shared.deps import ALGORITHM
-
     with testclient.TestClient(app) as client:
-        # Create a valid session token
-        now = int(datetime.now(timezone.utc).timestamp())
-        valid_token = jwt.encode(
-            {"sub": SESSION_SUBJECT_OWNER, "iat": now, "exp": now + 3600},
-            settings.secret_key,
-            algorithm=ALGORITHM,
-        )
+        valid_token = create_session(auth_db)
 
         client.cookies.set(SESSION_COOKIE_NAME, valid_token)
         response = client.get("/auth/session")
@@ -57,9 +49,8 @@ def test_get_session_returns_401_when_session_invalid():
 
 
 def test_request_logging_returns_request_headers_and_access_log(caplog):
-    with caplog.at_level(logging.DEBUG, logger="http.access"):
-        with testclient.TestClient(app) as client:
-            response = client.get("/auth/session", headers={CORRELATION_ID_HEADER: "frontend-123"})
+    with caplog.at_level(logging.DEBUG, logger="http.access"), testclient.TestClient(app) as client:
+        response = client.get("/auth/session", headers={CORRELATION_ID_HEADER: "frontend-123"})
 
     assert response.headers[CORRELATION_ID_HEADER] == "frontend-123"
     assert response.headers[REQUEST_ID_HEADER]
@@ -85,33 +76,21 @@ def test_request_logging_propagates_incoming_request_id() -> None:
     assert response.headers[REQUEST_ID_HEADER] == "frontend-request-7"
 
 
-def test_successful_protected_request_does_not_emit_info_access_log(caplog, monkeypatch):
-    from datetime import datetime, timezone
-
-    from jose import jwt
-
-    from app.shared.deps import ALGORITHM
-
+def test_successful_protected_request_does_not_emit_info_access_log(caplog, monkeypatch, auth_db):
     monkeypatch.setattr(stats_router, "compute_stats", lambda db: StatsResponse())
 
-    now = int(datetime.now(timezone.utc).timestamp())
-    valid_token = jwt.encode(
-        {"sub": SESSION_SUBJECT_OWNER, "iat": now, "exp": now + 3600},
-        settings.secret_key,
-        algorithm=ALGORITHM,
-    )
+    valid_token = create_session(auth_db)
     csrf = build_csrf_token(settings.secret_key, valid_token)
 
-    with caplog.at_level(logging.INFO):
-        with testclient.TestClient(app) as client:
-            client.cookies.set(SESSION_COOKIE_NAME, valid_token)
-            response = client.get(
-                "/api/stats",
-                headers={
-                    "x-csrf-token": csrf,
-                    CORRELATION_ID_HEADER: "frontend-456",
-                },
-            )
+    with caplog.at_level(logging.INFO), testclient.TestClient(app) as client:
+        client.cookies.set(SESSION_COOKIE_NAME, valid_token)
+        response = client.get(
+            "/api/stats",
+            headers={
+                "x-csrf-token": csrf,
+                CORRELATION_ID_HEADER: "frontend-456",
+            },
+        )
 
     assert response.status_code == 200
     assert not any(
@@ -121,9 +100,8 @@ def test_successful_protected_request_does_not_emit_info_access_log(caplog, monk
 
 
 def test_client_error_request_does_not_emit_info_access_log_by_default(caplog) -> None:
-    with caplog.at_level(logging.INFO):
-        with testclient.TestClient(app) as client:
-            response = client.get("/auth/session")
+    with caplog.at_level(logging.INFO), testclient.TestClient(app) as client:
+        response = client.get("/auth/session")
 
     assert response.status_code == 401
     assert not any(record.name == "http.access" for record in caplog.records)

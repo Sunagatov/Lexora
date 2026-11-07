@@ -13,6 +13,7 @@ import { AccountData } from './AccountData'
 import { AccountOffline } from './AccountOffline'
 import {AccountSidebar} from './AccountSidebar'
 import {AccountWordMix} from './AccountWordMix'
+import {AccountSecurity} from './AccountSecurity'
 import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {
   DEFAULT_PREFERENCES,
@@ -28,6 +29,7 @@ const SECTIONS = [
   { id: 'word-mix', title: 'Daily Word Mix', description: 'Set size, word selection and variety' },
   { id: 'study', title: 'Study preferences', description: 'Word lists, cards and gestures' },
   { id: 'appearance', title: 'Appearance', description: 'Theme and display preferences' },
+  { id: 'security', title: 'Security', description: 'Manage your sign-in sessions' },
   { id: 'statistics', title: 'Statistics', description: 'Progress and activity' },
   { id: 'data', title: 'Library & data', description: 'Import, export and Trash' },
   { id: 'offline', title: 'Offline', description: 'Saved copy and sync' },
@@ -78,7 +80,7 @@ export function AccountPage() {
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const snapshot = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
   const { values } = snapshot
-  const { logoutPending, logoutError, handleLogout } = useLogoutAction()
+  const { logoutPending, logoutError, handleLogout, handleLogoutAll } = useLogoutAction()
   const mutationsPending = useIsMutating() > 0
   const mobile = useIsMobile(768)
   const selected = SECTIONS.find((item) => item.id === section)
@@ -154,6 +156,7 @@ export function AccountPage() {
           </div>
         )}
         {section === 'word-mix' && <AccountWordMix preferences={values.word_mix} />}
+        {section === 'security' && <AccountSecurity pending={logoutPending} onLogoutAll={handleLogoutAll} />}
         {section === 'languages' && (
           <div className="account-surface">
             <label className="account-row account-language-row">

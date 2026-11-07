@@ -236,12 +236,12 @@ def test_topic_delete_after_synced_rating_ignores_client_only_metadata(db):
     assert db.get(Word, 1).deleted_at is not None
 
 
-def test_offline_routes_require_both_session_and_csrf(db):
+def test_offline_routes_require_both_session_and_csrf(db, auth_db):
     from fastapi.testclient import TestClient
-    from jose import jwt
 
     from app.main import app
-    from app.shared.auth import ALGORITHM, SESSION_SUBJECT_OWNER, build_csrf_token
+    from app.shared.auth import build_csrf_token
+    from app.features.auth.service import create_session
     from app.shared.config import settings
     from app.shared.deps import get_db
 
@@ -250,7 +250,7 @@ def test_offline_routes_require_both_session_and_csrf(db):
         client = TestClient(app)
         assert client.get("/api/offline/snapshot").status_code == 401
         assert client.post("/api/offline/changes", json={}).status_code == 401
-        token = jwt.encode({"sub": SESSION_SUBJECT_OWNER}, settings.secret_key, algorithm=ALGORITHM)
+        token = create_session(auth_db)
         client.cookies.set("session", token)
         assert client.get("/api/offline/snapshot").status_code == 403
         response = client.get(

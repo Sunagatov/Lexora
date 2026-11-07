@@ -3,11 +3,11 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
 import type {PropsWithChildren} from 'react'
 import {beforeEach, expect, it, vi} from 'vitest'
-import {logout} from '@/features/auth/api/authApi'
+import {logout, logoutAll} from '@/features/auth/api/authApi'
 import {useLogoutAction} from './useLogoutAction'
 
-vi.mock('@/features/auth/api/authApi', () => ({logout: vi.fn()}))
-beforeEach(() => vi.mocked(logout).mockReset())
+vi.mock('@/features/auth/api/authApi', () => ({logout: vi.fn(), logoutAll: vi.fn()}))
+beforeEach(() => { vi.mocked(logout).mockReset(); vi.mocked(logoutAll).mockReset() })
 
 function setup() {
   const client = new QueryClient()
@@ -37,4 +37,16 @@ it('keeps the session and avoids an error message when sign-out is cancelled', a
   await act(async () => { await result.current.handleLogout() })
   expect(result.current.logoutError).toBe('')
   expect(client.getQueryData(['saved-library'])).toBeDefined()
+})
+
+it('clears local queries only after all-device revocation succeeds', async () => {
+  const {result, client} = setup()
+  vi.mocked(logoutAll).mockRejectedValueOnce(new Error('Service unavailable'))
+  await act(async () => { await result.current.handleLogoutAll() })
+  expect(client.getQueryData(['saved-library'])).toBeDefined()
+  expect(result.current.logoutError).toContain('Service unavailable')
+  vi.mocked(logoutAll).mockResolvedValueOnce(true)
+  await act(async () => { await result.current.handleLogoutAll() })
+  expect(client.getQueryData(['saved-library'])).toBeUndefined()
+  expect(logout).not.toHaveBeenCalled()
 })

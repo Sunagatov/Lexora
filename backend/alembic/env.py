@@ -14,6 +14,7 @@ from app.features.smart_review.model import StudyQueue, StudyQueueItem  # noqa: 
 from app.features.stats.model import AppUsageEvent  # noqa: F401
 from app.features.offline.model import OfflineReceipt  # noqa: F401
 from app.features.preferences.model import AppPreferences  # noqa: F401
+from app.features.auth.model import AuthSession, LoginAttemptBucket  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

@@ -42,6 +42,27 @@ def isolated_fallback_database():
 
 
 @pytest.fixture
+def auth_db():
+    from app.shared import db
+
+    db.ensure_database_schema()
+    with db.SessionLocal() as session:
+        yield session
+
+
+@pytest.fixture(autouse=True)
+def isolated_auth_state(isolated_fallback_database):
+    from sqlalchemy import delete
+    from app.features.auth.model import AuthSession, LoginAttemptBucket
+    from app.shared import db
+
+    db.ensure_database_schema()
+    with db.SessionLocal.begin() as session:
+        session.execute(delete(AuthSession))
+        session.execute(delete(LoginAttemptBucket))
+
+
+@pytest.fixture
 def fixed_now() -> datetime:
     return datetime(2026, 1, 1, 12, 0, tzinfo=UTC)
 

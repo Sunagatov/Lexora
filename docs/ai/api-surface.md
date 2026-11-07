@@ -4,9 +4,23 @@ This is a concise route summary based on inspected routers. Inspect router and s
 
 ## Auth And Protection
 
-- Public: `GET /health`, `GET /api/config/public`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`.
+- Public: `GET /health`, `GET /api/config/public`, `POST /auth/login`.
+- `GET /auth/session` validates the registered session and returns its CSRF token.
+- `POST /auth/logout` revokes the current cookie, then clears it. An existing
+  cookie requires CSRF or a trusted browser Origin (also used by deferred logout).
+- `POST /auth/logout-all` requires session + CSRF and revokes every registered
+  session, including the caller. My Lexora → Security exposes this action.
 - API-key protected: `POST /api/words/bulk` uses `X-Api-Key`.
 - Session + CSRF protected: routers mounted in `backend/app/main.py` with `verify_session` and `verify_csrf`.
+
+Session cookies contain random opaque tokens; only credential-bound token hashes,
+credential fingerprints and expirations are stored in `auth_sessions`. Password/
+signing-secret changes invalidate earlier sessions; startup and new login purge
+older credential rows so reusing an earlier password cannot revive them. Restart
+all backend workers when changing credential configuration. Legacy JWTs are rejected, requiring one fresh sign-in
+after migration `20261107_0017`. Database failures fail closed. Durable atomic
+login budgets return `429` with `Retry-After`; stale counters/sessions are cleaned
+up during login. Vocabulary, progress and API-key imports keep their contracts.
 
 Protected router groups:
 

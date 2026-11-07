@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useQueryClient} from '@tanstack/react-query'
 import {routes} from '@/app/routes'
-import {logout} from '@/features/auth/api/authApi'
+import {logout, logoutAll} from '@/features/auth/api/authApi'
 
 export function useLogoutAction() {
   const navigate = useNavigate()
@@ -10,13 +10,13 @@ export function useLogoutAction() {
   const [logoutPending, setLogoutPending] = useState(false)
   const [logoutError, setLogoutError] = useState('')
 
-  async function handleLogout() {
+  async function signOut(allDevices: boolean) {
     if (logoutPending) return
 
     setLogoutPending(true)
     setLogoutError('')
     try {
-      if (await logout() === false) return
+      if (await (allDevices ? logoutAll() : logout()) === false) return
       queryClient.clear()
       navigate(routes.login, {replace: true})
     } catch (error) {
@@ -31,6 +31,7 @@ export function useLogoutAction() {
   return {
     logoutPending,
     logoutError,
-    handleLogout,
+    handleLogout: () => signOut(false),
+    handleLogoutAll: () => signOut(true),
   }
 }

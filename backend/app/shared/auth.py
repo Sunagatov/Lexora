@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import hashlib
 
-ALGORITHM = "HS256"
-
 SESSION_COOKIE_NAME = "session"
 CSRF_HEADER_NAME = "X-CSRF-Token"
 SESSION_SUBJECT_OWNER = "owner"

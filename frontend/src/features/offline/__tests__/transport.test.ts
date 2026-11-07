@@ -38,6 +38,21 @@ async function setup() {
 
 afterEach(() => { Reflect.deleteProperty(navigator, 'serviceWorker'); vi.restoreAllMocks(); vi.unstubAllGlobals() })
 
+it('clears saved data after all-device revocation succeeds', async () => {
+  const {request} = await setup()
+  fake.network.mockResolvedValueOnce({ok: true})
+  await request('/auth/logout-all', {method: 'POST'})
+  expect(fake.replica).toBeUndefined()
+  expect(fake.network).toHaveBeenCalledWith('/auth/logout-all', {method: 'POST'})
+})
+
+it('does not claim all devices are signed out when the network is unavailable', async () => {
+  const {request} = await setup()
+  fake.network.mockRejectedValueOnce(new TypeError('Network unavailable'))
+  await expect(request('/auth/logout-all', {method: 'POST'})).rejects.toThrow('Network unavailable')
+  expect(fake.replica?.words).toHaveLength(1)
+})
+
 it('copies the current practice set and its progress when saving all words offline', async () => {
   const {offline, request} = await setup()
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
