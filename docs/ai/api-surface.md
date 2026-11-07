@@ -14,7 +14,7 @@ This is a concise route summary based on inspected routers. Inspect router and s
 - Session + CSRF protected: routers mounted in `backend/app/main.py` with `verify_session` and `verify_csrf`.
 
 Session cookies contain random opaque tokens; only credential-bound token hashes,
-credential fingerprints and expirations are stored in `auth_sessions`. Password/
+credential fingerprints and expirations are stored in `lexora_auth_sessions`. Password/
 signing-secret changes invalidate earlier sessions; startup and new login purge
 older credential rows so reusing an earlier password cannot revive them. Restart
 all backend workers when changing credential configuration. Legacy JWTs are rejected, requiring one fresh sign-in

@@ -5,7 +5,7 @@ from app.shared.db import Base
 
 
 class AuthSession(Base):
-    __tablename__ = "auth_sessions"
+    __tablename__ = "lexora_auth_sessions"
 
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
     credential_tag: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -13,7 +13,7 @@ class AuthSession(Base):
 
 
 class LoginAttemptBucket(Base):
-    __tablename__ = "auth_login_attempts"
+    __tablename__ = "lexora_auth_login_attempts"
 
     key: Mapped[str] = mapped_column(String(64), primary_key=True)
     attempts: Mapped[int] = mapped_column(Integer, nullable=False)
