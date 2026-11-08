@@ -12,6 +12,14 @@ function setup() {
   return replica
 }
 
+it('retains the false Favorites default in queued edits after creating a word offline', () => {
+  const replica = setup()
+  expect(replica.words[0].is_favorite).toBe(false)
+  changeItem(replica, 'word', 'update', -2, {is_favorite: true})
+  expect(replica.changes[replica.changes.length - 1].before.is_favorite).toBe(false)
+  expect(replica.words[0].is_favorite).toBe(true)
+})
+
 it.each([1.5, 0, -1])('rejects invalid frequency rank %s before changing the word or queue', rank => {
   const replica = setup()
   const count = replica.changes.length

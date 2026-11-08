@@ -25,6 +25,7 @@ from app.features.words.ai_curation.import_results import (
 )
 from app.features.words.ai_curation.import_support import (
     AiCurationImportOperations,
+    _check_stale,
     _collect_existing_word_ids,
     _validate_payload_ids,
 )
@@ -83,6 +84,12 @@ def import_ai_curation(
     _validate_payload_ids(payload, words_by_id)
 
     try:
+        # Compare every operation with the original state before our own writes.
+        if payload.exported_at is not None:
+            for operation in payload.word_updates:
+                _check_stale(words_by_id[operation.id], payload.exported_at, "update_existing_word")
+            for operation in payload.word_reassigns:
+                _check_stale(words_by_id[operation.id], payload.exported_at, "reassign_word_topics")
         created_topics, created_topic_results = _process_topic_operations(db, payload, operations)
         updated_word_ids, updates_unchanged = _process_word_updates(db, payload, words_by_id, operations)
         created_word_ids = _process_word_creates(db, payload, created_topics, operations)

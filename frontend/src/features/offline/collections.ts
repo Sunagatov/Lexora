@@ -26,7 +26,7 @@ export function visibleWord(replica: Replica, word: Word): Word {
   return {...word, topic_ids: word.topic_ids.filter(id => active.has(id))}
 }
 
-export function listWords(replica: Replica, params: URLSearchParams) {
+function matchingWords(replica: Replica, params: URLSearchParams) {
   let words = replica.words.filter(w => !w.deleted_at && inLanguage(w)).map(w => displayTranslations(visibleWord(replica, w)) as Word)
   if (params.get('favorites_only') === 'true') words = words.filter(word => word.is_favorite)
   const root = Number(params.get('topic_id'))
@@ -47,7 +47,21 @@ export function listWords(replica: Replica, params: URLSearchParams) {
     ...(params.has('then_sort') ? {thenSortBy: params.get('then_sort') === 'none' ? null : params.get('then_sort')} : {}),
     topicIds, frozenIds: null,
   } as FilterOptions
-  words = filterAndSort(words, options)
+  return filterAndSort(words, options)
+}
+
+export function wordSummary(replica: Replica, params: URLSearchParams) {
+  const words = matchingWords(replica, params)
+  const level_counts: Record<number, number> = {}
+  words.forEach(word => {
+    const level = word.knowledge_level ?? 0
+    level_counts[level] = (level_counts[level] ?? 0) + 1
+  })
+  return {total: words.length, scope_total: words.length, level_counts}
+}
+
+export function listWords(replica: Replica, params: URLSearchParams) {
+  const words = matchingWords(replica, params)
   const page = Math.max(1, Number(params.get('page')) || 1)
   const pageSize = Math.min(200, Math.max(1, Number(params.get('page_size')) || 50))
   return {words: words.slice((page - 1) * pageSize, page * pageSize), total: words.length, page, page_size: pageSize,

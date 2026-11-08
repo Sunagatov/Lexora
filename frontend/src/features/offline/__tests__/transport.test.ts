@@ -38,6 +38,34 @@ async function setup() {
 
 afterEach(() => { Reflect.deleteProperty(navigator, 'serviceWorker'); vi.restoreAllMocks(); vi.unstubAllGlobals() })
 
+it.each([
+  'levels=4', 'search=calm', 'cefr_levels=B2', 'positions=noun', 'topic_ids=8',
+  'favorites_only=true', 'completeness=complete', 'levels=4&cefr_levels=A1',
+])('keeps the saved-copy summary aligned with list filters: %s', async filters => {
+  const {request} = await setup()
+  fake.replica!.words[0].cefr_level = 'A1'
+  fake.replica!.words[0].part_of_speech = 'adjective'
+  fake.replica!.topics.push({...structuredClone(fake.replica!.topics[0]), id: 8, name: 'Other', slug: 'other'})
+  fake.replica!.words.push({...structuredClone(fake.replica!.words[0]), id: 9, term: 'calm',
+    knowledge_level: 4, cefr_level: 'B2', part_of_speech: 'noun', topic_ids: [8], is_favorite: true,
+    definition: 'A calm state', translation_entries: ['test translation'], example_entries: ['A calm day.']})
+  const list = await request(`/api/words?${filters}`) as {total: number}
+  const summary = await request(`/api/words/summary?${filters}`) as {total: number; scope_total: number; level_counts: Record<number, number>}
+  const expected = filters === 'levels=4&cefr_levels=A1' ? 0 : 1
+  expect(list.total).toBe(expected)
+  expect(summary).toEqual({total: expected, scope_total: expected, level_counts: expected ? {4: 1} : {}})
+})
+
+it('summarizes every matching word rather than only the current saved-copy page', async () => {
+  const {request} = await setup()
+  fake.replica!.words.push({...structuredClone(fake.replica!.words[0]), id: 9, term: 'calm', knowledge_level: 4})
+  const list = await request('/api/words?page_size=1') as {words: unknown[]; total: number}
+  const summary = await request('/api/words/summary?page_size=1')
+  expect(list.words).toHaveLength(1)
+  expect(list.total).toBe(2)
+  expect(summary).toEqual({total: 2, scope_total: 2, level_counts: {1: 1, 4: 1}})
+})
+
 it('clears saved data after all-device revocation succeeds', async () => {
   const {request} = await setup()
   fake.network.mockResolvedValueOnce({ok: true})

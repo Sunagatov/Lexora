@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import cast
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import selectinload
 
 from app.features.languages.catalog import learning_language
@@ -44,10 +44,23 @@ def complete_queue_item(db, item_id: int) -> StudyQueue:
         raise QueueNotActiveError
 
     if not item.is_completed:
-        item.is_completed = True
-        item.completed_at = now
-        queue.completed_count += 1
-        db.commit()
+        # Claim completion once, then increment in SQL rather than writing a
+        # counter computed from a potentially stale ORM object in another request.
+        claimed = db.scalar(
+            update(StudyQueueItem)
+            .where(StudyQueueItem.id == item_id, StudyQueueItem.is_completed.is_(False))
+            .values(is_completed=True, completed_at=now)
+            .returning(StudyQueueItem.id)
+        )
+        if claimed is not None:
+            db.execute(
+                update(StudyQueue)
+                .where(StudyQueue.id == item.queue_id)
+                .values(completed_count=StudyQueue.completed_count + 1)
+            )
+            db.commit()
+        db.refresh(item)
+        db.refresh(queue)
 
     return queue
 

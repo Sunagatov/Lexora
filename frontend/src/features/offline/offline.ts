@@ -3,7 +3,7 @@ import {networkRequest, setRequestAdapter} from '@/shared/api/http'
 import {readReplica, withOfflineLock, writeReplica} from './storage'
 import {changeItem, remapId} from './changes'
 import {languagePreferences} from '@/features/languages/api'
-import {inLanguage, scopedReplica, listWords, sidebarStats, visibleWord} from './collections'
+import {inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
 import type {Replica, Snapshot} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
@@ -74,12 +74,7 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
     if (route === '/api/words') return listWords(replica, params)
     if (route === '/api/topics') return scope.topics.filter(t => !t.deleted_at).sort((a, b) => a.name.localeCompare(b.name))
     if (route === '/api/topics/sidebar-stats') return sidebarStats(replica)
-    if (route === '/api/words/summary') {
-      const level_counts: Record<number, number> = {}
-      const words = scope.words.filter(w => !w.deleted_at && (params.get('favorites_only') !== 'true' || w.is_favorite))
-      words.forEach(w => { const level = w.knowledge_level ?? 0; level_counts[level] = (level_counts[level] ?? 0) + 1 })
-      return {total: words.length, level_counts}
-    }
+    if (route === '/api/words/summary') return wordSummary(replica, params)
     if (route === '/api/trash/words') return scope.words.filter(w => w.deleted_at).map(w => visibleWord(replica, w))
     if (route === '/api/trash/topics') return scope.topics.filter(t => t.deleted_at)
     const match = route.match(/^\/api\/(words|topics)\/(-?\d+)$/)

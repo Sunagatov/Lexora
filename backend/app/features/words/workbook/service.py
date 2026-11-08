@@ -148,6 +148,13 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
     _create_meta_sheet(workbook, meta_mappings)
     add_language_metadata(workbook, db)
 
+    # Vocabulary and topic metadata are literal text, even when starting with '='.
+    for sheet in workbook:
+        for row in sheet.iter_rows():
+            for cell in row:
+                if isinstance(cell.value, str):
+                    cell.data_type = "s"
+
     output = BytesIO()
     workbook.save(output)
     filename = f"lexora-vocabulary-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}.xlsx"

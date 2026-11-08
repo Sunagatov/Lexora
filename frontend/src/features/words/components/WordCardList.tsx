@@ -23,6 +23,7 @@ type Props = {
   pendingWordIds?: ReadonlySet<number>
   fromTopicSlug?: string
   onUpdate: UpdateLevel
+  reviewMode?: boolean
 }
 
 function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwipe}: {
@@ -121,9 +122,9 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
   )
 }
 
-export function WordCardList({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate}: Props) {
+export function WordCardList({words, wordList, pendingWordId, pendingWordIds, fromTopicSlug, onUpdate, reviewMode = false}: Props) {
   async function swipe(word: Word, level: 4 | 5) {
-    if (word.knowledge_level === level) return
+    if (word.knowledge_level === level && !reviewMode) return
     try { await onUpdate(word.id, level) }
     catch { return } // The list owns the visible save error and rollback.
   }

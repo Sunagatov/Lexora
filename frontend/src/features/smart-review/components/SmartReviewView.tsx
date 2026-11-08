@@ -170,7 +170,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
           levelSummary={filter.levelSummary}
           pageWords={filter.pageWords} navigationWords={filter.filteredWords} page={filter.page} totalPages={filter.totalPages}
           pageSize={filter.pageSize} setPageSize={filter.setPageSize} setPage={filter.setPage}
-          pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate}
+          pendingWordId={update.pendingWordId} pendingWordIds={update.pendingWordIds} onUpdate={handleUpdate} reviewMode
           onWordSelect={isMobile ? undefined : setPanelWordId}
           selectedWordId={panelWordId}
         />

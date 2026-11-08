@@ -25,6 +25,15 @@ ratings roll back and offer retrying the chosen level. Daily Word Mix disables
 every word with a pending rating, even when another word is saved concurrently.
 Offline word creation, renaming and topic/identity changes use library-wide
 duplicate checks (including Trash); explicit parts of speech stay separate.
+Offline-created words include the false Favorites default. Synchronization also
+accepts that default in older queued snapshots while still rejecting newer server
+changes. Saved-copy vocabulary summaries use the same filters as their word lists
+and include all matching words, independent of pagination.
+
+Settings retain both in-flight and queued changes in the device recovery record
+until the server acknowledges them, including nested mix and pronunciation edits.
+Daily Word Mix completion claims an item once and increments its count atomically,
+so concurrent completions and retries cannot lose or duplicate progress.
 
 The `/` homepage is My Vocabulary: all non-deleted words, server-side sorting
 and pagination, default 50 per page, Weak first then A1–C2 within each knowledge
@@ -58,6 +67,21 @@ responses cannot replace a newer search. Failed loads expose an error and Retry;
 failed edits/deletions preserve the word and explain the failure. Enrichment
 responses apply only while their original term is still being edited.
 Queries retry a failed request at most twice; authentication failures are not retried.
+
+Study ratings count as review activity even when the selected level is unchanged;
+manual no-op updates do not. Mobile Daily Mix list swipes also complete unchanged
+ratings. Retention coverage counts only current library words, while historical
+activity remains available after words enter Trash. Queue statistics accept both
+PostgreSQL timestamps and the debug SQLite fallback's naive UTC timestamps.
+
+Word updates, including child-entry-only edits, advance the word modification
+time. AI curation checks all exported timestamps before applying any operations,
+so one request can update and reassign the same word without conflicting with
+itself. Existing words can be reimported without translations in the selected
+translation language; new words still require a translation. Both Excel export
+layouts preserve text beginning with '=' as literal text. Word-editor enrichment
+keeps blank lines between multilingual example blocks, and Trash restoration
+checks the exact language/part-of-speech identity, including an unset POS.
 
 ## Frontend
 

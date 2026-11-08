@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import bindparam, func, select
@@ -7,7 +7,11 @@ from sqlalchemy.orm import Session
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.topics.model import Topic
 from app.features.topics.rules import assert_topics_exist
-from app.features.words.constants import PROGRESS_SOURCE_MANUAL
+from app.features.words.constants import (
+    PROGRESS_SOURCE_MANUAL,
+    PROGRESS_SOURCE_SMART_REVIEW,
+    PROGRESS_SOURCE_STUDY_LIST,
+)
 from app.features.words.domain import (
     assert_no_duplicate_word as assert_no_duplicate_word,
 )
@@ -256,14 +260,18 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
     for field, value in {**_word_attribute_updates(db, payload), **stale}.items():
         setattr(word, field, value)
 
+    # Child-table edits also invalidate exported content, even without a scalar change.
+    if payload.model_fields_set - {"progress_source", "translation_language"}:
+        word.updated_at = datetime.now(UTC)
     _sync_entry_tables_for_update(db, word, payload)
 
     if payload.topic_ids is not None:
         word.topics = _load_topics(db, payload.topic_ids)
 
     if "knowledge_level" in payload.model_fields_set:
-        if payload.knowledge_level != old_level and payload.knowledge_level is not None:
-            source = payload.progress_source or PROGRESS_SOURCE_MANUAL
+        source = payload.progress_source or PROGRESS_SOURCE_MANUAL
+        is_review = source in (PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST)
+        if payload.knowledge_level is not None and (payload.knowledge_level != old_level or is_review):
             record_level_change(db, int(word.id), old_level, int(payload.knowledge_level), source)
 
     db.add(word)
@@ -272,7 +280,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
 
 
 def soft_delete_word(db: Session, word: Word, *, commit: bool = True) -> Word:
-    word.deleted_at = datetime.now(timezone.utc)
+    word.deleted_at = datetime.now(UTC)
     word.deleted_via_topic_id = None
     db.add(word)
     _finalize_write(db, word, commit=commit)
