@@ -12,7 +12,7 @@ function WordTableSkeleton() {
   )
 }
 
-import type {ReactNode} from 'react'
+import {useLayoutEffect, useRef, type ReactNode} from 'react'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilter, Selection} from '@/features/words/model/wordDomain'
 import type {Topic} from '@/features/topics/types/topicTypes'
@@ -22,14 +22,12 @@ import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
 import {useWordListScrollRestore} from '@/features/words/hooks/useWordListNavigation'
-import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
-import {usePreferences} from '@/features/preferences/api'
+import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type Props = {
   collectionTitle?: string
   collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
-  collectionProgress?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
   sortBy: SortOption; setSortBy: (v: SortOption) => void
   levelFilter: KnowledgeFilter; setLevelFilter: (v: KnowledgeFilter) => void
@@ -45,6 +43,7 @@ type Props = {
   pageStart: number; pageEnd: number
   levelSummary: Record<WordKnowledgeLevel, number>
   progressLabel?: string
+  progressCount?: number
   progressReady?: boolean
   pageWords: Word[]
   navigationWords?: Word[]
@@ -64,11 +63,11 @@ type Props = {
 }
 
 export function WordCollectionView({
-  collectionTitle, collectionBreadcrumb, collectionAction, collectionProgress,
+  collectionTitle, collectionBreadcrumb, collectionAction,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
-  pageStart, pageEnd, levelSummary, progressLabel, progressReady,
+  pageStart, pageEnd, levelSummary, progressLabel, progressCount, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, navigationWords, navigationQuery, navigationIds, page, totalPages, pageSize, setPageSize, setPage,
   pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
@@ -77,9 +76,15 @@ export function WordCollectionView({
   onWordSelect, selectedWordId,
 }: Props) {
   useWordListScrollRestore(isLoading)
-  const readingMode = usePronunciationMode(pageWords[0]?.language ?? 'en')
-  const preferences = usePreferences()
-  const hasPronunciation = preferences.pronunciation && pageWords.some(word => pronunciationText(word, readingMode))
+  const mobile = useIsMobile()
+  const filterKey = JSON.stringify([wordSearch, sortBy, thenSortBy, levelFilter, posFilter, cefrFilter, topicFilter, completeness])
+  const previousFilterKey = useRef(filterKey)
+  useLayoutEffect(() => {
+    if (previousFilterKey.current !== filterKey) {
+      document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'instant'})
+      previousFilterKey.current = filterKey
+    }
+  }, [filterKey])
   const wordList = {
     ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
     offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),
@@ -99,7 +104,7 @@ export function WordCollectionView({
     <div className="word-collection-layout">
       <div className="sticky-controls">
         <WordCollectionToolbar
-          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction} collectionProgress={collectionProgress}
+          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction}
           wordSearch={wordSearch} setWordSearch={setWordSearch}
           sortBy={sortBy} setSortBy={setSortBy}
           levelFilter={levelFilter} setLevelFilter={setLevelFilter}
@@ -111,19 +116,12 @@ export function WordCollectionView({
           filteredCount={filteredCount} pageStart={pageStart} pageEnd={pageEnd}
           levelSummary={levelSummary}
           progressLabel={progressLabel}
+          progressCount={progressCount}
           progressReady={progressReady}
           thenSortBy={thenSortBy} setThenSortBy={setThenSortBy}
           topicFilter={topicFilter} setTopicFilter={setTopicFilter} topics={topics}
           onLearningSort={onLearningSort}
         />
-        {pageWords.length > 0 && (
-          <div className={`word-list-header${hasPronunciation ? ' has-pronunciation' : ''}`} aria-hidden="true">
-            <span className="word-list-header-cell">Word</span>
-            {hasPronunciation && <span className="word-list-header-cell word-list-header-pronunciation">Pronunciation</span>}
-            <span className="word-list-header-cell word-list-header-details">Translation / details</span>
-            <span className="word-list-header-cell word-list-header-knowledge">Knowledge</span>
-          </div>
-        )}
       </div>
       <div className="word-collection-scroll">
         <div className="main-inner">
@@ -133,8 +131,9 @@ export function WordCollectionView({
             <div className="empty-state word-collection-empty-state">{emptyMessage}</div>
           ) : (
             <>
-              <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />
-              <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+              {mobile
+                ? <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+                : <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />}
             </>
           )}
         </div>

@@ -55,14 +55,14 @@ def test_libraries_keep_words_topics_progress_and_ids_separate(client, language,
     assert added["language"] == language and group["language"] == language
     assert client.get("/api/words").json()["total"] == 1
     assert client.get("/api/topics").json()[0]["id"] == group["id"]
-    assert client.get("/api/words/summary").json() == {"total": 1, "level_counts": {"1": 1}}
+    assert client.get("/api/words/summary").json() == {"total": 1, "scope_total": 1, "level_counts": {"1": 1}}
     assert client.get(f'/api/words/{original["id"]}').status_code == 404
     assert client.get("/api/words", params={"topic_id": english["id"]}).json()["total"] == 0
     assert client.post("/api/words", json={"term": "foreign", "topic_ids": [english["id"]], "translation_entries": ["x"]}).status_code == 400
     assert client.post("/api/topics", json={"name": "bad parent", "parent_topic_id": english["id"]}).status_code == 400
     client.headers["X-Lexora-Language"] = "en"
     assert client.get("/api/words").json()["words"][0]["id"] == original["id"]
-    assert client.get("/api/words/summary").json() == {"total": 1, "level_counts": {"4": 1}}
+    assert client.get("/api/words/summary").json() == {"total": 1, "scope_total": 1, "level_counts": {"4": 1}}
 
 
 def test_same_topic_and_spelling_allowed_in_other_language(client):

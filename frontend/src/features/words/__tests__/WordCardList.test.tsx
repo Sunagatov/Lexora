@@ -4,6 +4,12 @@ import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {describe, expect, it, vi} from 'vitest'
 import {WordCardList} from '@/features/words/components/WordCardList'
 import type {Word} from '@/features/words/types/wordTypes'
+import {deleteWord} from '@/features/words/api/wordsApi'
+import {queryKeys} from '@/app/queryKeys'
+
+vi.mock('@/features/words/api/wordsApi', async importOriginal => ({
+  ...await importOriginal<typeof import('@/features/words/api/wordsApi')>(), deleteWord: vi.fn(),
+}))
 
 function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word {
   return {
@@ -52,6 +58,50 @@ function swipeCard(card: HTMLElement, end = 195) {
 }
 
 describe('WordCardList', () => {
+  it('edits from the word menu while preserving the current list context', () => {
+    const router = createMemoryRouter([
+      {path: '/', element: <WordCardList words={[makeWord(1, 'hola')]} pendingWordId={null} onUpdate={vi.fn()} />},
+      {path: '/words/1/edit', element: <div>Editor</div>},
+    ], {initialEntries: ['/?search=hola&page=2']})
+    render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button', {name: 'Actions for hola'}))
+    fireEvent.click(screen.getByRole('link', {name: 'Edit word & topics'}))
+    expect(router.state.location.pathname).toBe('/words/1/edit')
+    expect(router.state.location.state.returnTo).toMatchObject({pathname: '/', search: '?search=hola&page=2'})
+  })
+
+  it('requires confirmation before moving a word to Trash and preserves it after a failed request', async () => {
+    vi.mocked(deleteWord).mockRejectedValueOnce(new Error('Network down'))
+    const client = new QueryClient({defaultOptions: {mutations: {retry: false}}})
+    const word = makeWord(1, 'hola')
+    client.setQueryData(queryKeys.publicConfig, {trash_retention_days: 45})
+    client.setQueryData(queryKeys.words, [word])
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[word]} pendingWordId={null} onUpdate={vi.fn()} />}])
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button', {name: 'Actions for hola'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'}))
+    expect(deleteWord).not.toHaveBeenCalled()
+    expect(screen.getByText(/45 days/)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'}))
+    expect(await screen.findByRole('alert')).toBeTruthy()
+    expect(client.getQueryData(queryKeys.words)).toEqual([word])
+    expect(router.state.location.pathname).toBe('/')
+  })
+
+  it('removes a trashed word from the cached list after a successful confirmed request', async () => {
+    vi.mocked(deleteWord).mockResolvedValueOnce(undefined)
+    const client = new QueryClient()
+    const word = makeWord(1, 'hola')
+    client.setQueryData(queryKeys.publicConfig, {trash_retention_days: 30})
+    client.setQueryData(queryKeys.words, [word])
+    const router = createMemoryRouter([{path: '/', element: <WordCardList words={[word]} pendingWordId={null} onUpdate={vi.fn()} />}])
+    render(<QueryClientProvider client={client}><RouterProvider router={router} /></QueryClientProvider>)
+    fireEvent.click(screen.getByRole('button', {name: 'Actions for hola'}))
+    fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'}))
+    await act(async () => { fireEvent.click(screen.getByRole('button', {name: 'Move to Trash'})) })
+    expect(client.getQueryData(queryKeys.words)).toEqual([])
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
   it('keeps audio outside the word link and puts the reading hint below the term', () => {
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'hola', {language: 'es', pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} />}])
     const {container} = render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
@@ -98,7 +148,7 @@ describe('WordCardList', () => {
     expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
   })
   it('saves a touch swipe without opening the word detail route or showing Undo', async () => {
-    window.matchMedia = vi.fn().mockReturnValue({matches: true})
+    vi.spyOn(window, 'matchMedia').mockReturnValue({matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn()} as unknown as MediaQueryList)
     const onUpdate = vi.fn()
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'patient')]} pendingWordId={null} onUpdate={onUpdate} />}])
     render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
@@ -119,7 +169,7 @@ describe('WordCardList', () => {
     expect(router.state.location.pathname).toBe('/')
     expect(screen.queryByRole('button', {name: 'Undo'})).toBeNull()
   })
-  it('expands and collapses all translations independently without navigation or changing the rating', () => {
+  it('shows all translations without an expand button or changing the rating', () => {
     const translations = ['холодный', 'прохладный', 'остывший', 'неприветливый']
     const onUpdate = vi.fn()
     const router = createMemoryRouter([{
@@ -129,29 +179,20 @@ describe('WordCardList', () => {
 
     render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
 
-    const content = screen.getByText(translations.join(' · '))
-    expect(content.classList.contains('is-expanded')).toBe(false)
-    const toggle = screen.getByRole('button', {name: 'Expand translations for cold'})
-    expect(toggle.getAttribute('aria-expanded')).toBe('false')
-    expect(toggle.getAttribute('aria-controls')).toBe(content.id)
-    fireEvent.click(toggle)
-    expect(content.classList.contains('is-expanded')).toBe(true)
-    expect(toggle.getAttribute('aria-expanded')).toBe('true')
-    expect(screen.getByRole('button', {name: 'Expand translations for warm'}).getAttribute('aria-expanded')).toBe('false')
+    expect(screen.getByText(translations.join(' · '))).toBeTruthy()
+    expect(screen.queryByRole('button', {name: /Expand translations/})).toBeNull()
     expect(router.state.location.pathname).toBe('/')
     expect(onUpdate).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', {name: 'Collapse translations for cold'}))
-    expect(content.classList.contains('is-expanded')).toBe(false)
   })
 
-  it('can expand a single long translation but does not show an empty expander', () => {
+  it('shows a single long translation in full without an expander', () => {
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[
       makeWord(1, 'long', {translation_entries: ['Один длинный перевод, который не помещается на одной строке карточки.']}),
       makeWord(2, 'empty', {translation_entries: []}),
     ]} pendingWordId={null} onUpdate={vi.fn()} />}])
     render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
-    fireEvent.click(screen.getByRole('button', {name: 'Expand translations for long'}))
-    expect(screen.getByRole('button', {name: 'Collapse translations for long'}).getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByText('Один длинный перевод, который не помещается на одной строке карточки.')).toBeTruthy()
+    expect(screen.queryByRole('button', {name: 'Expand translations for long'})).toBeNull()
     expect(screen.queryByRole('button', {name: 'Expand translations for empty'})).toBeNull()
   })
 
@@ -177,14 +218,11 @@ describe('WordCardList', () => {
 
     fireEvent.click(screen.getByRole('button', {name: /okay/i}))
 
-    const overlay = document.querySelector('.level-dropdown-overlay')
-    expect(overlay).not.toBeNull()
-
-    fireEvent.click(overlay!)
+    fireEvent.click(screen.getByRole('button', {name: 'Close knowledge selector'}))
 
     expect(screen.getByText('alpha')).toBeTruthy()
     expect(screen.queryByText('word detail page')).toBeNull()
-    expect(document.querySelector('.level-dropdown-overlay')).toBeNull()
+    expect(screen.queryByRole('dialog', {name: 'Knowledge level'})).toBeNull()
   })
 })
 

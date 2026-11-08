@@ -82,8 +82,9 @@ page membership/order. Paginated word queries are marked stale without refetchin
 for knowledge-only updates, and do not refresh on focus, reconnect, or remount.
 Changing list controls/pages or reloading fetches the current saved ordering.
 The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
-available through the sidebar/menu and keeps its completion progress and New set
-control within the shared toolbar.
+available through the sidebar/menu. Its shared toolbar shows one knowledge
+distribution bar, an All words / Daily Word Mix breadcrumb and New set beside
+the heading; completion continues to be tracked without another progress bar.
 
 The shared Add word action is available on the homepage, bulk vocabulary, and
 topic lists. Its modal preserves drafts after failed saves and prevents duplicate
@@ -125,6 +126,26 @@ Typical path:
 - backend returns active queue or generates/refreshes one
 - queue item completion updates queue state
 - frontend renders resulting queue response
+
+Daily Word Mix has List and Swipe views over the same queue. Swipe presents one
+word with its translations, selected pronunciation and a saved example. Right
+rates Strong (4), left Parked (5), up Okay (3), and down skips locally without a
+knowledge or completion request. Visible buttons provide the same actions.
+Previous/Next only navigate; there is no Undo action. Direction previews require
+an 80px unambiguous drag before release, and pointer cancellation never rates.
+The example area scrolls independently of the gesture surface.
+
+The versioned per-learning-language local storage entry contains queue identity,
+item IDs, cursor, decisions and any saved-rating/pending-completion marker; it
+contains no word text. Position survives List/Swipe switching and reopening the
+same queue on the same device, and resets for a new queue identity. Translation
+language changes do not discard this learning-language session. Skips are offered
+again at the end, and unrated words reached by navigation are offered as remaining
+work. Ratings advance only after level and completion requests succeed; a failed
+completion retries without submitting the saved rating again, including after
+reload. Pending saves block mode switching and navigation. Window focus does not
+silently regenerate the active review queue. Expired/server-replaced queues still
+follow the existing queue lifecycle; progress is not claimed to sync between devices.
 
 ### AI topic suggestion flow
 

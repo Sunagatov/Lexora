@@ -7,12 +7,15 @@ export async function login(password: string): Promise<void> {
   localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, data.csrf_token)
 }
 
-export async function logout(): Promise<boolean> {
-  try { await request<{ok: boolean}>('/auth/logout', {method: 'POST'}) }
+async function endSession(path: string): Promise<boolean> {
+  try { await request<{ok: boolean}>(path, {method: 'POST'}) }
   catch (error) { if (error instanceof ApiError && error.status === 499) return false; throw error }
   localStorage.removeItem(CSRF_TOKEN_STORAGE_KEY)
   return true
 }
+
+export function logout(): Promise<boolean> { return endSession('/auth/logout') }
+export function logoutAll(): Promise<boolean> { return endSession('/auth/logout-all') }
 
 export async function bootstrapSession(): Promise<boolean> {
   try {

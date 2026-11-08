@@ -1,22 +1,19 @@
-from datetime import datetime, timedelta, timezone
 import logging
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import cast
 from unittest.mock import MagicMock
 
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-import app.features.topics.model  # noqa: F401 — registers Topic in SQLAlchemy's class registry
-import app.features.words.model  # noqa: F401 — registers Word in SQLAlchemy's class registry
-import app.features.words.progress  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
-
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from app.shared.db import Base
+import app.features.topics.model
+import app.features.words.model
+import app.features.words.progress  # noqa: F401 — registers WordProgressEvent in SQLAlchemy's class registry
 from app.features.smart_review import service as smart_review_service
 from app.features.words.model import Word
+from app.shared.db import Base
 
 
 class FakeDB:
@@ -27,6 +24,9 @@ class FakeDB:
 
     def add(self, obj):
         self.added.append(obj)
+
+    def get(self, model, object_id):
+        return None
 
     def flush(self):
         for obj in self.added:
@@ -72,9 +72,10 @@ def test_complete_queue_item_raises_when_queue_is_missing_or_inactive() -> None:
         smart_review_service.complete_queue_item(db, 10)
 
 
-def test_complete_queue_item_raises_when_queue_is_expired() -> None:
+@pytest.mark.parametrize("tz", [None, UTC])
+def test_complete_queue_item_raises_when_queue_is_expired(tz) -> None:
     item = SimpleNamespace(queue_id=5, is_completed=False, completed_at=None)
-    past = datetime(2020, 1, 1, tzinfo=timezone.utc)
+    past = datetime(2020, 1, 1, tzinfo=tz)
     queue = SimpleNamespace(
         is_active=True,
         completed_count=0,
@@ -96,12 +97,13 @@ def test_complete_queue_item_raises_when_queue_is_expired() -> None:
         smart_review_service.complete_queue_item(db, 10)
 
 
-def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
+@pytest.mark.parametrize("tz", [None, UTC])
+def test_complete_queue_item_marks_incomplete_item_as_done(tz) -> None:
     item = SimpleNamespace(queue_id=5, word_id=10, is_completed=False, completed_at=None)
     queue = SimpleNamespace(
         is_active=True,
         completed_count=1,
-        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+        expires_at=datetime(2099, 1, 1, tzinfo=tz),
     )
     word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
 
@@ -127,12 +129,35 @@ def test_complete_queue_item_marks_incomplete_item_as_done() -> None:
     db.commit.assert_called_once()
 
 
+def test_complete_queue_item_after_sqlite_round_trip() -> None:
+    db = _make_sqlite_session()
+    with db:
+        word = Word(term="hello")
+        db.add(word)
+        db.flush()
+        queue = smart_review_service.StudyQueue(
+            expires_at=datetime.now(UTC) + timedelta(hours=1),
+            is_active=True, total_count=1, completed_count=0,
+        )
+        db.add(queue)
+        db.flush()
+        item = smart_review_service.StudyQueueItem(queue_id=queue.id, word_id=word.id, position=0, is_completed=False)
+        db.add(item)
+        db.commit()
+        db.refresh(queue)
+        assert queue.expires_at.tzinfo is None
+        completed = smart_review_service.complete_queue_item(db, item.id)
+        assert item.is_completed is True
+        assert completed.completed_count == 1
+        assert smart_review_service.complete_queue_item(db, item.id).completed_count == 1
+
+
 def test_complete_queue_item_does_not_commit_when_already_completed() -> None:
     item = SimpleNamespace(queue_id=5, word_id=10, is_completed=True, completed_at="already")
     queue = SimpleNamespace(
         is_active=True,
         completed_count=3,
-        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+        expires_at=datetime(2099, 1, 1, tzinfo=UTC),
     )
     word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
 
@@ -303,7 +328,7 @@ def test_cooldown_word_ids_uses_completed_items_only(monkeypatch) -> None:
     monkeypatch.setattr(smart_review_service.settings, "smart_review_cooldown_days", 7)
 
     db = _make_sqlite_session()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     word_completed = Word(term="done")
     word_pending = Word(term="pending")
@@ -360,9 +385,9 @@ def test_complete_queue_item_raises_when_linked_word_is_deleted() -> None:
     queue = SimpleNamespace(
         is_active=True,
         completed_count=0,
-        expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+        expires_at=datetime(2099, 1, 1, tzinfo=UTC),
     )
-    deleted_word = SimpleNamespace(id=10, deleted_at=datetime(2026, 1, 1, tzinfo=timezone.utc), is_active=True)
+    deleted_word = SimpleNamespace(id=10, deleted_at=datetime(2026, 1, 1, tzinfo=UTC), is_active=True)
 
     db = MagicMock()
 
@@ -387,7 +412,7 @@ def test_get_or_create_active_queue_regenerates_when_existing_queue_contains_del
         is_active=True,
         completed_count=0,
         total_count=1,
-        items=[SimpleNamespace(word=SimpleNamespace(deleted_at=datetime(2026, 1, 1, tzinfo=timezone.utc), is_active=True))],
+        items=[SimpleNamespace(word=SimpleNamespace(deleted_at=datetime(2026, 1, 1, tzinfo=UTC), is_active=True))],
     )
     regenerated = SimpleNamespace(id=99)
 
@@ -430,6 +455,7 @@ def test_get_or_create_active_queue_regenerates_stale_empty_queue_when_candidate
     regenerated = SimpleNamespace(id=101)
 
     db = MagicMock()
+    db.get.return_value = None
     db.scalar.return_value = empty_queue
 
     monkeypatch.setattr(smart_review_service.settings, "smart_review_enabled", True)
@@ -454,6 +480,7 @@ def test_get_or_create_active_queue_keeps_empty_queue_when_no_candidates_exist(m
     empty_queue = SimpleNamespace(is_active=True, total_count=0, completed_count=0, items=[])
 
     db = MagicMock()
+    db.get.return_value = None
     db.scalar.return_value = empty_queue
 
     generate = MagicMock()

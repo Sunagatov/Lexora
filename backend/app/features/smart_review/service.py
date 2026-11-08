@@ -6,15 +6,16 @@ from typing import cast
 from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import learning_language
+from app.features.preferences.api import configured_word_mix_preferences
 from app.features.smart_review import lifecycle, selection
 from app.features.smart_review.exceptions import (
-    QueueItemNotFoundError as QueueItemNotFoundError,
+    QueueItemNotFoundError as QueueItemNotFoundError,  # noqa: PLC0414 - compatibility export
 )
 from app.features.smart_review.exceptions import (
-    QueueNotActiveError as QueueNotActiveError,
+    QueueNotActiveError as QueueNotActiveError,  # noqa: PLC0414 - compatibility export
 )
 from app.features.smart_review.model import StudyQueue
-from app.features.smart_review.model import StudyQueueItem as StudyQueueItem
+from app.features.smart_review.model import StudyQueueItem as StudyQueueItem  # noqa: PLC0414 - compatibility export
 from app.shared.config import settings
 from app.shared.logging_utils import log_audit_event
 
@@ -28,24 +29,24 @@ def deactivate_all_queues(db: Session) -> None:
 
 
 def generate_queue(db: Session) -> StudyQueue:
-    cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=settings.smart_review_cooldown_days)
-    topic_counts = selection.empty_topic_counts()
-    level_buckets = _level_buckets()
-
-    selected: list = []
-    for level, needed in level_buckets.items():
-        if needed <= 0:
-            continue
-        words = selection.pick_for_level_retry_excluded(
-            db,
-            level=level,
-            needed=needed,
-            excluded_ids=cooldown_ids | {word.id for word in selected},
-            topic_counts=topic_counts,
-            max_per_topic=settings.smart_review_max_per_topic,
-            cefr_weights=settings.smart_review_cefr_weights,
-        )
-        selected.extend(words)
+    preferences = configured_word_mix_preferences(db)
+    cooldown_days = preferences.cooldown_days if preferences else settings.smart_review_cooldown_days
+    cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=cooldown_days)
+    if preferences is not None:
+        selected = selection.pick_configured_words(db, preferences)
+    else:
+        topic_counts = selection.empty_topic_counts()
+        selected = []
+        for level, needed in _level_buckets().items():
+            if needed <= 0:
+                continue
+            words = selection.pick_for_level_retry_excluded(
+                db, level=level, needed=needed,
+                excluded_ids=cooldown_ids | {word.id for word in selected},
+                topic_counts=topic_counts, max_per_topic=settings.smart_review_max_per_topic,
+                cefr_weights=settings.smart_review_cefr_weights,
+            )
+            selected.extend(words)
 
     random.shuffle(selected)
 
@@ -84,6 +85,9 @@ def _level_buckets() -> dict[int, int]:
 
 def _should_regenerate_queue(db: Session, queue: StudyQueue) -> bool:
     if queue.total_count == 0:
+        preferences = configured_word_mix_preferences(db)
+        if preferences is not None:
+            return selection.has_configured_candidates(db, preferences)
         cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=settings.smart_review_cooldown_days)
         return selection.has_any_candidates(db, level_buckets=_level_buckets(), excluded_ids=cooldown_ids)
     if lifecycle.queue_needs_regeneration_sql(db, queue.id, queue.total_count):

@@ -14,7 +14,7 @@ if str(BACKEND_DIR) not in sys.path:
 
 # Required by app.shared.config.Settings at import time.
 os.environ.setdefault("APP_PASSWORD", "test-password")
-os.environ.setdefault("SECRET_KEY", "test-secret-key")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-isolated-tests-only")
 os.environ.setdefault("API_KEY", "test-api-key")
 # Test collection imports the DB module; never probe a configured remote database.
 os.environ["POSTGRES_HOST"] = "127.0.0.1"
@@ -39,6 +39,27 @@ def isolated_fallback_database():
     yield
     db.engine, db.SessionLocal, deps.SessionLocal, db._sqlite_schema_ready = original
     engine.dispose()
+
+
+@pytest.fixture
+def auth_db():
+    from app.shared import db
+
+    db.ensure_database_schema()
+    with db.SessionLocal() as session:
+        yield session
+
+
+@pytest.fixture(autouse=True)
+def isolated_auth_state(isolated_fallback_database):
+    from sqlalchemy import delete
+    from app.features.auth.model import AuthSession, LoginAttemptBucket
+    from app.shared import db
+
+    db.ensure_database_schema()
+    with db.SessionLocal.begin() as session:
+        session.execute(delete(AuthSession))
+        session.execute(delete(LoginAttemptBucket))
 
 
 @pytest.fixture

@@ -153,11 +153,12 @@ export function AllWordsPage() {
         topicFilter={s.topicFilter} setTopicFilter={s.setTopicFilter} topics={topics}
         completeness={s.completeness} setCompleteness={s.setCompleteness}
         onLearningSort={s.setLearningSort} onReset={resetFilters}
-        totalWordsOverall={s.summaryQuery.data?.total ?? 0} topicTotalCount={s.summaryQuery.data?.total ?? 0}
+        totalWordsOverall={s.summaryQuery.data?.scope_total ?? 0} topicTotalCount={s.summaryQuery.data?.scope_total ?? 0}
         filteredCount={total} pageStart={words.length ? (page - 1) * pageSize + 1 : 0} pageEnd={words.length ? (page - 1) * pageSize + words.length : 0}
         levelSummary={{1: s.summaryQuery.data?.level_counts[1] ?? 0, 3: (s.summaryQuery.data?.level_counts[2] ?? 0) + (s.summaryQuery.data?.level_counts[3] ?? 0), 4: s.summaryQuery.data?.level_counts[4] ?? 0, 5: s.summaryQuery.data?.level_counts[5] ?? 0}}
-        progressLabel="Whole vocabulary progress"
+        progressLabel={hasFilters ? 'Filtered vocabulary progress' : 'Whole vocabulary progress'}
         progressReady={s.summaryQuery.isSuccess}
+        progressCount={s.summaryQuery.data?.total}
       />
 
       {(loadError || actionError) && (
@@ -250,7 +251,7 @@ export function AllWordsPage() {
                           </button>
                         </div>
                         {isOpen && (
-                          <LevelDropdown current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
+                          <LevelDropdown term={word.term} current={word.knowledge_level as WordKnowledgeLevel | null} anchor={levelAnchor!}
                             onSelect={l => { handleLevelChange(word.id, l); setOpenLevelId(null) }}
                             onClose={() => setOpenLevelId(null)} />
                         )}

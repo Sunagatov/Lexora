@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState, type ReactElement} from 'react'
+import {useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode} from 'react'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {useTopicSidebarPrefs} from '@/features/topics/hooks/useTopicSidebarPrefs'
@@ -17,7 +17,6 @@ type Props = {
   topics: Topic[]
   topicCounts: Map<number, number>
   topicProgress: Map<number, number>
-  totalWords: number
   topicSearch: string
   setTopicSearch: (v: string) => void
   selectedTopicId: number | null
@@ -28,6 +27,7 @@ type Props = {
   smartQueue: StudyQueue | null
   isCollapsed?: boolean
   onToggleCollapsed?: () => void
+  topicsStatus?: ReactNode
 }
 
 type TopicButtonSharedProps = {
@@ -144,10 +144,11 @@ function buildDeleteTopicMessage(topics: Topic[], deleteTopicId: number): string
 }
 
 export function TopicSidebar({
-  topics, topicCounts, topicProgress, totalWords, topicSearch, setTopicSearch,
+  topics, topicCounts, topicProgress, topicSearch, setTopicSearch,
   selectedTopicId, isSmartReview, isMobile = false,
   onSelect, onSelectSmartReview, smartQueue,
   isCollapsed = false, onToggleCollapsed,
+  topicsStatus,
 }: Props) {
   const prefs = useTopicSidebarPrefs()
   const [posSortOpen, setPosSortOpen] = useState(false)
@@ -260,32 +261,28 @@ export function TopicSidebar({
 
   return (
     <>
-      {!isMobile && (
-        <button
+      <TopicSidebarHeader
+        collapseControl={!isMobile && <button
           type="button"
           className="sidebar-collapse-btn"
           onClick={onToggleCollapsed}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points={isCollapsed ? '4,2 9,7 4,12' : '9,2 4,7 9,12'} />
           </svg>
-        </button>
-      )}
-
-      <TopicSidebarHeader
-        topicCount={topics.length}
-        totalWords={totalWords}
+        </button>}
         topicSearch={topicSearch}
         setTopicSearch={setTopicSearch}
-        isMobile={isMobile}
         isSmartReview={isSmartReview}
         onSelectSmartReview={onSelectSmartReview}
         smartQueue={smartQueue}
       />
 
       <div className="sidebar-topic-list">
+        {topicsStatus}
+        {!(topicsStatus && topics.length === 0) && <>
         {pinnedTopics.length > 0 && (
           <div className="sidebar-group">
             <div className="sidebar-group-header">
@@ -316,38 +313,38 @@ export function TopicSidebar({
           </TopicSidebarGroup>
         )}
 
-        {themeTopics.length > 0 && (
-          <TopicSidebarGroup
-            title="Topics"
-            count={themeTopics.length}
-            collapsed={prefs.topicsCollapsed}
-            onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
-            sortMode={prefs.topicsSort}
-            sortButtonRef={topicsSortRef}
-            sortOpen={topicsSortOpen}
-            onToggleSort={() => setTopicsSortOpen((value) => !value)}
-            onCloseSort={() => setTopicsSortOpen(false)}
-            onSelectSort={(mode) => {
-              prefs.setTopicsSort(mode)
-              setTopicsSortOpen(false)
-            }}
-            meta={topicsMeta}
-          >
-            {renderTopicTree(
-              themeTree,
-              {
-                ...topicButtonSharedProps,
-                onDelete: openDeleteTopic,
-              },
-              expandedTopicIds,
-              !!needle,
-            )}
-          </TopicSidebarGroup>
-        )}
+        <TopicSidebarGroup
+          title="Topics"
+          onCreateTopic={startAddTopic}
+          count={themeTopics.length}
+          collapsed={prefs.topicsCollapsed}
+          onToggleCollapsed={() => prefs.setTopicsCollapsed(!prefs.topicsCollapsed)}
+          sortMode={prefs.topicsSort}
+          sortButtonRef={topicsSortRef}
+          sortOpen={topicsSortOpen}
+          onToggleSort={() => setTopicsSortOpen((value) => !value)}
+          onCloseSort={() => setTopicsSortOpen(false)}
+          onSelectSort={(mode) => {
+            prefs.setTopicsSort(mode)
+            setTopicsSortOpen(false)
+          }}
+          meta={topicsMeta}
+        >
+          {renderTopicTree(
+            themeTree,
+            {
+              ...topicButtonSharedProps,
+              onDelete: openDeleteTopic,
+            },
+            expandedTopicIds,
+            !!needle,
+          )}
+        </TopicSidebarGroup>
 
         {posTopics.length === 0 && themeTopics.length === 0 && (
           <div className="sidebar-empty">No topics found.</div>
         )}
+        </>}
       </div>
 
       <TopicSidebarFooter
@@ -362,6 +359,7 @@ export function TopicSidebar({
         onCreate={() => createTopicMutation.mutate()}
         onCancel={cancelAddTopic}
         onStartAdd={startAddTopic}
+        showAddButton={isCollapsed && !isMobile}
       />
 
 

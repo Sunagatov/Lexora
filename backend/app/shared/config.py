@@ -19,13 +19,16 @@ class Settings(BaseSettings):
     log_format: Literal["pretty", "json"] = "pretty"
     log_slow_request_threshold_ms: int = 500
 
-    app_password: str = Field(default="")
+    app_password: str = Field(default="", max_length=1024)
     secret_key: str = Field(default="")
-    cookie_max_age: int = 60 * 60 * 24 * 30  # 30 days
+    cookie_max_age: int = Field(default=60 * 60 * 24 * 7, ge=60, le=60 * 60 * 24 * 30)
     cookie_httponly: bool = True
     cookie_secure: bool = False  # set True in production via env
     cookie_samesite: str = "lax"
     api_key: str = Field(default="")
+    auth_login_window_seconds: int = Field(default=60, ge=1, le=3600)
+    auth_login_attempts_per_ip: int = Field(default=5, ge=1, le=1000)
+    auth_login_attempts_global: int = Field(default=30, ge=1, le=10000)
 
     smart_review_enabled: bool = True
     smart_review_queue_size: int = 200

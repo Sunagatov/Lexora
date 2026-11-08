@@ -21,7 +21,9 @@ export function LoginPage() {
       await loadPreferences()
       navigate(routes.home)
     } catch (err) {
-      setError(err instanceof ApiError && err.status === 401 ? 'Wrong password.' : 'Could not sign in. Please try again.')
+      setError(err instanceof ApiError && err.status === 401 ? 'Wrong password.'
+        : err instanceof ApiError && err.status === 429 ? err.message
+        : 'Could not sign in. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -34,12 +36,16 @@ export function LoginPage() {
         <input
           className="login-input"
           type="password"
+          name="password"
+          aria-label="Password"
+          autoComplete="current-password"
+          maxLength={1024}
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoFocus
         />
-        {error && <p className="login-error">{error}</p>}
+        {error && <p className="login-error" role="alert">{error}</p>}
         <button className="login-btn" type="submit" disabled={loading || !password}>
           {loading ? 'Signing in…' : 'Sign in'}
         </button>

@@ -7,12 +7,18 @@ Source lives in `src/`.
 ## Local Commands
 
 ```bash
-npm install
+npm ci
 npm run dev
 npm test
 npm run lint
 npm run build
 ```
+
+Use Node 22.22.2+, 24.15.0+, or 26+; the Docker builder uses Node 26.
+TypeScript stays on 6.0.3 because typescript-eslint 8.72.1 requires TypeScript
+below 6.1. Upgrade it when the lint adapter supports TypeScript 7.
+The minimatch override supplies the patched 11.x release to ESLint and its
+TypeScript adapter while their dependency ranges still select vulnerable 10.x.
 
 Offline mode is available in production builds: `npm run build`, then
 `npm run preview` (with a same-origin API proxy/server), or the frontend web server.

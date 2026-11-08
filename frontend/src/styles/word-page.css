@@ -31,7 +31,7 @@
   font-size: 0.9rem;
 }
 
-/* Fixed hero — never scrolls */
+/* Desktop keeps the hero above the scrolling details; mobile reading scrolls both. */
 .word-page-hero-wrap {
   flex-shrink: 0;
   padding: 14px 28px 0;
@@ -537,7 +537,36 @@
 
 @media (max-width: 860px) {
   .word-page {
+    min-height: 0;
     padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .word-page-reading {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+
+  .word-page-reading .word-page-inner {
+    flex: none;
+    overflow: visible;
+  }
+
+  .word-page-reading .word-page-hero {
+    padding: 12px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+
+  .word-page-reading .word-page-term {
+    font-size: 1.75rem;
+    overflow-wrap: anywhere;
+  }
+
+  .word-page-reading .word-page-hero-translation {
+    font-size: 0.9rem;
+    font-style: normal;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
   }
   
   .word-page-hero-wrap {

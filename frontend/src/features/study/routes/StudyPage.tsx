@@ -37,7 +37,7 @@ export function StudyPage() {
   const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
   const {collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed} = useSidebarCollapsedPref()
-  const isMobile = useIsMobile(768)
+  const isMobile = useIsMobile()
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
 
   useEffect(() => {
@@ -58,7 +58,6 @@ export function StudyPage() {
 
   const sidebarProps = {
     topics: s.topics, topicCounts: s.topicCounts, topicProgress: s.topicProgress,
-    totalWords: s.totalWords,
     topicSearch: s.topicSearch, setTopicSearch: s.setTopicSearch,
     selectedTopicId: s.selectedTopicId, isSmartReview: s.isSmartReview,
     onSelect: (id: number) => { setDrawerOpen(false); s.selectTopic(id) },
@@ -80,7 +79,7 @@ export function StudyPage() {
         sidebarProps={sidebarProps}
       />
 
-      <div className="main-content">
+      <div className="main-content" inert={drawerOpen && isMobile}>
         {s.isSmartReview ? (
           <SmartReviewView queue={s.smartQueue} isLoading={s.isLoading} topics={s.topics} />
         ) : (

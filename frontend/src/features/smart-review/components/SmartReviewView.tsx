@@ -26,7 +26,7 @@ function SmartReviewSkeleton() {
   )
 }
 
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState, useSyncExternalStore} from 'react'
 import {useNavigate} from 'react-router-dom'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
@@ -39,7 +39,11 @@ import {WordDetailPanel} from '@/features/words/components/WordDetailPanel'
 import {DEFAULT_PAGE_SIZE} from '@/shared/config/pagination'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {EmptyState} from '@/shared/components/EmptyState'
+import {Breadcrumb} from '@/shared/components/Breadcrumb'
+import {preferencesSnapshot, subscribePreferences} from '@/features/preferences/api'
 import type {Topic} from '@/features/topics/types/topicTypes'
+import {SwipeReview} from './SwipeReview'
+import {languagePreferences} from '@/features/languages/api'
 
 type Props = {queue: StudyQueue | null; isLoading: boolean; topics?: Topic[]}
 
@@ -47,10 +51,21 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const navigate = useNavigate()
   const review = useSmartReview(false)
   const {completeItem, refresh, isRefreshing} = review
+  const preferences = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
+  const settingsSaving = navigator.onLine && preferences.status === 'saving'
+  const [swipeBusy, setSwipeBusy] = useState(false)
+  const [view, setView] = useState<'list' | 'swipe'>(() => {
+    try { return localStorage.getItem('lexora-word-mix-view') === 'swipe' ? 'swipe' : 'list' }
+    catch { return 'list' }
+  })
+  function selectView(next: 'list' | 'swipe') {
+    setView(next)
+    try { localStorage.setItem('lexora-word-mix-view', next) } catch { /* In-memory selection still works. */ }
+  }
   const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
   const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
   const defaultPageSize = DEFAULT_PAGE_SIZE
-  const isMobile = useIsMobile(768)
+  const isMobile = useIsMobile()
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const queueId = queue?.id ?? null
@@ -107,13 +122,18 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
     )
   }
 
-  const remaining  = queue.total_count - queue.completed_count
-  const progress   = queue.total_count > 0 ? Math.round((queue.completed_count / queue.total_count) * 100) : 0
-  const isComplete = remaining === 0 && queue.total_count > 0
   const splitClassName = `word-collection-split smart-review-word-content${isTransitioning || isRefreshing ? ' is-loading' : ''}${panelWordId && !isMobile ? ' has-panel' : ''}`
 
   return (
     <div className="study-topic-panel">
+      <div className="mix-view-bar">
+        {view === 'swipe' ? <h1>Daily Word Mix</h1> : <span />}
+        <div className="mix-view-switch" aria-label="Word mix view">
+          <button type="button" aria-pressed={view === 'list'} disabled={swipeBusy} onClick={() => selectView('list')}>List</button>
+          <button type="button" aria-pressed={view === 'swipe'} disabled={swipeBusy} onClick={() => selectView('swipe')}>Swipe</button>
+        </div>
+      </div>
+      {view === 'swipe' ? <SwipeReview key={`${languagePreferences().language}:${queue.id}:${queue.generated_at}`} queue={queue} onBackToList={() => selectView('list')} onBusyChange={setSwipeBusy} /> : <>
       {failedLevel && <div role="alert" className="wp-save-error">
         Failed to save word level. Please try again.
         <button type="button" className="btn btn-ghost" onClick={() => handleUpdate(failedLevel.wordId, failedLevel.level)}>Retry</button>
@@ -125,15 +145,14 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
       <div className={splitClassName}>
         <WordCollectionView
           collectionTitle="Daily Word Mix"
-          collectionAction={<button type="button" className="btn btn-ghost toolbar-mix-refresh" onClick={() => refresh()} disabled={isRefreshing}>
-            {isRefreshing ? '…' : isComplete ? '✨ New' : '↺ New set'}
+          collectionBreadcrumb={<Breadcrumb items={[
+            {label: 'All words', onClick: () => navigate(routes.home)},
+            {label: 'Daily Word Mix', isActive: true},
+          ]} />}
+          collectionAction={<button type="button" className="btn btn-ghost toolbar-mix-refresh" onClick={() => refresh()} disabled={isRefreshing || settingsSaving} aria-label="New set" aria-busy={isRefreshing}
+            title={settingsSaving ? 'Waiting for settings to finish saving' : 'Create a new word mix'}>
+            <span aria-hidden="true">↻</span> {isRefreshing ? 'Creating…' : 'New set'}
           </button>}
-          collectionProgress={<div className="toolbar-mix-progress">
-            <span>Reviewed {queue.completed_count}/{queue.total_count}{isComplete ? ' ✓' : ''}</span>
-            <div className="smart-review-header-bar" role="progressbar" aria-label="Daily Word Mix completion" aria-valuemin={0} aria-valuemax={queue.total_count || 1} aria-valuenow={queue.completed_count}>
-              <div className="smart-review-header-bar-fill" style={{width: `${progress}%`}} />
-            </div>
-          </div>}
           progressLabel="Daily Word Mix knowledge"
           wordSearch={filter.wordSearch} setWordSearch={filter.setWordSearch}
           sortBy={filter.sortBy} setSortBy={filter.setSortBy}
@@ -164,6 +183,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
           />
         )}
       </div>
+      </>}
     </div>
   )
 }

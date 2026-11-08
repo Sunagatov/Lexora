@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useParams, useOutletContext } from 'react-router-dom'
 import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useIsMutating } from '@tanstack/react-query'
 import { routes } from '@/app/routes'
@@ -11,10 +11,13 @@ import { TrashPage } from '@/features/trash/routes/TrashPage'
 import { AccountIcon } from './AccountIcon'
 import { AccountData } from './AccountData'
 import { AccountOffline } from './AccountOffline'
-import { accountReturnTarget } from './accountNavigation'
+import {AccountSidebar} from './AccountSidebar'
+import {AccountWordMix} from './AccountWordMix'
+import {AccountSecurity} from './AccountSecurity'
+import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {
   DEFAULT_PREFERENCES,
-  flushPreferences,
+  loadPreferences,
   preferencesSnapshot,
   subscribePreferences,
   updatePreferences,
@@ -23,8 +26,10 @@ import {
 
 const SECTIONS = [
   { id: 'languages', title: 'Languages', description: 'Learning and translation languages' },
+  { id: 'word-mix', title: 'Daily Word Mix', description: 'Set size, word selection and variety' },
   { id: 'study', title: 'Study preferences', description: 'Word lists, cards and gestures' },
   { id: 'appearance', title: 'Appearance', description: 'Theme and display preferences' },
+  { id: 'security', title: 'Security', description: 'Manage your sign-in sessions' },
   { id: 'statistics', title: 'Statistics', description: 'Progress and activity' },
   { id: 'data', title: 'Library & data', description: 'Import, export and Trash' },
   { id: 'offline', title: 'Offline', description: 'Saved copy and sync' },
@@ -72,26 +77,21 @@ export function AccountPage() {
   const { section } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
   const snapshot = useSyncExternalStore(subscribePreferences, preferencesSnapshot)
   const { values } = snapshot
-  const { logoutPending, handleLogout } = useLogoutAction()
+  const { logoutPending, logoutError, handleLogout, handleLogoutAll } = useLogoutAction()
   const mutationsPending = useIsMutating() > 0
   const mobile = useIsMobile(768)
   const selected = SECTIONS.find((item) => item.id === section)
   const title = section === 'trash' ? 'Trash' : (selected?.title ?? 'My Lexora')
-  const goBack = () => {
-    const target = accountReturnTarget(location.state, values.language)
-    navigate(target.to, {state: target.state})
-  }
   const state = location.state
   if (!section && !mobile) return <Navigate to="/account/study" replace state={state} />
   return (
-    <div className={`account-layout${section ? ' account-has-section' : ''}`}>
+    <>
+    {drawerOpen && <AccountSidebar onClose={() => setDrawerOpen(false)} />}
+    <div className={`account-layout${section ? ' account-has-section' : ''}`} inert={drawerOpen}>
       <nav className="account-nav" aria-label="My Lexora sections">
-        <button className="account-back" onClick={goBack}>
-          <AccountIcon name="back" />
-          Back to words
-        </button>
         <h2>My Lexora</h2>
         {SECTIONS.map((item) => (
           <Link
@@ -114,16 +114,17 @@ export function AccountPage() {
         </button>
       </nav>
       <div className="account-content">
-        <button
+        <div className="account-content-inner">
+        {section && <button
           className="account-mobile-back account-back"
-          onClick={section ? () => navigate(routes.account, { state }) : goBack}
+          onClick={() => navigate(routes.account, { state })}
         >
           <AccountIcon name="back" />
-          {section ? 'My Lexora' : 'Back to words'}
-        </button>
+          My Lexora
+        </button>}
         <div className="account-title">
           <h1>{title}</h1>
-          {section === 'study' && <p>Shared across all learning languages</p>}
+          {(section === 'study' || section === 'word-mix') && <p>Shared across all learning languages</p>}
           {!section && <p>Your library. Your preferences.</p>}
         </div>
         {!section && (
@@ -150,10 +151,12 @@ export function AccountPage() {
               onClick={handleLogout}
             >
               <AccountIcon name="logout" />
-              Sign out
+              {logoutPending ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
         )}
+        {section === 'word-mix' && <AccountWordMix preferences={values.word_mix} />}
+        {section === 'security' && <AccountSecurity pending={logoutPending} onLogoutAll={handleLogoutAll} />}
         {section === 'languages' && (
           <div className="account-surface">
             <label className="account-row account-language-row">
@@ -322,22 +325,23 @@ export function AccountPage() {
         {section === 'trash' && <TrashPage embedded />}
         {section === 'data' && <AccountData />}
         {section === 'offline' && <AccountOffline />}
+        {logoutError && <p className="account-error" role="alert">{logoutError}</p>}
         {section && !selected && section !== 'trash' && (
           <p>
             Section not found. <Link to={routes.account}>Open My Lexora</Link>
           </p>
         )}
-        {['study', 'languages', 'appearance'].includes(section ?? '') && (
+        {['study', 'languages', 'appearance', 'word-mix'].includes(section ?? '') && (
           <div className="account-save-row">
             <span
               role="status"
               className={snapshot.status === 'error' ? 'account-error' : 'account-saved'}
             >
-              <AccountIcon name="check" />
+              {snapshot.status === 'saved' && <AccountIcon name="check" />}
               {snapshot.status === 'saving'
                 ? 'Saving…'
                 : snapshot.status === 'error'
-                  ? 'Saved on this device; sync needed'
+                  ? 'Settings need attention'
                   : 'Saved'}
             </span>
             {section === 'study' && (
@@ -365,14 +369,16 @@ export function AccountPage() {
             <button
               className="account-text-button"
               onClick={() => {
-                void flushPreferences()
+                void loadPreferences()
               }}
             >
-              Retry sync
+              Retry settings
             </button>
           </p>
         )}
+        </div>
       </div>
     </div>
+    </>
   )
 }

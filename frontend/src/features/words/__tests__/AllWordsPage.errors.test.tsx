@@ -35,7 +35,7 @@ beforeEach(() => {
   queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
   vi.mocked(fetchTopics).mockResolvedValue([])
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha]))
-  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, level_counts: {3: 1}})
+  vi.mocked(fetchWordKnowledgeSummary).mockResolvedValue({total: 1, scope_total: 1, level_counts: {3: 1}})
 })
 
 it('renders word cards at tablet widths where CSS hides the table', async () => {
@@ -54,7 +54,6 @@ it('keeps the latest search results when an older request finishes later', async
     ? oldRequest : Promise.resolve(page(params?.search === 'bravo' ? [bravo] : [alpha])))
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
-  fireEvent.click(screen.getAllByRole('button', {name: 'Toggle search'})[0])
   fireEvent.change(screen.getByRole('searchbox', {name: 'Search words'}), {target: {value: 'alpha'}})
   await waitFor(() => expect(fetchWordList).toHaveBeenCalledWith(expect.objectContaining({search: 'alpha'})))
   fireEvent.change(screen.getByRole('searchbox', {name: 'Search words'}), {target: {value: 'bravo'}})

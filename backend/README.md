@@ -18,13 +18,23 @@ FastAPI backend for Lexora.
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
+pip install --require-hashes -r requirements-dev.lock
+pip install --no-deps -e .
 cp .env.example .env
 alembic upgrade head
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Use example env files as templates only. Do not commit real secrets or private environment values.
+
+`requirements.lock` pins production dependencies; `requirements-dev.lock` adds
+pytest and ruff. Docker installs the production lock with hash verification.
+After updating `pyproject.toml`, regenerate both universal locks with uv:
+
+```bash
+uv pip compile pyproject.toml --universal --python-version 3.12 --generate-hashes --no-header --output-file requirements.lock
+uv pip compile pyproject.toml --extra dev --universal --python-version 3.12 --generate-hashes --no-header --output-file requirements-dev.lock
+```
 
 ## Local Checks
 

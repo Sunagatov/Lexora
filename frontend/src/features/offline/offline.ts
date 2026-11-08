@@ -7,6 +7,8 @@ import {inLanguage, scopedReplica, listWords, sidebarStats, visibleWord} from '.
 import type {Replica, Snapshot} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
+import {preferencesSnapshot} from '@/features/preferences/api'
+import {selectWordMix} from '@/features/smart-review/model/selectWordMix'
 
 type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; topicAliases?: Record<number, number>}
 let status: Status = {saved: false, pending: 0, busy: false, offline: !navigator.onLine, words: 0, topics: 0}
@@ -37,14 +39,18 @@ function isNetworkFailure(error: unknown) {
 }
 
 function newMix(replica: Replica): StudyQueue {
-  const words = replica.words.filter(w => !w.deleted_at && inLanguage(w) && w.is_active && w.knowledge_level !== 5)
-  // Fisher–Yates avoids biased random ordering and saves a stable local set.
-  for (let i = words.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1)); [words[i], words[j]] = [words[j], words[i]]
+  replica.mixReviewedAt ??= {}
+  for (const mix of [...Object.values(replica.mixes ?? {}), ...(replica.mix ? [replica.mix] : [])]) {
+    for (const item of mix.items) {
+      if (item.is_completed && item.completed_at && (!replica.mixReviewedAt[item.word_id] || item.completed_at > replica.mixReviewedAt[item.word_id])) {
+        replica.mixReviewedAt[item.word_id] = item.completed_at
+      }
+    }
   }
+  const words = selectWordMix(replica.words.filter(inLanguage), preferencesSnapshot().values.word_mix, replica.mixReviewedAt)
   const now = new Date().toISOString()
-  return {id: replica.nextId--, generated_at: now, expires_at: new Date(Date.now() + 86_400_000).toISOString(), is_active: true, total_count: Math.min(words.length, 200), completed_count: 0,
-    items: words.slice(0, 200).map((word, position) => ({id: replica.nextId--, word_id: word.id, position, word: visibleWord(replica, word), is_completed: false, completed_at: null}))}
+  return {id: replica.nextId--, generated_at: now, expires_at: new Date(Date.now() + 86_400_000).toISOString(), is_active: true, total_count: words.length, completed_count: 0,
+    items: words.map((word, position) => ({id: replica.nextId--, word_id: word.id, position, word: visibleWord(replica, word), is_completed: false, completed_at: null}))}
 }
 
 function readMix(replica: Replica) {
@@ -164,11 +170,11 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
           throw error
         }
       }
-      if (path === '/auth/logout') {
+      if (path === '/auth/logout' || path === '/auth/logout-all') {
         if (status.pending && !window.confirm('You have unsynced changes. Signing out will remove them from this device. Export an offline backup first if you want to keep them. Sign out anyway?')) throw new ApiError(499, 'Sign-out cancelled')
         try { await network(path, init) }
         catch (error) {
-          if (error instanceof ApiError) throw error
+          if (path === '/auth/logout-all' || error instanceof ApiError) throw error
           localStorage.setItem('lexora-offline-logout', '1')
         }
         await withOfflineLock(() => persist())

@@ -26,6 +26,7 @@ from app.features.words.repository import (
     get_all_words,
     get_ordered_word_ids,
     get_word_by_id,
+    get_word_knowledge_scope_total,
     get_word_knowledge_summary,
     soft_delete_word,
     update_word,
@@ -87,9 +88,29 @@ def list_words(
 
 
 @router.get("/summary", response_model=WordKnowledgeSummary)
-def word_knowledge_summary(db: Annotated[Session, Depends(get_db)], favorites_only: bool = False) -> WordKnowledgeSummary:
-    counts = get_word_knowledge_summary(db, favorites_only=favorites_only)
-    return WordKnowledgeSummary(total=sum(counts.values()), level_counts=counts)
+def word_knowledge_summary(
+    db: Annotated[Session, Depends(get_db)],
+    favorites_only: bool = False,
+    topic_id: int | None = Query(default=None, gt=0),
+    search: str | None = Query(default=None, min_length=1),
+    pos: str | None = Query(default=None, min_length=1),
+    cefr: str | None = Query(default=None, min_length=1),
+    level: KnowledgeLevel | None = Query(default=None, ge=1, le=5),
+    completeness: str | None = Query(default=None, pattern="^(complete|incomplete)$"),
+    levels: Annotated[list[Annotated[KnowledgeLevel, Field(ge=1, le=5)]] | None, Query()] = None,
+    positions: Annotated[list[Literal["noun", "verb", "adjective", "adverb", "phrase", "preposition", "phrasal verb", "other"]] | None, Query()] = None,
+    cefr_levels: Annotated[list[Literal["A1", "A2", "B1", "B2", "C1", "C2"]] | None, Query()] = None,
+    topic_ids: Annotated[list[Annotated[int, Field(gt=0)]] | None, Query()] = None,
+) -> WordKnowledgeSummary:
+    filters = {"topic_id": topic_id, "search": search, "pos": pos, "cefr": cefr,
+        "level": level, "completeness": completeness, "levels": levels, "positions": positions,
+        "cefr_levels": cefr_levels, "topic_ids": topic_ids}
+    counts = get_word_knowledge_summary(db, favorites_only=favorites_only, **filters)
+    return WordKnowledgeSummary(
+        total=sum(counts.values()),
+        scope_total=get_word_knowledge_scope_total(db, favorites_only=favorites_only, **filters),
+        level_counts=counts,
+    )
 
 
 @router.patch("/batch", response_model=BatchUpdateResponse)

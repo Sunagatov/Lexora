@@ -171,6 +171,11 @@ export function remapId(replica: Replica, entity: Change['entity'], temporary: n
     }
   }
   replica.words.forEach(remapWord)
+  if (entity === 'word' && replica.mixReviewedAt?.[temporary]) {
+    const reviewedAt = replica.mixReviewedAt
+    if (!reviewedAt[actual] || Date.parse(reviewedAt[temporary]) > Date.parse(reviewedAt[actual])) reviewedAt[actual] = reviewedAt[temporary]
+    delete reviewedAt[temporary]
+  }
   const mixes = new Set([replica.mix, ...Object.values(replica.mixes ?? {})].filter(mix => !!mix))
   mixes.forEach(mix => mix.items.forEach(item => {
     if (entity === 'word') item.word_id = remap(item.word_id)

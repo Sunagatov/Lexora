@@ -3,9 +3,7 @@ import {useSyncExternalStore} from 'react'
 import {routes} from '@/app/routes'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 import {languagePreferences, languageProfile, subscribeLanguages} from '@/features/languages/api'
-import {AccountIcon} from '@/features/preferences/AccountIcon'
 import {accountReturnTarget} from '@/features/preferences/accountNavigation'
-import {useIsMutating} from '@tanstack/react-query'
 
 type Props = {
   hasDrawer?: boolean
@@ -16,43 +14,27 @@ type Props = {
 export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer}: Props) {
   const navigate = useNavigate()
   const location = useLocation()
+  const inAccount = location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)
   const language = useSyncExternalStore(subscribeLanguages, languagePreferences)
   const profile = languageProfile(language.language)
-  const accountActive = location.pathname.startsWith(routes.account)
-  const pending = useIsMutating() > 0
-
-  function toggleAccount() {
-    if (accountActive) {
-      const target = accountReturnTarget(location.state, language.language)
-      navigate(target.to, {state: target.state})
-      return
-    }
-    navigate(routes.account, {state: {
-      returnTo: location.pathname + location.search + location.hash,
-      returnLanguage: language.language,
-      returnState: location.state,
-      returnScrollTop: document.querySelector('.word-collection-scroll, .all-words-page')?.scrollTop ?? 0,
-    }})
-  }
 
   return (
     <header className="app-header">
       <div className="app-header-left">
-        <button type="button" className="app-header-brand" onClick={() => navigate(routes.home)}>
+        <button type="button" className="app-header-brand" onClick={() => {
+          if (inAccount) {
+            const target = accountReturnTarget(location.state, language.language)
+            navigate(target.to, {state: target.state})
+          } else navigate(routes.home)
+        }}>
           <img className="app-header-language-flag" src={profile.favicon} alt="" />
           Lexora
         </button>
         <WordRouteBreadcrumb />
       </div>
       <div className="app-header-actions">
-        <button type="button" className={`app-header-account${accountActive ? ' is-active' : ''}`} aria-label="My Lexora" aria-current={accountActive ? 'page' : undefined}
-          disabled={pending || location.pathname.endsWith('/edit')}
-          title={location.pathname.endsWith('/edit') ? 'Finish editing before opening My Lexora' : accountActive ? 'Back to words' : 'My Lexora'}
-          onClick={toggleAccount}>
-          <AccountIcon name="account" />
-        </button>
         {hasDrawer && (
-          <button type="button" className="app-header-burger" onClick={onOpenDrawer}
+          <button type="button" className={`app-header-burger${inAccount ? ' account-burger' : ''}`} onClick={onOpenDrawer}
             aria-label={drawerOpen ? 'Close sidebar' : 'Open sidebar'} aria-expanded={drawerOpen} aria-controls="mobile-topic-drawer">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               {drawerOpen ? <path d="M4 4l10 10M14 4L4 14" /> : <>

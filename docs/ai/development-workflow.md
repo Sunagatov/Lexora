@@ -28,10 +28,14 @@ duplicate checks (including Trash); explicit parts of speech stay separate.
 
 The `/` homepage is My Vocabulary: all non-deleted words, server-side sorting
 and pagination, default 50 per page, Weak first then A1–C2 within each knowledge
-level. Its Strong (level 4) count and knowledge distribution cover the whole
-library, independent of search, filters, or the current page. `/smart-review`
-remains the separate Daily Word Mix with its session completion progress and
-New set action. The logo opens `/` with cleared filters; `/words` retains bulk
+level. Its Strong (level 4) count and knowledge distribution cover all matching
+words after search and filters, independent of the current page. Server-paginated
+views use the summary response's own total for percentage calculations so separately
+loading word pages cannot distort the percentages. Topic lists and Daily Word Mix
+summarize their complete filtered collections before pagination. `/smart-review`
+remains the separate Daily Word Mix, showing one knowledge bar and a New set
+action beside its breadcrumb heading. Session completion is still tracked.
+The logo opens `/` with cleared filters; `/words` retains bulk
 editing. Word changes invalidate both the paginated lists and library summary.
 
 Opening a word stores the source list URL and scroll position in router state.

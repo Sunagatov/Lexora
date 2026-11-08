@@ -55,6 +55,8 @@ Learning and translation selectors live only in My Lexora → Languages. Owner
 preferences sync through `/api/preferences` at login/startup and on focus/reconnect;
 shared list defaults apply across learning libraries. Focus refresh pauses during
 an open word editor or save so a remote language change cannot discard work.
+Overlapping refreshes keep the newest response. Failed reads retain device
+settings and expose Retry settings; that action also retries pending saves.
 Library changes clear QueryClient and remount scoped views. Returning to words
 after selecting a different learning language opens All words in that library.
 Switching is disabled while a mutation is pending; the account entry is disabled
@@ -68,23 +70,72 @@ selected learning language, without providing another language picker.
 Favorites is one list per learning language, independent of topics and knowledge.
 Mobile cards keep audio and Favorites at the top-right, pronunciation below the
 term, and separate CEFR/part-of-speech badges in the footer beside the rating.
-Translations preview one line; the labelled disclosure arrow reveals the entire
-saved translation text, including a single long translation. Its control and the
-other actions are siblings of the word link, so they never open the detail page.
+All translations and pronunciation hints wrap in full, without a disclosure arrow.
+Audio, Favorites, rating and word actions are siblings of the word link, so they
+never open the detail page. Word actions provide editing (including topics), copy,
+and a confirmed move to Trash. A failed deletion leaves cached words intact.
 The mobile list omits the redundant table column headings. Desktop rows retain
 their existing full translations and details expansion.
 
-Hearts appear on cards, rows and word details; the sidebar entry is below Daily
-Word Mix. Removing a heart patches only that flag and keeps the current list page
+Vocabulary search is always visible in the toolbar beside sorting and Filters.
+It does not autofocus on page load; clearing the query keeps focus in the input.
+Desktop search, sorting and Filters are grouped together with small gaps; search
+widens modestly on focus instead of leaving a wide reserved track. On mobile it occupies the
+controls row until Done, Escape or blur, preserving the query and list position.
+Daily Word Mix uses an All words / Daily Word Mix breadcrumb, a matching count,
+and New set in its heading row. Only the knowledge distribution bar is shown;
+session completion still updates as words are rated, without a separate Reviewed bar.
+Collection headings show only the matching word count, without an unfiltered
+"of N" suffix. Search and sort/filter controls share the same resting border colour.
+The desktop sidebar collapse/expand button sits beside topic search in the header,
+including when collapsed. The application footer does not repeat the Lexora brand.
+Knowledge choices open a large mobile bottom sheet or an anchored desktop dialog,
+with descriptions and a selected checkmark. Selecting saves immediately; dismissing
+does not change a rating. Only the active mobile/desktop list presentation mounts.
+Desktop tables own their sticky column headers. Narrow desktop content places the
+pronunciation under the term, leaving room for translations and stable actions.
+
+On mobile, the full word reading page scrolls the hero together with its details
+so long terms/translations cannot pin most of the viewport. The application
+header and previous/next navigation remain available; desktop and editing keep
+their existing scrolling layout.
+
+Hearts appear on cards, rows and word details. Daily Mix, Favorites and My Lexora
+share one sidebar shortcut row, with topic search always visible underneath.
+The Topics heading includes sorting and creation; topic search can be cleared
+without closing the sidebar. The account shortcut is absent from the app header.
+Removing a heart patches only that flag and keeps the current list page
 in place until navigation or filter changes. Lists reuse normal sorting, search,
 filters and pagination. Offline copies retain the flag and use the same filters.
 
 My Lexora also owns Statistics, Import/Export, Trash, Offline, study defaults and
-appearance. Desktop uses section navigation; mobile uses an overview and section
+appearance. Daily Word Mix settings live at `/account/word-mix`, shared across
+languages and devices. Size, included knowledge/CEFR levels, recent-review cooldown
+and topic balancing affect the next generated set. All topics in the current
+language are eligible. A custom size accepts whole numbers 1–1000, alongside
+50/100/200/500 presets. Existing generation defaults remain until customised.
+Desktop uses centred, width-constrained section navigation; mobile uses an overview and section
 pages. Returning to the same library restores the captured word-list URL/scroll.
-Clicking the header account icon again also returns to that saved list, including
-when a different account section is open.
+The header brand and a second click on the sidebar's My Lexora shortcut return
+to the captured list; switching a learning
+language opens All words for the new library instead. The account header includes
+the sidebar burger on all screen sizes, without a duplicate Back to words action.
+Mobile account subsections retain navigation to the account overview. Open sidebars
+make underlying content inert and return focus when dismissed.
+Failed sign-out requests show an account error and retain the session/cache until
+sign-out succeeds. Statistics load failures offer Retry within the account.
+Expired-session errors from settings reads/saves follow the shared login redirect;
+older refresh failures cannot override a newer successful settings refresh.
+The account's topic drawer shows loading/error states with Retry and preserves
+cached topics on refresh failure, rather than claiming the library is empty.
+Statistics counters respect the Animations setting. An unfinished custom mix size
+survives a settings refresh; Escape restores the latest saved size. Topic exports
+show parent paths and use only still-visible selections after a topic refresh.
+Mobile export selectors use full-width rows so their labels stay readable.
 Offline copies remain device-local even though display/study preferences sync.
+Saved-mode new sets use the cached mix size, knowledge/CEFR choices and topic
+balancing. Cooldowns use available saved review history, including completed
+items from downloaded sets; they cannot see server history that was not downloaded.
 
 The browser-tab favicon follows the selected learning language and its saved
 preference on reload. It uses local flag PNGs rendered from the bundled Noto

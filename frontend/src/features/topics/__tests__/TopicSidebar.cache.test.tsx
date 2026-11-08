@@ -41,9 +41,8 @@ function renderSidebar(queryClient: QueryClient, topics: Topic[]) {
         <TopicSidebar
           topics={topics}
           topicCounts={new Map()}
-          topicProgress={new Map()}
-          totalWords={0}
-          topicSearch=""
+           topicProgress={new Map()}
+           topicSearch=""
           setTopicSearch={vi.fn()}
           selectedTopicId={null}
           isSmartReview={false}

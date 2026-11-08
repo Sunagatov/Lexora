@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest'
-import {bootstrapSession, logout} from '@/features/auth/api/authApi'
+import {bootstrapSession, logout, logoutAll} from '@/features/auth/api/authApi'
 import * as http from '@/shared/api/http'
 import {ApiError} from '@/shared/api/apiError'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
@@ -100,6 +100,17 @@ describe('bootstrapSession', () => {
     await logout()
 
     expect(http.request).toHaveBeenCalledWith('/auth/logout', {method: 'POST'})
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
+  })
+
+  it('revokes every session and clears csrf only after success', async () => {
+    localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, 'token')
+    vi.mocked(http.request).mockRejectedValueOnce(new Error('Network failure'))
+    await expect(logoutAll()).rejects.toThrow('Network failure')
+    expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBe('token')
+    vi.mocked(http.request).mockResolvedValueOnce({ok: true})
+    expect(await logoutAll()).toBe(true)
+    expect(http.request).toHaveBeenLastCalledWith('/auth/logout-all', {method: 'POST'})
     expect(localStorage.getItem(CSRF_TOKEN_STORAGE_KEY)).toBeNull()
   })
 })

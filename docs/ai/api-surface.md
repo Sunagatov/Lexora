@@ -4,9 +4,23 @@ This is a concise route summary based on inspected routers. Inspect router and s
 
 ## Auth And Protection
 
-- Public: `GET /health`, `GET /api/config/public`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/session`.
+- Public: `GET /health`, `GET /api/config/public`, `POST /auth/login`.
+- `GET /auth/session` validates the registered session and returns its CSRF token.
+- `POST /auth/logout` revokes the current cookie, then clears it. An existing
+  cookie requires CSRF or a trusted browser Origin (also used by deferred logout).
+- `POST /auth/logout-all` requires session + CSRF and revokes every registered
+  session, including the caller. My Lexora → Security exposes this action.
 - API-key protected: `POST /api/words/bulk` uses `X-Api-Key`.
 - Session + CSRF protected: routers mounted in `backend/app/main.py` with `verify_session` and `verify_csrf`.
+
+Session cookies contain random opaque tokens; only credential-bound token hashes,
+credential fingerprints and expirations are stored in `lexora_auth_sessions`. Password/
+signing-secret changes invalidate earlier sessions; startup and new login purge
+older credential rows so reusing an earlier password cannot revive them. Restart
+all backend workers when changing credential configuration. Legacy JWTs are rejected, requiring one fresh sign-in
+after migration `20261107_0017`. Database failures fail closed. Durable atomic
+login budgets return `429` with `Retry-After`; stale counters/sessions are cleaned
+up during login. Vocabulary, progress and API-key imports keep their contracts.
 
 Protected router groups:
 
@@ -28,6 +42,15 @@ Protected router groups:
 - Page size (50/100/200), sorting, language choices, theme, card/gesture/display
   toggles and per-language pronunciation modes persist in `app_preferences`.
   Partial updates serialize on its singleton row to preserve unrelated edits.
+- Shared `word_mix` preferences contain `size` (whole number 1–1000), nonempty
+  `levels` (1/3/4/5), `cefr_levels` (empty means all), `cooldown_days` (0–365) and
+  `balance_topics`. Nested patches merge submitted fields. Reads expose the
+  existing server defaults until customised; unrelated settings saves do not
+  change the generation algorithm. No schema migration is needed for this JSON key.
+  Customised mixes select unique active words inside the current learning language,
+  apply knowledge/CEFR/cooldown filters and optionally distribute choices across
+  topics. Topic selection always includes all topics. Settings apply on the next
+  generation, preserving the existing set, its IDs and completion state.
 - Word responses include `is_favorite`; existing word PUT accepts that flag alone
   without changing knowledge or topics. `favorites_only=true` filters word lists,
   ordered IDs and knowledge summaries inside the selected learning library.
@@ -162,7 +185,7 @@ separate merged ratings. Restore the backup to recover the original distinction.
 Deploy backend/migration and frontend together; keep the old image for rollback.
 
 - `GET /api/words` — paginated list with optional `topic_id`, `search`, `pos`, `cefr`, `level`, `completeness`, and `sort` (term/level/CEFR ascending or descending, newest, oldest). Default API sort remains `term-asc`; `level-asc` orders by knowledge, then A1–C2, term, and ID before pagination. Parked/unrated words follow Weak, Okay and Strong. Search includes term, translation, definition, example, pattern, notes, and verb forms.
-- `GET /api/words/summary` — whole-library `total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Level key `0` represents unrated words.
+- `GET /api/words/summary` — filtered `total`, `scope_total` and `level_counts`, excluding deleted words and counting each word once regardless of its topics. Accepts the same search, knowledge, POS, CEFR, topic/subtree, completeness and Favorites filters as the word list; without filters it covers the selected language's whole library. Both totals cover the matching scope. Level key `0` represents unrated words.
 
 `GET /api/words` also accepts repeated `levels`, `positions`, `cefr_levels`, and
 `topic_ids` parameters. Values within a group are ORed; groups are ANDed.

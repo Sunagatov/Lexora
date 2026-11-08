@@ -33,6 +33,15 @@ Auth and security:
 - `COOKIE_SECURE`
 - `COOKIE_SAMESITE`
 - `API_KEY`
+- `AUTH_LOGIN_WINDOW_SECONDS`
+- `AUTH_LOGIN_ATTEMPTS_PER_IP`
+- `AUTH_LOGIN_ATTEMPTS_GLOBAL`
+
+Auth sessions and login counters use the existing database; no extra service is
+required. Session duration defaults to seven days. Login budgets count all
+attempts, including correct passwords. Peer identity comes from the server's
+transport, not untrusted forwarding headers; a shared proxy may share that peer
+budget. The owner-wide allowance also bounds distributed attempts.
 
 Smart review:
 

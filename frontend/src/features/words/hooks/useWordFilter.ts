@@ -15,10 +15,10 @@ export function useWordFilter(topicWords: Word[], options: Options = {}) {
   const topicIds = useMemo(() => topicFilter.length ? [...new Set([...topicFilter,
     ...topics.filter(topic => topicFilter.some(id => topicContainsWordThroughSubtree(id, [topic.id], topics))).map(topic => topic.id),
   ])] : [], [topicFilter, topics])
-  const levelSummary = useMemo(() => buildLevelSummary(topicWords), [topicWords])
   const filteredWords = useMemo(() => filterAndSort(topicWords, {
     search: wordSearch, levelFilter, posFilter, cefrFilter, completeness, sortBy, thenSortBy, topicIds, frozenIds,
   }), [topicWords, wordSearch, levelFilter, posFilter, cefrFilter, completeness, sortBy, thenSortBy, topicIds, frozenIds])
+  const levelSummary = useMemo(() => buildLevelSummary(filteredWords), [filteredWords])
   const totalPages = Math.max(1, Math.ceil(filteredWords.length / pageSize))
   const safePage = Math.min(page, totalPages)
   useEffect(() => {

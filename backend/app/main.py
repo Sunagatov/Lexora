@@ -6,22 +6,24 @@ from typing import Any, cast
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.shared.config import settings
-from app.shared.deps import verify_csrf, verify_session
 from app.features.auth.router import router as auth_router
+from app.features.auth.service import purge_stale_sessions
 from app.features.health.router import router as health_router
-from app.features.topics.router import router as topics_router
-from app.features.words.router import router as words_router
-from app.features.words.agent_router import router as words_agent_router
-from app.features.words.suggest.router import router as suggest_router
-from app.features.words.enrich.router import router as enrich_router
-from app.features.smart_review.router import router as smart_review_router
-from app.features.trash.router import router as trash_router
-from app.features.stats.router import router as stats_router
 from app.features.offline.router import router as offline_router
 from app.features.preferences.router import router as preferences_router
+from app.features.smart_review.router import router as smart_review_router
+from app.features.stats.router import router as stats_router
+from app.features.topics.router import router as topics_router
+from app.features.trash.router import router as trash_router
+from app.features.words.agent_router import router as words_agent_router
 from app.features.words.ai_curation.router import router as ai_curation_router
+from app.features.words.enrich.router import router as enrich_router
+from app.features.words.router import router as words_router
+from app.features.words.suggest.router import router as suggest_router
+from app.shared import db as database
+from app.shared.config import settings
 from app.shared.db import USING_SQLITE_FALLBACK, ensure_database_schema
+from app.shared.deps import verify_csrf, verify_session
 from app.shared.logging_utils import (
     CORRELATION_ID_HEADER,
     REQUEST_ID_HEADER,
@@ -32,7 +34,6 @@ from app.shared.logging_utils import (
     make_request_id,
     sanitize_header_value,
 )
-
 
 configure_logging(
     level=settings.log_level,
@@ -54,6 +55,10 @@ async def lifespan(_: FastAPI):
         },
     )
     ensure_database_schema()
+    # Configuration is loaded at startup. Permanently discard sessions issued
+    # for an older credential, including when a previous password is reused.
+    with database.SessionLocal.begin() as db:
+        purge_stale_sessions(db)
     try:
         yield
     finally:

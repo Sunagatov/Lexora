@@ -1,4 +1,4 @@
-import {act, render as testingRender, screen} from '@testing-library/react'
+import {act, fireEvent, render as testingRender, screen, within} from '@testing-library/react'
 import type {ReactElement} from 'react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {MemoryRouter} from 'react-router-dom'
@@ -49,17 +49,49 @@ function makeWord(id: number, term: string, overrides: Partial<Word> = {}): Word
 }
 
 describe('WordTable', () => {
+  it('moves pronunciation below the term in a narrow panel without leaving an extra table column', () => {
+    let resize!: (width: number) => void
+    vi.stubGlobal('ResizeObserver', class {
+      constructor(callback: (entries: {contentRect: {width: number}}[]) => void) {
+        resize = width => callback([{contentRect: {width}}])
+      }
+      observe() {}
+      disconnect() {}
+    })
+    try {
+      const {container} = render(<MemoryRouter><WordTable words={[makeWord(1, 'hola', {pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} /></MemoryRouter>)
+      act(() => resize(600))
+      expect(screen.getAllByRole('columnheader')).toHaveLength(3)
+      expect(container.querySelector('.word-inline-pronunciation')?.textContent).toBe('о́ла')
+      fireEvent.click(screen.getByRole('button', {name: 'Expand details for hola'}))
+      expect(container.querySelector('.word-row-detail td')?.getAttribute('colspan')).toBe('3')
+      act(() => resize(1200))
+      expect(screen.getAllByRole('columnheader')).toHaveLength(4)
+      expect(container.querySelector('td.word-cell-pronunciation')?.textContent).toBe('о́ла')
+      expect(container.querySelector('.word-row-detail td')?.getAttribute('colspan')).toBe('4')
+    } finally { vi.unstubAllGlobals() }
+  })
+  it('exposes examples to screen readers only after expanding their row', () => {
+    render(<MemoryRouter><WordTable words={[makeWord(1, 'hello', {example_entries: ['Example sentence.', 'Another example.']})]} pendingWordId={null} onUpdate={vi.fn()} /></MemoryRouter>)
+    expect(screen.queryByRole('list')).toBeNull()
+    fireEvent.click(screen.getByRole('button', {name: 'Expand details for hello'}))
+    expect(screen.getByRole('list')).toBeTruthy()
+    expect(screen.getByText('Example sentence.').closest('[aria-hidden]')?.getAttribute('aria-hidden')).toBe('false')
+    fireEvent.click(screen.getByRole('button', {name: 'Collapse details for hello'}))
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(screen.getByText('Example sentence.').closest('[aria-hidden]')?.getAttribute('aria-hidden')).toBe('true')
+  })
   it('switches the pronunciation column without replacing words or changing ratings', () => {
     const word = makeWord(1, '你好', {language: 'zh', pronunciation_easy: 'ни³ хао³', transliteration: 'nǐ hǎo', pronunciation_ipa: 'ni xau'})
     const update = vi.fn()
     const {container} = render(<MemoryRouter><WordTable words={[word]} pendingWordId={null} onUpdate={update} /></MemoryRouter>)
     const originalRow = container.querySelector('.word-row')
-    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('ни³ хао³')
+    expect(container.querySelector('td.word-cell-pronunciation')?.textContent).toBe('ни³ хао³')
     act(() => setPronunciationPreferences({zh: 'pinyin'}))
-    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('nǐ hǎo')
-    expect(screen.getByTitle('Pinyin with tone marks').getAttribute('lang')).toBe('zh-Latn')
+    expect(container.querySelector('td.word-cell-pronunciation')?.textContent).toBe('nǐ hǎo')
+    expect(within(document.querySelector('td.word-cell-pronunciation') as HTMLElement).getByTitle('Pinyin with tone marks').getAttribute('lang')).toBe('zh-Latn')
     act(() => setPronunciationPreferences({zh: 'ipa'}))
-    expect(container.querySelector('.word-cell-pronunciation')?.textContent).toBe('ni xau')
+    expect(container.querySelector('td.word-cell-pronunciation')?.textContent).toBe('ni xau')
     expect(container.querySelector('.word-row')).toBe(originalRow)
     expect(word.knowledge_level).toBe(1)
     expect(update).not.toHaveBeenCalled()
@@ -73,7 +105,7 @@ describe('WordTable', () => {
     const row = container.querySelector('.word-row')!
     expect(row.children).toHaveLength(4)
     expect(row.children[1].textContent).toBe('о́ла')
-    expect(screen.getByTitle('Приблизительно').getAttribute('lang')).toBe('ru')
+    expect(within(row.children[1] as HTMLElement).getByTitle('Приблизительно').getAttribute('lang')).toBe('ru')
   })
 
   it('shows every saved translation in the desktop word list', () => {

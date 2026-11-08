@@ -1,46 +1,46 @@
 import hmac
 import logging
-from datetime import datetime, timezone
+from typing import Annotated
 
-from fastapi import APIRouter, Cookie, HTTPException, Request, Response, status
-from jose import JWTError, jwt
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request, Response
+from sqlalchemy.orm import Session
 
+from app.features.auth.schemas import LoginRequest
+from app.features.auth.service import (
+    create_session,
+    reserve_login_attempt,
+    revoke_all_sessions,
+    revoke_session,
+)
 from app.shared.auth import (
-    ALGORITHM,
     AUTH_TYPE_SESSION,
-    ERROR_INVALID_SESSION,
-    ERROR_NOT_AUTHENTICATED,
     SESSION_COOKIE_NAME,
     SESSION_SUBJECT_OWNER,
     build_csrf_token,
 )
 from app.shared.config import settings
-from app.shared.logging_utils import bind_request_context, clear_request_context, get_request_context
-from app.features.auth.schemas import LoginRequest
+from app.shared.deps import get_auth_db, verify_csrf, verify_session
+from app.shared.logging_utils import (
+    bind_request_context,
+    clear_request_context,
+    get_request_context,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 logger = logging.getLogger(__name__)
 
-def _verify_session_token(session: str | None, request: Request | None = None) -> str:
-    if session is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_NOT_AUTHENTICATED)
-    try:
-        payload = jwt.decode(session, settings.secret_key, algorithms=[ALGORITHM])
-        if payload.get("sub") != SESSION_SUBJECT_OWNER:
-            raise JWTError("unexpected subject")
-    except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ERROR_INVALID_SESSION)
-    bind_request_context(subject=SESSION_SUBJECT_OWNER, auth_type=AUTH_TYPE_SESSION)
-    if request is not None:
-        request.state.subject = SESSION_SUBJECT_OWNER
-        request.state.auth_type = AUTH_TYPE_SESSION
-    return session
-
 
 @router.post("/login")
-def login(payload: LoginRequest, request: Request, response: Response) -> dict:
-    if not hmac.compare_digest(payload.password, settings.app_password):
+def login(
+    payload: LoginRequest,
+    request: Request,
+    response: Response,
+    db: Annotated[Session, Depends(get_auth_db)],
+) -> dict:
+    # Never let caller-supplied forwarding headers choose fresh throttle buckets.
+    reserve_login_attempt(db, request.client.host if request.client else "unknown")
+    if not hmac.compare_digest(payload.password.encode(), settings.app_password.encode()):
         logger.warning(
             "login_failed",
             extra={
@@ -48,14 +48,9 @@ def login(payload: LoginRequest, request: Request, response: Response) -> dict:
                 "reason": "wrong_password",
             },
         )
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong password")
+        raise HTTPException(status_code=401, detail="Wrong password")
 
-    now = int(datetime.now(timezone.utc).timestamp())
-    token = jwt.encode(
-        {"sub": SESSION_SUBJECT_OWNER, "iat": now, "exp": now + settings.cookie_max_age},
-        settings.secret_key,
-        algorithm=ALGORITHM,
-    )
+    token = create_session(db)
     csrf_token = build_csrf_token(settings.secret_key, token)
 
     response.set_cookie(
@@ -80,13 +75,44 @@ def login(payload: LoginRequest, request: Request, response: Response) -> dict:
 
 
 @router.post("/logout")
-def logout(response: Response) -> dict:
-    response.delete_cookie(SESSION_COOKIE_NAME)
+def logout(
+    request: Request,
+    response: Response,
+    db: Annotated[Session, Depends(get_auth_db)],
+    session: str | None = Cookie(default=None),
+    x_csrf_token: str | None = Header(default=None),
+) -> dict:
+    if session is not None:
+        # A deferred offline logout has cleared local CSRF storage. Its browser
+        # still sends a trusted Origin; other callers must supply the CSRF token.
+        origin = request.headers.get("origin")
+        scheme = "https" if settings.cookie_secure else request.url.scheme
+        same_origin = f"{scheme}://{request.url.netloc}"
+        if origin != same_origin and origin not in settings.cors_allowed_origins:
+            verify_csrf(session, x_csrf_token)
+        revoke_session(db, session)
+    response.delete_cookie(
+        SESSION_COOKIE_NAME,
+        secure=settings.cookie_secure,
+        httponly=settings.cookie_httponly,
+        samesite=settings.cookie_samesite,
+    )
     logger.debug("logout_completed", extra={"event": "logout_completed"})
     return {"ok": True}
 
 
 @router.get("/session")
-def get_session(request: Request, session: str | None = Cookie(default=None)) -> dict:
-    token = _verify_session_token(session, request)
+def get_session(token: str = Depends(verify_session)) -> dict:
     return {"authenticated": True, "csrf_token": build_csrf_token(settings.secret_key, token)}
+
+
+@router.post("/logout-all", dependencies=[Depends(verify_session), Depends(verify_csrf)])
+def logout_all(response: Response, db: Annotated[Session, Depends(get_auth_db)]) -> dict:
+    revoke_all_sessions(db)
+    response.delete_cookie(
+        SESSION_COOKIE_NAME,
+        secure=settings.cookie_secure,
+        httponly=settings.cookie_httponly,
+        samesite=settings.cookie_samesite,
+    )
+    return {"ok": True}
