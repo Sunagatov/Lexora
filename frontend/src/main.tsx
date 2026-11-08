@@ -1,3 +1,4 @@
+import {startBrowserTelemetry} from '@/shared/browserTelemetry'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {RouterProvider} from 'react-router-dom'
@@ -13,3 +14,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </Providers>
   </React.StrictMode>,
 )
+
+void startBrowserTelemetry(import.meta.env.VITE_FARO_URL, 'lexora-frontend')
