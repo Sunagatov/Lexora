@@ -170,6 +170,10 @@ describe('buildStatsPageDerivedData', () => {
       value: 120,
       sub: '12 added this month',
     })
-    expect(derived.overviewCards[2]?.sparkline).toEqual([1, 2, 1, -1, 4])
+    expect(derived.overviewCards[2]).toMatchObject({
+      label: 'Word reviews', value: 15, sub: 'last 7 days; each word once per day',
+    })
+    expect(derived.overviewCards[3]).toMatchObject({label: 'Okay or better', value: '63%'})
+    expect(derived.overviewCards[2]?.sparkline).toEqual([1, 2, 3, 4, 5])
   })
 })

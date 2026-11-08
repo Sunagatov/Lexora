@@ -282,6 +282,14 @@ The deleted topic and its words remain in Trash on conflict.
 - `GET /api/stats` — aggregate stats.
 - `POST /api/stats/usage` — record usage event.
 
+Monthly additions include every source in the active, language-scoped library,
+including imported words, grouped by each word's saved `created_at` month. This
+is a creation-date view of the current library, not an audit of import execution
+dates; deleted words are excluded. Daily `reviewed` counts distinct word IDs
+within each day (a word reviewed on two days counts twice in a period total).
+Improved/downgraded values count level-change events and need not sum to reviewed.
+The UI labels this total "Word reviews" and displays Okay-or-better as a percent.
+
 Retention `strong_words` counts only Strong (`4`), separately from Okay-or-better.
 Topic statistics include all active descendants, deduplicating words linked to
 multiple descendants or both a parent and a child, as the sidebar does.

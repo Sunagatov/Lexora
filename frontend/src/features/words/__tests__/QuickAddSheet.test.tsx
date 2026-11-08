@@ -39,6 +39,58 @@ function mockQuickAdd(overrides: Record<string, unknown> = {}) {
 }
 
 describe('QuickAddSheet', () => {
+  it.each([false, true])('cycles both Tab directions with save disabled=%s', (disabled) => {
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd({canSave: !disabled}) as never)
+    const onClose = vi.fn()
+    render(<QuickAddSheet onClose={onClose} />)
+    const first = screen.getByRole('button', {name: 'Close quick add sheet'})
+    const last = screen.getByRole('button', {name: disabled ? 'Cancel' : 'Save word'})
+    last.focus()
+    fireEvent.keyDown(last, {key: 'Tab'})
+    expect(document.activeElement).toBe(first)
+    fireEvent.keyDown(first, {key: 'Tab', shiftKey: true})
+    expect(document.activeElement).toBe(last)
+    fireEvent.keyDown(last, {key: 'Escape'})
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('traps Tab inside the inline topic editor but leaves Escape to that editor', () => {
+    const q = mockQuickAdd({addingTopic: true})
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(q as never)
+    const onClose = vi.fn()
+    render(<QuickAddSheet onClose={onClose} />)
+    const topic = screen.getByRole('textbox', {name: 'New topic name'})
+    topic.focus()
+    fireEvent.keyDown(topic, {key: 'Tab'})
+    expect(document.activeElement).toBe(screen.getByRole('button', {name: 'Cancel new topic'}))
+    fireEvent.keyDown(topic, {key: 'Escape'})
+    expect(q.cancelNewTopic).toHaveBeenCalledOnce()
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('distinguishes duplicate topic names without changing their IDs', () => {
+    const topics = [
+      {id: 1, name: 'Education'}, {id: 2, name: 'Entertainment'},
+      {id: 3, name: 'Books', parent_topic_id: 1}, {id: 4, name: 'Books', parent_topic_id: 2},
+    ]
+    const q = mockQuickAdd({sortedTopics: topics, topicId: 3})
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(q as never)
+    render(<QuickAddSheet onClose={vi.fn()} />)
+    expect((screen.getByRole('option', {name: 'Education / Books'}) as HTMLOptionElement).value).toBe('3')
+    fireEvent.change(screen.getByRole('combobox', {name: 'Topic'}), {target: {value: '4'}})
+    expect(q.setTopicId).toHaveBeenCalledWith(4)
+    expect(screen.getByRole('option', {name: 'Entertainment / Books'})).toBeTruthy()
+  })
+
+  it('keeps focus in the sheet when the inline topic input is removed', () => {
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd({addingTopic: true}) as never)
+    const {rerender} = render(<QuickAddSheet onClose={vi.fn()} />)
+    screen.getByRole('textbox', {name: 'New topic name'}).focus()
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd() as never)
+    rerender(<QuickAddSheet onClose={vi.fn()} />)
+    expect(document.activeElement).toBe(screen.getByRole('combobox', {name: 'Topic'}))
+  })
+
   it('keeps background controls inert, closes once on Escape, and restores focus', () => {
     vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd() as never)
     const app = document.createElement('div')

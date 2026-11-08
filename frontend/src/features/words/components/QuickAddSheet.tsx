@@ -2,6 +2,7 @@ import {useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardE
 import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 import {Toast} from '@/shared/components/Toast'
+import {createTopicLabeler} from '@/features/topics/model/topicLabels'
 
 type Props = {onClose: () => void}
 
@@ -9,6 +10,7 @@ export function QuickAddSheet({onClose}: Props) {
   const fieldId = useId()
   const q = useQuickAdd()
   const sheetRef = useRef<HTMLDivElement>(null)
+  const wasAddingTopic = useRef(false)
   const [toastFeedback, setToastFeedback] = useState<{ok: boolean; msg: string} | null>(null)
 
   useEffect(() => {
@@ -35,16 +37,38 @@ export function QuickAddSheet({onClose}: Props) {
     setToastFeedback(q.feedback)
   }, [q.feedback])
 
+  useEffect(() => {
+    // The inline editor removes its focused input when it closes.
+    if (wasAddingTopic.current && !q.addingTopic) {
+      sheetRef.current?.querySelector('select')?.focus()
+    }
+    wasAddingTopic.current = q.addingTopic
+  }, [q.addingTopic])
+
   function handleSheetKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Escape') { e.stopPropagation(); onClose() }
   }
 
+  function containTabFocus(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Tab' || !sheetRef.current) return
+    const controls = Array.from(sheetRef.current.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]',
+    )).filter(control => control.tabIndex >= 0 && !control.closest('[hidden]'))
+    if (!controls.length) return
+    e.preventDefault()
+    const current = controls.indexOf(document.activeElement as HTMLElement)
+    const next = current < 0 ? (e.shiftKey ? controls.length - 1 : 0)
+      : (current + (e.shiftKey ? -1 : 1) + controls.length) % controls.length
+    controls[next].focus()
+  }
+
   const enriched = q.enrichDone && q.enrichResult
+  const topicLabel = createTopicLabeler(q.sortedTopics)
 
   return createPortal(
     <>
       <div className="quick-add-overlay" onClick={onClose} />
-      <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown}>
+      <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown} onKeyDownCapture={containTabFocus}>
         <button type="button" className="quick-add-handle-hitbox" aria-label="Close quick add sheet" onClick={onClose}>
           <span className="quick-add-handle" />
         </button>
@@ -133,7 +157,7 @@ export function QuickAddSheet({onClose}: Props) {
                   onChange={(e) => q.setTopicId(Number(e.target.value))}>
                   {q.topicsLoading && <option value="">Loading…</option>}
                   {!q.topicsLoading && q.topicId === null && <option value="" disabled>📥 Inbox (default)</option>}
-                  {q.sortedTopics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  {q.sortedTopics.map((t) => <option key={t.id} value={t.id}>{topicLabel(t)}</option>)}
                 </select>
                 <button type="button" className="quick-add-new-topic-btn ripple-btn" aria-label="Add topic" disabled={q.savePending} onClick={() => q.setAddingTopic(true)}>+</button>
               </div>
