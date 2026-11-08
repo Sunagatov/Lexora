@@ -127,8 +127,8 @@ export function UsageTracker() {
         return
       }
 
-      visibleRef.current = false
       void flushPending(now)
+      visibleRef.current = false
     }
 
     function handlePageHide() {

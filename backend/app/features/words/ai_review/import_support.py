@@ -6,6 +6,7 @@ from sqlalchemy import select
 
 from app.features.words.ai_review.schemas import AiReviewImportRequest
 from app.features.words.constants import PROGRESS_SOURCE_JSON_IMPORT
+from app.features.words.import_timestamps import as_utc
 from app.features.words.model import Word, word_topics
 from app.features.words.repository_queries import with_word_details
 from app.features.words.schemas import WordUpdate
@@ -55,7 +56,7 @@ def assert_not_stale(payload: AiReviewImportRequest, words_by_id: dict[int, Word
         return
     for item in payload.words:
         word = words_by_id[item.id]
-        if word.updated_at is not None and word.updated_at > payload.exported_at:
+        if word.updated_at is not None and as_utc(word.updated_at) > as_utc(payload.exported_at):
             raise error_cls(
                 f"Word {word.id} ('{word.term}') was modified after export "
                 f"(word.updated_at={word.updated_at.isoformat()}, "

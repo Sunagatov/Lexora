@@ -9,15 +9,14 @@ from app.features.languages.catalog import Language, TranslationLanguage
 from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.constants import (
     BULK_WORDS_MAX,
-    CEFR_LEVELS,
-    COUNTABILITY_VALUES,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
-    LANGUAGES,
-    REGISTER_VALUES,
     WORD_TERM_MAX_LEN,
+    CefrLevel,
+    Countability,
     KnowledgeLevel,
     ProgressSource,
+    WordRegister,
 )
 from app.features.words.enrichment import (
     EXAMPLE_TARGET_COUNT,
@@ -63,9 +62,9 @@ class WordCreate(BaseModel):
     pronunciation_audio_url: str | None = None
     image_url: str | None = None
     part_of_speech: str | None = None
-    cefr_level: str | None = None
-    register: str | None = None
-    countability: str | None = None
+    cefr_level: CefrLevel | None = None
+    register: WordRegister | None = None
+    countability: Countability | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
     knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None
@@ -97,9 +96,9 @@ class WordUpdate(BaseModel):
     pronunciation_audio_url: str | None = None
     image_url: str | None = None
     part_of_speech: str | None = None
-    cefr_level: str | None = None
-    register: str | None = None
-    countability: str | None = None
+    cefr_level: CefrLevel | None = None
+    register: WordRegister | None = None
+    countability: Countability | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
     knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None
@@ -118,7 +117,7 @@ class WordUpdate(BaseModel):
 
     @model_validator(mode="after")
     def reject_explicit_nulls(self) -> "WordUpdate":
-        for field in ("topic_ids", "term", "is_active", "is_favorite"):
+        for field in ("topic_ids", "term", "language", "is_active", "is_favorite"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
         return self
@@ -246,9 +245,9 @@ class WordInput(BaseModel):
     definition: str | None = None
     pronunciation_ipa: str | None = None
     part_of_speech: str | None = None
-    cefr_level: str | None = None
-    register: str | None = None
-    countability: str | None = None
+    cefr_level: CefrLevel | None = None
+    register: WordRegister | None = None
+    countability: Countability | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
     knowledge_level: KnowledgeLevel | None = Field(default=1, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
     pattern: str | None = None

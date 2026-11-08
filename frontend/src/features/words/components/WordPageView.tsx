@@ -80,7 +80,7 @@ export function WordPageView({word, topics, hideTranslation = false, hidePOS = f
       )}
 
       {/* Verb forms */}
-      {word.language === 'en' && word.verb_form && (word.verb_form.past_simple || word.verb_form.past_participle || word.verb_form.present_participle || word.verb_form.third_person) && (
+      {word.language === 'en' && ['verb', 'phrasal verb'].includes(word.part_of_speech?.toLowerCase() ?? '') && word.verb_form && (word.verb_form.past_simple || word.verb_form.past_participle || word.verb_form.present_participle || word.verb_form.third_person) && (
         <section className="wpv-section">
           <h3 className="wpv-section-title">Verb Forms</h3>
           <div className="wpv-verb-grid">

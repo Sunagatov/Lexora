@@ -167,7 +167,17 @@ knowledge changes; sorting/filtering refreshes on the next explicit navigation.
 
 Obvious errors from router code include `400` for invalid topic data, `404` for missing topics, and `409` for conflicts such as duplicate names/slugs or active children.
 
+Topic writes serialize within each learning language before validating names and
+parents. Name uniqueness and exact-name import resolution use Unicode case folding
+(for example, `Straße` and `STRASSE` conflict).
+
 ## Words
+
+Word create/update and bulk-input schemas validate CEFR (A1–C2), register and
+countability against the canonical choices before writing. Invalid choices and an
+explicit null update language return `422`. AI import schemas validate the same
+choices; naive legacy export timestamps are interpreted as UTC for stale checks.
+Search treats SQL pattern characters (`%` and `_`) as literal text.
 
 Knowledge categories are `1` Weak, `3` Okay, `4` Strong and `5` Parked (or null
 for unrated). Basic (`2`) is retired. Request payloads, old spreadsheet imports
@@ -238,6 +248,12 @@ Obvious errors from router code include `400` for invalid input, `404` for missi
 - `GET /api/smart-review` — get or create active queue; returns `503` when disabled.
 - `POST /api/smart-review/refresh` — regenerate queue; returns `503` when disabled.
 - `POST /api/smart-review/items/{item_id}/complete` — complete queue item.
+
+Queue lookup and generation serialize per learning language, so concurrent first
+reads share one active queue. Completion responses update cached completion fields
+without replacing newer word edits. Daily Mix uses the saved page-size preference
+unless its URL explicitly selects another size; swipe details retain the return
+location and queue sequence.
 
 ## AI Curation
 

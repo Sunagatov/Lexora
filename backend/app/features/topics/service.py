@@ -53,6 +53,7 @@ from app.features.topics.sidebar_stats import (
 )
 from app.features.words.api import assert_word_restore_allowed
 from app.shared.text import slugify as slugify
+from app.shared.transaction_locks import lock_language_transaction
 
 
 def _build_topic_slug(name: str) -> str:
@@ -78,6 +79,7 @@ def _build_topic_create_payload(
 
 
 def create_topic(db: Session, payload: TopicCreate, *, commit: bool = True) -> Topic:
+    lock_language_transaction(db, 71002, learning_language(db))
     if getattr(payload, "language", None) is not None and payload.language != learning_language(db):
         raise HTTPException(400, "Topic language must match the selected learning language")
     server_slug = _build_topic_slug(payload.name)
@@ -143,6 +145,7 @@ def create_topic_from_values(
 
 
 def update_topic(db: Session, topic: Topic, payload: TopicUpdate, *, commit: bool = True) -> Topic:
+    lock_language_transaction(db, 71002, learning_language(db))
     if payload.name is not None and payload.name != topic.name:
         name_value = cast(str, payload.name)
         assert_active_topic_name_available(db, name_value, exclude_topic_id=topic.id)
@@ -169,6 +172,7 @@ def update_topic(db: Session, topic: Topic, payload: TopicUpdate, *, commit: boo
 
 
 def restore_topic(db: Session, topic: Topic, restore_words: bool = False, *, commit: bool = True) -> Topic:
+    lock_language_transaction(db, 71002, learning_language(db))
     _assert_topic_parent_can_be_restored(db, topic)
     assert_active_topic_name_available(db, topic.name, exclude_topic_id=topic.id)
     if restore_words:
@@ -189,5 +193,6 @@ def _assert_topic_parent_can_be_restored(db: Session, topic: Topic) -> None:
 
 
 def delete_topic(db: Session, topic: Topic, *, delete_words: bool = False, commit: bool = True) -> Topic:
+    lock_language_transaction(db, 71002, learning_language(db))
     assert_topic_has_no_active_children(db, topic.id)
     return soft_delete_topic(db, topic, delete_words=delete_words, commit=commit)

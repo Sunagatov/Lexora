@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import learning_language
@@ -55,13 +55,10 @@ def assert_active_topic_name_available(
     exclude_topic_id: int | None = None,
 ) -> None:
     normalized = name.strip().casefold()
-    existing = db.scalar(
-        select(Topic)
-        .where(func.lower(Topic.name) == normalized)
-        .where(Topic.language == learning_language(db))
-        .where(Topic.deleted_at.is_(None))
-    )
-    if existing is None or existing.id == exclude_topic_id:
+    candidates = db.scalars(
+        select(Topic).where(Topic.language == learning_language(db), Topic.deleted_at.is_(None))
+    ).all()
+    if not any(topic.id != exclude_topic_id and topic.name.strip().casefold() == normalized for topic in candidates):
         return
     raise TopicNameConflictError(f"Active topic name '{name}' already exists")
 
@@ -84,7 +81,7 @@ def assert_topic_parent_valid(
     if parent_topic_id is None:
         return
 
-    parent = db.scalar(select(Topic).where(Topic.id == parent_topic_id, Topic.deleted_at.is_(None), Topic.language == learning_language(db)))
+    parent = db.scalar(select(Topic).where(Topic.id == parent_topic_id, Topic.deleted_at.is_(None), Topic.language == learning_language(db)).execution_options(populate_existing=True))
     if parent is None:
         raise InvalidTopicParentError(f"Parent topic {parent_topic_id} not found")
     if exclude_topic_id is not None and parent.id == exclude_topic_id:
@@ -98,6 +95,6 @@ def assert_topic_parent_valid(
         seen.add(current.id)
         if exclude_topic_id is not None and current.parent_topic_id == exclude_topic_id:
             raise InvalidTopicParentError("Topic parent cannot be one of its descendants")
-        current = db.scalar(select(Topic).where(Topic.id == current.parent_topic_id, Topic.deleted_at.is_(None)))
+        current = db.scalar(select(Topic).where(Topic.id == current.parent_topic_id, Topic.deleted_at.is_(None)).execution_options(populate_existing=True))
         if current is None:
             break

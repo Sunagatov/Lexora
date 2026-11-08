@@ -236,7 +236,6 @@ export function AccountData() {
           file={file}
           onClose={() => setFile(null)}
           onApplied={async () => {
-            setFile(null)
             await client.invalidateQueries()
           }}
         />

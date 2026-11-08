@@ -14,6 +14,7 @@ from app.features.words.repository_queries import with_word_details
 from app.features.words.workbook.format import (
     EXPORT_COLUMNS,
     EXTRA_EMPTY_ROWS,
+    META_SHEET_NAME,
     PRONUNCIATION_COLUMNS,
     InvalidWorkbookError,
     _add_dynamic_row_colors,
@@ -25,7 +26,7 @@ from app.features.words.workbook.format import (
     _set_column_widths,
 )
 from app.features.words.workbook.importer import import_words_workbook
-from app.features.words.workbook.language import add_language_metadata
+from app.features.words.workbook.language import LANGUAGE_SHEET, add_language_metadata
 
 __all__ = ["InvalidWorkbookError", "build_words_workbook", "import_words_workbook"]
 
@@ -98,7 +99,7 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
 
     topics = _load_export_topics(db)
 
-    used_titles: set[str] = set()
+    used_titles: set[str] = {*workbook.sheetnames, META_SHEET_NAME, LANGUAGE_SHEET}
     meta_mappings: list[tuple[str, int, str]] = []
 
     if not topics:
@@ -114,8 +115,8 @@ def build_words_workbook(db: Session) -> tuple[str, bytes]:
         for topic in topics:
             words = words_by_topic.get(topic.id, [])
             sheet_title = _safe_sheet_title(topic.name, used_titles)
-            meta_mappings.append((sheet_title, topic.id, topic.name))
             ws = workbook.create_sheet(sheet_title)
+            meta_mappings.append((ws.title, topic.id, topic.name))
 
             for idx, (_, header) in enumerate([*EXPORT_COLUMNS, *PRONUNCIATION_COLUMNS], start=1):
                 ws.cell(row=1, column=idx, value=header)

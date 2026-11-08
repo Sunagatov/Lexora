@@ -146,7 +146,8 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     setDraft((d) => {
       if (!d) return d
       if (field === 'term' && typeof value === 'string' && value.trim() !== d.term.trim()) {
-        return {...d, term: value, pronunciation_ipa: '', transliteration: ''}
+        const original = value.trim() === initialDraft.current?.term.trim() ? initialDraft.current : null
+        return {...d, term: value, pronunciation_ipa: original?.pronunciation_ipa ?? '', transliteration: original?.transliteration ?? ''}
       }
       return {...d, [field]: value}
     })

@@ -5,22 +5,25 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.features.languages.catalog import Language
+from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.ai_curation.schema_support import (
     COMMON_MODEL_CONFIG,
     COUNTABILITY_ALLOWED_VALUES,
     PART_OF_SPEECH_ALLOWED_VALUES,
-    JsonEntry,
     SCHEMA_VERSION,
+    JsonEntry,
     _clean_entries,
     _json_entry_field,
     _normalize_optional_choice,
 )
-from app.features.topics.constants import TOPIC_NAME_MAX_LEN
 from app.features.words.constants import (
-    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
     WORD_TERM_MAX_LEN,
+    CefrLevel,
+    KnowledgeLevel,
+    WordRegister,
 )
 
 JsonEntryField = Annotated[JsonEntry, _json_entry_field()]
@@ -58,10 +61,10 @@ class _WordPayloadBase(BaseModel):
     part_of_speech: str | None = None
     notes: str | None = Field(default=None, max_length=4000)
     knowledge_level: KnowledgeLevel | None = Field(default=None, ge=KNOWLEDGE_LEVEL_MIN, le=KNOWLEDGE_LEVEL_MAX)
-    language: str | None = None
+    language: Language | None = None
     definition: str | None = None
-    cefr_level: str | None = None
-    register: str | None = None
+    cefr_level: CefrLevel | None = None
+    register: WordRegister | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
     synonym_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
     antonym_entries: list[JsonEntryField] | None = Field(default=None, max_length=20)
@@ -92,7 +95,7 @@ class WordUpdateV2(_WordPayloadBase):
 
     @model_validator(mode="after")
     def reject_explicit_nulls(self) -> "WordUpdateV2":
-        for field in ("term", "is_active"):
+        for field in ("term", "language", "is_active"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null; omit it to leave it unchanged")
         return self
