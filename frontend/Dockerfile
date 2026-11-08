@@ -5,6 +5,8 @@ RUN npm ci
 COPY . .
 ARG VITE_API_BASE_URL=https://lexora.zuf.uk
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ARG VITE_FARO_URL
+ENV VITE_FARO_URL=$VITE_FARO_URL
 RUN npm run build
 
 FROM nginx:alpine
