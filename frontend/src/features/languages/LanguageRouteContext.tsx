@@ -1,11 +1,13 @@
-import {useLayoutEffect, useSyncExternalStore} from 'react'
+import {useDeferredValue, useLayoutEffect, useSyncExternalStore} from 'react'
 import {useLocation, useNavigate, useNavigationType} from 'react-router-dom'
 import {languagePreferences, LEARNING_LANGUAGES, subscribeLanguages} from './api'
 import {updatePreferences} from '@/features/preferences/api'
 
 /** History entries remember the library their word/topic IDs belong to. */
 export function LanguageRouteContext() {
-  const preferences = useSyncExternalStore(subscribeLanguages, languagePreferences)
+  // Router 7 transitions navigation. Record language after that transition so a
+  // synchronous preference update cannot replace the route being left behind.
+  const preferences = useDeferredValue(useSyncExternalStore(subscribeLanguages, languagePreferences))
   const location = useLocation()
   const navigationType = useNavigationType()
   const navigate = useNavigate()

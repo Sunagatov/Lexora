@@ -2,10 +2,10 @@ from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from typing import Annotated
 
+import jwt
 import pytest
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.testclient import TestClient
-from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session

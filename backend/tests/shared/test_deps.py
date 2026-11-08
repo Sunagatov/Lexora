@@ -1,8 +1,8 @@
 from types import SimpleNamespace
 
+import jwt
 import pytest
 from fastapi import HTTPException
-from jose import jwt
 
 from app.features.auth.service import create_session
 from app.shared import deps
