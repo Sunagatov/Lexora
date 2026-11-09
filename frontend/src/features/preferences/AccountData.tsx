@@ -6,6 +6,7 @@ import { request } from '@/shared/api/http'
 import { exportWordsWorkbook } from '@/features/words/api/wordsApi'
 import { WorkbookImportDialog } from '@/features/words/components/WorkbookImportDialog'
 import type { Topic } from '@/features/topics/types/topicTypes'
+import { createTopicLabeler } from '@/features/topics/model/topicLabels'
 import { offlineStatus, subscribeOffline } from '@/features/offline/offline'
 import { usePreferences } from './api'
 
@@ -47,17 +48,7 @@ export function AccountData() {
   const topicsById = new Map(topicQuery.data?.map(topic => [topic.id, topic]))
   const selectedTopicIds = topicIds.filter(id => topicsById.has(id))
 
-  function topicLabel(topic: Topic) {
-    const names = [topic.name]
-    const seen = new Set([topic.id])
-    let parent = topicsById.get(topic.parent_topic_id ?? 0)
-    while (parent && !seen.has(parent.id)) {
-      seen.add(parent.id)
-      names.unshift(parent.name)
-      parent = topicsById.get(parent.parent_topic_id ?? 0)
-    }
-    return names.join(' / ')
-  }
+  const topicLabel = createTopicLabeler(topicQuery.data ?? [])
   async function download() {
     setBusy(true)
     setError('')
@@ -236,7 +227,6 @@ export function AccountData() {
           file={file}
           onClose={() => setFile(null)}
           onApplied={async () => {
-            setFile(null)
             await client.invalidateQueries()
           }}
         />

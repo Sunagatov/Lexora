@@ -537,6 +537,26 @@ describe('WordPage — topic editing', () => {
     vi.mocked(wordsApi.updateWord).mockResolvedValue(word1)
   })
 
+  it('shows and filters ancestor paths while preserving selected topic identities', async () => {
+    vi.mocked(topicsApi.fetchTopics).mockResolvedValue([
+      makeTopic(1, 'education', 'Education'), makeTopic(2, 'entertainment', 'Entertainment'),
+      {...makeTopic(3, 'books', 'Books'), parent_topic_id: 1},
+      {...makeTopic(4, 'entertainment-books', 'Books'), parent_topic_id: 2},
+    ])
+    vi.mocked(wordsApi.fetchWord).mockResolvedValue({...word1, topic_ids: [3]})
+    const queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const router = buildRouter('/words/1/edit')
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>)
+    const educationBooks = await screen.findByRole('checkbox', {name: 'Education / Books'})
+    expect((educationBooks as HTMLInputElement).checked).toBe(true)
+    fireEvent.change(screen.getByPlaceholderText('Filter topics'), {target: {value: 'entertainment / books'}})
+    const entertainmentBooks = screen.getByRole('checkbox', {name: 'Entertainment / Books'})
+    expect(screen.queryByRole('checkbox', {name: 'Education / Books'})).toBeNull()
+    fireEvent.click(entertainmentBooks)
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}))
+    await waitFor(() => expect(wordsApi.updateWord).toHaveBeenCalledWith(1, expect.objectContaining({topic_ids: [3, 4]})))
+  })
+
   it('can add an additional topic before saving', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

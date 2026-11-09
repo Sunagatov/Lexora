@@ -33,15 +33,19 @@ LANGUAGES = ("en", "zh", "es", "de", "tr", "tt", "ar", "fr", "pt", "ru")
 
 # ── CEFR levels ──
 
-CEFR_LEVELS = ("A1", "A2", "B1", "B2", "C1", "C2")
+CefrLevel = Literal["A1", "A2", "B1", "B2", "C1", "C2"]
+WordRegister = Literal["formal", "informal", "neutral", "slang", "technical"]
+Countability = Literal["countable", "uncountable", "both", "plural", "collective"]
+
+CEFR_LEVELS = get_args(CefrLevel)
 
 # ── Register ──
 
-REGISTER_VALUES = ("formal", "informal", "neutral", "slang", "technical")
+REGISTER_VALUES = get_args(WordRegister)
 
 # ── Countability (lowercase, matches DB CHECK) ──
 
-COUNTABILITY_VALUES = ("countable", "uncountable", "both", "plural", "collective")
+COUNTABILITY_VALUES = get_args(Countability)
 
 # ── Parts of speech (seed values — canonical source is the DB table) ──
 

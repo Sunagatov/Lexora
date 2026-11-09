@@ -54,22 +54,20 @@ def get_topic_by_slug(db: Session, slug: str) -> Topic | None:
 
 def find_active_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
     normalized = topic_name.strip().casefold()
-    return db.scalar(
+    return next((topic for topic in db.scalars(
         select(Topic)
-        .where(func.lower(Topic.name) == normalized)
         .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.is_(None))
-    )
+    ).all() if topic.name.strip().casefold() == normalized), None)
 
 
 def find_deleted_topic_by_exact_name(db: Session, topic_name: str) -> Topic | None:
     normalized = topic_name.strip().casefold()
-    return db.scalar(
+    return next((topic for topic in db.scalars(
         select(Topic)
-        .where(func.lower(Topic.name) == normalized)
         .where(Topic.language == learning_language(db))
         .where(Topic.deleted_at.isnot(None))
-    )
+    ).all() if topic.name.strip().casefold() == normalized), None)
 
 
 def find_active_topic_by_slug(db: Session, slug: str) -> Topic | None:

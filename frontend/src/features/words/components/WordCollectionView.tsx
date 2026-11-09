@@ -55,6 +55,7 @@ type Props = {
   pendingWordId: number | null
   pendingWordIds?: ReadonlySet<number>
   onUpdate: (wordId: number, level: WordKnowledgeLevel) => void
+  reviewMode?: boolean
   fromTopicSlug?: string
   isLoading?: boolean
   emptyMessage?: string
@@ -70,7 +71,7 @@ export function WordCollectionView({
   pageStart, pageEnd, levelSummary, progressLabel, progressCount, progressReady,
   thenSortBy, setThenSortBy, topicFilter, setTopicFilter, topics, onLearningSort,
   pageWords, navigationWords, navigationQuery, navigationIds, page, totalPages, pageSize, setPageSize, setPage,
-  pendingWordId, pendingWordIds, onUpdate, fromTopicSlug,
+  pendingWordId, pendingWordIds, onUpdate, fromTopicSlug, reviewMode,
   isLoading = false,
   emptyMessage = 'No words match the current filters.',
   onWordSelect, selectedWordId,
@@ -139,7 +140,7 @@ export function WordCollectionView({
           ) : (
             <>
               {mobile
-                ? <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} />
+                ? <WordCardList words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} reviewMode={reviewMode} />
                 : <WordTable words={pageWords} wordList={wordList} pendingWordId={pendingWordId} pendingWordIds={pendingWordIds} fromTopicSlug={fromTopicSlug} onUpdate={onUpdate} onWordSelect={onWordSelect} selectedWordId={selectedWordId} />}
             </>
           )}

@@ -7,6 +7,7 @@ from typing import Callable
 
 from app.features.words.ai_curation.common import AiCurationImportError
 from app.features.words.ai_curation.schemas import AiCurationImportRequest, TopicRef, WordUpdateV2
+from app.features.words.import_timestamps import as_utc
 from app.features.words.model import Word
 
 
@@ -45,7 +46,7 @@ def _validate_payload_ids(payload: AiCurationImportRequest, words_by_id: dict[in
 
 
 def _check_stale(word: Word, exported_at: datetime, label: str) -> None:
-    if word.updated_at is not None and word.updated_at > exported_at:
+    if word.updated_at is not None and as_utc(word.updated_at) > as_utc(exported_at):
         raise AiCurationImportError(
             f"{label}: word {word.id} ('{word.term}') was modified after export "
             f"(word.updated_at={word.updated_at.isoformat()}, "

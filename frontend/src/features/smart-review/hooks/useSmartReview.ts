@@ -22,7 +22,14 @@ export function useSmartReview(enabled = true) {
     onSuccess: (updatedQueue) => queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, current => {
       // An older completion response must not replace a new set or reduce progress.
       if (current && (current.id !== updatedQueue.id || current.completed_count > updatedQueue.completed_count)) return current
-      return updatedQueue
+      if (!current) return updatedQueue
+      const completed = new Map(updatedQueue.items.map(item => [item.id, item]))
+      return {...current, completed_count: updatedQueue.completed_count, items: current.items.map(item => {
+        const incoming = completed.get(item.id)
+        return incoming?.is_completed && !item.is_completed
+          ? {...item, is_completed: true, completed_at: incoming.completed_at}
+          : item
+      })}
     }),
     onError: (_error, itemId) => {
       setFailedAction({kind: 'complete', itemId})

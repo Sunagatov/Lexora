@@ -342,6 +342,18 @@ def test_build_usage_stats_groups_by_day_and_session() -> None:
     assert daily[1].active_seconds == 75
 
 
+def test_build_words_added_by_month_includes_imports_and_other_sources() -> None:
+    words = [
+        _word_stub(id=1, source="manual", created_at=datetime(2026, 4, 1, tzinfo=UTC)),
+        _word_stub(id=2, source="import", created_at=datetime(2026, 10, 28, tzinfo=UTC)),
+        _word_stub(id=3, source="seed", created_at=datetime(2026, 1, 1, tzinfo=UTC)),
+        _word_stub(id=4, source="import", created_at=datetime(2026, 10, 29, tzinfo=UTC)),
+    ]
+    result = stats_service._build_words_added_by_month(words)
+    assert result == {"2026-01": 1, "2026-04": 1, "2026-10": 2}
+    assert sum(result.values()) == len(words)
+
+
 def test_build_words_added_by_month_uses_provided_words_list_not_all_words() -> None:
     # Only non-deleted words (deleted_at=None) are passed by compute_stats, so deleted
     # words must not appear in the monthly totals.

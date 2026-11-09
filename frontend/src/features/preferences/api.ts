@@ -79,6 +79,7 @@ let snapshot: Snapshot = {
   error: '',
 }
 let pending: PreferencesPatch = cached.pending ?? {}
+let inFlight: PreferencesPatch = {}
 let saving = false
 let editVersion = 0
 let readVersion = 0
@@ -97,7 +98,9 @@ export function usePreferences() {
 function publish(values: Preferences, status: Snapshot['status'], error = '') {
   snapshot = { values, status, error }
   try {
-    localStorage.setItem(key, JSON.stringify({ values, pending }))
+    // A reload must retry unacknowledged edits, including the active request.
+    const unsaved = mergePatches(inFlight, pending)
+    localStorage.setItem(key, JSON.stringify({ values, pending: unsaved }))
   } catch {
     /* Keep this tab usable. */
   }
@@ -113,6 +116,17 @@ function publish(values: Preferences, status: Snapshot['status'], error = '') {
   }
   setPronunciationPreferences(values.pronunciation_modes)
   listeners.forEach((listener) => listener())
+}
+
+function mergePatches(earlier: PreferencesPatch, later: PreferencesPatch): PreferencesPatch {
+  return {
+    ...earlier,
+    ...later,
+    ...(earlier.word_mix || later.word_mix
+      ? {word_mix: {...earlier.word_mix, ...later.word_mix}} : {}),
+    ...(earlier.pronunciation_modes || later.pronunciation_modes
+      ? {pronunciation_modes: {...earlier.pronunciation_modes, ...later.pronunciation_modes}} : {}),
+  }
 }
 
 export async function loadPreferences() {
@@ -163,6 +177,7 @@ export async function flushPreferences() {
   try {
     while (Object.keys(pending).length) {
       const patch = pending
+      inFlight = patch
       pending = {}
       try {
         const values = await networkRequest<Preferences>('/api/preferences', {
@@ -170,6 +185,7 @@ export async function flushPreferences() {
           body: JSON.stringify(patch),
           signal: AbortSignal.timeout(10_000),
         })
+        inFlight = {}
         publish(
           {
             ...values,
@@ -180,19 +196,8 @@ export async function flushPreferences() {
           Object.keys(pending).length ? 'saving' : 'saved',
         )
       } catch (error) {
-        pending = {
-          ...patch,
-          ...pending,
-          ...(patch.word_mix || pending.word_mix ? {word_mix: {...patch.word_mix, ...pending.word_mix}} : {}),
-          ...(patch.pronunciation_modes || pending.pronunciation_modes
-            ? {
-                pronunciation_modes: {
-                  ...patch.pronunciation_modes,
-                  ...pending.pronunciation_modes,
-                },
-              }
-            : {}),
-        }
+        pending = mergePatches(patch, pending)
+        inFlight = {}
         publish(
           snapshot.values,
           'error',

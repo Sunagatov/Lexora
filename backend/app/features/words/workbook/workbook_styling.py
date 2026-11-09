@@ -74,7 +74,7 @@ def _safe_sheet_title(raw_title: str, used_titles: set[str]) -> str:
     base = cleaned[:31]
     candidate = base
     suffix = 2
-    while candidate in used_titles:
+    while candidate.casefold() in {title.casefold() for title in used_titles}:
         suffix_text = f" ({suffix})"
         candidate = f"{base[:31 - len(suffix_text)]}{suffix_text}"
         suffix += 1

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -66,9 +66,10 @@ def _build_retention_stats(
     regressed_word_ids: set[int],
 ) -> RetentionSummary:
     active_words = sum(level_counts[level] for level in (1, 3, 4))
-    reviewed_words = len(reviewed_word_ids)
-    improved_words = len(improved_word_ids)
-    regressed_words = len(regressed_word_ids)
+    current_word_ids = {word.id for word in words}
+    reviewed_words = len(reviewed_word_ids & current_word_ids)
+    improved_words = len(improved_word_ids & current_word_ids)
+    regressed_words = len(regressed_word_ids & current_word_ids)
     total_words = len(words)
     return RetentionSummary(
         active_words=active_words,
@@ -110,7 +111,7 @@ def _build_consistency_stats(
     daily_activity: list[DailyActivity],
     now: datetime | None = None,
 ) -> ConsistencySummary:
-    today = (now or datetime.now(timezone.utc)).date()
+    today = (now or datetime.now(UTC)).date()
     active_days = {date.fromisoformat(day.date) for day in usage_daily}
     study_days = {date.fromisoformat(day.date) for day in daily_activity}
 
@@ -144,7 +145,7 @@ def _build_usage_stats(db: Session, now: datetime | None = None) -> tuple[UsageS
         )
 
     daily_seconds, per_session_seconds = _collect_usage_totals(events)
-    today = (now or datetime.now(timezone.utc)).date()
+    today = (now or datetime.now(UTC)).date()
     last_7d_cutoff = today - timedelta(days=6)
     total_active_seconds = sum(daily_seconds.values())
     sessions = len(per_session_seconds)
@@ -184,7 +185,7 @@ def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary
             avg_completion_seconds=0,
         )
 
-    current_time = now or datetime.now(timezone.utc)
+    current_time = now or datetime.now(UTC)
     active_queues = 0
     completed_queues = 0
     total_count = 0
@@ -193,7 +194,7 @@ def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary
 
     for queue in queues:
         total_count += queue.total_count
-        if queue.is_active and queue.expires_at > current_time:
+        if queue.is_active and _utc_timestamp(queue.expires_at) > _utc_timestamp(current_time):
             active_queues += 1
         if queue.total_count > 0:
             ratio_total += queue.completed_count / queue.total_count
@@ -201,7 +202,7 @@ def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary
             completed_queues += 1
             completed_times = [item.completed_at for item in queue.items if item.completed_at is not None]
             if completed_times:
-                completion_durations.append((max(completed_times) - queue.generated_at).total_seconds())
+                completion_durations.append((max(_utc_timestamp(value) for value in completed_times) - _utc_timestamp(queue.generated_at)).total_seconds())
 
     total_queues = len(queues)
     return QueueSummary(
@@ -215,6 +216,10 @@ def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary
         if completion_durations
         else 0,
     )
+
+
+def _utc_timestamp(value: datetime) -> datetime:
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
 
 
 def _current_streak(days: set[date], today: date) -> int:

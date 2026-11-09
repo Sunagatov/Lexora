@@ -8,6 +8,44 @@ from types import SimpleNamespace
 
 import pytest
 
+
+@pytest.fixture(params=["sqlite", "postgresql"])
+def concurrency_engine(request, tmp_path):
+    """Independent connections against SQLite or a disposable local PostgreSQL."""
+    from uuid import uuid4
+
+    from sqlalchemy import create_engine, text
+
+    from app.shared.db import Base
+
+    if request.param == "sqlite":
+        engine = create_engine(f"sqlite:///{tmp_path / 'concurrency.sqlite'}")
+        try:
+            Base.metadata.create_all(engine)
+            yield engine
+        finally:
+            engine.dispose()
+        return
+
+    port = os.environ.get("LEXORA_REVIEW_TEST_POSTGRES_PORT")
+    if not port:
+        pytest.skip("Disposable PostgreSQL port not supplied")
+    assert port.isdecimal() and 1024 <= int(port) <= 65535
+    root = create_engine(
+        f"postgresql+psycopg://lexora_review_test:local-test-only@127.0.0.1:{port}/lexora_review_test"
+    )
+    schema = "concurrency_" + uuid4().hex
+    engine = root.execution_options(schema_translate_map={None: schema})
+    try:
+        with root.begin() as connection:
+            connection.execute(text(f'CREATE SCHEMA "{schema}"'))
+        Base.metadata.create_all(engine)
+        yield engine
+    finally:
+        with root.begin() as connection:
+            connection.execute(text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
+        root.dispose()
+
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
@@ -26,10 +64,11 @@ os.environ["APP_DEBUG"] = "true"
 @pytest.fixture(scope="session", autouse=True)
 def isolated_fallback_database():
     """Application-startup tests must never reuse a developer's SQLite copy."""
-    from app.shared import db, deps
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
     from sqlalchemy.pool import StaticPool
+
+    from app.shared import db, deps
 
     original = db.engine, db.SessionLocal, deps.SessionLocal, db._sqlite_schema_ready
     engine = create_engine("sqlite://", poolclass=StaticPool, connect_args={"check_same_thread": False})
@@ -53,6 +92,7 @@ def auth_db():
 @pytest.fixture(autouse=True)
 def isolated_auth_state(isolated_fallback_database):
     from sqlalchemy import delete
+
     from app.features.auth.model import AuthSession, LoginAttemptBucket
     from app.shared import db
 

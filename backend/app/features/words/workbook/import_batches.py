@@ -97,6 +97,7 @@ def apply_import(db: Session, batch_id: str, expected_hash: str) -> dict:
             created.append(word)
         else:
             word = words[entry["word_id"]]
+        word.updated_at = datetime.now(UTC)
         for name in (
             "term",
             "definition",

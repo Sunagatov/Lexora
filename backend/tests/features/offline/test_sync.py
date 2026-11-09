@@ -108,6 +108,53 @@ def test_missing_before_values_cannot_bypass_conflict_check(db):
     assert error.value.status_code == 422
 
 
+@pytest.mark.parametrize("action,data", [("delete", {}), ("update", {"is_favorite": True})])
+def test_legacy_offline_created_word_can_be_deleted_or_favorited(db, action, data):
+    created = apply_change(db, change(
+        db, action="create", entity_id=-2, before={},
+        data={"term": "calm", "topic_ids": [1], "translation_entries": ["calm translation"]},
+    ))
+    before = dict(created["item"])
+    # Already-queued edits from older copies omit the false Favorites default.
+    before.pop("is_favorite")
+    edit = change(db, action=action, entity_id=created["entity_id"], before=before, data=data)
+    result = apply_change(db, edit)
+    if action == "delete":
+        assert result["item"]["deleted_at"] is not None
+    else:
+        assert result["item"]["is_favorite"] is True
+    assert apply_change(db, edit) == result
+
+
+def test_legacy_favorite_default_still_detects_a_newer_server_favorite(db):
+    before = snapshot(db)["words"][0]
+    before.pop("is_favorite")
+    update_word(db, db.get(Word, 1), WordUpdate(is_favorite=True))
+    with pytest.raises(HTTPException) as error:
+        sync_change(change(db, action="delete", before=before, data={}), db)
+    assert error.value.status_code == 409
+    assert db.get(Word, 1).is_favorite is True
+    assert db.get(Word, 1).deleted_at is None
+
+
+def test_legacy_favorite_default_does_not_allow_a_missing_previous_word(db):
+    with pytest.raises(HTTPException) as error:
+        sync_change(change(db, before={}, data={"is_favorite": True}), db)
+    assert error.value.status_code == 422
+
+
+def test_topic_delete_accepts_legacy_word_snapshots_without_favorites(db):
+    saved = snapshot(db)
+    for word in saved["words"]:
+        word.pop("is_favorite")
+    apply_change(db, change(
+        db, entity="topic", action="delete", data={},
+        before=saved["topics"][0], affected_words=saved["words"],
+    ))
+    assert db.get(Topic, 1).deleted_at is not None
+    assert db.get(Word, 1).deleted_at is not None
+
+
 def test_receipt_and_content_are_atomic(db, monkeypatch):
     edit = change(db)
 
@@ -239,9 +286,9 @@ def test_topic_delete_after_synced_rating_ignores_client_only_metadata(db):
 def test_offline_routes_require_both_session_and_csrf(db, auth_db):
     from fastapi.testclient import TestClient
 
+    from app.features.auth.service import create_session
     from app.main import app
     from app.shared.auth import build_csrf_token
-    from app.features.auth.service import create_session
     from app.shared.config import settings
     from app.shared.deps import get_db
 

@@ -146,7 +146,8 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
     setDraft((d) => {
       if (!d) return d
       if (field === 'term' && typeof value === 'string' && value.trim() !== d.term.trim()) {
-        return {...d, term: value, pronunciation_ipa: '', transliteration: ''}
+        const original = value.trim() === initialDraft.current?.term.trim() ? initialDraft.current : null
+        return {...d, term: value, pronunciation_ipa: original?.pronunciation_ipa ?? '', transliteration: original?.transliteration ?? ''}
       }
       return {...d, [field]: value}
     })
@@ -217,7 +218,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
           notes: d.notes || r.notes || '',
           part_of_speech: d.part_of_speech || r.part_of_speech || '',
           translations: d.translations || (r.translation_entries.length ? r.translation_entries.join('\n') : ''),
-          example: d.example || (r.example_entries.length ? r.example_entries.join('\n') : ''),
+          example: d.example || (r.example_entries.length ? r.example_entries.join('\n\n') : ''),
           synonyms: d.synonyms || (r.synonym_entries.length ? r.synonym_entries.join('\n') : ''),
           antonyms: d.antonyms || (r.antonym_entries.length ? r.antonym_entries.join('\n') : ''),
           collocations: d.collocations || (r.collocation_entries.length ? r.collocation_entries.join('\n') : ''),

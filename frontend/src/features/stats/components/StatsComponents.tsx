@@ -73,7 +73,7 @@ const STAT_META: Record<string, {icon: string; tone: string}> = {
   'Avg queue size': {icon: '📦', tone: 'violet'},
   'Avg completion': {icon: '🔄', tone: 'sky'},
   'Avg completion time': {icon: '⏳', tone: 'amber'},
-  'Level changes': {icon: '🪄', tone: 'violet'},
+  'Word reviews': {icon: '🪄', tone: 'violet'},
   Improved: {icon: '⬆️', tone: 'emerald'},
   Downgraded: {icon: '⬇️', tone: 'rose'},
   'Net progress': {icon: '📌', tone: 'indigo'},

@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.features.topics.model import Topic
 from app.features.topics import service as topic_service
+from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate, TopicUpdate
 
 
@@ -98,7 +98,7 @@ def test_create_topic_rejects_duplicate_active_name(monkeypatch) -> None:
 
     monkeypatch.setattr(topic_service, "slugify", lambda value, max_len: "travel")
     monkeypatch.setattr(topic_service, "assert_slug_available", MagicMock())
-    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=None)
+    db.scalars.return_value.all.return_value = [Topic(id=9, name="Travel", slug="travel")]
 
     with pytest.raises(topic_service.TopicNameConflictError) as exc_info:
         topic_service.create_topic(db, payload)
@@ -193,7 +193,7 @@ def test_update_topic_rejects_duplicate_active_name(monkeypatch) -> None:
     payload = TopicUpdate(name="Travel")
 
     monkeypatch.setattr(topic_service, "assert_slug_available", MagicMock())
-    db.scalar.return_value = MagicMock(spec=Topic, id=9, deleted_at=None)
+    db.scalars.return_value.all.return_value = [Topic(id=9, name="Travel", slug="travel")]
 
     with pytest.raises(topic_service.TopicNameConflictError) as exc_info:
         topic_service.update_topic(db, topic, payload)
@@ -261,7 +261,7 @@ def test_restore_topic_validates_words_before_restoring(monkeypatch, make_topic,
 def test_restore_topic_rejects_duplicate_active_name(make_topic) -> None:
     db = MagicMock()
     topic = make_topic(id=5, name="Travel", slug="old-travel", deleted_at=object())
-    db.scalar.return_value = make_topic(id=9, name="Travel", slug="travel")
+    db.scalars.return_value.all.return_value = [make_topic(id=9, name="Travel", slug="travel")]
 
     with pytest.raises(topic_service.TopicNameConflictError):
         topic_service.restore_topic(db, topic)

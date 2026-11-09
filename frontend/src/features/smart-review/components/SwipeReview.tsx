@@ -8,6 +8,7 @@ import {LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import {EasyPronunciation} from '@/features/words/components/EasyPronunciation'
 import {usePreferences} from '@/features/preferences/api'
 import {routes} from '@/app/routes'
+import {useWordListNavigation} from '@/features/words/hooks/useWordListNavigation'
 import {useSwipeSession} from '../hooks/useSwipeSession'
 import {useMixSwipe} from '../hooks/useMixSwipe'
 import {SWIPE_DISTANCE, type SwipeRating} from '../model/swipeSession'
@@ -55,6 +56,7 @@ function PronounceButton({word}: {word: Word}) {
 export function SwipeReview({queue, onBackToList, onBusyChange}: {queue: StudyQueue; onBackToList: () => void; onBusyChange: (busy: boolean) => void}) {
   const language = queue.items[0]?.word.language ?? languagePreferences().language
   const preferences = usePreferences()
+  const navigation = useWordListNavigation(undefined, {ids: queue.items.map(item => item.word_id), offset: 0, total: queue.items.length})
   const s = useSwipeSession(queue, language)
   const {session, item} = s
   useEffect(() => {
@@ -116,7 +118,7 @@ export function SwipeReview({queue, onBackToList, onBusyChange}: {queue: StudyQu
                 <span>Example</span><p>{item.word.example_entries[0]}</p>
               </div>}
             </div>
-            <div className="mix-card-footer"><span>{LEVEL_LABELS[item.word.knowledge_level ?? 0] ?? 'Not rated'}</span><Link to={routes.word(item.word_id)}>Word details ↗</Link></div>
+            <div className="mix-card-footer"><span>{LEVEL_LABELS[item.word.knowledge_level ?? 0] ?? 'Not rated'}</span><Link to={routes.word(item.word_id)} state={navigation.state} onClick={event => navigation.openWord(event, item.word_id)}>Word details ↗</Link></div>
             {hasDrag && <div className="mix-swipe-preview" aria-live="polite">{preview.arrow} {preview.label}<small>{swipe.action !== null ? 'Release to apply' : 'Keep swiping · Move back to cancel'}</small></div>}
           </article>
         </div>

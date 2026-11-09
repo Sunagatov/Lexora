@@ -120,8 +120,6 @@ def _build_topic_stats(
 def _build_words_added_by_month(words: list[WordStatsSnapshot]) -> dict[str, int]:
     counts: dict[str, int] = defaultdict(int)
     for word in words:
-        if word.source != "manual":
-            continue
         key = f"{word.created_at.year}-{word.created_at.month:02d}"
         counts[key] += 1
     return dict(sorted(counts.items()))

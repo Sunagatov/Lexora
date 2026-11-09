@@ -121,7 +121,7 @@ describe('filterAndSort', () => {
 
 describe('smartPreview', () => {
   it('returns verb forms when past_simple present', () => {
-    const w = makeWord({term: 'go', verb_form: {past_simple: 'went', past_participle: 'gone', present_participle: null, third_person: null}})
+    const w = makeWord({term: 'go', language: 'en', part_of_speech: 'verb', verb_form: {past_simple: 'went', past_participle: 'gone', present_participle: null, third_person: null}})
     const p = smartPreview(w)
     expect(p?.label).toBe('Forms')
     expect(p?.text).toContain('went')

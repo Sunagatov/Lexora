@@ -99,34 +99,27 @@ def test_complete_queue_item_raises_when_queue_is_expired(tz) -> None:
 
 @pytest.mark.parametrize("tz", [None, UTC])
 def test_complete_queue_item_marks_incomplete_item_as_done(tz) -> None:
-    item = SimpleNamespace(queue_id=5, word_id=10, is_completed=False, completed_at=None)
-    queue = SimpleNamespace(
-        is_active=True,
-        completed_count=1,
-        expires_at=datetime(2099, 1, 1, tzinfo=tz),
-    )
-    word = SimpleNamespace(id=10, deleted_at=None, is_active=True)
+    # Exercise the actual SQL update, including the counter returned to callers.
+    with _make_sqlite_session() as db:
+        word = Word(term="hello", is_active=True)
+        queue = smart_review_service.StudyQueue(
+            is_active=True, total_count=2, completed_count=1,
+            expires_at=datetime(2099, 1, 1, tzinfo=tz),
+        )
+        db.add_all([word, queue])
+        db.flush()
+        item = smart_review_service.StudyQueueItem(
+            queue_id=queue.id, word_id=word.id, position=1, is_completed=False,
+        )
+        db.add(item)
+        db.commit()
 
-    db = MagicMock()
+        result = smart_review_service.complete_queue_item(db, item.id)
 
-    def fake_get(model, object_id):
-        if model is smart_review_service.StudyQueueItem:
-            return item
-        if model is smart_review_service.StudyQueue:
-            return queue
-        if model is Word:
-            return word
-        return None
-
-    db.get.side_effect = fake_get
-
-    result = smart_review_service.complete_queue_item(db, 10)
-
-    assert result is queue
-    assert item.is_completed is True
-    assert item.completed_at is not None
-    assert queue.completed_count == 2
-    db.commit.assert_called_once()
+        assert result is queue
+        assert item.is_completed is True
+        assert item.completed_at is not None
+        assert queue.completed_count == 2
 
 
 def test_complete_queue_item_after_sqlite_round_trip() -> None:

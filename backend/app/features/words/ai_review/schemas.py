@@ -3,18 +3,17 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.features.words.constants import (
-    CEFR_LEVELS,
     COUNTABILITY_VALUES,
-    KnowledgeLevel,
     KNOWLEDGE_LEVEL_MAX,
     KNOWLEDGE_LEVEL_MIN,
-    LANGUAGES,
     PART_OF_SPEECH_VALUES,
-    REGISTER_VALUES,
     WORD_TERM_MAX_LEN,
+    CefrLevel,
+    KnowledgeLevel,
+    WordRegister,
 )
 
 SCHEMA_VERSION = "lexora.ai-review.v1"
@@ -100,8 +99,8 @@ class AiReviewImportWord(BaseModel):
     example_entries: list[JsonEntry] | None = Field(default=None, max_length=20)
     countability: str | None = None
     part_of_speech: str | None = None
-    cefr_level: str | None = None
-    register: str | None = None
+    cefr_level: CefrLevel | None = None
+    register: WordRegister | None = None
     frequency_rank: int | None = Field(default=None, ge=1)
     definition: str | None = None
     synonym_entries: list[JsonEntry] | None = Field(default=None, max_length=20)

@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from app.features.words.ai_curation.common import AiCurationImportError
 from app.features.words.ai_curation.import_support import (
     AiCurationImportOperations,
-    _check_stale,
     _has_changes,
     _resolve_topic_id_set,
 )
@@ -58,10 +57,6 @@ def _process_word_updates(
 ) -> tuple[list[int], int]:
     updated_word_ids: list[int] = []
     unchanged = 0
-
-    if payload.exported_at is not None:
-        for op in payload.word_updates:
-            _check_stale(words_by_id[op.id], payload.exported_at, "update_existing_word")
 
     for op in payload.word_updates:
         word = words_by_id[op.id]
@@ -139,10 +134,6 @@ def _process_word_reassigns(
 ) -> tuple[list[int], int]:
     reassigned_word_ids: list[int] = []
     unchanged = 0
-
-    if payload.exported_at is not None:
-        for op in payload.word_reassigns:
-            _check_stale(words_by_id[op.id], payload.exported_at, "reassign_word_topics")
 
     for op in payload.word_reassigns:
         word = words_by_id[op.id]

@@ -237,7 +237,7 @@ export function DailyProgressSection({
         <PeriodTabs options={ACTIVITY_PERIODS} value={activityPeriod} onChange={onActivityPeriodChange} />
       </div>
       <div className="stats-cards stats-cards-4">
-        <StatCard value={activityTotals.reviewed} label="Level changes" />
+        <StatCard value={activityTotals.reviewed} label="Word reviews" sub="Each word counts once per day" />
         <StatCard value={activityTotals.improved} label="Improved" />
         <StatCard value={activityTotals.downgraded} label="Downgraded" />
         <StatCard value={activityTotals.net >= 0 ? `+${activityTotals.net}` : String(activityTotals.net)} label="Net progress" />
@@ -250,7 +250,7 @@ export function DailyProgressSection({
       )}
       {activityChartData.length > 0
         ? <BarChart data={activityChartData} color="#10b981" />
-        : <div className="stats-empty">No level changes recorded for this period. Start studying to see progress here.</div>}
+        : <div className="stats-empty">No reviews recorded for this period. Start studying to see progress here.</div>}
       {stats.tracking_started_at && (
         <div className="stats-tracking-note">
           Progress tracking started {dayLabel(stats.tracking_started_at)}. Earlier history is not available.
@@ -273,7 +273,7 @@ export function WordsAddedSection({
   return (
     <section className="stats-section">
       <div className="stats-section-header">
-        <SectionTitle icon="🗓️" subtitle="How quickly your vocabulary library is growing">
+        <SectionTitle icon="🗓️" subtitle="Active words, including imports, grouped by their saved creation date">
           Words added by month
         </SectionTitle>
         <PeriodTabs options={MONTH_PERIODS} value={monthPeriod} onChange={onMonthPeriodChange} />

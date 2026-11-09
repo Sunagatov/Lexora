@@ -52,19 +52,20 @@ def words_for_topics_stmt(topic_ids: list[int]):
 
 
 def apply_word_search(stmt, search: str, target: str = "ru", *, include_pinyin: bool = False):
-    needle = f"%{search}%"
+    escaped = search.replace("!", "!!").replace("%", "!%").replace("_", "!_")
+    needle = f"%{escaped}%"
     definition = Word.explanation_groups["en"]["definition"].as_string() if target == "en" else Word.definition
     notes = Word.explanation_groups["en"]["notes"].as_string() if target == "en" else Word.notes
     matches = (
-        Word.term.ilike(needle)
-        | definition.ilike(needle)
-        | Word.transliteration.ilike(needle)
-        | Word.pattern.ilike(needle)
-        | notes.ilike(needle)
-        | Word.id.in_(select(WordTranslation.word_id).where(WordTranslation.value.ilike(needle), WordTranslation.language == target))
-        | Word.id.in_(select(WordExample.word_id).where(WordExample.value.ilike(needle)))
+        Word.term.ilike(needle, escape="!")
+        | definition.ilike(needle, escape="!")
+        | Word.transliteration.ilike(needle, escape="!")
+        | Word.pattern.ilike(needle, escape="!")
+        | notes.ilike(needle, escape="!")
+        | Word.id.in_(select(WordTranslation.word_id).where(WordTranslation.value.ilike(needle, escape="!"), WordTranslation.language == target))
+        | Word.id.in_(select(WordExample.word_id).where(WordExample.value.ilike(needle, escape="!")))
         | Word.id.in_(select(WordVerbForm.word_id).where(
-            WordVerbForm.past_simple.ilike(needle) | WordVerbForm.past_participle.ilike(needle)
+            WordVerbForm.past_simple.ilike(needle, escape="!") | WordVerbForm.past_participle.ilike(needle, escape="!")
         ))
     )
     key = pinyin_key(search)

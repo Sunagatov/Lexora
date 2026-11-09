@@ -62,7 +62,7 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
         id, term: '', topic_ids: [], language: languagePreferences().language, definition: null, pronunciation_ipa: null, transliteration: null,
         pronunciation_audio_url: null, image_url: null, part_of_speech: null, cefr_level: null,
         register: null, countability: null, frequency_rank: null, knowledge_level: null, pattern: null,
-        notes: null, is_active: true, verb_form: null, translation_entries: [], example_entries: [],
+        notes: null, is_active: true, is_favorite: false, verb_form: null, translation_entries: [], example_entries: [],
         synonym_entries: [], antonym_entries: [], collocation_entries: [], confusable_entries: [],
         example_count: 0, example_target_count: 3, example_status: 'missing', needs_example_enrichment: true,
         created_at: now, updated_at: now, deleted_at: null,

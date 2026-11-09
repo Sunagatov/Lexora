@@ -247,7 +247,7 @@ def build_import_plan(
         if before:
             before["topic_ids"] = sorted(str(tid) for tid in before["topic_ids"])
         location = entry["locations"][0]
-        if not after["translations"]:
+        if not before and not after["translations"]:
             plan["errors"].append(
                 issue(**location, message="New words require at least one translation")
             )

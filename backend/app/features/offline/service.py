@@ -92,12 +92,16 @@ def comparable(data: dict) -> dict:
         result.setdefault("explanation_groups", {"ru": {"definition": data.get("definition"), "notes": data.get("notes")}})
     result["deleted_at"] = bool(result.get("deleted_at"))
     if "topic_ids" in result:
+        # Saved copies created before Favorites existed omit its false default.
+        result.setdefault("is_favorite", False)
         result["topic_ids"] = sorted(result["topic_ids"])
     return result
 
 
 def _check_before(current: dict, change: OfflineChange) -> None:
     current = dict(current)
+    if "topic_ids" in change.before and "is_favorite" not in change.before:
+        change = change.model_copy(update={"before": {**change.before, "is_favorite": False}})
     if "transliteration" in change.data and "transliteration" not in change.before:
         change = change.model_copy(update={"before": {**change.before, "transliteration": None}})
     target = change.data.get("translation_language", "ru")

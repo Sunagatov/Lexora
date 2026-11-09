@@ -58,6 +58,6 @@ def assert_word_restore_allowed(
             db,
             sorted(topic_ids),
             exclude_word_id=word.id,
-            identity=(getattr(word, "language", "en"), word.part_of_speech_id) if getattr(word, "part_of_speech_id", None) is not None else None,
+            identity=(getattr(word, "language", "en"), getattr(word, "part_of_speech_id", None)),
         ),
     )

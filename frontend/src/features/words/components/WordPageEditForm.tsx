@@ -4,6 +4,7 @@ import {LEVELS, LEVEL_LABELS} from '@/features/words/model/wordDomain'
 import type {EditState} from '@/features/words/model/wordForm'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {languagePreferences} from '@/features/languages/api'
+import {createTopicLabeler} from '@/features/topics/model/topicLabels'
 
 type Props = {
   draft: EditState
@@ -36,9 +37,10 @@ export function WordPageEditForm({
   const language = languagePreferences().language
   const isVerb = language === 'en' && (draft.part_of_speech === 'verb' || draft.part_of_speech === 'phrasal verb')
   const isNoun = draft.part_of_speech === 'noun'
-  const topicOptions = [...topics].sort((a, b) => a.name.localeCompare(b.name))
+  const topicLabel = createTopicLabeler(topics)
+  const topicOptions = [...topics].sort((a, b) => topicLabel(a).localeCompare(topicLabel(b)))
   const filteredTopicOptions = topicSearch.trim()
-    ? topicOptions.filter((topic) => topic.name.toLowerCase().includes(topicSearch.trim().toLowerCase()))
+    ? topicOptions.filter((topic) => topicLabel(topic).toLowerCase().includes(topicSearch.trim().toLowerCase()))
     : topicOptions
   const selectedTopicIds = new Set(draft.topic_ids.map(Number).filter((value) => Number.isInteger(value) && value !== 0))
 
@@ -192,7 +194,7 @@ export function WordPageEditForm({
                   checked={selectedTopicIds.has(topic.id)}
                   onChange={(event) => toggleTopic(topic.id, event.target.checked)}
                 />
-                <span>{topic.name}</span>
+                <span>{topicLabel(topic)}</span>
               </label>
             )) : (
               <div className="wp-topic-empty">No topics match.</div>

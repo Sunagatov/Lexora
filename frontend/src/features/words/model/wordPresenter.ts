@@ -14,7 +14,7 @@ export function lexicalChips(word: Word): LexicalChip[] {
 
 export function smartPreview(word: Word): {label: string; text: string} | null {
   const pos = word.part_of_speech?.toLowerCase()
-  if (word.verb_form?.past_simple || word.verb_form?.past_participle) {
+  if (word.language === 'en' && (pos === 'verb' || pos === 'phrasal verb') && (word.verb_form?.past_simple || word.verb_form?.past_participle)) {
     return {label: 'Forms', text: [word.term, word.verb_form?.past_simple, word.verb_form?.past_participle].filter(Boolean).join(' · ')}
   }
   if (pos === 'verb' && word.pattern)        return {label: 'Pattern', text: word.pattern}

@@ -254,7 +254,7 @@ export function buildOverviewCards(
     8,
   )
   const usageSparkline = sparklineValues(filteredUsage.map((day) => day.active_seconds), 12)
-  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.net), 12)
+  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.reviewed), 12)
   const levelDistributionSparkline = [
     stats.level_counts.level_1,
     stats.level_counts.level_3,
@@ -284,13 +284,13 @@ export function buildOverviewCards(
     },
     {
       value: weeklyActivityTotals.reviewed,
-      label: 'Level changes',
-      sub: 'last 7 days',
+      label: 'Word reviews',
+      sub: 'last 7 days; each word once per day',
       trend: buildTrendLabel(weeklyActivityTotals.reviewed, previousWeeklyActivityTotals.reviewed, 'vs previous 7d'),
       sparkline: activitySparkline,
     },
     {
-      value: stats.okay_or_better_pct,
+      value: `${stats.okay_or_better_pct}%`,
       label: 'Okay or better',
       sub: `${stats.level_counts.level_4.toLocaleString()} strong words`,
       trend: buildTrendLabel(weeklyActivityTotals.net, previousWeeklyActivityTotals.net, 'net this week'),

@@ -18,6 +18,7 @@ from app.features.smart_review.model import StudyQueue
 from app.features.smart_review.model import StudyQueueItem as StudyQueueItem  # noqa: PLC0414 - compatibility export
 from app.shared.config import settings
 from app.shared.logging_utils import log_audit_event
+from app.shared.transaction_locks import lock_language_transaction
 
 
 def complete_queue_item(db: Session, item_id: int) -> StudyQueue:
@@ -29,6 +30,7 @@ def deactivate_all_queues(db: Session) -> None:
 
 
 def generate_queue(db: Session) -> StudyQueue:
+    lock_language_transaction(db, 71001, learning_language(db))
     preferences = configured_word_mix_preferences(db)
     cooldown_days = preferences.cooldown_days if preferences else settings.smart_review_cooldown_days
     cooldown_ids = selection.cooldown_word_ids(db, cooldown_days=cooldown_days)
@@ -65,6 +67,7 @@ def generate_queue(db: Session) -> StudyQueue:
 def get_or_create_active_queue(db: Session) -> StudyQueue | None:
     if not settings.smart_review_enabled:
         return None
+    lock_language_transaction(db, 71001, learning_language(db))
     queue: StudyQueue | None = cast(StudyQueue | None, lifecycle.load_active_queue_lightweight(db))
     if queue is not None:
         if _should_regenerate_queue(db, queue):
