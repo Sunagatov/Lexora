@@ -105,3 +105,35 @@ from reduced spoken -ī. None of the entries claims individual native-audio veri
 The package review summaries and decision records list primary references and the
 limits of each notation. Completion means every starter entry has a useful reading
 aid, not that every accent or phonetic detail has been certified by a native speaker.
+
+## English display and coverage diagnostics
+
+An unset English pronunciation preference now selects saved IPA, which is the
+representation supported by the English vocabulary import. Other libraries keep
+the Russian-hint default. Explicit per-language choices, including English reading
+hints, and the global pronunciation visibility switch remain authoritative. There
+is no implicit fallback between notations and no generated pronunciation.
+
+From an authorized Vault operations context, run the backend module
+`python -m app.scripts.audit_pronunciations` against the intended PostgreSQL
+configuration. It uses a read-only transaction and a 15-second statement timeout,
+prints only aggregate counts per library, and refuses SQLite fallback. It counts
+non-deleted words (including inactive entries), IPA, Russian hints, transliteration,
+audio, entries lacking both IPA and hints, and entries lacking every representation.
+Empty and space-only fields count as missing. This audit does not fill any fields.
+
+No live English coverage count was established during the cloud bug investigation:
+this workspace had no authenticated database/server access or English data snapshot.
+Synthetic tests prove that saved English IPA survives database/API serialization,
+Favorite changes and Parked ratings, and appears under the default display.
+
+If the live audit confirms missing data, export the affected stable Word IDs,
+terms and parts of speech privately. Obtain dictionary-backed, reviewed English
+IPA with a documented accent and provenance. Preview a content-only import against
+a fresh backup restored into isolated PostgreSQL; include only missing target
+fields and leave existing valid values unchanged. Review per-ID changes and verify
+IDs, translations, topics, progress, Favorites and other pronunciation fields before
+and after. Keep an audit and scoped rollback record, then request approval for the
+production import. The existing Cyrillic-hint package importer does not accept
+English; extending it requires separate reviewed English support. Do not feed it
+unreviewed generated hints or replace the vocabulary database.

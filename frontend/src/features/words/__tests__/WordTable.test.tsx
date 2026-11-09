@@ -59,7 +59,7 @@ describe('WordTable', () => {
       disconnect() {}
     })
     try {
-      const {container} = render(<MemoryRouter><WordTable words={[makeWord(1, 'hola', {pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} /></MemoryRouter>)
+      const {container} = render(<MemoryRouter><WordTable words={[makeWord(1, 'hola', {language: 'es', pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} /></MemoryRouter>)
       act(() => resize(600))
       expect(screen.getAllByRole('columnheader')).toHaveLength(3)
       expect(container.querySelector('.word-inline-pronunciation')?.textContent).toBe('о́ла')

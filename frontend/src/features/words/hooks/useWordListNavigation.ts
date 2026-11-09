@@ -1,4 +1,4 @@
-import {useLayoutEffect} from 'react'
+import {useLayoutEffect, useRef} from 'react'
 import type {MouseEvent} from 'react'
 import {useLocation, useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
@@ -45,10 +45,14 @@ export function useWordListNavigation(fromTopicSlug?: string, wordList?: WordLis
 
 export function useWordListScrollRestore(isLoading: boolean) {
   const location = useLocation()
+  const restoredKey = useRef<string | null>(null)
   const scrollTop = (location.state as {wordListScrollTop?: number} | null)?.wordListScrollTop
   useLayoutEffect(() => {
-    if (isLoading || scrollTop === undefined) return
+    if (isLoading || scrollTop === undefined || restoredKey.current === location.key) return
     const element = listScrollElement()
-    if (element) element.scrollTop = scrollTop
+    if (element) {
+      element.scrollTop = scrollTop
+      restoredKey.current = location.key
+    }
   }, [isLoading, location.key, scrollTop])
 }

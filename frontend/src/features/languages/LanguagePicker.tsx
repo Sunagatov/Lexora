@@ -3,7 +3,7 @@ import {createPortal} from 'react-dom'
 import {useIsMutating} from '@tanstack/react-query'
 import {useLocation, useNavigate} from 'react-router-dom'
 import {languagePreferences, languageProfile, LEARNING_LANGUAGES, setLanguagePreferences, subscribeLanguages, type LanguagePreferences} from './api'
-import {pronunciationPreferences, setPronunciationPreferences, type PronunciationMode} from './pronunciationPreferences'
+import {defaultPronunciationMode, pronunciationPreferences, setPronunciationPreferences, type PronunciationMode} from './pronunciationPreferences'
 
 function LanguageDialog({onClose}: {onClose: () => void}) {
   const [draft, setDraft] = useState(languagePreferences)
@@ -21,7 +21,7 @@ function LanguageDialog({onClose}: {onClose: () => void}) {
       onChange={event => setDraft({...draft, translationLanguage: event.target.value as 'ru' | 'en'})}>
       <option value="ru">🇷🇺 Russian</option><option value="en">🇬🇧 English</option>
     </select></label>
-    <label>Pronunciation<select aria-label="Pronunciation display" value={readings[draft.language] ?? 'easy'}
+    <label>Pronunciation<select aria-label="Pronunciation display" value={readings[draft.language] ?? defaultPronunciationMode(draft.language)}
       onChange={event => setReadings({...readings, [draft.language]: event.target.value as PronunciationMode})}>
       <option value="easy">Russian reading hints</option>
       {draft.language === 'zh' && <option value="pinyin">Pinyin with tones</option>}

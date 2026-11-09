@@ -153,3 +153,57 @@ def test_multi_language_export_keeps_importable_language_metadata_and_does_not_c
             assert metadata["language"] == language
             assert book["Words"].max_row == 2
     assert learning_language(db) == "en"
+
+
+def test_pronunciation_coverage_counts_real_fields_and_never_changes_words(db):
+    from app.features.words.pronunciation_audit import pronunciation_coverage
+
+    db.add_all([
+        Word(term="ipa", language="en", pronunciation_ipa="/aɪ/", knowledge_level=4),
+        Word(term="hint", language="en", pronunciation_easy="хи́нт"),
+        Word(term="empty", language="en", pronunciation_ipa=" ", pronunciation_easy=""),
+        Word(term="audio", language="en", pronunciation_audio_url="https://example.test/a.mp3"),
+        Word(term="removed", language="en", deleted_at=datetime.now(UTC)),
+        Word(term="你好", language="zh", transliteration="nǐ hǎo"),
+    ])
+    db.commit()
+    before = [(w.id, w.term, w.knowledge_level, w.pronunciation_ipa, w.pronunciation_easy)
+              for w in db.scalars(select(Word).order_by(Word.id))]
+    assert pronunciation_coverage(db) == [
+        {"language": "en", "total": 4, "with_ipa": 1, "with_reading_hint": 1,
+         "with_transliteration": 0, "with_audio": 1, "missing_ipa_and_hint": 2,
+         "missing_all_pronunciation": 1},
+        {"language": "zh", "total": 1, "with_ipa": 0, "with_reading_hint": 0,
+         "with_transliteration": 1, "with_audio": 0, "missing_ipa_and_hint": 1,
+         "missing_all_pronunciation": 0},
+    ]
+    assert [(w.id, w.term, w.knowledge_level, w.pronunciation_ipa, w.pronunciation_easy)
+            for w in db.scalars(select(Word).order_by(Word.id))] == before
+    assert not db.dirty
+
+
+def test_english_pronunciation_survives_list_detail_favorite_and_parked_roundtrip(db):
+    word = Word(term="patient", language="en", pronunciation_ipa="/ˈpeɪʃənt/",
+                pronunciation_easy="пе́йшэнт", knowledge_level=1)
+    db.add(word)
+    db.commit()
+    word_id = word.id
+    app = FastAPI()
+    app.include_router(words_router)
+    app.dependency_overrides[get_db] = lambda: db
+    with TestClient(app) as client:
+        listed = client.get("/api/words").json()["words"][0]
+        assert listed["pronunciation_ipa"] == "/ˈpeɪʃənt/"
+        assert listed["pronunciation_easy"] == "пе́йшэнт"
+        for payload in [{"knowledge_level": 5}, {"is_favorite": True}, {"is_favorite": False}]:
+            response = client.put(f"/api/words/{word_id}", json=payload)
+            assert response.status_code == 200
+            saved = response.json()
+            assert saved["id"] == word_id
+            assert saved["knowledge_level"] == 5
+            assert saved["pronunciation_ipa"] == listed["pronunciation_ipa"]
+            assert saved["pronunciation_easy"] == listed["pronunciation_easy"]
+        detail = client.get(f"/api/words/{word_id}").json()
+        assert detail["is_favorite"] is False
+        assert detail["knowledge_level"] == 5
+        assert detail["pronunciation_ipa"] == listed["pronunciation_ipa"]

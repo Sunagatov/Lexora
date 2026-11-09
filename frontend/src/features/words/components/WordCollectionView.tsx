@@ -78,13 +78,22 @@ export function WordCollectionView({
   useWordListScrollRestore(isLoading)
   const mobile = useIsMobile()
   const filterKey = JSON.stringify([wordSearch, sortBy, thenSortBy, levelFilter, posFilter, cefrFilter, topicFilter, completeness])
-  const previousFilterKey = useRef(filterKey)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const viewKey = JSON.stringify([filterKey, page, pageSize])
+  const previousViewKey = useRef(viewKey)
+  const resetScroll = useRef(false)
   useLayoutEffect(() => {
-    if (previousFilterKey.current !== filterKey) {
-      document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'instant'})
-      previousFilterKey.current = filterKey
+    if (previousViewKey.current !== viewKey) {
+      resetScroll.current = true
+      previousViewKey.current = viewKey
     }
-  }, [filterKey])
+    // Placeholder rows and scroll anchoring can move the viewport again after
+    // a click-time scroll. Reset the actual container once the new rows commit.
+    if (resetScroll.current && !isLoading && scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+      resetScroll.current = false
+    }
+  }, [viewKey, isLoading])
   const wordList = {
     ids: navigationIds ?? (navigationWords ?? pageWords).map(word => word.id),
     offset: navigationIds || navigationWords ? 0 : Math.max(0, pageStart - 1),
@@ -93,11 +102,9 @@ export function WordCollectionView({
   }
   function handlePage(p: number) {
     setPage(p)
-    document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'smooth'})
   }
   function handlePageSize(size: number) {
     setPageSize(size)
-    document.querySelector('.word-collection-scroll')?.scrollTo({top: 0, behavior: 'instant'})
   }
 
   return (
@@ -123,7 +130,7 @@ export function WordCollectionView({
           onLearningSort={onLearningSort}
         />
       </div>
-      <div className="word-collection-scroll">
+      <div ref={scrollRef} className="word-collection-scroll">
         <div className="main-inner">
           {isLoading && pageWords.length === 0 ? (
             <WordTableSkeleton />

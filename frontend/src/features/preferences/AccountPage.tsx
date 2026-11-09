@@ -5,7 +5,7 @@ import { useIsMutating } from '@tanstack/react-query'
 import { routes } from '@/app/routes'
 import { useLogoutAction } from '@/features/auth/hooks/useLogoutAction'
 import { LEARNING_LANGUAGES, languageProfile } from '@/features/languages/api'
-import type { PronunciationMode } from '@/features/languages/pronunciationPreferences'
+import { defaultPronunciationMode, type PronunciationMode } from '@/features/languages/pronunciationPreferences'
 import { StatsPage } from '@/features/stats/routes/StatsPage'
 import { TrashPage } from '@/features/trash/routes/TrashPage'
 import { AccountIcon } from './AccountIcon'
@@ -200,7 +200,7 @@ export function AccountPage() {
               </span>
               <select
                 aria-label="Pronunciation display"
-                value={values.pronunciation_modes[values.language] ?? 'easy'}
+                value={values.pronunciation_modes[values.language] ?? defaultPronunciationMode(values.language)}
                 onChange={(event) =>
                   updatePreferences({
                     pronunciation_modes: {

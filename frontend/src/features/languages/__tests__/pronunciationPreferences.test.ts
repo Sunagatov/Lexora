@@ -25,3 +25,12 @@ it('loads valid saved choices and ignores broken or language-inappropriate value
   expect(saved.pronunciationMode('fr')).toBe('ipa')
   saved.setPronunciationPreferences({})
 })
+
+
+it('defaults English to saved IPA and still honors an explicit reading-hint preference', () => {
+  setPronunciationPreferences({})
+  expect(pronunciationMode('en')).toBe('ipa')
+  expect(pronunciationMode('es')).toBe('easy')
+  setPronunciationPreferences({en: 'easy'})
+  expect(pronunciationMode('en')).toBe('easy')
+})

@@ -325,3 +325,49 @@ it('uses the final direction after dragging across the starting point and commit
   expect(onSwipe).toHaveBeenCalledExactlyOnceWith(5)
   expect(screen.getByText('word 0')).toBeTruthy()
 })
+
+
+it('does not swallow a heart tap whose pointerdown stops bubbling after a swipe', () => {
+  const onSwipe = vi.fn(), favorite = vi.fn()
+  function Card() {
+    const {offset, ready, ...events} = useWordSwipe(onSwipe, false)
+    return <article {...events} data-testid="card" data-ready={ready}>{offset}
+      <button onPointerDown={e => e.stopPropagation()} onClick={favorite}>Heart</button>
+    </article>
+  }
+  render(<Card />)
+  const card = screen.getByTestId('card'), heart = screen.getByRole('button')
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 200, 100)
+  touch(card, 'pointermove', 100, 100)
+  touch(card, 'pointerup', 100, 100)
+  // Touch browsers may omit the synthetic click after a captured drag.
+  touch(heart, 'pointerdown', 200, 100)
+  touch(heart, 'pointerup', 200, 100)
+  fireEvent.click(heart, {detail: 1})
+  expect(favorite).toHaveBeenCalledOnce()
+})
+
+it.each([4, 5])('rates a deliberate drag from the card action area without clicking its button (level=%s)', level => {
+  const onSwipe = vi.fn(), favorite = vi.fn()
+  function Card() {
+    const {offset, ready, ...events} = useWordSwipe(onSwipe, false)
+    return <article {...events} data-testid="card" data-ready={ready}>{offset}
+      <div data-word-swipe-actions><button onPointerDown={e => e.stopPropagation()} onClick={favorite}>Heart</button></div>
+    </article>
+  }
+  render(<Card />)
+  const card = screen.getByTestId('card'), button = screen.getByRole('button')
+  card.setPointerCapture = vi.fn()
+  const [start, end] = level === 5 ? [250, 100] : [100, 250]
+  touch(button, 'pointerdown', start, 100)
+  touch(button, 'pointermove', end, 102)
+  touch(card, 'pointerup', end, 102)
+  fireEvent.click(button, {detail: 1})
+  expect(onSwipe).toHaveBeenCalledExactlyOnceWith(level)
+  expect(favorite).not.toHaveBeenCalled()
+  touch(button, 'pointerdown', 200, 100)
+  touch(button, 'pointerup', 200, 100)
+  fireEvent.click(button, {detail: 1})
+  expect(favorite).toHaveBeenCalledOnce()
+})

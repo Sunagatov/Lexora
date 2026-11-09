@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import type {PointerEvent} from 'react'
 import {swipeAction, type SwipeRating} from '../model/swipeSession'
 
@@ -6,6 +6,9 @@ export function useMixSwipe(onAction: (action: SwipeRating | 'skip') => void, di
   const start = useRef<{x: number; y: number; id: number} | null>(null)
   const [drag, setDrag] = useState({x: 0, y: 0})
   function reset() { start.current = null; setDrag({x: 0, y: 0}) }
+  useEffect(() => {
+    if (disabled) { start.current = null; setDrag({x: 0, y: 0}) }
+  }, [disabled])
   return {drag, action: swipeAction(drag.x, drag.y),
     events: {
       onPointerDown(e: PointerEvent<HTMLElement>) {
@@ -26,8 +29,14 @@ export function useMixSwipe(onAction: (action: SwipeRating | 'skip') => void, di
         reset()
         if (action !== null) onAction(action)
       },
-      onPointerCancel: reset,
-      onLostPointerCapture: reset,
+      onPointerCancel(e: PointerEvent<HTMLElement>) {
+        if (e.pointerId === start.current?.id) reset()
+      },
+      onLostPointerCapture(e: PointerEvent<HTMLElement>) {
+        // The touched child loses implicit capture when the surface takes it.
+        // Only loss of the surface's own capture cancels this gesture.
+        if (e.target === e.currentTarget && e.pointerId === start.current?.id) reset()
+      },
     },
   }
 }

@@ -18,7 +18,8 @@ function read(): PronunciationPreferences {
 
 let preferences = read()
 export const pronunciationPreferences = () => preferences
-export const pronunciationMode = (language: string): PronunciationMode => preferences[language as LearningLanguage] ?? 'easy'
+export const defaultPronunciationMode = (language: string): PronunciationMode => language === 'en' ? 'ipa' : 'easy'
+export const pronunciationMode = (language: string): PronunciationMode => preferences[language as LearningLanguage] ?? defaultPronunciationMode(language)
 export function subscribePronunciation(listener: () => void) {
   listeners.add(listener)
   return () => { listeners.delete(listener) }

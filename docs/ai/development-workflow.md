@@ -80,3 +80,16 @@ bash scripts/ai/check-ai-docs.sh
 ```
 
 Do not run Docker, deployment, SSH, backup, restore, production, or secret commands unless the user explicitly asks for that operational task.
+
+Pagination resets the owning list container after the requested rows are committed,
+including cached pages, page-size and filter changes. Returning from word details
+restores the saved position once per navigation, not on background refetches.
+Favorites update their heart state immediately, share a per-word pending lock across
+visible controls, and roll back only the flag on failure. Taps during a pending save
+are ignored; once it finishes, the next tap can reverse the saved state. Captured
+card gestures leave the next independent button tap available. Deliberate drags
+starting over the card’s heart/speaker actions can rate the word; taps retain their
+action, and the knowledge picker/menu remain outside that gesture start area. Daily Mix capture
+transfer from a child is not cancellation; cancellation/loss of the active surface's
+own pointer still is. English defaults to saved IPA when no notation was selected;
+see `easy-pronunciation.md` for coverage diagnostics and safe missing-data follow-up.

@@ -63,7 +63,7 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
     <article {...swipe}
       style={{'--swipe-x': `${offset}px`, '--swipe-angle': `${offset / 30}deg`} as CSSProperties}
       className={`word-card ${lc}${openLevel ? ' word-card-dropdown-open' : ''}${offset ? ` swipe-dragging ${offset > 0 ? 'swipe-strong' : 'swipe-parked'}` : ''}`}>
-      <div className="word-card-actions">
+      <div className="word-card-actions" data-word-swipe-actions>
         <button type="button"
           className={`word-card-speak${isSpeaking ? ' is-speaking' : ''}`}
           onClick={speak}
