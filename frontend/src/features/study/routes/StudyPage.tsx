@@ -140,6 +140,7 @@ export function StudyPage() {
                     wordId={panelWordId}
                     words={s.pageWords}
                     fromTopicSlug={s.selectedTopic?.slug}
+                    wordList={{ids: s.filteredWords.map(word => word.id), offset: 0, total: s.filteredWords.length}}
                     onClose={() => setPanelWordId(null)}
                     onNavigate={setPanelWordId}
                   />

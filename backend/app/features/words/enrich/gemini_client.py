@@ -66,12 +66,18 @@ def _parse_gemini_response(data: dict) -> GeminiResult | None:
     except (KeyError, IndexError, TypeError):
         return None
 
+    return parse_enrichment_text(text)
+
+
+def parse_enrichment_text(text: str) -> GeminiResult | None:
+    if not isinstance(text, str):
+        return None
+
     # Strip markdown code fences if present
     text = text.strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-        if text.endswith("```"):
-            text = text[:-3]
+        text = text.removesuffix("```")
         text = text.strip()
 
     try:
@@ -118,13 +124,7 @@ def _parse_gemini_response(data: dict) -> GeminiResult | None:
     return result
 
 
-async def fetch_gemini(term: str, language: str = "en", translation_language: str = "ru") -> GeminiResult | None:
-    if not settings.gemini_api_key:
-        return None
-
-    model = settings.gemini_model
-    url = f"{GEMINI_API_URL}/{model}:generateContent?key={settings.gemini_api_key}"
-
+def enrichment_prompt(language: str, translation_language: str) -> str:
     prompt = SYSTEM_PROMPT.replace("English", LANGUAGES[language]["name"]).replace("Russian", LANGUAGES[translation_language]["name"])
     target = LANGUAGES[translation_language]["name"]
     prompt = prompt.replace(f"concise {LANGUAGES[language]['name']} definition", f"concise {target} definition")
@@ -134,8 +134,16 @@ async def fetch_gemini(term: str, language: str = "en", translation_language: st
         prompt += "\nSet verb_form to null; describe this language's own grammar, gender, plural or conjugation in pattern and notes. Do not apply English verb forms to other languages."
     if language == translation_language:
         prompt += "\nFor translations provide useful same-language paraphrases, rather than simply repeating the word."
+    return prompt
+
+
+async def fetch_gemini(term: str, language: str = "en", translation_language: str = "ru") -> GeminiResult | None:
+    if not settings.gemini_api_key:
+        return None
+    model = settings.gemini_model
+    url = f"{GEMINI_API_URL}/{model}:generateContent?key={settings.gemini_api_key}"
     body = {
-        "system_instruction": {"parts": [{"text": prompt}]},
+        "system_instruction": {"parts": [{"text": enrichment_prompt(language, translation_language)}]},
         "contents": [{"parts": [{"text": term}]}],
         "generationConfig": {
             "temperature": 0.2,
@@ -149,6 +157,7 @@ async def fetch_gemini(term: str, language: str = "en", translation_language: st
             resp = await client.post(url, json=body)
             resp.raise_for_status()
             return _parse_gemini_response(resp.json())
-    except Exception:
-        logger.warning("gemini_api_error", extra={"event": "gemini_api_error", "term": term, "model": model}, exc_info=True)
+    except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
+        # HTTP exception strings can contain the credential-bearing request URL.
+        logger.warning("gemini_api_error", extra={"event": "gemini_api_error", "model": model})
         return None

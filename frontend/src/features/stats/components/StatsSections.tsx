@@ -316,7 +316,7 @@ export function TopicsSection({
               <span className="stats-col-right">Progress</span>
             </div>
             {(topicExpanded ? topics : topics.slice(0, 10)).map((row) => (
-              <div key={row.id} className="stats-topic-row" onClick={() => navigate(routes.topic(row.slug))}>
+              <button type="button" key={row.id} className="stats-topic-row" onClick={() => navigate(routes.topic(row.slug))}>
                 <span className="stats-topic-name">{row.name}</span>
                 <span className="stats-col-center stats-topic-count">{row.total}</span>
                 <span className={`stats-col-center stats-topic-weak ${row.weak_count > 0 ? 'has-weak' : ''}`}>{row.weak_count > 0 ? row.weak_count : '—'}</span>
@@ -325,7 +325,7 @@ export function TopicsSection({
                   <span className="stats-topic-pct">{row.progress}%</span>
                   <div className="stats-topic-bar"><div className="stats-topic-bar-fill" style={{width: `${row.progress}%`}} /></div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
           {topics.length > 10 && (

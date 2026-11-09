@@ -38,6 +38,10 @@ export function patchWordLevel(
 
 export function replaceWordInLists(queryClient: QueryClient, updated: Word): void {
   queryClient.setQueryData(queryKeys.word(updated.id), updated)
+  queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, current => current ? {
+    ...current,
+    items: current.items.map(item => item.word_id === updated.id ? {...item, word: updated} : item),
+  } : current)
   queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (current = []) =>
     current.map((word) => (word.id === updated.id ? updated : word)),
   )

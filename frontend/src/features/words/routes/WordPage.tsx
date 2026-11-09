@@ -1,6 +1,6 @@
 import {languageProfile} from '@/features/languages/api'
 import {useEffect, useState} from 'react'
-import {useNavigate, useLocation} from 'react-router-dom'
+import {useNavigate, useLocation, useBlocker} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {ConfirmModal} from '@/shared/ui/ConfirmModal'
@@ -9,6 +9,7 @@ import {usePublicConfig} from '@/shared/config/usePublicConfig'
 import {useWordPageState} from '@/features/words/hooks/useWordPageState'
 import {WordPageEditForm} from '@/features/words/components/WordPageEditForm'
 import {WordPageView} from '@/features/words/components/WordPageView'
+import {UnsavedWordDialog} from '@/features/words/components/UnsavedWordDialog'
 import {WordPageFooterNav, WordPageHero, WordPageSkeleton} from '@/features/words/components/WordPageChrome'
 import type {WordLocationState} from '@/features/words/hooks/useWordListNavigation'
 
@@ -31,6 +32,14 @@ export function WordPage() {
   })
   const publicConfigQuery = usePublicConfig()
   const [isSpeaking, setIsSpeaking] = useState(false)
+  // Successful saves and explicit Cancel opt out through the state hook.
+  const blocker = useBlocker(s.shouldBlockNavigation)
+  useEffect(() => {
+    if (!s.isDirty) return
+    const beforeUnload = (event: BeforeUnloadEvent) => {event.preventDefault(); event.returnValue = ''}
+    window.addEventListener('beforeunload', beforeUnload)
+    return () => window.removeEventListener('beforeunload', beforeUnload)
+  }, [s.isDirty])
 
   useEffect(() => {
     return () => {
@@ -81,6 +90,8 @@ export function WordPage() {
 
   return (
     <div className={`word-page${editing ? '' : ' word-page-reading'}`}>
+      {blocker.state === 'blocked' && <UnsavedWordDialog
+        onDiscard={() => {s.allowNavigation(); blocker.proceed()}} onKeep={() => blocker.reset()} />}
       <WordPageHero
         word={word}
         topicName={topic?.name}
@@ -124,6 +135,7 @@ export function WordPage() {
             onClearError={() => s.setSaveError(null)}
             onDelete={() => s.setConfirming(true)}
             onCancel={() => {
+              s.allowNavigation()
               navigate(routes.word(s.wordId), {replace: true, state: location.state})
               s.setSaveError(null)
             }}

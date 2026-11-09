@@ -6,17 +6,33 @@ import {fetchWordList} from '@/features/words/api/wordsApi'
 import type {Topic} from '@/features/topics/types/topicTypes'
 
 const topics = [{id: 1, name: 'Everyday life', slug: 'everyday-life'} as Topic]
-function Probe() {
+function Probe({choices = topics}: {choices?: Topic[]}) {
   const s = useWordFilterControls({defaultPageSize: 50})
   const location = useLocation()
   return <>
     <span data-testid="url">{location.search}</span>
-    <WordCollectionToolbar {...s} topics={topics} onLearningSort={s.setLearningSort} onReset={s.resetFilters}
+    <WordCollectionToolbar {...s} topics={choices} onLearningSort={s.setLearningSort} onReset={s.resetFilters}
       totalWordsOverall={100} topicTotalCount={100} filteredCount={30} pageStart={1} pageEnd={30}
       levelSummary={{1: 50, 3: 35, 4: 10, 5: 5}} />
   </>
 }
 const params = () => new URLSearchParams(screen.getByTestId('url').textContent!)
+
+it('distinguishes duplicate topic names in choices, search and applied filter chips', () => {
+  const choices = [
+    {id: 1, name: 'Education', parent_topic_id: null}, {id: 2, name: 'Entertainment', parent_topic_id: null},
+    {id: 3, name: 'Books', parent_topic_id: 1}, {id: 4, name: 'Books', parent_topic_id: 2},
+  ] as Topic[]
+  render(<MemoryRouter><Probe choices={choices} /></MemoryRouter>)
+  fireEvent.click(screen.getByRole('button', {name: 'Toggle filters'}))
+  const first = screen.getByLabelText('Topic: Education / Books')
+  expect(screen.getByLabelText('Topic: Entertainment / Books')).toBeTruthy()
+  fireEvent.click(first)
+  expect(screen.getByRole('button', {name: 'Remove Education / Books filter'})).toBeTruthy()
+  fireEvent.change(screen.getByLabelText('Search topics in filters'), {target: {value: 'Entertainment / Books'}})
+  expect(screen.queryByLabelText('Topic: Education / Books')).toBeNull()
+  expect(screen.getByLabelText('Topic: Entertainment / Books')).toBeTruthy()
+})
 
 it('keeps every selection when several controls change before the next render', () => {
   const router = createMemoryRouter([{path: '/', element: <Probe />}])

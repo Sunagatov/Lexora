@@ -17,6 +17,7 @@ import {
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {WordFilterPanel} from '@/features/words/components/WordFilterPanel'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
+import {createTopicLabeler} from '@/features/topics/model/topicLabels'
 
 type Props = {
   collectionTitle?: string
@@ -87,6 +88,7 @@ export function WordCollectionToolbar({
   const [topicSearch, setTopicSearch] = useState('')
   const [searchFocused, setSearchFocused] = useState(false)
   const mobile = useIsMobile()
+  const topicLabel = createTopicLabeler(topics)
   const searchRef = useRef<HTMLInputElement>(null)
   const sortDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -141,7 +143,7 @@ export function WordCollectionToolbar({
     ...levels.map(value => ({key: `level-${value}`, label: LEVEL_LABELS[value], remove: () => setLevelFilter(selectionValue(levels.filter(level => level !== value)) ?? 'all')})),
     ...cefrs.map(value => ({key: `cefr-${value}`, label: value, remove: () => setCefrFilter(selectionValue(cefrs.filter(cefr => cefr !== value)))})),
     ...positions.map(value => ({key: `pos-${value}`, label: POS_LABELS[value], remove: () => setPosFilter(selectionValue(positions.filter(pos => pos !== value)))})),
-    ...topicFilter.map(id => ({key: `topic-${id}`, label: topics.find(topic => topic.id === id)?.name ?? `Topic ${id}`, remove: () => setTopicFilter?.(topicFilter.filter(topicId => topicId !== id))})),
+    ...topicFilter.map(id => { const topic = topics.find(topic => topic.id === id); return {key: `topic-${id}`, label: topic ? topicLabel(topic) : `Topic ${id}`, remove: () => setTopicFilter?.(topicFilter.filter(topicId => topicId !== id))} }),
     ...(completeness !== 'all' ? [{key: 'completeness', label: completeness === 'complete' ? 'Complete' : 'Incomplete', remove: () => setCompleteness('all')}] : []),
     ...(searchActive ? [{key: 'search', label: `Search: ${wordSearch}`, remove: () => setWordSearch('')}] : []),
   ]
@@ -322,8 +324,8 @@ export function WordCollectionToolbar({
               <summary>{topicFilter.length ? `${topicFilter.length} topics selected` : 'All topics'}</summary>
               <input className="search-input" aria-label="Search topics in filters" placeholder="Find a topic…" value={topicSearch} onChange={event => setTopicSearch(event.target.value)} />
               <div className="toolbar-topic-options">
-                {topics.filter(topic => topic.name.toLowerCase().includes(topicSearch.trim().toLowerCase())).map(topic => <label key={topic.id}>
-                  <input type="checkbox" aria-label={`Topic: ${topic.name}`} checked={topicFilter.includes(topic.id)} onChange={() => setTopicFilter(toggleValue(topicFilter, topic.id))} />{topic.name}
+                {topics.filter(topic => topicLabel(topic).toLowerCase().includes(topicSearch.trim().toLowerCase())).map(topic => <label key={topic.id}>
+                  <input type="checkbox" aria-label={`Topic: ${topicLabel(topic)}`} checked={topicFilter.includes(topic.id)} onChange={() => setTopicFilter(toggleValue(topicFilter, topic.id))} />{topicLabel(topic)}
                 </label>)}
               </div>
               {topicFilter.length > 0 && <button type="button" className="btn btn-ghost" onClick={() => setTopicFilter([])}>All topics</button>}

@@ -34,7 +34,7 @@ export function TopicSidebarGroup({
           <span className="sidebar-group-count">{count}</span>
         </button>
         <div className="sidebar-sort-wrap">
-          <button ref={sortButtonRef} type="button" className={`sidebar-sort-btn ${sortMode !== 'weakest' ? 'active' : ''}`} onClick={onToggleSort} aria-label="Sort">
+          <button ref={sortButtonRef} type="button" className={`sidebar-sort-btn ${sortMode !== 'weakest' ? 'active' : ''}`} onClick={onToggleSort} aria-label="Sort" aria-haspopup="dialog" aria-expanded={sortOpen}>
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <line x1="2" y1="4" x2="12" y2="4"/><line x1="4" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="8" y2="10"/>
             </svg>

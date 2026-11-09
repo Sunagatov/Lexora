@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.features.words.enrich.dictionary_client import fetch_dictionary
 from app.features.words.enrich.gemini_client import fetch_gemini
 from app.features.words.enrich.merge import merge_enrichment
+from app.features.words.enrich.openai_client import fetch_openai
 from app.features.words.enrich.schemas import EnrichRequest, EnrichResponse
 
 logger = logging.getLogger(__name__)
@@ -23,10 +24,13 @@ async def enrich_word(payload: EnrichRequest) -> EnrichResponse:
         else fetch_gemini(payload.term, payload.language, payload.translation_language),
     )
 
+    if ai_result is None:
+        ai_result = await fetch_openai(payload.term, payload.language, payload.translation_language)
+
     if dict_result is None and ai_result is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Enrichment sources unavailable",
+            detail="Enrichment is unavailable. Check the configured AI provider or enter the word manually.",
         )
 
     result = merge_enrichment(payload.term, dict_result, ai_result)

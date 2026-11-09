@@ -110,6 +110,16 @@ function renderHarness(queryClient: QueryClient, entry: {pathname: string; state
 }
 
 describe('useWordPageState cache invalidation', () => {
+  it('updates the word inside the cached Daily Mix after a successful editor save', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
+    client.setQueryData(queryKeys.smartReview, {id: 1, items: [{id: 101, word_id: 10, word: makeWord()}]})
+    vi.mocked(wordsApi.updateWord).mockResolvedValueOnce(makeWord({knowledge_level: 4}))
+    renderHarness(client, {pathname: '/words/10/edit'})
+    await waitFor(() => expect(screen.getByTestId('draft-state').textContent).toBe('ready'))
+    fireEvent.change(screen.getByLabelText('Definition'), {target: {value: 'changed'}})
+    fireEvent.click(screen.getByText('save'))
+    await waitFor(() => expect(client.getQueryData<{items: {word: Word}[]}>(queryKeys.smartReview)?.items[0].word.knowledge_level).toBe(4))
+  })
   beforeEach(() => {
     vi.mocked(topicsApi.fetchTopics).mockResolvedValue([
       makeTopic(1, 'alpha', 'Alpha'),

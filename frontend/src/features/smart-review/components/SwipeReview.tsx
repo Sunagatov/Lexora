@@ -111,9 +111,9 @@ export function SwipeReview({queue, onBackToList, onBusyChange}: {queue: StudyQu
                 <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
                 <EasyPronunciation word={item.word} />
               </div>
-              <div className="mix-translations" lang={item.word.translation_language ?? 'ru'}>
+              {preferences.translations && <div className="mix-translations" lang={item.word.translation_language ?? 'ru'}>
                 {item.word.translation_entries.length ? item.word.translation_entries.join(' · ') : 'No translation saved'}
-              </div>
+              </div>}
               {item.word.example_entries[0] && <div className="mix-card-example">
                 <span>Example</span><p>{item.word.example_entries[0]}</p>
               </div>}

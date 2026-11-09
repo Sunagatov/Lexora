@@ -4,6 +4,7 @@ import type {Word, WordKnowledgeLevel, WorkbookPreview, WorkbookImportResult, En
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
 import {languagePreferences} from '@/features/languages/api'
+import {enqueueWordWrite} from './wordWriteQueue'
 
 function translationPayload<T extends object>(payload: T) {
   return ['translation_entries', 'definition', 'notes'].some(key => key in payload) ? {...payload, translation_language: languagePreferences().translationLanguage} : payload
@@ -26,10 +27,15 @@ export const fetchWords = async (params: {topicId?: number; search?: string} = {
 }
 
 export const fetchWord                = (id: number)                                                    => request<Word>(`/api/words/${id}`)
-export const updateWord               = (id: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>>) => request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify(translationPayload(payload))})
+export const updateWord = (id: number, payload: Partial<Omit<Word, 'id' | 'created_at' | 'updated_at'>> & {progress_source?: string}) => {
+  const body = JSON.stringify(translationPayload(payload))
+  // Capture language/CSRF context before waiting behind an earlier write.
+  const headers = buildRequestHeaders()
+  return enqueueWordWrite(id, () => request<Word>(`/api/words/${id}`, {method: 'PUT', body, headers}))
+}
 export const deleteWord               = (id: number)                                                    => request<void>(`/api/words/${id}`, {method: 'DELETE'})
 export const updateWordKnowledgeLevel = (id: number, level: WordKnowledgeLevel, source = DEFAULT_WORD_PROGRESS_SOURCE) =>
-  request<Word>(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify({knowledge_level: level, progress_source: source})})
+  updateWord(id, {knowledge_level: level, progress_source: source})
 export const quickAddWord = (payload: {term: string; topic_ids: number[]; translation_entries: string[]; knowledge_level: number; [key: string]: unknown}) =>
   request<Word>('/api/words', {method: 'POST', body: JSON.stringify({...translationPayload(payload), language: languagePreferences().language})})
 export const enrichWord = (term: string) =>

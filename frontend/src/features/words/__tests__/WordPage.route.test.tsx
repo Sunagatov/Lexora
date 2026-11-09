@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react'
-import {MemoryRouter, Route, Routes} from 'react-router-dom'
+import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import {WordPage} from '@/features/words/routes/WordPage'
@@ -35,12 +35,10 @@ function renderWordRoute(path: string) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[path]}>
-        <Routes>
-          <Route path="/words/:wordId" element={<WordPage />} />
-          <Route path="/words/:wordId/edit" element={<WordPage />} />
-        </Routes>
-      </MemoryRouter>
+      <RouterProvider router={createMemoryRouter([
+        {path: '/words/:wordId', element: <WordPage />},
+        {path: '/words/:wordId/edit', element: <WordPage />},
+      ], {initialEntries: [path]})} />
     </QueryClientProvider>,
   )
 }

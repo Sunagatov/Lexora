@@ -88,9 +88,9 @@ class Settings(BaseSettings):
         "https://lexora.zuf.uk",
     ]
 
-    # AI / topic suggestion — uses GitHub Models (OpenAI-compatible)
+    # AI / topic suggestion and optional word-enrichment fallback
     openai_api_key: str = ""
-    openai_base_url: str = "https://models.inference.ai.azure.com"
+    openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = "gpt-4o-mini"
 
     # AI / word enrichment — uses Google Gemini free tier

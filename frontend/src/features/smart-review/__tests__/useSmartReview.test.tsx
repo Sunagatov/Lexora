@@ -16,6 +16,27 @@ function wrapper(queryClient: QueryClient) {
 }
 
 describe('useSmartReview cache recovery', () => {
+  it('retains failed completions while another word succeeds and retries every remaining item', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
+    const q = {id: 1, generated_at: '', expires_at: '', is_active: true, total_count: 2, completed_count: 0, items: []} as StudyQueue
+    client.setQueryData(queryKeys.smartReview, q)
+    vi.mocked(smartReviewApi.completeSmartReviewItem)
+      .mockRejectedValueOnce(new Error('completion A failed'))
+      .mockResolvedValueOnce({...q, completed_count: 1})
+      .mockResolvedValueOnce({...q, completed_count: 2})
+    const {result} = renderHook(() => useSmartReview(false), {wrapper: wrapper(client)})
+    await act(async () => {result.current.completeItem(101)})
+    await waitFor(() => expect(result.current.actionError).toContain('1 word'))
+    await act(async () => {result.current.completeItem(102)})
+    await waitFor(() => expect(smartReviewApi.completeSmartReviewItem).toHaveBeenCalledTimes(2))
+    expect(result.current.actionError).toContain('1 word')
+    await act(async () => {result.current.retryAction()})
+    await waitFor(() => {
+      const calls = vi.mocked(smartReviewApi.completeSmartReviewItem).mock.calls
+      expect(calls[calls.length - 1]?.[0]).toBe(101)
+    })
+    await waitFor(() => expect(result.current.actionError).toBeNull())
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(smartReviewApi.fetchSmartReview).mockResolvedValue({

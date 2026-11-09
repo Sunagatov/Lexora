@@ -40,11 +40,17 @@ export function loadSwipeSession(queue: StudyQueue, language: string): SwipeSess
       || new Set(stored.order).size !== stored.order.length || !Number.isInteger(stored.cursor)
       || stored.cursor < 0 || stored.cursor > stored.order.length) return initial
     for (const [id, decision] of Object.entries(stored.decisions ?? {})) {
-      if (ids.includes(Number(id)) && [3, 4, 5, 'skip', 'reviewed'].includes(decision as SwipeDecision)) decisions[Number(id)] = decision as SwipeDecision
+      if (ids.includes(Number(id)) && !queue.items.find(item => item.id === Number(id))?.is_completed
+        && [3, 4, 5, 'skip', 'reviewed'].includes(decision as SwipeDecision)) decisions[Number(id)] = decision as SwipeDecision
     }
     const pending = stored.pending && stored.pending.id === stored.order[stored.cursor] && [3, 4, 5].includes(stored.pending.level)
+      && !queue.items.find(item => item.id === stored.pending.id)?.is_completed
       ? {id: stored.pending.id as number, level: stored.pending.level as SwipeRating} : null
-    return {...initial, order: stored.order, cursor: stored.cursor, decisions, pending}
+    let cursor = stored.cursor
+    if (stored.pending && !pending) {
+      while (cursor < stored.order.length && queue.items.find(item => item.id === stored.order[cursor])?.is_completed) cursor++
+    }
+    return {...initial, order: stored.order, cursor, decisions, pending}
   } catch { return initial }
 }
 

@@ -94,6 +94,19 @@ Trash, and Daily Word Mix distinguish request failures from missing or empty dat
 and offer Retry. Review completion can be retried without saving the word level
 again, and late completion responses cannot replace a newer mix or reduce progress.
 The word editor locks fields during saves and waits for enrichment before saving.
+Word edits and knowledge-level writes share a per-word request queue. List and
+Daily Mix caches receive saved words, and failed completion acknowledgements stay
+retryable independently of later successes. A stored Swipe acknowledgement is
+cleared when the refreshed server queue already marks that item complete.
+
+Unsaved word edits block route navigation until kept or explicitly discarded;
+successful saves and explicit Cancel navigation bypass that guard. Detail panels
+preserve the originating filtered word sequence when opening the full editor.
+
+Enrichment tries Gemini first, then the configured OpenAI-compatible provider.
+The fallback uses the same multilingual JSON parser and does not save generated
+content. A genuine provider credential is required; retired GitHub Models hosts
+are rejected. Production configuration and credential recovery belong to Vault.
 The topic editor is a native modal outside the sidebar, with scrollable fields and
 visible actions on short screens. Topic refetches preserve its unsaved draft.
 Topic row actions are available on keyboard focus and touch screens as well as hover.

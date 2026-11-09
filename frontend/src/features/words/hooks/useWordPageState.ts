@@ -32,6 +32,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [enrichPending, setEnrichPending] = useState(false)
   const enrichmentVersion = useRef(0)
+  const navigationAllowed = useRef(false)
 
   const numericWordId = Number(wordId)
   const isValidWordId = Number.isInteger(numericWordId) && (numericWordId > 0 || (numericWordId < 0 && offlineStatus().saved))
@@ -69,6 +70,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<Word>) => updateWord(numericWordId, payload),
     onSuccess: (updated) => {
+      navigationAllowed.current = true
       replaceWordInLists(queryClient, updated)
       invalidateWordDependencies(queryClient)
       options.onSaveSuccess?.(updated, {
@@ -95,6 +97,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   const deleteMutation = useMutation({
     mutationFn: () => deleteWord(numericWordId),
     onSuccess: () => {
+      navigationAllowed.current = true
       setConfirming(false)
       removeWordFromLists(queryClient, numericWordId)
       invalidateWordDependencies(queryClient, [queryKeys.trashWords])
@@ -127,6 +130,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
       setDraft(null)
       draftWordIdRef.current = null
       initialDraft.current = null
+      navigationAllowed.current = false
       setSaveError(null)
       return
     }
@@ -135,6 +139,7 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
 
     if (draftWordIdRef.current !== wordIdForEffect) {
       const initial = toEditState(word)
+      navigationAllowed.current = false
       initialDraft.current = initial
       setDraft(initial)
       draftWordIdRef.current = wordIdForEffect
@@ -236,6 +241,11 @@ export function useWordPageState(options: UseWordPageStateOptions = {}) {
   }
 
   return {
+    isDirty: editing && !!draft && !!initialDraft.current && !navigationAllowed.current
+      && Object.keys(buildChangedSavePayload(draft, initialDraft.current)).length > 0,
+    shouldBlockNavigation: () => editing && !!draft && !!initialDraft.current && !navigationAllowed.current
+      && Object.keys(buildChangedSavePayload(draft, initialDraft.current)).length > 0,
+    allowNavigation: () => {navigationAllowed.current = true},
     wordId: numericWordId,
     isInvalidWordId: !isValidWordId,
     editing,

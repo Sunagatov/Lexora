@@ -701,6 +701,12 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 }
 
 .stats-topic-row {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  border: 0;
   display: grid;
   grid-template-columns: 1fr 56px 56px 80px 130px;
   align-items: center;

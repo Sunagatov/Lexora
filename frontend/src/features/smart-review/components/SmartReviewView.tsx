@@ -177,6 +177,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
           <WordDetailPanel
             wordId={panelWordId}
             words={filter.pageWords}
+            wordList={{ids: filter.filteredWords.map(word => word.id), offset: 0, total: filter.filteredWords.length}}
             onClose={() => setPanelWordId(null)}
             onNavigate={setPanelWordId}
           />

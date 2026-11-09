@@ -7,6 +7,11 @@ import type {Word} from '@/features/words/types/wordTypes'
 import {loadSwipeSession, saveSwipeSession, swipeAction, swipeStorageKey} from '../model/swipeSession'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useSmartReview} from '../hooks/useSmartReview'
+const visibility = vi.hoisted(() => ({translations: true}))
+vi.mock('@/features/preferences/api', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/features/preferences/api')>()
+  return {...actual, usePreferences: () => ({...actual.preferencesSnapshot().values, translations: visibility.translations})}
+})
 
 vi.mock('@/features/words/hooks/useWordUpdate')
 vi.mock('../hooks/useSmartReview')
@@ -24,6 +29,7 @@ function open(q = queue()) {
 }
 
 beforeEach(() => {
+  visibility.translations = true
   vi.clearAllMocks()
   update.mockResolvedValue({})
   complete.mockResolvedValue({})
@@ -39,6 +45,29 @@ describe('four-way gestures', () => {
 })
 
 describe('swipe review', () => {
+  it('hides answer translations when Translations on cards is off', () => {
+    visibility.translations = false
+    open()
+    expect(screen.queryByText('стойкий · устойчивый')).toBeNull()
+  })
+  it('resumes past an acknowledged recovery item without another rating or completion', () => {
+    const q = queue()
+    const stored = loadSwipeSession(q, 'en')
+    saveSwipeSession({...stored, pending: {id: 101, level: 4}, decisions: {101: 'skip'}}, 'en')
+    q.items[0].is_completed = true
+    q.items[0].word.knowledge_level = 3
+    q.completed_count = 1
+    const restored = loadSwipeSession(q, 'en')
+    expect(restored.pending).toBeNull()
+    expect(restored.cursor).toBe(1)
+    expect(restored.decisions[101]).toBe(3)
+    open(q)
+    expect(screen.getByRole('heading', {name: 'adapt'})).toBeTruthy()
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect((screen.getByRole('button', {name: 'Mark Strong'}) as HTMLButtonElement).disabled).toBe(false)
+    expect(update).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
+  })
   it('shows translations immediately, provides four actions and has no Undo', () => {
     open()
     expect(screen.getByRole('heading', {name: 'resilient'})).toBeTruthy()
