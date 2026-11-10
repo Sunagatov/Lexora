@@ -174,24 +174,6 @@ export function WordCollectionToolbar({
       </div>}
 
       <div className={`toolbar-actions-row${searchFocused ? ' is-searching' : ''}`}>
-        <div className="toolbar-inline-search" onBlur={event => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setSearchFocused(false)
-        }}>
-          <SearchIcon />
-          <input ref={searchRef} type="search" aria-label="Search words"
-            placeholder="Search words…"
-            onFocus={() => { setSearchFocused(true); setSortOpen(false) }}
-            onKeyDown={event => {
-              if (event.key === 'Escape') { event.stopPropagation(); setSearchFocused(false); searchRef.current?.blur() }
-            }}
-            value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
-          {wordSearch !== '' && <button type="button" className="toolbar-search-clear"
-            onClick={() => { setWordSearch(''); searchRef.current?.focus({preventScroll: true}) }}
-            aria-label="Clear search"><CloseIcon /></button>}
-          {searchFocused && <button type="button" className="toolbar-search-done" onClick={() => {
-            setSearchFocused(false); searchRef.current?.focus({preventScroll: true}); searchRef.current?.blur()
-          }}>Done</button>}
-        </div>
         <div ref={sortDropdownRef} inert={mobile && searchFocused} className={`dropdown toolbar-sort-dropdown ${sortOpen ? 'dropdown-open' : ''}`}>
           <button type="button" className="dropdown-trigger word-list-control toolbar-sort-trigger" onClick={() => setSortOpen(open => !open)}
             aria-haspopup="listbox" aria-expanded={sortOpen} aria-label="Sort words" title={sortLabel}>
@@ -217,6 +199,24 @@ export function WordCollectionToolbar({
             </svg>
             Filters{activeFilterCount + Number(searchActive) > 0 && <span className="toolbar-filter-badge">{activeFilterCount + Number(searchActive)}</span>}
           </button>
+        </div>
+        <div className="toolbar-inline-search" onBlur={event => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setSearchFocused(false)
+        }}>
+          <SearchIcon />
+          <input ref={searchRef} type="search" aria-label="Search words"
+            placeholder="Search words…"
+            onFocus={() => { setSearchFocused(true); setSortOpen(false) }}
+            onKeyDown={event => {
+              if (event.key === 'Escape') { event.stopPropagation(); setSearchFocused(false); searchRef.current?.blur() }
+            }}
+            value={wordSearch} onChange={event => setWordSearch(event.target.value)} />
+          {wordSearch !== '' && <button type="button" className="toolbar-search-clear"
+            onClick={() => { setWordSearch(''); searchRef.current?.focus({preventScroll: true}) }}
+            aria-label="Clear search"><CloseIcon /></button>}
+          {searchFocused && <button type="button" className="toolbar-search-done" onClick={() => {
+            setSearchFocused(false); searchRef.current?.focus({preventScroll: true}); searchRef.current?.blur()
+          }}>Done</button>}
         </div>
       </div>
 

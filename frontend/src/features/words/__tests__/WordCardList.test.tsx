@@ -64,7 +64,12 @@ describe('WordCardList', () => {
       {path: '/words/1/edit', element: <div>Editor</div>},
     ], {initialEntries: ['/?search=hola&page=2']})
     render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
-    fireEvent.click(screen.getByRole('button', {name: 'Actions for hola'}))
+    const actions = screen.getByRole('button', {name: 'Actions for hola'})
+    fireEvent.click(actions)
+    fireEvent.click(screen.getByRole('button', {name: 'Close word actions'}))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(document.activeElement).toBe(actions)
+    fireEvent.click(actions)
     fireEvent.click(screen.getByRole('link', {name: 'Edit word & topics'}))
     expect(router.state.location.pathname).toBe('/words/1/edit')
     expect(router.state.location.state.returnTo).toMatchObject({pathname: '/', search: '?search=hola&page=2'})

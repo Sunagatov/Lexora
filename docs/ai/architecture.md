@@ -70,10 +70,13 @@ Confirmed routes:
 
 Word lists share a compact toolbar on desktop and mobile: collection heading,
 collection knowledge progress, then sorting, filtering, and search controls. Search
-sits immediately after Filters and opens its input below the control row. The
+sits immediately after Sort and Filters as a permanent inline field; on mobile,
+focusing it expands the field across the control row. The
 heading distinguishes All words, the selected topic, and Daily Word Mix, with a
 matching/collection count when filtered. Progress always covers the collection,
 independent of filters; exact knowledge counts expand from the percentage legend.
+The four mobile legend labels and two-decimal percentages share one row; below
+360px, decorative dots are hidden to preserve space for the text.
 Filter chips, reset controls, and detailed sorting appear only in the filter panel.
 Word lists open full details through the word term or row; desktop rows have no
 separate expand button or inline expanded-details section.
@@ -91,8 +94,10 @@ the heading; completion continues to be tracked without another progress bar.
 The shared Add word action is available on the homepage, bulk vocabulary, and
 topic lists. Its modal preserves drafts after failed saves and prevents duplicate
 submissions. Knowledge pickers render outside list containers so sticky controls
-cannot cover their options; positioning stays within the viewport. Word details,
-Trash, and Daily Word Mix distinguish request failures from missing or empty data
+cannot cover their options; positioning stays within the viewport.
+The word actions popup uses a top-right X to close, including its Trash
+confirmation step; dismissal stays disabled while a deletion is pending.
+Word details, Trash, and Daily Word Mix distinguish request failures from missing or empty data
 and offer Retry. Review completion can be retried without saving the word level
 again, and late completion responses cannot replace a newer mix or reduce progress.
 The word editor locks fields during saves and waits for enrichment before saving.

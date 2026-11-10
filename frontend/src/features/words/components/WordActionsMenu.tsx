@@ -55,7 +55,11 @@ function WordActionsDialog({word, wordList, fromTopicSlug, anchor, onClose}: Pro
       onCancel={event => { event.preventDefault(); event.stopPropagation(); close() }}
       onClick={event => { event.stopPropagation(); if (event.target === event.currentTarget) close() }}>
       <div className="word-actions-content">
-        <h2>{confirming ? 'Move to Trash?' : word.term}</h2>
+        <div className="word-actions-heading">
+          <h2>{confirming ? 'Move to Trash?' : word.term}</h2>
+          <button type="button" className="word-actions-close" aria-label="Close word actions"
+            disabled={deletion.isPending} onClick={close}>×</button>
+        </div>
         {confirming ? <>
           <p>“{word.term}” will be moved to Trash and permanently deleted after {config.data?.trash_retention_days ?? 30} days.</p>
           {deletion.isError && <p role="alert">Could not move this word to Trash. Please try again.</p>}
@@ -69,7 +73,6 @@ function WordActionsDialog({word, wordList, fromTopicSlug, anchor, onClose}: Pro
           }}>Copy word</button>
           <button type="button" className="word-action-danger" onClick={() => setConfirming(true)}>Move to Trash</button>
           {message && <p role="status">{message}</p>}
-          <button type="button" onClick={close}>Close</button>
         </>}
       </div>
     </dialog>, document.body)

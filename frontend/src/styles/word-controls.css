@@ -19,14 +19,14 @@
 .knowledge-picker-heading > div { min-width: 0; flex: 1; }
 .knowledge-picker h2, .word-actions-dialog h2 { margin: 0; font-size: 1.05rem; line-height: 1.4; overflow-wrap: anywhere; }
 .knowledge-picker p, .word-actions-dialog p { margin: 4px 0 0; color: var(--text-2); font-size: 0.85rem; line-height: 1.5; overflow-wrap: anywhere; }
-.knowledge-picker-close, .word-actions-trigger {
+.knowledge-picker-close, .word-actions-close, .word-actions-trigger {
   display: inline-flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; flex: none;
   border: 0; border-radius: 8px; padding: 0;
   background: transparent; color: var(--text-2);
 }
-.knowledge-picker-close { font-size: 24px; }
-.word-actions-trigger:hover, .knowledge-picker-close:hover { background: var(--accent-light); color: var(--accent); transform: none; }
+.knowledge-picker-close, .word-actions-close { font-size: 24px; }
+.word-actions-trigger:hover, .knowledge-picker-close:hover, .word-actions-close:hover { background: var(--accent-light); color: var(--accent); transform: none; }
 .knowledge-picker-options { display: flex; flex-direction: column; gap: 8px; }
 .knowledge-picker-option {
   display: flex; align-items: center; gap: 12px;
@@ -50,7 +50,8 @@
 [aria-pressed="true"] > .knowledge-picker-check { color: white; background: var(--accent); border-color: var(--accent); }
 .word-actions-dialog { margin: auto; }
 .word-actions-content { display: flex; flex-direction: column; gap: 8px; }
-.word-actions-content h2 { margin-bottom: 4px; }
+.word-actions-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.word-actions-heading h2 { flex: 1; min-width: 0; }
 .word-actions-content > button, .word-actions-content > a {
   display: block; padding: 12px; border: 1px solid var(--border); border-radius: 9px;
   background: transparent; color: var(--text); text-align: left; font: inherit; font-size: 0.9rem; text-decoration: none;
