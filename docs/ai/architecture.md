@@ -75,6 +75,8 @@ heading distinguishes All words, the selected topic, and Daily Word Mix, with a
 matching/collection count when filtered. Progress always covers the collection,
 independent of filters; exact knowledge counts expand from the percentage legend.
 Filter chips, reset controls, and detailed sorting appear only in the filter panel.
+Word lists open full details through the word term or row; desktop rows have no
+separate expand button or inline expanded-details section.
 On mobile, Filters opens a native modal bottom sheet with independent scrolling
 and a pinned Done button. Opening/closing it does not move the word list.
 Knowledge saves update badges and collection progress while retaining the current

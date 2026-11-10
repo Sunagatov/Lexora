@@ -165,44 +165,6 @@
   gap: 6px;
 }
 
-.word-table-expand-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: none;
-  cursor: pointer;
-  color: var(--text-3);
-  flex-shrink: 0;
-}
-
-.word-table-expand-btn:hover {
-  background: var(--surface-2, #f1f5f9);
-  color: var(--text);
-}
-
-.word-row-detail td {
-  padding: 0;
-}
-
-/* Slide-down animation for the expand body */
-.word-row-expand-body {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.26s ease-out;
-}
-
-.word-row-expand-body.is-open {
-  max-height: 400px;
-}
-
-.word-row-expand-content {
-  padding: 0 16px 12px;
-}
-
 .word-term {
   display: block;
   font-size: 1.0rem;
@@ -412,28 +374,6 @@
 .word-card-expand-btn:hover {
   color: var(--accent);
   background: var(--accent-light);
-}
-
-.word-extra {
-  font-size: 0.8rem;
-  color: var(--text-3);
-  margin-top: 3px;
-  line-height: 1.4;
-}
-
-.word-extra strong {
-  color: var(--text-2);
-  font-weight: 600;
-}
-
-.word-extra-examples {
-  margin: 4px 0 0 1.2em;
-  padding: 0;
-  list-style: decimal;
-}
-
-.word-extra-examples li {
-  margin-bottom: 2px;
 }
 
 /* Level badge */

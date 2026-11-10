@@ -1,7 +1,7 @@
 import {languageProfile} from '@/features/languages/api'
 import {FavoriteButton} from './FavoriteButton'
 import {usePreferences} from '@/features/preferences/api'
-import {Fragment, useLayoutEffect, useRef, useState} from 'react'
+import {useLayoutEffect, useRef, useState} from 'react'
 import {Link} from 'react-router-dom'
 import type {Word, WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {routes} from '@/app/routes'
@@ -10,7 +10,6 @@ import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {WordSummaryContent} from '@/features/words/components/WordSummaryContent'
 import {EasyPronunciation} from './EasyPronunciation'
 import {pronunciationText, usePronunciationMode} from '@/features/words/model/pronunciation'
-import {smartPreview} from '@/features/words/model/wordPresenter'
 import {useWordListNavigation, type WordListContext} from '@/features/words/hooks/useWordListNavigation'
 import {WordActionsMenu} from './WordActionsMenu'
 
@@ -35,7 +34,6 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
   const separatePronunciation = hasPronunciation && !compact
   const [openId,     setOpenId]     = useState<number | null>(null)
   const [levelAnchor, setLevelAnchor] = useState<HTMLElement | null>(null)
-  const [expandedId, setExpandedId] = useState<number | null>(null)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
   useLayoutEffect(() => {
@@ -67,20 +65,13 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
           <th scope="col" className="word-cell-knowledge">Knowledge</th>
         </tr></thead>
         <tbody>
-          {words.map((word, idx) => {
-            const isLast     = idx === words.length - 1
+          {words.map((word) => {
             const lc         = levelClass(word.knowledge_level)
             const isOpen     = openId === word.id
-            const isExpanded = expandedId === word.id
-
-            const showExample = word.example_entries.length > 0
-            const showNotes   = word.notes   && smartPreview(word)?.label !== 'Notes'
-            const showPattern = word.pattern && smartPreview(word)?.label !== 'Pattern' && smartPreview(word)?.label !== 'Forms'
-            const hasExpanded = showExample || showNotes || showPattern
 
             return (
-              <Fragment key={word.id}>
                 <tr
+                  key={word.id}
                   className={`word-row ${lc}${selectedWordId === word.id ? ' word-row-panel-active' : ''}${onWordSelect ? ' word-row-clickable' : ''}`}
                   onClick={onWordSelect ? () => onWordSelect(word.id) : undefined}
                 >
@@ -132,53 +123,11 @@ export function WordTable({words, wordList, pendingWordId, pendingWordIds, fromT
                           onSelect={(l) => { onUpdate(word.id, l); setOpenId(null) }}
                           onClose={() => setOpenId(null)} />
                       )}
-                      {hasExpanded && (
-                        <button
-                          type="button"
-                          className="word-table-expand-btn"
-                          onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : word.id) }}
-                          aria-expanded={isExpanded}
-                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${word.term}`}
-                        >
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-                            style={{transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s'}}>
-                            <polyline points="2,3.5 5,6.5 8,3.5" />
-                          </svg>
-                        </button>
-                      )}
                       <FavoriteButton word={word} />
                       <WordActionsMenu word={word} wordList={wordList} fromTopicSlug={fromTopicSlug} disabled={pendingWordIds?.has(word.id) || pendingWordId === word.id} />
                     </div>
                   </td>
                 </tr>
-                {hasExpanded && (
-                  <tr className={`word-row-detail ${lc}`}>
-                    <td colSpan={separatePronunciation ? 4 : 3} style={{
-                      padding: 0,
-                      borderBottom: isExpanded && !isLast ? '1px solid var(--border)' : 'none',
-                    }}>
-                      <div className={`word-row-expand-body${isExpanded ? ' is-open' : ''}`} aria-hidden={!isExpanded}>
-                        <div className="word-row-expand-content">
-                          {showExample && (
-                            <div className="word-extra">
-                              <strong>Example:</strong>
-                              {word.example_entries.length > 1 ? (
-                                <ol className="word-extra-examples">
-                                  {word.example_entries.map((e, i) => <li key={i}>{e}</li>)}
-                                </ol>
-                              ) : (
-                                <span> {word.example_entries[0]}</span>
-                              )}
-                            </div>
-                          )}
-                          {showNotes   && <div className="word-extra"><strong>Notes:</strong> {word.notes}</div>}
-                          {showPattern && <div className="word-extra"><strong>Pattern:</strong> {word.pattern}</div>}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
             )
           })}
         </tbody>
