@@ -56,6 +56,19 @@ scrolling, momentum and pinch zoom remain available without a blocking touchmove
 handler. Mobile browser checks should cover both directions, list boundaries,
 short/empty lists, and starting a scroll on a word's text or action buttons.
 
+The navigation drawer locks each touch gesture to its initial direction: a
+vertical scroll cannot later dismiss it. Deliberate left drags follow the finger
+without transition lag; short/diagonal drags, text fields, popup dialogs and
+multi-touch gestures do not close it. Long confirmation dialogs scroll within
+the viewport, with wrapped actions on narrow screens. Check drawers, nested
+topic pickers, filter sheets, word editing and account screens using native
+touch input, including short viewports and long topic names.
+On mobile, the word editor scrolls its heading and form together so a short
+viewport does not squeeze the form into a narrow strip. The Sort menu is capped
+to the visible space below its trigger and adapts to viewport/keyboard resizing.
+Export topic choices use their own scrollable body inside the fieldset, so a
+drag in a gap between rows scrolls the choices rather than the account page.
+
 Interrupted drags are discarded when a card becomes disabled, and mouse drags
 stop if the primary button is no longer held. Unlocking the card requires a new
 gesture rather than resuming the interrupted one.

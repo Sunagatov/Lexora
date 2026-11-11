@@ -266,6 +266,9 @@
   right: auto;
 }
 
+/* Lower options must remain tappable above the fixed mobile pagination. */
+.sticky-controls:has(.toolbar-sort-menu) { z-index: 24; }
+
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);

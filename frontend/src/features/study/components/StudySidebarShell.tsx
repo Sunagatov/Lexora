@@ -5,6 +5,7 @@ import {useIsMobile} from '@/shared/hooks/useIsMobile'
 type TopicSidebarProps = ComponentProps<typeof TopicSidebar>
 
 const COLLAPSED_WIDTH = 64
+type DrawerGesture = {id: number; x: number; y: number; direction: 'pending' | 'dismiss'; offset: number}
 
 type Props = {
   overlayOnly?: boolean
@@ -29,8 +30,7 @@ export function StudySidebarShell({
 }: Props) {
   const effectiveWidth = sidebarCollapsed ? COLLAPSED_WIDTH : sidebarWidth
   const desktopSidebarStyle = {'--sidebar-w': `${effectiveWidth}px`} as CSSProperties
-  const touchStartXRef = useRef<number | null>(null)
-  const touchStartYRef = useRef<number | null>(null)
+  const gestureRef = useRef<DrawerGesture | null>(null)
   const [swipeOffset, setSwipeOffset] = useState(0)
   const drawerRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
@@ -47,37 +47,44 @@ export function StudySidebarShell({
   }, [drawerOpen, isMobile, overlayOnly])
 
   function resetSwipe() {
-    touchStartXRef.current = null
-    touchStartYRef.current = null
+    gestureRef.current = null
     setSwipeOffset(0)
   }
 
   function handleDrawerTouchStart(event: TouchEvent<HTMLDivElement>) {
-    if (!drawerOpen) return
+    resetSwipe()
+    const target = event.target
+    // React portals bubble through the drawer even though their dialogs are
+    // outside it. Their gestures must never dismiss the navigation behind them.
+    if (!drawerOpen || event.touches.length !== 1 || !(target instanceof Element) ||
+      !event.currentTarget.contains(target) || target.closest('input, textarea, select, [contenteditable="true"], [data-no-swipe]')) return
     const touch = event.touches[0]
-    touchStartXRef.current = touch.clientX
-    touchStartYRef.current = touch.clientY
+    gestureRef.current = {id: touch.identifier, x: touch.clientX, y: touch.clientY, direction: 'pending', offset: 0}
   }
 
   function handleDrawerTouchMove(event: TouchEvent<HTMLDivElement>) {
-    if (!drawerOpen || touchStartXRef.current === null || touchStartYRef.current === null) return
-    const touch = event.touches[0]
-    const deltaX = touch.clientX - touchStartXRef.current
-    const deltaY = touch.clientY - touchStartYRef.current
+    if (!drawerOpen || event.touches.length !== 1) { resetSwipe(); return }
+    const gesture = gestureRef.current
+    const touch = Array.from(event.touches).find(touch => touch.identifier === gesture?.id)
+    if (!gesture || !touch) return
+    const deltaX = touch.clientX - gesture.x
+    const deltaY = touch.clientY - gesture.y
 
-    if (Math.abs(deltaY) > Math.abs(deltaX) || deltaX > 0) {
-      setSwipeOffset(0)
-      return
+    if (gesture.direction === 'pending') {
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 10) return
+      // Once a gesture starts scrolling, it cannot turn into a close gesture.
+      if (deltaX >= 0 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) { resetSwipe(); return }
+      gesture.direction = 'dismiss'
     }
-
-    setSwipeOffset(Math.max(deltaX, -140))
+    gesture.offset = Math.max(-140, Math.min(deltaX, 0))
+    setSwipeOffset(gesture.offset)
   }
 
-  function handleDrawerTouchEnd() {
-    if (swipeOffset <= -64) {
-      setDrawerOpen(false)
-    }
+  function handleDrawerTouchEnd(event: TouchEvent<HTMLDivElement>) {
+    const gesture = gestureRef.current
+    const dismiss = drawerOpen && event.touches.length === 0 && gesture?.direction === 'dismiss' && gesture.offset <= -64
     resetSwipe()
+    if (dismiss) setDrawerOpen(false)
   }
 
   return (
@@ -89,6 +96,7 @@ export function StudySidebarShell({
         inert={!drawerOpen}
         aria-hidden={!drawerOpen}
         className={`mobile-drawer ${overlayOnly ? 'account-topic-drawer' : ''} ${drawerOpen ? 'open' : ''}`}
+        data-swiping={swipeOffset !== 0 || undefined}
         onKeyDown={event => {
           if (event.key === 'Escape' && !event.defaultPrevented) setDrawerOpen(false)
         }}

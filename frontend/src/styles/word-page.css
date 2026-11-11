@@ -31,7 +31,7 @@
   font-size: 0.9rem;
 }
 
-/* Desktop keeps the hero above the scrolling details; mobile reading scrolls both. */
+/* Desktop keeps the hero above the scrolling details; mobile scrolls both. */
 .word-page-hero-wrap {
   flex-shrink: 0;
   padding: 14px 28px 0;
@@ -539,14 +539,11 @@
   .word-page {
     min-height: 0;
     padding-bottom: calc(84px + env(safe-area-inset-bottom));
-  }
-
-  .word-page-reading {
     overflow-y: auto;
     overscroll-behavior-y: contain;
   }
 
-  .word-page-reading .word-page-inner {
+  .word-page .word-page-inner {
     flex: none;
     overflow: visible;
   }

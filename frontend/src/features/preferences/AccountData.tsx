@@ -123,36 +123,38 @@ export function AccountData() {
         {scope === 'topics' && (
           <fieldset className="account-topic-checks">
             <legend>Topics</legend>
-            {topicQuery.isLoading && <p>Loading topics…</p>}
-            {topicQuery.isError && (
-              <p role="alert">
-                Could not load topics.{' '}
-                <button
-                  onClick={() => {
-                    void topicQuery.refetch()
-                  }}
-                >
-                  Retry
-                </button>
-              </p>
-            )}
-            {topicQuery.data?.map((topic) => (
-              <label key={topic.id}>
-                <input
-                  type="checkbox"
-                  checked={topicIds.includes(topic.id)}
-                  onChange={(event) =>
-                    setTopicIds((current) =>
-                      event.target.checked
-                        ? [...current, topic.id]
-                        : current.filter((id) => id !== topic.id),
-                    )
-                  }
-                />
-                {languages.length > 1 ? `${topic.language.toUpperCase()} · ` : ''}
-                {topicLabel(topic)}
-              </label>
-            ))}
+            <div className="account-topic-options">
+              {topicQuery.isLoading && <p>Loading topics…</p>}
+              {topicQuery.isError && (
+                <p role="alert">
+                  Could not load topics.{' '}
+                  <button
+                    onClick={() => {
+                      void topicQuery.refetch()
+                    }}
+                  >
+                    Retry
+                  </button>
+                </p>
+              )}
+              {topicQuery.data?.map((topic) => (
+                <label key={topic.id}>
+                  <input
+                    type="checkbox"
+                    checked={topicIds.includes(topic.id)}
+                    onChange={(event) =>
+                      setTopicIds((current) =>
+                        event.target.checked
+                          ? [...current, topic.id]
+                          : current.filter((id) => id !== topic.id),
+                      )
+                    }
+                  />
+                  {languages.length > 1 ? `${topic.language.toUpperCase()} · ` : ''}
+                  {topicLabel(topic)}
+                </label>
+              ))}
+            </div>
           </fieldset>
         )}
         <div className="account-actions">

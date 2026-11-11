@@ -67,7 +67,10 @@
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   box-shadow: 24px 0 60px rgba(2, 6, 23, 0.34);
+  touch-action: pan-y pinch-zoom;
 }
+
+.mobile-drawer[data-swiping] { transition: none; }
 
 .mobile-drawer.open {
   transform: translateX(0);

@@ -16,6 +16,29 @@ function Toolbar() {
 }
 
 describe('permanent vocabulary search', () => {
+  it('keeps sorting inside the visible viewport as its height changes', () => {
+    const viewport = Object.assign(new EventTarget(), {height: 390, offsetTop: 0})
+    vi.stubGlobal('visualViewport', viewport)
+    const originalRect = HTMLElement.prototype.getBoundingClientRect
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      return this.matches('.toolbar-sort-menu') ? DOMRect.fromRect({y: 160}) : originalRect.call(this)
+    })
+    try {
+      render(<Toolbar />)
+      fireEvent.click(screen.getByRole('button', {name: 'Sort words'}))
+      const menu = screen.getByRole('listbox', {name: 'Sort options'})
+      expect(menu.style.maxHeight).toBe('222px')
+      act(() => {viewport.height = 250; viewport.dispatchEvent(new Event('resize'))})
+      expect(menu.style.maxHeight).toBe('82px')
+      act(() => {viewport.height = 844; viewport.dispatchEvent(new Event('resize'))})
+      expect(menu.style.maxHeight).toBe('300px')
+      fireEvent.click(screen.getByRole('option', {name: 'Oldest'}))
+      expect(screen.queryByRole('listbox', {name: 'Sort options'})).toBeNull()
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+
   it('shows search immediately without stealing focus or requiring a toggle', () => {
     render(<Toolbar />)
     const input = screen.getByRole('searchbox', {name: 'Search words'})

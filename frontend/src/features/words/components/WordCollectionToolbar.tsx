@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, type ReactNode} from 'react'
+import {useEffect, useLayoutEffect, useRef, useState, type ReactNode} from 'react'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
@@ -128,6 +128,26 @@ export function WordCollectionToolbar({
     }
     document.addEventListener('mousedown', onPointerDown)
     return () => document.removeEventListener('mousedown', onPointerDown)
+  }, [sortOpen])
+
+  useLayoutEffect(() => {
+    if (!sortOpen) return
+    const menu = sortDropdownRef.current?.querySelector<HTMLElement>('.toolbar-sort-menu')
+    if (!menu) return
+    const viewport = window.visualViewport
+    const fit = () => {
+      const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight
+      menu.style.maxHeight = `${Math.max(0, Math.min(300, bottom - menu.getBoundingClientRect().top - 8))}px`
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    viewport?.addEventListener('resize', fit)
+    viewport?.addEventListener('scroll', fit, {passive: true})
+    return () => {
+      window.removeEventListener('resize', fit)
+      viewport?.removeEventListener('resize', fit)
+      viewport?.removeEventListener('scroll', fit)
+    }
   }, [sortOpen])
 
   const showingLabel = pageStart > 0 ? `${pageStart}–${pageEnd}` : '0'

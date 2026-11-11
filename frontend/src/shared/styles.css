@@ -25,6 +25,15 @@
   gap: 12px;
 }
 
+/* Long confirmation text must remain reachable on short/narrow screens. */
+.modal-overlay > .modal {
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.modal-overlay > .modal > * { flex-shrink: 0; }
+.modal-overlay .modal-actions { flex-wrap: wrap; }
+
 :root[color-scheme="dark"] .modal-overlay {
   background: rgba(0, 0, 0, 0.5);
 }

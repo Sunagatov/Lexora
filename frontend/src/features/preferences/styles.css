@@ -347,8 +347,15 @@
   height: 16px;
 }
 .account-topic-checks {
+  display: block;
+}
+.account-topic-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   max-height: 250px;
   overflow: auto;
+  overscroll-behavior: contain;
 }
 .account-topic-checks legend {
   font-size: 12px;
@@ -552,7 +559,7 @@
   .account-language-checks {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .account-topic-checks { grid-template-columns: 1fr; }
+  .account-topic-options { grid-template-columns: 1fr; }
   .app-header-account {
     height: 32px;
     width: 34px;
