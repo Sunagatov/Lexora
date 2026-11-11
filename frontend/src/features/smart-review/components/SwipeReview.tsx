@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import type {CSSProperties} from 'react'
 import {Link} from 'react-router-dom'
 import type {StudyQueue} from '../types/studyQueueTypes'
@@ -59,6 +59,19 @@ export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToL
   const navigation = useWordListNavigation(undefined, {ids: queue.items.map(item => item.word_id), offset: 0, total: queue.items.length})
   const s = useSwipeSession(queue, language)
   const {session, item} = s
+  const readingRef = useRef<HTMLDivElement>(null)
+  const [readingScrollable, setReadingScrollable] = useState(false)
+  useLayoutEffect(() => {
+    const element = readingRef.current
+    if (!element) return
+    const measure = () => setReadingScrollable(element.scrollHeight > element.clientHeight + 1)
+    measure()
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
+    observer?.observe(element)
+    for (const child of element.children) observer?.observe(child)
+    window.addEventListener('resize', measure, {passive: true})
+    return () => { observer?.disconnect(); window.removeEventListener('resize', measure) }
+  }, [item?.id, preferences.translations])
   function act(action: SwipeRating | 'skip') {
     if (action === 'skip') s.skip()
     else void s.rate(action)
@@ -99,11 +112,11 @@ export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToL
         <button type="button" className="mix-secondary" onClick={onBackToList}>Back to word mix</button>
       </div> : <>
         <div className="mix-card-stage">
-          <article className={`mix-card${hasDrag ? ` is-dragging mix-${preview.className}` : ''}`}
+          <article {...swipe.events} className={`mix-card${hasDrag ? ` is-dragging mix-${preview.className}` : ''}`}
             style={{'--mix-x': `${Math.max(-135, Math.min(135, swipe.drag.x))}px`, '--mix-y': `${Math.max(-100, Math.min(100, swipe.drag.y))}px`, '--mix-angle': `${Math.max(-7, Math.min(7, swipe.drag.x / 25))}deg`} as CSSProperties}>
             <div className="mix-card-top"><span>{[languageProfile(item.word.language).name, item.word.part_of_speech, item.word.cefr_level].filter(Boolean).join(' · ')}</span><PronounceButton key={item.id} word={item.word} /></div>
-            <div key={item.id} className="mix-card-scroll" tabIndex={0} role="region" aria-label="Word information">
-              <div className="mix-card-word" {...swipe.events} aria-label="Swipe word card">
+            <div ref={readingRef} key={item.id} className="mix-card-scroll" data-mix-scrollable={readingScrollable} tabIndex={0} role="region" aria-label="Word information">
+              <div className="mix-card-word" data-mix-gesture-surface aria-label="Swipe word card">
                 <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
                 <EasyPronunciation word={item.word} />
               </div>

@@ -41,6 +41,14 @@ cancellation by the active pointer, keyboard activation after cancellation,
 and stopping card movement during a pending save. Vertical scrolling and
 screen-edge navigation remain available.
 
+List swipes can start on card text, pronunciation/Favorite controls, the level
+badge or the actions button; a tap still activates the original control. Open
+dialogs are excluded. Daily Mix accepts gestures across its reading content,
+not only the word heading. Long examples keep native vertical scrolling and
+horizontal rating gestures; the heading retains four-way review gestures.
+When the content fits again after a resize, four-way gestures resume across it.
+Pinch zoom is preserved, and adding a second finger cancels a pending gesture.
+
 The document root disables vertical pull-to-refresh. Word lists and the main
 content scroller contain vertical overscroll, so reaching either end does not
 hand the gesture to the page. This uses native CSS scrolling; vertical touch

@@ -45,6 +45,55 @@ describe('four-way gestures', () => {
 })
 
 describe('swipe review', () => {
+  it('keeps long content scrollable and restores vertical ratings when the content fits', async () => {
+    let overflowing = true
+    vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains('mix-card-scroll') ? overflowing ? 1000 : 100 : 0
+    })
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains('mix-card-scroll') ? 200 : 0
+    })
+    open()
+    const surface = screen.getByText('She stayed resilient.'), card = surface.closest('article')!
+    card.setPointerCapture = vi.fn()
+    function up() {
+      for (const [type, y] of [['pointerdown', 200], ['pointermove', 100], ['pointerup', 100]] as const) {
+        const event = new Event(type, {bubbles: true})
+        Object.assign(event, {pointerType:'touch',pointerId:1,isPrimary:true,clientX:180,clientY:y})
+        fireEvent(surface, event)
+      }
+    }
+    up()
+    expect(update).not.toHaveBeenCalled()
+    expect(complete).not.toHaveBeenCalled()
+    overflowing = false
+    fireEvent(window, new Event('resize'))
+    up()
+    await screen.findByRole('heading', {name:'adapt'})
+    expect(update).toHaveBeenCalledExactlyOnceWith(1, 3)
+    expect(complete).toHaveBeenCalledExactlyOnceWith(101)
+  })
+
+  it.each([
+    ['стойкий · устойчивый', -130, 0, 5],
+    ['She stayed resilient.', 130, 0, 4],
+    ['стойкий · устойчивый', 0, -100, 3],
+    ['She stayed resilient.', 0, 100, 'skip'],
+  ])('handles a full-card gesture from %s (%s,%s)', async (text, dx, dy, action) => {
+    open()
+    const surface = screen.getByText(text as string)
+    const card = surface.closest('article')!
+    card.setPointerCapture = vi.fn()
+    for (const [type, x, y] of [['pointerdown', 200, 200], ['pointermove', 200 + Number(dx), 200 + Number(dy)], ['pointerup', 200 + Number(dx), 200 + Number(dy)]] as const) {
+      const event = new Event(type, {bubbles: true})
+      Object.assign(event, {pointerType:'touch',pointerId:1,isPrimary:true,clientX:x,clientY:y})
+      fireEvent(surface, event)
+    }
+    await screen.findByRole('heading', {name:'adapt'})
+    if (action === 'skip') { expect(update).not.toHaveBeenCalled(); expect(complete).not.toHaveBeenCalled() }
+    else { expect(update).toHaveBeenCalledExactlyOnceWith(1, action); expect(complete).toHaveBeenCalledExactlyOnceWith(101) }
+  })
+
   it('hides answer translations when Translations on cards is off', () => {
     visibility.translations = false
     open()

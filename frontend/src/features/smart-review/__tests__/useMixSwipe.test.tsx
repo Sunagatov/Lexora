@@ -53,3 +53,34 @@ it('does not resume a gesture when a saving lock is enabled and then released', 
   pointer(card, 'pointerup', 100)
   expect(onAction).toHaveBeenCalledExactlyOnceWith(5)
 })
+
+it('cancels a rating when a second finger starts a pinch', () => {
+  const onAction = vi.fn()
+  render(<Card onAction={onAction} />)
+  const card = screen.getByTestId('card')
+  card.setPointerCapture = vi.fn()
+  pointer(card, 'pointerdown', 250)
+  pointer(card, 'pointermove', 100)
+  pointer(card, 'pointerdown', 200, 2)
+  pointer(card, 'pointerup', 100)
+  expect(onAction).not.toHaveBeenCalled()
+})
+
+it.each([false, true])('keeps vertical reading gestures separate from ratings (heading=%s)', heading => {
+  const onAction = vi.fn()
+  function ReadingCard() {
+    const {events} = useMixSwipe(onAction, false)
+    return <article {...events} data-testid="card"><div data-mix-scrollable="true">
+      <h2 data-mix-gesture-surface>word</h2><p>Long example</p>
+    </div></article>
+  }
+  render(<ReadingCard />)
+  const card = screen.getByTestId('card'), target = screen.getByText(heading ? 'word' : 'Long example')
+  card.setPointerCapture = vi.fn()
+  pointer(target, 'pointerdown', 150)
+  const up = new Event('pointerup', {bubbles: true})
+  Object.assign(up, {pointerType:'touch',pointerId:1,isPrimary:true,clientX:150,clientY:0})
+  fireEvent(card, up)
+  if (heading) expect(onAction).toHaveBeenCalledExactlyOnceWith(3)
+  else expect(onAction).not.toHaveBeenCalled()
+})

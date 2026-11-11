@@ -17,8 +17,11 @@
 .mix-audio button { border: 0; color: var(--text); background: transparent; cursor: pointer; width: 44px; height: 44px; display: grid; place-items: center; }
 .mix-audio { position: relative; }
 .mix-audio > span { position: absolute; right: 0; font-size: .65rem; white-space: nowrap; color: var(--text-2); }
-.mix-card-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-gutter: stable; }
-.mix-card-word { touch-action: none; user-select: none; padding-top: 2px; color: var(--text); overflow-wrap: anywhere; }
+.mix-card { touch-action: pan-y pinch-zoom; }
+.mix-card-top, .mix-card-footer { touch-action: pinch-zoom; }
+.mix-card-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pinch-zoom; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-gutter: stable; }
+.mix-card-scroll[data-mix-scrollable="true"] { touch-action: pan-y pinch-zoom; }
+.mix-card-word { touch-action: pinch-zoom; user-select: none; padding-top: 2px; color: var(--text); overflow-wrap: anywhere; }
 .mix-card-word h2 { font-size: clamp(1.5rem, 7vw, 2.15rem); line-height: 1.2; letter-spacing: -.025em; margin-bottom: 10px; }
 .mix-card-word .word-easy-pronunciation { color: var(--text-2); font-size: .85rem; margin-bottom: 10px; }
 .mix-translations { font-size: 1rem; font-weight: 450; line-height: 1.5; }

@@ -14,7 +14,8 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
   function reset() { start.current = null; setDrag({x: 0, y: 0}) }
   function begin(event: PointerEvent<HTMLElement>, fromAction = false) {
     if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
-    if ((event.target as Element).closest('input, select, textarea')
+    if (!event.currentTarget.contains(event.target as Node)
+      || (event.target as Element).closest('input, select, textarea, [data-no-swipe]')
       || (!fromAction && (event.target as Element).closest('button'))) return
     // Leave the browser's screen-edge back gesture available.
     if (event.pointerType === 'touch' && (event.clientX < 24 || event.clientX > window.innerWidth - 24)) return
@@ -30,12 +31,18 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
     offset: disabled ? 0 : Math.max(-120, Math.min(120, drag.x)),
     ready: !disabled && swipeDirection(drag.x, drag.y) !== null,
     onPointerDownCapture(event: PointerEvent<HTMLElement>) {
+      if (event.pointerType === 'touch' && !event.isPrimary) {
+        suppressClick.current = true
+        reset()
+        return
+      }
       // Controls can stop pointerdown bubbling. Clear a previous drag's click
       // suppression before their handlers run, so the next heart tap works.
       suppressClick.current = false
-      // Right-side actions are a common starting point for left swipes. Observe
-      // these before a button stops propagation; taps still go to the button.
-      if ((event.target as Element).closest('[data-word-swipe-actions] button')) begin(event, true)
+      // Badge/menu buttons are also common starting points for left swipes.
+      // Observe them before they stop bubbling, but leave portalled dialogs alone.
+      if (event.currentTarget.contains(event.target as Node)
+        && (event.target as Element).closest('button')) begin(event, true)
     },
     onPointerDown(event: PointerEvent<HTMLElement>) {
       // A new interaction must work even if a cancelled drag produced no click.

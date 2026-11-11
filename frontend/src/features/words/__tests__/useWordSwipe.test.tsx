@@ -1,11 +1,62 @@
 import {act, fireEvent, render, screen} from '@testing-library/react'
 import {swipeDirection, useWordSwipe} from '../hooks/useWordSwipe'
+import {createPortal} from 'react-dom'
 
 function touch(element: HTMLElement, type: string, x: number, y: number) {
   const event = new Event(type, {bubbles: true})
   Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: y})
   fireEvent(element, event)
 }
+
+it.each(['Weak', 'Actions'])('allows a deliberate swipe from the %s control and preserves the next tap', label => {
+  const onSwipe = vi.fn(), click = vi.fn()
+  function Card() {
+    const {offset, ready, ...events} = useWordSwipe(onSwipe, false)
+    return <article {...events} data-testid="card" data-ready={ready}>{offset}
+      <button onPointerDown={e => e.stopPropagation()} onClick={click}>{label}</button>
+    </article>
+  }
+  render(<Card />)
+  const card = screen.getByTestId('card'), button = screen.getByRole('button')
+  card.setPointerCapture = vi.fn()
+  touch(button, 'pointerdown', 280, 100)
+  touch(button, 'pointermove', 130, 103)
+  touch(card, 'pointerup', 130, 103)
+  fireEvent.click(button, {detail: 1})
+  expect(onSwipe).toHaveBeenCalledExactlyOnceWith(5)
+  expect(click).not.toHaveBeenCalled()
+  touch(button, 'pointerdown', 280, 100)
+  touch(button, 'pointerup', 280, 100)
+  fireEvent.click(button, {detail: 1})
+  expect(click).toHaveBeenCalledOnce()
+})
+
+it('cancels a list rating when a second finger arrives', () => {
+  const onSwipe = vi.fn()
+  function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}>{offset}</article> }
+  render(<Card />)
+  const card = screen.getByTestId('card')
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 250, 100)
+  touch(card, 'pointermove', 100, 100)
+  const second = new Event('pointerdown', {bubbles: true})
+  Object.assign(second, {pointerType: 'touch', pointerId: 2, isPrimary: false, clientX: 200, clientY: 100})
+  fireEvent(card, second)
+  touch(card, 'pointerup', 100, 100)
+  expect(onSwipe).not.toHaveBeenCalled()
+})
+
+it('does not rate a word from a portalled menu', () => {
+  const onSwipe = vi.fn()
+  function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}>{offset}{createPortal(<div role="dialog"><a>Menu item</a></div>, document.body)}</article> }
+  render(<Card />)
+  const card = screen.getByTestId('card'), menu = screen.getByText('Menu item')
+  card.setPointerCapture = vi.fn()
+  touch(menu, 'pointerdown', 250, 100)
+  touch(menu, 'pointermove', 100, 100)
+  touch(menu, 'pointerup', 100, 100)
+  expect(onSwipe).not.toHaveBeenCalled()
+})
 
 it.each([[100, 195, 4], [195, 100, 5]])('commits a deliberate touch gesture and suppresses the following link click (%s Р Р†РІР‚В РІР‚в„ў %s)', (start, end, level) => {
   const onSwipe = vi.fn(), click = vi.fn()
@@ -23,10 +74,10 @@ it.each([[100, 195, 4], [195, 100, 5]])('commits a deliberate touch gesture and 
   expect(click).not.toHaveBeenCalled()
 })
 
-it('cancels short swipes and ignores swipes started on a button', () => {
+it('cancels short swipes and respects controls that explicitly opt out', () => {
   const onSwipe = vi.fn()
   window.matchMedia = vi.fn().mockReturnValue({matches: true})
-  function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}><button>Speak</button><span>{offset}</span></article> }
+  function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}><button data-no-swipe>Speak</button><span>{offset}</span></article> }
   render(<Card />)
   const card = screen.getByTestId('card')
   card.setPointerCapture = vi.fn()
