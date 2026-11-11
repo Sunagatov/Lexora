@@ -351,6 +351,14 @@
 
 .word-card-body-tap:hover { background: transparent; }
 
+.word-card-title-line { display: block; }
+.word-card .word-card-title-line .word-term { display: inline; }
+.word-card-title-line .word-easy-pronunciation {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+
 /* Expand/collapse button */
 .word-card-expand-btn {
   display: inline-flex;

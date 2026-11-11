@@ -80,6 +80,9 @@ The four mobile legend labels and two-decimal percentages share one row; below
 Filter chips, reset controls, and detailed sorting appear only in the filter panel.
 Word lists open full details through the word term or row; desktop rows have no
 separate expand button or inline expanded-details section.
+Card pronunciation follows the original word on the same line when space allows,
+wrapping without truncation when needed; pronunciation visibility and notation
+preferences still apply.
 On mobile, Filters opens a native modal bottom sheet with independent scrolling
 and a pinned Done button. Opening/closing it does not move the word list.
 Knowledge saves update badges and collection progress while retaining the current

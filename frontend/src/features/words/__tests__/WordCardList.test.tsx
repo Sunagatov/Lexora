@@ -107,7 +107,7 @@ describe('WordCardList', () => {
     expect(client.getQueryData(queryKeys.words)).toEqual([])
     expect(screen.queryByRole('dialog')).toBeNull()
   })
-  it('keeps audio outside the word link and puts the reading hint below the term', () => {
+  it('keeps pronunciation with the term in the word link and audio outside it', () => {
     const router = createMemoryRouter([{path: '/', element: <WordCardList words={[makeWord(1, 'hola', {language: 'es', pronunciation_easy: 'о́ла'})]} pendingWordId={null} onUpdate={vi.fn()} />}])
     const {container} = render(<QueryClientProvider client={new QueryClient()}><RouterProvider router={router} /></QueryClientProvider>)
     const hint = container.querySelector('.word-easy-pronunciation')!

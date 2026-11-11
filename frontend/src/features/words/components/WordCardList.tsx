@@ -78,8 +78,10 @@ function WordCard({word, wordList, pendingWordId, fromTopicSlug, onUpdate, onSwi
       </div>
       {offset !== 0 && <span className="swipe-feedback" style={{opacity: Math.min(Math.abs(offset) / SWIPE_THRESHOLD, .95)}} aria-hidden="true">{offset > 0 ? 'Strong →' : '← Parked'}{ready ? ' · Release' : ' · Keep swiping'}</span>}
       <Link className="word-card-body-tap" draggable={false} to={routes.word(word.id)} state={navigation.state} onClick={event => navigation.openWord(event, word.id)}>
-        <span className="word-term"><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
-        <EasyPronunciation word={word} />
+        <span className="word-card-title-line">
+          <span className="word-term"><bdi lang={word.language} dir={word.language === 'ar' ? 'rtl' : 'ltr'}>{word.term}</bdi></span>
+          {' '}<EasyPronunciation word={word} />
+        </span>
         {translation && <span className="word-translation-focus word-card-translations">{translation}</span>}
       </Link>
       <div className="word-card-footer">
