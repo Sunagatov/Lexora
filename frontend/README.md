@@ -41,6 +41,13 @@ cancellation by the active pointer, keyboard activation after cancellation,
 and stopping card movement during a pending save. Vertical scrolling and
 screen-edge navigation remain available.
 
+The document root disables vertical pull-to-refresh. Word lists and the main
+content scroller contain vertical overscroll, so reaching either end does not
+hand the gesture to the page. This uses native CSS scrolling; vertical touch
+scrolling, momentum and pinch zoom remain available without a blocking touchmove
+handler. Mobile browser checks should cover both directions, list boundaries,
+short/empty lists, and starting a scroll on a word's text or action buttons.
+
 Interrupted drags are discarded when a card becomes disabled, and mouse drags
 stop if the primary button is no longer held. Unlocking the card requires a new
 gesture rather than resuming the interrupted one.

@@ -89,6 +89,10 @@ a:focus-visible {
 
 html, body, #root { height: 100%; }
 
+/* The viewport takes overscroll policy from html, not body. Keep a downward
+   list gesture from becoming pull-to-refresh, including over app chrome. */
+html { overscroll-behavior-y: none; }
+
 body {
   background: #f4f2ee;
   color: var(--text);

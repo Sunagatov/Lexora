@@ -1220,6 +1220,7 @@
   flex: 1;
   min-width: 0;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   max-width: 960px;
   margin: 0 auto;
   padding: 24px 16px 80px;
