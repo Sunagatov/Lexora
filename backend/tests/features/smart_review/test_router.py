@@ -136,3 +136,16 @@ def test_complete_item_returns_loaded_queue(monkeypatch, make_topic, make_word, 
     assert len(result.items) == 1
     assert result.items[0].position == 0
     assert result.items[0].word.term == "plane"
+
+
+def test_compact_completion_does_not_reload_or_serialize_the_mix(monkeypatch, fixed_now) -> None:
+    queue = SimpleNamespace(id=5, completed_count=6)
+    monkeypatch.setattr(smart_review_router, "complete_queue_item", lambda db, item_id: queue)
+    def reject_full_load(*args):
+        pytest.fail("Completion must not reload every word in the mix")
+    monkeypatch.setattr(smart_review_router, "_load_queue", reject_full_load)
+    db = SimpleNamespace(get=lambda model, item_id: SimpleNamespace(completed_at=fixed_now))
+    result = smart_review_router.complete_item(100, db=db, compact=True)
+    assert result.model_dump() == {
+        "queue_id": 5, "item_id": 100, "completed_count": 6, "completed_at": fixed_now,
+    }

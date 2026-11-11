@@ -1,5 +1,5 @@
 import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
-import {ApiError} from '@/shared/api/apiError'
+import {ApiError, isUncertainWriteError} from '@/shared/api/apiError'
 import type {Word, WordKnowledgeLevel, WorkbookPreview, WorkbookImportResult, EnrichResult} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
@@ -31,7 +31,22 @@ export const updateWord = (id: number, payload: Partial<Omit<Word, 'id' | 'creat
   const body = JSON.stringify(translationPayload(payload))
   // Capture language/CSRF context before waiting behind an earlier write.
   const headers = buildRequestHeaders()
-  return enqueueWordWrite(id, () => request<Word>(`/api/words/${id}`, {method: 'PUT', body, headers}))
+  return enqueueWordWrite(id, async () => {
+    try { return await request<Word>(`/api/words/${id}`, {method: 'PUT', body, headers}) }
+    catch (error) {
+      // The server may have committed before the mobile connection dropped.
+      // Verify a rating instead of replaying it and recording another review.
+      const ratingOnly = payload.knowledge_level != null
+        && Object.keys(payload).every(key => key === 'knowledge_level' || key === 'progress_source')
+      if (ratingOnly && isUncertainWriteError(error)) {
+        try {
+          const saved = await request<Word>(`/api/words/${id}`, {headers})
+          if (saved.knowledge_level === payload.knowledge_level) return saved
+        } catch { /* Preserve the original write error when verification also fails. */ }
+      }
+      throw error
+    }
+  })
 }
 export const deleteWord               = (id: number)                                                    => request<void>(`/api/words/${id}`, {method: 'DELETE'})
 export const updateWordKnowledgeLevel = (id: number, level: WordKnowledgeLevel, source = DEFAULT_WORD_PROGRESS_SOURCE) =>

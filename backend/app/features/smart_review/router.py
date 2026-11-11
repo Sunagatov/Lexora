@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.features.languages.catalog import learning_language
 from app.features.smart_review.exceptions import QueueItemNotFoundError, QueueNotActiveError
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
-from app.features.smart_review.schemas import StudyQueueResponse
+from app.features.smart_review.schemas import ReviewCompletionResponse, StudyQueueResponse
 from app.features.smart_review.service import (
     complete_queue_item,
     generate_queue,
@@ -63,14 +63,20 @@ def refresh_queue(db: Session = Depends(get_db)) -> StudyQueueResponse:
     return StudyQueueResponse.from_queue(loaded)
 
 
-@router.post("/items/{item_id}/complete", response_model=StudyQueueResponse)
-def complete_item(item_id: int, db: Session = Depends(get_db)) -> StudyQueueResponse:
+@router.post("/items/{item_id}/complete", response_model=StudyQueueResponse | ReviewCompletionResponse)
+def complete_item(item_id: int, db: Session = Depends(get_db), compact: bool = False) -> StudyQueueResponse | ReviewCompletionResponse:
     try:
         queue = complete_queue_item(db, item_id)
     except QueueItemNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue item not found")
     except QueueNotActiveError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found or inactive")
+    if compact:
+        item = db.get(StudyQueueItem, item_id)
+        return ReviewCompletionResponse(
+            queue_id=queue.id, item_id=item_id,
+            completed_count=queue.completed_count, completed_at=item.completed_at,
+        )
     loaded = _load_queue(db, queue.id)
     if loaded is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Queue not found")

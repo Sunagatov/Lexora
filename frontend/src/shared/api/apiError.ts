@@ -4,3 +4,9 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 }
+
+export function isUncertainWriteError(error: unknown): boolean {
+  return error instanceof TypeError
+    || error instanceof DOMException && error.name === 'TimeoutError'
+    || error instanceof ApiError && (error.status === 408 || error.status >= 500)
+}

@@ -50,3 +50,10 @@ class StudyQueueResponse(BaseModel):
             completed_count=queue.completed_count,
             items=[StudyQueueItemResponse.from_item(i) for i in queue.items],
         )
+
+
+class ReviewCompletionResponse(BaseModel):
+    queue_id: int
+    item_id: int
+    completed_count: int
+    completed_at: datetime | None

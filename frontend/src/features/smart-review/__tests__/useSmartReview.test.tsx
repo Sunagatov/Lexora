@@ -6,6 +6,7 @@ import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {queryKeys} from '@/app/queryKeys'
 import * as smartReviewApi from '@/features/smart-review/api/smartReviewApi'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import {ApiError} from '@/shared/api/apiError'
 
 vi.mock('@/features/smart-review/api/smartReviewApi')
 
@@ -16,9 +17,67 @@ function wrapper(queryClient: QueryClient) {
 }
 
 describe('useSmartReview cache recovery', () => {
+  it('clears a lost-response warning when a refetch confirms the item is completed', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const queue = {id: 1, total_count: 1, completed_count: 0,
+      items: [{id: 101, is_completed: false}]} as StudyQueue
+    client.setQueryData(queryKeys.smartReview, queue)
+    vi.mocked(smartReviewApi.completeSmartReviewItem).mockRejectedValueOnce(new Error('response lost'))
+    const {result} = renderHook(() => useSmartReview(false), {wrapper: wrapper(client)})
+    act(() => result.current.completeItem(101))
+    await waitFor(() => expect(result.current.actionError).toContain('1 word'))
+    act(() => client.setQueryData(queryKeys.smartReview, {...queue, completed_count: 1,
+      items: [{id: 101, is_completed: true}]}))
+    await waitFor(() => expect(result.current.actionError).toBeNull())
+    act(() => result.current.retryAction())
+    expect(smartReviewApi.completeSmartReviewItem).toHaveBeenCalledOnce()
+  })
+
+  it('does not attach a late failure from an old mix to the new mix', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    client.setQueryData(queryKeys.smartReview, {id: 1, items: []})
+    let reject!: (error: Error) => void
+    vi.mocked(smartReviewApi.completeSmartReviewItem).mockImplementationOnce(() => new Promise((_resolve, fail) => {reject = fail}))
+    const {result} = renderHook(() => useSmartReview(false), {wrapper: wrapper(client)})
+    act(() => result.current.completeItem(101))
+    await waitFor(() => expect(reject).toBeDefined())
+    act(() => client.setQueryData(queryKeys.smartReview, {id: 2, items: []}))
+    await act(async () => reject(new Error('old mix no longer active')))
+    expect(result.current.actionError).toBeNull()
+    act(() => result.current.retryAction())
+    expect(smartReviewApi.completeSmartReviewItem).toHaveBeenCalledOnce()
+  })
+
+  it('merges compact acknowledgements without losing newer edits or progress', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    const queue = {id: 1, total_count: 2, completed_count: 1,
+      items: [{id: 101, is_completed: false, word: {id: 1, knowledge_level: 4, is_favorite: true}},
+        {id: 102, is_completed: true, word: {id: 2}}]} as StudyQueue
+    client.setQueryData(queryKeys.smartReview, queue)
+    vi.mocked(smartReviewApi.completeSmartReviewItem).mockResolvedValueOnce({queue_id: 1, item_id: 101,
+      completed_count: 1, completed_at: '2026-11-11T20:00:00Z'})
+    const {result} = renderHook(() => useSmartReview(false), {wrapper: wrapper(client)})
+    await act(async () => {await result.current.completeItemAsync(101)})
+    expect(result.current.queue?.completed_count).toBe(1)
+    expect(result.current.queue?.items[0]).toMatchObject({is_completed: true,
+      word: {knowledge_level: 4, is_favorite: true}})
+  })
+
+  it('retries idempotent completion after transient server failure', async () => {
+    const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
+    client.setQueryData(queryKeys.smartReview, {id: 1, items: [], completed_count: 0})
+    vi.mocked(smartReviewApi.completeSmartReviewItem).mockRejectedValueOnce(new ApiError(502, 'gateway'))
+      .mockResolvedValueOnce({queue_id: 1, item_id: 101, completed_count: 1, completed_at: null})
+    const {result} = renderHook(() => useSmartReview(false), {wrapper: wrapper(client)})
+    await act(async () => {await result.current.completeItemAsync(101)})
+    expect(smartReviewApi.completeSmartReviewItem).toHaveBeenCalledTimes(2)
+    expect(result.current.actionError).toBeNull()
+  })
+
   it('retains failed completions while another word succeeds and retries every remaining item', async () => {
     const client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}})
-    const q = {id: 1, generated_at: '', expires_at: '', is_active: true, total_count: 2, completed_count: 0, items: []} as StudyQueue
+    const q = {id: 1, generated_at: '', expires_at: '', is_active: true, total_count: 2, completed_count: 0,
+      items: [{id: 101, is_completed: false}, {id: 102, is_completed: false}]} as StudyQueue
     client.setQueryData(queryKeys.smartReview, q)
     vi.mocked(smartReviewApi.completeSmartReviewItem)
       .mockRejectedValueOnce(new Error('completion A failed'))
@@ -46,7 +105,8 @@ describe('useSmartReview cache recovery', () => {
       is_active: true,
       total_count: 1,
       completed_count: 0,
-      items: [],
+      items: [101, 102].map(id => ({id, word_id: id - 100, position: id - 101,
+        is_completed: false, completed_at: null, word: {id: id - 100} as StudyQueue['items'][number]['word']})),
     })
   })
 

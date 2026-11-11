@@ -247,13 +247,23 @@ Obvious errors from router code include `400` for invalid input, `404` for missi
 
 - `GET /api/smart-review` — get or create active queue; returns `503` when disabled.
 - `POST /api/smart-review/refresh` — regenerate queue; returns `503` when disabled.
-- `POST /api/smart-review/items/{item_id}/complete` — complete queue item.
+- `POST /api/smart-review/items/{item_id}/complete` — complete queue item. The
+  optional `compact=true` returns only `queue_id`, `item_id`, `completed_count`
+  and `completed_at`, avoiding a reload/serialization of every word. Omitting it
+  preserves the full queue response for existing clients.
 
 Queue lookup and generation serialize per learning language, so concurrent first
 reads share one active queue. Completion responses update cached completion fields
 without replacing newer word edits. Daily Mix uses the saved page-size preference
 unless its URL explicitly selects another size; swipe details retain the return
 location and queue sequence.
+
+Temporary completion failures have bounded retries because completion is
+idempotent. A refetched completed item clears its warning; failures from a
+replaced mix are not offered for retry. An uncertain rating response instead
+reads the word back within its write queue: a matching saved level confirms
+success without repeating the review event. Authentication/validation rejections
+and content edits are not treated as successful ratings.
 
 ## AI Curation
 
