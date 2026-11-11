@@ -53,16 +53,12 @@ function PronounceButton({word}: {word: Word}) {
   </div>
 }
 
-export function SwipeReview({queue, onBackToList, onBusyChange}: {queue: StudyQueue; onBackToList: () => void; onBusyChange: (busy: boolean) => void}) {
+export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToList: () => void}) {
   const language = queue.items[0]?.word.language ?? languagePreferences().language
   const preferences = usePreferences()
   const navigation = useWordListNavigation(undefined, {ids: queue.items.map(item => item.word_id), offset: 0, total: queue.items.length})
   const s = useSwipeSession(queue, language)
   const {session, item} = s
-  useEffect(() => {
-    onBusyChange(s.blocked)
-    return () => onBusyChange(false)
-  }, [s.blocked, onBusyChange])
   function act(action: SwipeRating | 'skip') {
     if (action === 'skip') s.skip()
     else void s.rate(action)

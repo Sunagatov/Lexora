@@ -1,8 +1,10 @@
 import {useEffect, useRef, useState} from 'react'
 import {CEFR_LEVELS, LEVEL_LABELS, LEVELS} from '@/features/words/model/wordDomain'
 import {updatePreferences, type WordMixPreferences} from './api'
+import {useWordMixView} from './useWordMixView'
 
 export function AccountWordMix({preferences}: {preferences: WordMixPreferences}) {
+  const [view, selectView] = useWordMixView()
   const [size, setSize] = useState(String(preferences.size))
   const [sizeError, setSizeError] = useState('')
   const sizeEdited = useRef(false)
@@ -27,6 +29,16 @@ export function AccountWordMix({preferences}: {preferences: WordMixPreferences})
   const cooldownOptions = [...new Set([0, 1, 3, 7, 14, 30, preferences.cooldown_days])].sort((a, b) => a - b)
 
   return <div className="account-word-mix">
+    <section className="account-surface" aria-labelledby="mix-view-title">
+      <h2 className="account-card-title" id="mix-view-title">Review view</h2>
+      <div className="account-row account-mix-row">
+        <span>Word mix view<small>Choose how Daily Word Mix opens on this device.</small></span>
+        <div className="account-segments" role="group" aria-label="Word mix view">
+          <button type="button" aria-pressed={view === 'list'} onClick={() => selectView('list')}>List</button>
+          <button type="button" aria-pressed={view === 'swipe'} onClick={() => selectView('swipe')}>Swipe</button>
+        </div>
+      </div>
+    </section>
     <section className="account-surface" aria-labelledby="mix-size-title">
       <h2 className="account-card-title" id="mix-size-title">Set size</h2>
       <div className="account-row account-mix-row">
@@ -91,6 +103,6 @@ export function AccountWordMix({preferences}: {preferences: WordMixPreferences})
           onChange={event => save({balance_topics: event.target.checked})} />
       </label>
     </section>
-    <p className="account-help">Changes apply to your next new set. Your current set stays as it is.</p>
+    <p className="account-help">Set size, word selection and variety changes apply to your next new set. Your current set stays as it is.</p>
   </div>
 }

@@ -25,7 +25,7 @@ const queue = (language = 'en'): StudyQueue => ({id: 7, generated_at: '2026-11-0
       pronunciation_ipa: null, pronunciation_easy: null} as unknown as Word}))})
 
 function open(q = queue()) {
-  return render(<SwipeReview queue={q} onBackToList={vi.fn()} onBusyChange={vi.fn()} />, {wrapper: MemoryRouter})
+  return render(<SwipeReview queue={q} onBackToList={vi.fn()} />, {wrapper: MemoryRouter})
 }
 
 beforeEach(() => {

@@ -7,6 +7,28 @@ vi.mock('./api', async () => ({...await vi.importActual('./api'), updatePreferen
 const defaults = {...DEFAULT_PREFERENCES.word_mix, levels: [1, 3] as (1 | 3 | 4 | 5)[]}
 beforeEach(() => vi.clearAllMocks())
 
+it('keeps the existing Swipe preference and saves List without changing the word mix', () => {
+  localStorage.setItem('lexora-word-mix-view', 'swipe')
+  const {unmount} = render(<AccountWordMix preferences={defaults} />)
+  expect(screen.getByRole('button', {name: 'Swipe'}).getAttribute('aria-pressed')).toBe('true')
+  fireEvent.click(screen.getByRole('button', {name: 'List'}))
+  expect(screen.getByRole('button', {name: 'List'}).getAttribute('aria-pressed')).toBe('true')
+  expect(updatePreferences).not.toHaveBeenCalled()
+  unmount()
+  render(<AccountWordMix preferences={defaults} />)
+  expect(screen.getByRole('button', {name: 'List'}).getAttribute('aria-pressed')).toBe('true')
+})
+
+it('defaults to List and restores Swipe when account settings reopen', () => {
+  const {unmount} = render(<AccountWordMix preferences={defaults} />)
+  expect(screen.getByRole('button', {name: 'List'}).getAttribute('aria-pressed')).toBe('true')
+  fireEvent.click(screen.getByRole('button', {name: 'Swipe'}))
+  unmount()
+  render(<AccountWordMix preferences={defaults} />)
+  expect(screen.getByRole('button', {name: 'Swipe'}).getAttribute('aria-pressed')).toBe('true')
+  expect(updatePreferences).not.toHaveBeenCalled()
+})
+
 it('changes the set size without resetting the other mix settings', () => {
   render(<AccountWordMix preferences={defaults} />)
   fireEvent.click(screen.getByRole('button', {name: '100'}))

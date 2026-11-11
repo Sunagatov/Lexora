@@ -7,10 +7,17 @@ import {useSmartReview} from '@/features/smart-review/hooks/useSmartReview'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useWordFilter} from '@/features/words/hooks/useWordFilter'
 import {MemoryRouter} from 'react-router-dom'
+import {AccountWordMix} from '@/features/preferences/AccountWordMix'
+import {DEFAULT_PREFERENCES} from '@/features/preferences/api'
 
 vi.mock('@/features/smart-review/hooks/useSmartReview')
 vi.mock('@/features/words/hooks/useWordUpdate')
 vi.mock('@/features/words/hooks/useWordFilter')
+vi.mock('@/features/smart-review/components/SwipeReview', () => ({
+  SwipeReview: ({onBackToList}: {onBackToList: () => void}) => (
+    <section aria-label="Swipe word mix"><button onClick={onBackToList}>Back to word mix</button></section>
+  ),
+}))
 vi.mock('@/features/words/components/WordCollectionView', () => ({
   WordCollectionView: ({pageWords, onUpdate, pendingWordId, pendingWordIds}: {pageWords: Word[]; onUpdate: (wordId: number, level: 1 | 3 | 4 | 5) => void; pendingWordId?: number | null; pendingWordIds?: ReadonlySet<number>}) => (
     <button type="button" disabled={pendingWordId === pageWords[0]?.id || pendingWordIds?.has(pageWords[0]?.id)} onClick={() => onUpdate(pageWords[0]?.id ?? 0, 3)}>
@@ -134,6 +141,25 @@ describe('SmartReviewView', () => {
       pageEnd: 1,
       resetFilters: vi.fn(),
     } as never)
+  })
+
+  it('opens the view selected in My Lexora without a switcher or empty toolbar row', () => {
+    const account = render(<AccountWordMix preferences={DEFAULT_PREFERENCES.word_mix} />)
+    fireEvent.click(screen.getByRole('button', {name: 'Swipe'}))
+    account.unmount()
+
+    const review = render(<SmartReviewView queue={makeQueue(makeWord(11, 'run'))} isLoading={false} />, {wrapper: MemoryRouter})
+    expect(screen.getByRole('region', {name: 'Swipe word mix'})).toBeTruthy()
+    expect(screen.queryByRole('button', {name: 'List'})).toBeNull()
+    expect(screen.queryByRole('button', {name: 'Swipe'})).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', {name: 'Back to word mix'}))
+    expect(screen.getByRole('button', {name: 'review first'})).toBeTruthy()
+    expect(review.container.querySelector('.mix-view-bar')).toBeNull()
+    review.unmount()
+
+    render(<AccountWordMix preferences={DEFAULT_PREFERENCES.word_mix} />)
+    expect(screen.getByRole('button', {name: 'List'}).getAttribute('aria-pressed')).toBe('true')
   })
 
   it('uses the desktop default page size on wide screens', () => {

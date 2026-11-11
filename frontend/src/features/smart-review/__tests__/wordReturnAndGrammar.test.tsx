@@ -28,7 +28,7 @@ it.each(['list', 'swipe'])('returns to Daily Mix after opening word details from
     items: [{id: 101, word_id: 1, position: 0, word, is_completed: false, completed_at: null}]} as StudyQueue
   const router = createMemoryRouter([
     {path: '/smart-review', element: view === 'swipe'
-      ? <SwipeReview queue={queue} onBackToList={vi.fn()} onBusyChange={vi.fn()} />
+      ? <SwipeReview queue={queue} onBackToList={vi.fn()} />
       : <WordCardList words={[word]} pendingWordId={null} onUpdate={vi.fn()} />},
     {path: '/words/:wordId', element: <WordPage />},
     {path: '/topics/inbox', element: <div>Inbox topic</div>},

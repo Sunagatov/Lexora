@@ -90,6 +90,9 @@ The homepage has no separate My Vocabulary summary card. Daily Word Mix remains
 available through the sidebar/menu. Its shared toolbar shows one knowledge
 distribution bar, an All words / Daily Word Mix breadcrumb and New set beside
 the heading; completion continues to be tracked without another progress bar.
+The List/Swipe selector lives in My Lexora → Daily Word Mix, not above the
+review toolbar. It retains the existing device-local `lexora-word-mix-view`
+preference; set generation and the current queue are unchanged by switching views.
 
 The shared Add word action is available on the homepage, bulk vocabulary, and
 topic lists. Its modal preserves drafts after failed saves and prevents duplicate
