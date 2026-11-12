@@ -1,5 +1,5 @@
 import {Outlet, useLocation} from 'react-router-dom'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {AppHeader} from '@/app/layout/AppHeader'
 import {AppFooter} from '@/app/layout/AppFooter'
 import {UsageTracker} from '@/features/stats/components/UsageTracker'
@@ -8,6 +8,7 @@ import {routes} from '@/app/routes'
 import {LanguageRouteContext} from '@/features/languages/LanguageRouteContext'
 import {PreferencesEffects} from '@/features/preferences/PreferencesEffects'
 import {usePreferences} from '@/features/preferences/api'
+import {useQuickAddOverlap} from '@/features/words/hooks/useQuickAddOverlap'
 
 export type AppLayoutOutletContext = {
   drawerOpen: boolean
@@ -25,6 +26,8 @@ export function AppLayout() {
   const [quickAddOpen, setQuickAddOpen] = useState(false)
   const hasDrawer = isStudyRoute(location.pathname) || location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)
   const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname === routes.favorites || location.pathname.startsWith('/topics/')
+  const quickAddButton = useRef<HTMLButtonElement>(null)
+  const quickAddOverlaps = useQuickAddOverlap(quickAddButton, canAddWord && !drawerOpen && !quickAddOpen)
 
   useEffect(() => {
     setDrawerOpen(false)
@@ -46,8 +49,9 @@ export function AppLayout() {
       <AppFooter />
 
       <button
+        ref={quickAddButton}
         type="button"
-        className={`fab ${!canAddWord || drawerOpen ? 'fab-hidden' : ''}`}
+        className={`fab ${!canAddWord || drawerOpen ? 'fab-hidden' : ''}${quickAddOverlaps ? ' fab-obstructed' : ''}`}
         aria-label="Add word"
         disabled={!canAddWord || drawerOpen}
         onClick={() => setQuickAddOpen(true)}

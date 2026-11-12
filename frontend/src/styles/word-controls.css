@@ -60,6 +60,12 @@
 .word-actions-content > .word-action-danger { color: #f87171; }
 :root[color-scheme="light"] .word-actions-content > .word-action-danger { color: #b91c1c; }
 @media (max-width: 860px) {
+  .word-card .word-actions-trigger {
+    width: 44px;
+    height: 44px;
+    touch-action: manipulation;
+  }
+
   .knowledge-picker {
     inset: auto 0 0;
     width: 100%; max-width: none; max-height: calc(100dvh - 16px);
