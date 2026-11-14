@@ -7,8 +7,16 @@ export function swipeDirection(dx: number, dy: number): 4 | 5 | null {
   return Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.5 ? dx > 0 ? 4 : 5 : null
 }
 
+function scrollOwner(element: HTMLElement): HTMLElement | null {
+  for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+    if (parent.scrollHeight > parent.clientHeight && /^(auto|scroll)$/.test(getComputedStyle(parent).overflowY)) return parent
+  }
+  return null
+}
+
 export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean) {
-  const start = useRef<{x: number; y: number; id: number; blocked: boolean; horizontal?: boolean} | null>(null)
+  const start = useRef<{x: number; y: number; id: number; blocked: boolean; horizontal?: boolean;
+    sideways?: boolean; vertical?: boolean; scroll: HTMLElement | null; scrollTop: number} | null>(null)
   const suppressClick = useRef(false)
   const [drag, setDrag] = useState({x: 0, y: 0})
   function reset() { start.current = null; setDrag({x: 0, y: 0}) }
@@ -19,7 +27,9 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
       || (!fromAction && (event.target as Element).closest('button'))) return
     // Leave the browser's screen-edge back gesture available.
     if (event.pointerType === 'touch' && (event.clientX < 24 || event.clientX > window.innerWidth - 24)) return
-    start.current = {x: event.clientX, y: event.clientY, id: event.pointerId, blocked: disabled}
+    const scroll = scrollOwner(event.currentTarget)
+    start.current = {x: event.clientX, y: event.clientY, id: event.pointerId, blocked: disabled,
+      scroll, scrollTop: scroll?.scrollTop ?? 0}
   }
   useEffect(() => {
     if (disabled) {
@@ -54,6 +64,24 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
       if (!point || point.id !== event.pointerId) return
       if (event.pointerType === 'mouse' && (event.buttons & 1) === 0) { reset(); return }
       const dx = event.clientX - point.x, dy = event.clientY - point.y
+      // Browsers can latch a sideways start as horizontal and keep sending
+      // pointer events instead of starting a vertical pan when the finger turns.
+      // Only rescue that sequence; ordinary vertical pans remain native.
+      if (!point.vertical && event.pointerType === 'touch' && point.sideways && Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)) {
+        point.vertical = true
+        point.blocked = true
+        setDrag({x: 0, y: 0})
+      }
+      if (point.vertical) {
+        suppressClick.current = true
+        if (point.scroll) {
+          point.scroll.scrollTop = Math.max(0, Math.min(point.scroll.scrollHeight - point.scroll.clientHeight, point.scrollTop - dy))
+        }
+        return
+      }
+      // Track a sideways start separately from the stricter rating threshold:
+      // a shallow diagonal can also latch the browser without starting a swipe.
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) point.sideways = true
       // Track blocked drags only to distinguish them from taps. A swipe while
       // saving must not turn into a link click or resume when saving finishes.
       if (disabled || point.blocked) {

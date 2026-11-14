@@ -20,6 +20,12 @@ startup and preserves the file for backup and migration instead of deleting data
 
 The topic-study client loads every word page before applying its local filters
 and pagination. The All Words page continues to use server-side pagination.
+
+Mobile word-card gestures that start sideways and then turn vertical scroll the
+nearest list instead of remaining stuck in swipe mode. Ordinary vertical pans
+stay native; the fallback follows the finger only when the browser continues
+sending pointer events after a sideways start. Once a gesture becomes scrolling,
+it cannot rate the word. Card hover/focus colours remain unchanged.
 Topic loading failures expose Retry and preserve the requested page. Failed topic
 ratings roll back and offer retrying the chosen level. Daily Word Mix disables
 every word with a pending rating, even when another word is saved concurrently.

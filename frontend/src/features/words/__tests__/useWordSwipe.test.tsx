@@ -2,6 +2,60 @@ import {act, fireEvent, render, screen} from '@testing-library/react'
 import {swipeDirection, useWordSwipe} from '../hooks/useWordSwipe'
 import {createPortal} from 'react-dom'
 
+function ScrollableCard({onSwipe, disabled = false}: {onSwipe: (level: 4 | 5) => void; disabled?: boolean}) {
+  const {offset, ready, ...events} = useWordSwipe(onSwipe, disabled)
+  return <div data-testid="scroller" style={{overflowY: 'auto'}}>
+    <article {...events} data-testid="card" data-ready={ready}><a>scroll word {offset}</a></article>
+  </div>
+}
+
+it.each([[false, 1], [true, 1], [false, 18], [true, 18]])('scrolls after sideways drift turns vertical, without rating (disabled=%s, initial y=%s)', (disabled, initialY) => {
+  const onSwipe = vi.fn()
+  render(<ScrollableCard onSwipe={onSwipe} disabled={disabled} />)
+  const scroller = screen.getByTestId('scroller'), card = screen.getByTestId('card')
+  Object.defineProperties(scroller, {clientHeight: {value: 200}, scrollHeight: {value: 1200}})
+  scroller.scrollTop = 400
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 150, 200)
+  touch(card, 'pointermove', 175, 200 + initialY)
+  touch(card, 'pointermove', 175, 140)
+  expect(scroller.scrollTop).toBe(460)
+  expect(screen.getByText('scroll word 0')).toBeTruthy()
+  // Once scrolling, even turning horizontal again cannot rate the card.
+  touch(card, 'pointermove', 260, 200)
+  touch(card, 'pointerup', 260, 200)
+  expect(onSwipe).not.toHaveBeenCalled()
+})
+
+it('can scroll back up after an initially horizontal gesture', () => {
+  const onSwipe = vi.fn()
+  render(<ScrollableCard onSwipe={onSwipe} />)
+  const scroller = screen.getByTestId('scroller'), card = screen.getByTestId('card')
+  Object.defineProperties(scroller, {clientHeight: {value: 200}, scrollHeight: {value: 1200}})
+  scroller.scrollTop = 400
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 150, 200)
+  touch(card, 'pointermove', 125, 201)
+  touch(card, 'pointermove', 125, 270)
+  expect(scroller.scrollTop).toBe(330)
+  touch(card, 'pointerup', 125, 270)
+  expect(onSwipe).not.toHaveBeenCalled()
+})
+
+it('leaves a gesture that starts vertically to the browser', () => {
+  const onSwipe = vi.fn()
+  render(<ScrollableCard onSwipe={onSwipe} />)
+  const scroller = screen.getByTestId('scroller'), card = screen.getByTestId('card')
+  Object.defineProperties(scroller, {clientHeight: {value: 200}, scrollHeight: {value: 1200}})
+  scroller.scrollTop = 400
+  card.setPointerCapture = vi.fn()
+  touch(card, 'pointerdown', 150, 200)
+  touch(card, 'pointermove', 151, 160)
+  expect(scroller.scrollTop).toBe(400)
+  expect(card.setPointerCapture).not.toHaveBeenCalled()
+  expect(onSwipe).not.toHaveBeenCalled()
+})
+
 function touch(element: HTMLElement, type: string, x: number, y: number) {
   const event = new Event(type, {bubbles: true})
   Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: y})
