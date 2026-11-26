@@ -6,12 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "ios:sync": "npm run build && cap sync ios",
     "preview": "vite preview",
     "test": "node --no-experimental-webstorage node_modules/vitest/vitest.mjs run",
     "test:watch": "node --no-experimental-webstorage node_modules/vitest/vitest.mjs",
     "lint": "eslint src"
   },
   "dependencies": {
+    "@capacitor/core": "8.6.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/ios": "8.6.3",
+    "@capacitor/share": "8.0.3",
     "@grafana/faro-web-sdk": "2.13.0",
     "@tanstack/react-query": "^5.107.1",
     "react": "^19.3.1",
@@ -19,6 +24,7 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.6.3",
     "@eslint/js": "^10.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",

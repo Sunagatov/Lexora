@@ -1,5 +1,6 @@
 import {buildApiUrl, buildRequestHeaders, request} from '@/shared/api/http'
 import {ApiError, isUncertainWriteError} from '@/shared/api/apiError'
+import {saveFile} from '@/shared/saveFile'
 import type {Word, WordKnowledgeLevel, WorkbookPreview, WorkbookImportResult, EnrichResult} from '@/features/words/types/wordTypes'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {DEFAULT_WORD_PROGRESS_SOURCE, type SortOption} from '@/features/words/model/wordDomain'
@@ -103,14 +104,7 @@ export async function exportWordsWorkbook(template = false, options: {languages?
     ? decodeURIComponent(filenameStarMatch[1])
     : filenameMatch?.[1] ?? fallbackFilename
 
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 0)
+  await saveFile(blob, filename)
 }
 
 export type WordListParams = {

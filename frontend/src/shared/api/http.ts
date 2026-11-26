@@ -2,10 +2,12 @@ export {ApiError} from './apiError'
 
 import {ApiError} from './apiError'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
+import {isIOSApp} from '@/shared/platform'
 
 function normalizeBaseUrl(raw: string | undefined): string {
   const trimmed = raw?.trim()
   if (trimmed) return trimmed.replace(/\/+$/, '')
+  if (isIOSApp) return 'https://lexora.zuf.uk'
   if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, '')
   return ''
 }
@@ -43,7 +45,17 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
 export async function networkRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = buildRequestHeaders(init.headers, init.body)
 
-  const response = await fetch(buildApiUrl(path), {...init, headers, credentials: 'include'})
+  let response: Response
+  try {
+    response = await fetch(buildApiUrl(path), {...init, headers, credentials: 'include'})
+  } catch (error) {
+    // Report native URL loading errors like browser fetch failures so existing
+    // offline and save recovery can handle them.
+    if (isIOSApp && typeof error === 'object' && error !== null && 'code' in error && error.code === 'NSURLErrorDomain') {
+      throw Object.assign(new TypeError('Could not reach Lexora'), {cause: error})
+    }
+    throw error
+  }
 
   if (response.status === 401) throw new ApiError(401, 'Not authenticated')
 

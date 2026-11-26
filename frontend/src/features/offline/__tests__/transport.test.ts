@@ -3,10 +3,12 @@ import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
+  ios: false,
   adapter: undefined as undefined | ((path: string, init: RequestInit, network: (path: string, init: RequestInit) => Promise<unknown>) => Promise<unknown>),
   network: vi.fn(), write: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
 }))
 vi.mock('@/shared/api/http', () => ({networkRequest: fake.network, setRequestAdapter: (adapter: typeof fake.adapter) => { fake.adapter = adapter }}))
+vi.mock('@/shared/platform', () => ({get isIOSApp() { return fake.ios }}))
 vi.mock('../storage', () => ({
   readReplica: async () => structuredClone(fake.replica),
   writeReplica: async (replica: Replica) => { fake.write(); fake.replica = structuredClone(replica) },
@@ -36,7 +38,36 @@ async function setup() {
   return {offline, refresh, request}
 }
 
-afterEach(() => { Reflect.deleteProperty(navigator, 'serviceWorker'); vi.restoreAllMocks(); vi.unstubAllGlobals() })
+afterEach(() => {
+  fake.ios = false
+  Reflect.deleteProperty(navigator, 'serviceWorker')
+  Reflect.deleteProperty(navigator, 'locks')
+  localStorage.removeItem('lexora-offline-logout')
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+})
+
+it('saves the library in the packaged iOS app without a service worker', async () => {
+  fake.ios = true
+  Object.defineProperty(navigator, 'locks', {configurable: true, value: {}})
+  const {offline} = await setup()
+  fake.network.mockResolvedValueOnce(structuredClone(fake.replica!)).mockResolvedValueOnce(undefined)
+  await offline.saveOffline()
+  expect(offline.offlineStatus()).toMatchObject({saved: true, words: 1})
+  expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/api/offline/snapshot', '/api/smart-review'])
+})
+
+it('retries deferred iOS sign-out with the session CSRF token', async () => {
+  fake.ios = true
+  Object.defineProperty(navigator, 'locks', {configurable: true, value: {}})
+  const {request} = await setup()
+  localStorage.setItem('lexora-offline-logout', '1')
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  fake.network.mockResolvedValueOnce({csrf_token: 'test-only'}).mockResolvedValueOnce({ok: true})
+  await expect(request('/auth/session')).resolves.toMatchObject({authenticated: false})
+  expect(fake.network).toHaveBeenLastCalledWith('/auth/logout', {method: 'POST', headers: {'X-CSRF-Token': 'test-only'}})
+  expect(localStorage.getItem('lexora-offline-logout')).toBeNull()
+})
 
 it.each([
   'levels=4', 'search=calm', 'cefr_levels=B2', 'positions=noun', 'topic_ids=8',

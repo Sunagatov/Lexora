@@ -1,6 +1,7 @@
 import {useEffect, useId, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import {ApiError} from '@/shared/api/apiError'
+import {saveFile} from '@/shared/saveFile'
 import {redirectIfUnauthorized} from '@/features/auth/lib/redirectIfUnauthorized'
 import {
   applyWordsWorkbook,
@@ -20,18 +21,12 @@ import {languagePreferences, languageProfile} from '@/features/languages/api'
 type Props = {file: File; onClose: () => void; onApplied: () => Promise<unknown>}
 
 function download(value: unknown, name: string, csv = false) {
-  const url = URL.createObjectURL(
+  return saveFile(
     new Blob([csv ? String(value) : JSON.stringify(value, null, 2)], {
       type: csv ? 'text/csv;charset=utf-8' : 'application/json',
     }),
+    name,
   )
-  const link = document.createElement('a')
-  link.href = url
-  link.download = name
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 function downloadIssues(preview: WorkbookPreview) {
@@ -46,7 +41,7 @@ function downloadIssues(preview: WorkbookPreview) {
     ...preview.errors.map((item) => ['Error', item.sheet, item.row, item.message]),
     ...preview.warnings.map((item) => ['Warning', item.sheet, item.row, item.message]),
   ]
-  download(
+  return download(
     '\uFEFF' + rows.map((row) => row.map(cell).join(',')).join('\r\n'),
     'lexora-import-issues.csv',
     true,
@@ -217,7 +212,7 @@ export function WorkbookImportDialog({file, onClose, onApplied}: Props) {
               disabled={pending}
               onClick={async () => {
                 try {
-                  download(
+                  await download(
                     await fetchWorkbookRecovery(result.batch_id),
                     `lexora-recovery-${result.batch_id}.json`,
                   )
@@ -300,7 +295,7 @@ export function WorkbookImportDialog({file, onClose, onApplied}: Props) {
                 <Issues title="Errors — fix these before applying" items={preview.errors} />
                 <Issues title="Quality warnings" items={preview.warnings} />
                 {(preview.errors.length > 0 || preview.warnings.length > 0) && (
-                  <button className="btn btn-ghost" onClick={() => downloadIssues(preview)}>
+                  <button className="btn btn-ghost" onClick={() => { void downloadIssues(preview).catch(reportError) }}>
                     Download issues report
                   </button>
                 )}
@@ -344,7 +339,7 @@ export function WorkbookImportDialog({file, onClose, onApplied}: Props) {
                 )}
                 <button
                   className="btn btn-ghost"
-                  onClick={() => download(preview, 'lexora-import-preview.json')}
+                  onClick={() => { void download(preview, 'lexora-import-preview.json').catch(reportError) }}
                 >
                   Download full preview
                 </button>

@@ -63,6 +63,8 @@ Frontend source lives in `frontend/src/`.
 - `frontend/src/styles/` contains CSS split by UI area.
 - `frontend/src/test/` contains test setup.
 - `frontend/package.json` defines frontend scripts and dependencies.
+- `frontend/capacitor.config.ts` and `frontend/ios/` define the iPhone app that
+  bundles the Vite build. See `frontend/README.md` for build and device checks.
 
 Active frontend feature areas:
 

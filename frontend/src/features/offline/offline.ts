@@ -9,6 +9,8 @@ import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 import {preferencesSnapshot} from '@/features/preferences/api'
 import {selectWordMix} from '@/features/smart-review/model/selectWordMix'
+import {isIOSApp} from '@/shared/platform'
+import {saveFile} from '@/shared/saveFile'
 
 type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; topicAliases?: Record<number, number>}
 let status: Status = {saved: false, pending: 0, busy: false, offline: !navigator.onLine, words: 0, topics: 0}
@@ -38,6 +40,10 @@ function isNetworkFailure(error: unknown) {
     || (error instanceof ApiError && error.status >= 500)
 }
 
+function supportsIOSOffline() {
+  return 'indexedDB' in window && !!navigator.locks && typeof globalThis.crypto?.randomUUID === 'function'
+}
+
 function newMix(replica: Replica): StudyQueue {
   replica.mixReviewedAt ??= {}
   for (const mix of [...Object.values(replica.mixes ?? {}), ...(replica.mix ? [replica.mix] : [])]) {
@@ -65,7 +71,7 @@ function readMix(replica: Replica) {
 }
 
 async function localRequest(replica: Replica, path: string, init: RequestInit) {
-  const url = new URL(path, window.location.origin), route = url.pathname, params = url.searchParams
+  const url = new URL(path, window.location.href), route = url.pathname, params = url.searchParams
   const method = init.method?.toUpperCase() ?? 'GET'
   const scope = scopedReplica(replica)
   const body = typeof init.body === 'string' ? JSON.parse(init.body) as Record<string, unknown> : {}
@@ -144,7 +150,7 @@ const UNHANDLED = Symbol('unhandled')
 export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Promise<void> {
   refreshQueries = onRefresh
   initialized ??= (async () => {
-    if (!('indexedDB' in window)) return
+    if (!('indexedDB' in window) || (isIOSApp && !supportsIOSOffline())) return
     try { report(await readReplica()) } catch { return }
     if ('BroadcastChannel' in window) {
       channel = new BroadcastChannel('lexora-offline')
@@ -154,7 +160,17 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
       if (path === '/auth/session') {
         if (localStorage.getItem('lexora-offline-logout')) {
           if (navigator.onLine) {
-            await network('/auth/logout', {method: 'POST'})
+            if (isIOSApp) {
+              // A native request still needs the session's CSRF token.
+              try {
+                const session = await network<{csrf_token: string}>('/auth/session', {signal: AbortSignal.timeout(10_000)})
+                await network('/auth/logout', {method: 'POST', headers: {'X-CSRF-Token': session.csrf_token}})
+              } catch (error) {
+                if (!(error instanceof ApiError && error.status === 401)) throw error
+              }
+            } else {
+              await network('/auth/logout', {method: 'POST'})
+            }
             localStorage.removeItem('lexora-offline-logout')
           }
           return {authenticated: false, csrf_token: ''}
@@ -195,7 +211,7 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
     window.addEventListener('offline', reconnect)
     window.addEventListener('focus', () => { if (navigator.onLine) void syncOffline() })
     window.setInterval(() => { if (navigator.onLine && status.pending && document.visibilityState === 'visible') void syncOffline() }, 60_000)
-    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    if (!isIOSApp && 'serviceWorker' in navigator && import.meta.env.PROD) {
       void navigator.serviceWorker.register('/sw.js', {updateViaCache: 'none'}).catch(() => {})
     }
   })()
@@ -207,17 +223,21 @@ export async function saveOffline() {
   notify({busy: true, error: undefined})
   try {
     if (status.pending) throw new Error('Sync or export your pending changes before replacing the saved copy.')
-    if (!('serviceWorker' in navigator)) throw new Error('Offline saving requires HTTPS and a current browser.')
-    const registration = await navigator.serviceWorker.register('/sw.js', {updateViaCache: 'none'})
-    const worker = registration.installing ?? registration.waiting ?? registration.active
-    if (worker && worker.state !== 'activated') await new Promise<void>((resolve, reject) => {
-      const timer = window.setTimeout(() => reject(new Error('The offline app could not finish downloading. Try again online.')), 60_000)
-      worker.addEventListener('statechange', () => {
-        if (worker.state === 'activated') { clearTimeout(timer); resolve() }
-        if (worker.state === 'redundant') { clearTimeout(timer); reject(new Error('Could not cache the app. Please retry.')) }
+    if (isIOSApp) {
+      if (!supportsIOSOffline()) throw new Error('Offline saving is unavailable in this version of iOS. You can still study online.')
+    } else {
+      if (!('serviceWorker' in navigator)) throw new Error('Offline saving requires HTTPS and a current browser.')
+      const registration = await navigator.serviceWorker.register('/sw.js', {updateViaCache: 'none'})
+      const worker = registration.installing ?? registration.waiting ?? registration.active
+      if (worker && worker.state !== 'activated') await new Promise<void>((resolve, reject) => {
+        const timer = window.setTimeout(() => reject(new Error('The offline app could not finish downloading. Try again online.')), 60_000)
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'activated') { clearTimeout(timer); resolve() }
+          if (worker.state === 'redundant') { clearTimeout(timer); reject(new Error('Could not cache the app. Please retry.')) }
+        })
       })
-    })
-    await navigator.serviceWorker.ready
+      await navigator.serviceWorker.ready
+    }
     const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {headers: {'X-Lexora-All-Languages': 'true'}, signal: AbortSignal.timeout(60_000)})
     if (snapshot.version !== 1) throw new Error('Update the page before saving offline.')
     let mix: StudyQueue | undefined
@@ -293,8 +313,6 @@ export async function removeOffline() {
 export async function exportOfflineBackup() {
   const replica = await withOfflineLock(readReplica)
   if (!replica) return
-  const url = URL.createObjectURL(new Blob([JSON.stringify(replica, null, 2)], {type: 'application/json'}))
-  const link = document.createElement('a')
-  link.href = url; link.download = `lexora-offline-${new Date().toISOString().slice(0, 10)}.json`; link.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
+  await saveFile(new Blob([JSON.stringify(replica, null, 2)], {type: 'application/json'}),
+    `lexora-offline-${new Date().toISOString().slice(0, 10)}.json`)
 }

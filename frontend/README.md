@@ -20,6 +20,37 @@ below 6.1. Upgrade it when the lint adapter supports TypeScript 7.
 The minimatch override supplies the patched 11.x release to ESLint and its
 TypeScript adapter while their dependency ranges still select vulnerable 10.x.
 
+## iPhone app
+
+Capacitor packages the same React app in [`ios/`](ios/) using Swift Package
+Manager. The app connects to `https://lexora.zuf.uk` by default. A build can
+select a different HTTPS API through `VITE_API_BASE_URL`. Sign-in uses the
+existing owner session and CSRF checks. Capacitor provides the native HTTP
+transport so the packaged app can use the API from its local WebView origin.
+
+From this directory, install the locked dependencies and sync the web build:
+
+```sh
+npm ci
+npm run ios:sync
+```
+
+Open the synced project on a Mac with Xcode 26 or newer using `npx cap open ios`.
+The iPhone needs iOS 16.4 or newer to match the Vite build's WebKit target.
+In **Signing & Capabilities**, pick your own development team, select your
+connected iPhone, and run the App target. The bundle ID is `uk.zuf.lexora`.
+Keep signing credentials outside Git. Run `npm run ios:sync` again after changing
+the frontend or Capacitor configuration.
+
+First-device checks: sign in, relaunch to check session persistence, load words,
+change a level and check it on the website, then test Daily Mix, pronunciation,
+scrolling and sign-out. Export a workbook and select **Save to Files** in the
+share sheet, then open or import that workbook to verify the file. The app
+already has the web assets bundled, so offline saving only
+downloads library data. It uses the existing device storage where the WebView
+supports it. Test saving, relaunching in airplane mode and syncing after
+reconnect on the actual device.
+
 Offline mode is available in production builds: `npm run build`, then
 `npm run preview` (with a same-origin API proxy/server), or the frontend web server.
 The Vite development server does not install the service worker. Test with a full
