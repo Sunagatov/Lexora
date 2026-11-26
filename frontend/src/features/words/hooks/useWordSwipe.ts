@@ -1,5 +1,6 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef} from 'react'
 import type {PointerEvent} from 'react'
+import {useDragPreview} from '@/shared/hooks/useDragPreview'
 
 export const SWIPE_THRESHOLD = 72
 
@@ -7,36 +8,36 @@ export function swipeDirection(dx: number, dy: number): 4 | 5 | null {
   return Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.5 ? dx > 0 ? 4 : 5 : null
 }
 
-function scrollOwner(element: HTMLElement): HTMLElement | null {
+function scrollOwner(element: HTMLElement) {
   for (let parent = element.parentElement; parent; parent = parent.parentElement) {
-    if (parent.scrollHeight > parent.clientHeight && /^(auto|scroll)$/.test(getComputedStyle(parent).overflowY)) return parent
+    const limit = parent.scrollHeight - parent.clientHeight
+    if (limit > 0 && /^(auto|scroll)$/.test(getComputedStyle(parent).overflowY)) {
+      return {element: parent, top: parent.scrollTop, limit}
+    }
   }
   return null
 }
 
 export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean) {
   const start = useRef<{x: number; y: number; id: number; blocked: boolean; horizontal?: boolean;
-    sideways?: boolean; vertical?: boolean; scroll: HTMLElement | null; scrollTop: number} | null>(null)
+    sideways?: boolean; vertical?: boolean; scroll?: ReturnType<typeof scrollOwner>} | null>(null)
   const suppressClick = useRef(false)
-  const [drag, setDrag] = useState({x: 0, y: 0})
-  function reset() { start.current = null; setDrag({x: 0, y: 0}) }
-  function begin(event: PointerEvent<HTMLElement>, fromAction = false) {
+  const {drag, moveDrag, clearDrag} = useDragPreview()
+  function reset() { start.current = null; clearDrag() }
+  function begin(event: PointerEvent<HTMLElement>) {
     if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return
     if (!event.currentTarget.contains(event.target as Node)
-      || (event.target as Element).closest('input, select, textarea, [data-no-swipe]')
-      || (!fromAction && (event.target as Element).closest('button'))) return
+      || (event.target as Element).closest('input, select, textarea, [data-no-swipe]')) return
     // Leave the browser's screen-edge back gesture available.
     if (event.pointerType === 'touch' && (event.clientX < 24 || event.clientX > window.innerWidth - 24)) return
-    const scroll = scrollOwner(event.currentTarget)
-    start.current = {x: event.clientX, y: event.clientY, id: event.pointerId, blocked: disabled,
-      scroll, scrollTop: scroll?.scrollTop ?? 0}
+    start.current = {x: event.clientX, y: event.clientY, id: event.pointerId, blocked: disabled}
   }
   useEffect(() => {
     if (disabled) {
       if (start.current) start.current.blocked = true
-      setDrag({x: 0, y: 0})
+      clearDrag()
     }
-  }, [disabled])
+  }, [disabled, clearDrag])
   return {
     offset: disabled ? 0 : Math.max(-120, Math.min(120, drag.x)),
     ready: !disabled && swipeDirection(drag.x, drag.y) !== null,
@@ -48,14 +49,6 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
       }
       // Controls can stop pointerdown bubbling. Clear a previous drag's click
       // suppression before their handlers run, so the next heart tap works.
-      suppressClick.current = false
-      // Badge/menu buttons are also common starting points for left swipes.
-      // Observe them before they stop bubbling, but leave portalled dialogs alone.
-      if (event.currentTarget.contains(event.target as Node)
-        && (event.target as Element).closest('button')) begin(event, true)
-    },
-    onPointerDown(event: PointerEvent<HTMLElement>) {
-      // A new interaction must work even if a cancelled drag produced no click.
       suppressClick.current = false
       begin(event)
     },
@@ -70,12 +63,15 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
       if (!point.vertical && event.pointerType === 'touch' && point.sideways && Math.abs(dy) > 10 && Math.abs(dy) >= Math.abs(dx)) {
         point.vertical = true
         point.blocked = true
-        setDrag({x: 0, y: 0})
+        // Read the scroller once, only when the browser needs help panning.
+        point.scroll = scrollOwner(event.currentTarget)
+        clearDrag()
       }
       if (point.vertical) {
         suppressClick.current = true
         if (point.scroll) {
-          point.scroll.scrollTop = Math.max(0, Math.min(point.scroll.scrollHeight - point.scroll.clientHeight, point.scrollTop - dy))
+          const {element, top, limit} = point.scroll
+          element.scrollTop = Math.max(0, Math.min(limit, top - dy))
         }
         return
       }
@@ -98,7 +94,7 @@ export function useWordSwipe(onSwipe: (level: 4 | 5) => void, disabled: boolean)
         point.horizontal = true
         event.currentTarget.setPointerCapture(event.pointerId)
       }
-      if (point.horizontal) { suppressClick.current = true; setDrag({x: dx, y: dy}) }
+      if (point.horizontal) { suppressClick.current = true; moveDrag(dx, dy) }
     },
     onPointerUp(event: PointerEvent<HTMLElement>) {
       const point = start.current

@@ -79,6 +79,9 @@ not only the word heading. Long examples keep native vertical scrolling and
 horizontal rating gestures; the heading retains four-way review gestures.
 When the content fits again after a resize, four-way gestures resume across it.
 Pinch zoom is preserved, and adding a second finger cancels a pending gesture.
+Drag previews are updated once per frame. Swiping in single-card review shows
+the next word while the previous rating and progress save. The next rating
+unlocks when the save finishes. A failure returns to the previous card for retry.
 
 The document root disables vertical pull-to-refresh. Word lists and the main
 content scroller contain vertical overscroll, so reaching either end does not
@@ -86,6 +89,8 @@ hand the gesture to the page. This uses native CSS scrolling; vertical touch
 scrolling, momentum and pinch zoom remain available without a blocking touchmove
 handler. Mobile browser checks should cover both directions, list boundaries,
 short/empty lists, and starting a scroll on a word's text or action buttons.
+The card still highlights on touch and focus. The mobile list controls use solid
+backgrounds to keep the scrolling surface free of backdrop blur.
 
 The navigation drawer locks each touch gesture to its initial direction: a
 vertical scroll cannot later dismiss it. Deliberate left drags follow the finger

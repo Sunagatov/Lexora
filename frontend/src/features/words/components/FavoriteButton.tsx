@@ -1,58 +1,54 @@
-import { useMutation, useMutationState, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useSyncExternalStore } from 'react'
+import { notifyManager, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AccountIcon } from '@/features/preferences/AccountIcon'
-import { updateWord, type WordListResponse } from '@/features/words/api/wordsApi'
+import { updateWord, type WordSummaryParams } from '@/features/words/api/wordsApi'
+import { patchWordFavorite } from '@/features/words/model/wordCache'
 import type { Word } from '@/features/words/types/wordTypes'
-import type { StudyQueue } from '@/features/smart-review/types/studyQueueTypes'
 import { queryKeys } from '@/app/queryKeys'
 
 type FavoriteChange = {wordId: number; isFavorite: boolean}
+const FAVORITE_KEY = 'word-favorite'
 
 export function FavoriteButton({ word }: { word: Word }) {
   const client = useQueryClient()
-  const mutationKey = ['word-favorite', word.id]
-  const pendingValues = useMutationState({
-    filters: {mutationKey, exact: true, status: 'pending'},
-    select: item => (item.state.variables as FavoriteChange).isFavorite,
-  })
-  const pending = pendingValues.length > 0
-  const isFavorite = pending ? pendingValues[pendingValues.length - 1] : !!word.is_favorite
-  function patchFavorite(wordId: number, isFavorite: boolean) {
-    // Patch only this flag: a simultaneous rating must not get overwritten.
-    const patch = (item: Word) =>
-      item.id === wordId ? { ...item, is_favorite: isFavorite } : item
-    client.setQueryData<Word>(queryKeys.word(wordId), (current) =>
-      current ? patch(current) : current,
-    )
-    client.setQueriesData<Word[]>({ queryKey: queryKeys.words }, (current) => current?.map(patch))
-    client.setQueriesData<WordListResponse>({ queryKey: queryKeys.wordList }, (current) =>
-      current ? { ...current, words: current.words.map(patch) } : current,
-    )
-    client.setQueryData<StudyQueue>(queryKeys.smartReview, (current) =>
-      current
-        ? {
-            ...current,
-            items: current.items.map((item) => ({ ...item, word: patch(item.word) })),
-          }
-        : current,
-    )
+  const cache = client.getMutationCache()
+  const wordId = word.id
+  const mutationKey = [FAVORITE_KEY, wordId]
+  const subscribe = useCallback((notify: () => void) => {
+    const notifySettled = notifyManager.batchCalls(notify)
+    return cache.subscribe(event => {
+      // Limit notifications to saves for this word.
+      if (event.type !== 'updated' && event.type !== 'removed') return
+      const key = event.mutation.options.mutationKey
+      if (key?.[0] !== FAVORITE_KEY || key[1] !== wordId) return
+      if (event.type === 'updated' && event.action.type === 'pending') notify()
+      // Let the confirmed word reach the list before removing the optimistic flag.
+      else notifySettled()
+    })
+  }, [cache, wordId])
+  function pendingFavorite() {
+    return cache.find<Word, Error, FavoriteChange>({mutationKey, status: 'pending'})?.state.variables?.isFavorite
   }
+  const optimistic = useSyncExternalStore(subscribe, pendingFavorite)
+  const pending = optimistic !== undefined
+  const isFavorite = optimistic ?? !!word.is_favorite
+
   const mutation = useMutation({
     mutationKey,
     mutationFn: ({wordId, isFavorite}: FavoriteChange) => updateWord(wordId, {is_favorite: isFavorite}),
-    onMutate: async ({wordId, isFavorite}) => {
-      // In-flight reads must not replace the optimistic flag with older data.
+    onSuccess: async (updated, {wordId}) => {
+      // The pending flag gives instant feedback. Touch the word caches once,
+      // when the save is confirmed, and prevent older reads from replacing it.
       await Promise.all([queryKeys.word(wordId), queryKeys.words, queryKeys.wordList, queryKeys.smartReview]
-        .map(queryKey => client.cancelQueries({queryKey})))
-      patchFavorite(wordId, isFavorite)
-    },
-    onSuccess: (updated, {wordId}) => {
-      patchFavorite(wordId, !!updated.is_favorite)
+        .map(queryKey => client.cancelQueries({
+          queryKey, fetchStatus: 'fetching', predicate: query => query.state.data !== undefined,
+        })))
+      patchWordFavorite(client, wordId, !!updated.is_favorite)
+      const favoriteScope = ({queryKey}: {queryKey: readonly unknown[]}) =>
+        (queryKey[1] as WordSummaryParams | undefined)?.favoritesOnly === true
       // Leave the visible page intact until navigation/filtering, as requested.
-      void client.invalidateQueries({ queryKey: queryKeys.wordList, refetchType: 'none' })
-      void client.invalidateQueries({ queryKey: queryKeys.wordSummary })
-    },
-    onError: (_error, {wordId, isFavorite}) => {
-      patchFavorite(wordId, !isFavorite)
+      void client.invalidateQueries({queryKey: queryKeys.wordList, predicate: favoriteScope, refetchType: 'none'})
+      void client.invalidateQueries({queryKey: queryKeys.wordSummary, predicate: favoriteScope})
     },
   })
   return (
@@ -70,8 +66,8 @@ export function FavoriteButton({ word }: { word: Word }) {
           event.stopPropagation()
           // React may not have rendered disabled yet; also guard other visible
           // controls for this same word to prevent concurrent stale toggles.
-          if (client.isMutating({mutationKey, exact: true})) return
-          mutation.mutate({wordId: word.id, isFavorite: !isFavorite})
+          if (pendingFavorite() !== undefined) return
+          mutation.mutate({wordId, isFavorite: !isFavorite})
         }}
       >
         <AccountIcon name="heart" />

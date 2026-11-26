@@ -126,7 +126,6 @@ select option:disabled { color: var(--text-2); }
 
 @media (hover: none) and (pointer: coarse) {
   .fab:hover,
-  .word-card:hover,
   .topic-item:hover,
   .sidebar-footer-btn:hover,
   .dropdown-trigger:hover,

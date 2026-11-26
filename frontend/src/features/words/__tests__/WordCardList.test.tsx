@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
-import {act, fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 import {describe, expect, it, vi} from 'vitest'
 import {WordCardList} from '@/features/words/components/WordCardList'
@@ -164,7 +164,7 @@ describe('WordCardList', () => {
       Object.assign(event, {pointerType: 'touch', pointerId: 1, isPrimary: true, clientX: x, clientY: 100})
       fireEvent(card, event)
       if (type === 'pointermove') {
-        expect(card.style.getPropertyValue('--swipe-x')).toBe('95px')
+        await waitFor(() => expect(card.style.getPropertyValue('--swipe-x')).toBe('95px'))
         expect(card.classList.contains('swipe-dragging')).toBe(true)
       }
     }

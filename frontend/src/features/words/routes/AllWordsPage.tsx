@@ -14,6 +14,7 @@ import {WordCollectionToolbar} from '@/features/words/components/WordCollectionT
 import {WordCardList} from '@/features/words/components/WordCardList'
 import {WordPagination} from '@/features/words/components/WordPagination'
 import {useVocabulary} from '@/features/words/hooks/useVocabulary'
+import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
@@ -27,6 +28,7 @@ export function AllWordsPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const s = useVocabulary()
+  const update = useWordUpdate(() => {}, 'manual')
   const {wordSearch: search, posFilter: pos, cefrFilter: cefr, levelFilter: level, completeness, page, pageSize, wordsQuery} = s
   const isMobile = useIsMobile()
   const [actionError, setActionError] = useState<string | null>(null)
@@ -110,9 +112,7 @@ export function AllWordsPage() {
     setPendingWordIds(new Set(pendingIds.current))
     setActionError(null)
     try {
-      await batchUpdateWords({word_ids: [wordId], knowledge_level: newLevel})
-      patchWordLevel(queryClient, wordId, newLevel)
-      invalidateWordDependencies(queryClient, [queryKeys.smartReview, queryKeys.word(wordId)], {preserveWordPages: true})
+      await update.updateLevelAsync(wordId, newLevel)
       return true
     } catch (error) {
       redirectIfUnauthorized(error)
@@ -184,8 +184,9 @@ export function AllWordsPage() {
           actions={hasFilters ? [{label: 'Reset filters', onClick: resetFilters, variant: 'secondary'}] : [{label: 'Back Home', onClick: () => navigate(routes.home), variant: 'secondary'}]}
         />
       ) : (
-        <>
-        <div className="word-table-wrap">
+        isMobile ? <WordCardList words={words} wordList={wordList} pendingWordId={null}
+          pendingWordIds={bulkPending ? new Set(words.map(word => word.id)) : pendingWordIds} onUpdate={handleLevelChange} />
+        : <div className="word-table-wrap">
           <table className="word-table" aria-label="All words table">
             <thead>
               <tr>
@@ -263,9 +264,6 @@ export function AllWordsPage() {
             </tbody>
           </table>
         </div>
-        {isMobile && <WordCardList words={words} wordList={wordList} pendingWordId={null}
-          pendingWordIds={bulkPending ? new Set(words.map(word => word.id)) : pendingWordIds} onUpdate={handleLevelChange} />}
-        </>
       )}
 
       <WordPagination page={page} totalPages={totalPages} pageSize={pageSize} onPage={s.setPage} onPageSize={s.setPageSize} />

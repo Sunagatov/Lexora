@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import type {StudyQueue} from '../types/studyQueueTypes'
 import {loadSwipeSession, saveSwipeSession, type SwipeRating, type SwipeSession} from '../model/swipeSession'
 import {useSmartReview} from './useSmartReview'
@@ -13,8 +13,11 @@ export function useSwipeSession(queue: StudyQueue, language: string) {
   const failedRating = useRef<SwipeRating | null>(null)
   const update = useWordUpdate(() => {}, 'smart_review')
   const review = useSmartReview(false)
-  const items = new Map(queue.items.map(item => [item.id, item]))
+  const items = useMemo(() => new Map(queue.items.map(item => [item.id, item])), [queue.items])
   const item = items.get(session.order[session.cursor])
+  // Preview the next word while saving. Progress only advances durably once
+  // both writes succeed, so a failure returns to the word that needs retry.
+  const nextItem = busy ? items.get(session.order[session.cursor + 1]) : undefined
 
   function change(next: SwipeSession) {
     current.current = next
@@ -66,7 +69,7 @@ export function useSwipeSession(queue: StudyQueue, language: string) {
     if (!ids.length || lock.current || current.current.pending) return
     change({...current.current, order: ids, cursor: 0})
   }
-  return {session, item, busy, error, rate, skip, navigate, revisit,
+  return {session, item, nextItem, busy, error, rate, skip, navigate, revisit,
     retry: () => {
       const level = current.current.pending?.level ?? failedRating.current
       if (level) void rate(level)

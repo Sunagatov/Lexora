@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {swipeDirection, useWordSwipe} from '../hooks/useWordSwipe'
 import {createPortal} from 'react-dom'
 
@@ -112,7 +112,7 @@ it('does not rate a word from a portalled menu', () => {
   expect(onSwipe).not.toHaveBeenCalled()
 })
 
-it.each([[100, 195, 4], [195, 100, 5]])('commits a deliberate touch gesture and suppresses the following link click (%s Р Р†РІР‚В РІР‚в„ў %s)', (start, end, level) => {
+it.each([[100, 195, 4], [195, 100, 5]])('commits a touch gesture from %s to %s and suppresses the link click', async (start, end, level) => {
   const onSwipe = vi.fn(), click = vi.fn()
   window.matchMedia = vi.fn().mockReturnValue({matches: true})
   function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}><a onClick={click}>word {offset}</a></article> }
@@ -121,7 +121,7 @@ it.each([[100, 195, 4], [195, 100, 5]])('commits a deliberate touch gesture and 
   card.setPointerCapture = vi.fn()
   touch(card, 'pointerdown', start, 100)
   touch(card, 'pointermove', end, 105)
-  expect(screen.getByText(`word ${end - start}`)).toBeTruthy()
+  await screen.findByText(`word ${end - start}`)
   touch(card, 'pointerup', end, 105)
   expect(onSwipe).toHaveBeenCalledExactlyOnceWith(level)
   fireEvent.click(screen.getByText('word 0'), {detail: 1})
@@ -287,7 +287,7 @@ it('stops moving a card when saving disables it during a drag', () => {
 })
 
 
-it('cancels a swipe dragged back below the threshold without opening the word', () => {
+it('cancels a swipe dragged back below the threshold without opening the word', async () => {
   const onSwipe = vi.fn(), click = vi.fn()
   function Card() { const {offset, ready, ...events} = useWordSwipe(onSwipe, false); return <article {...events} data-testid="card" data-ready={ready}><a onClick={click}>word {offset}</a></article> }
   render(<Card />)
@@ -295,9 +295,9 @@ it('cancels a swipe dragged back below the threshold without opening the word', 
   card.setPointerCapture = vi.fn()
   touch(card, 'pointerdown', 100, 100)
   touch(card, 'pointermove', 195, 105)
-  expect(card.dataset.ready).toBe('true')
+  await waitFor(() => expect(card.dataset.ready).toBe('true'))
   touch(card, 'pointermove', 135, 105)
-  expect(card.dataset.ready).toBe('false')
+  await waitFor(() => expect(card.dataset.ready).toBe('false'))
   touch(card, 'pointerup', 135, 105)
   fireEvent.click(screen.getByText('word 0'), {detail: 1})
   expect(onSwipe).not.toHaveBeenCalled()

@@ -55,23 +55,15 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
   const settingsSaving = navigator.onLine && preferences.status === 'saving'
   const [view, selectView] = useWordMixView()
   const [failedLevel, setFailedLevel] = useState<{wordId: number; level: WordKnowledgeLevel} | null>(null)
-  const words  = useMemo(() => (queue?.items ?? []).map((item) => item.word), [queue])
+  const words = useMemo(() => view === 'list' ? (queue?.items ?? []).map(item => item.word) : [], [queue?.items, view])
   const defaultPageSize = preferences.values.page_size
   const isMobile = useIsMobile()
   const [panelWordId, setPanelWordId] = useState<number | null>(null)
-  const [isTransitioning, setIsTransitioning] = useState(false)
   const queueId = queue?.id ?? null
-  const completedCount = queue?.completed_count ?? 0
 
   useEffect(() => { setPanelWordId(null); setFailedLevel(null) }, [queueId])
-  useEffect(() => {
-    if (queueId === null) return
-    setIsTransitioning(true)
-    const timer = window.setTimeout(() => setIsTransitioning(false), 240)
-    return () => window.clearTimeout(timer)
-  }, [completedCount, panelWordId, queueId])
 
-  const filter = useWordFilter(words, {defaultPageSize, isLoading, topics})
+  const filter = useWordFilter(words, {defaultPageSize, isLoading, topics, syncUrl: view === 'list'})
   useEffect(() => {
     if (panelWordId !== null && !filter.pageWords.some(word => word.id === panelWordId)) {
       setPanelWordId(null)
@@ -114,7 +106,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
     )
   }
 
-  const splitClassName = `word-collection-split smart-review-word-content${isTransitioning || isRefreshing ? ' is-loading' : ''}${panelWordId && !isMobile ? ' has-panel' : ''}`
+  const splitClassName = `word-collection-split smart-review-word-content${isRefreshing ? ' is-loading' : ''}${panelWordId && !isMobile ? ' has-panel' : ''}`
 
   return (
     <div className="study-topic-panel">

@@ -245,12 +245,10 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: linear-gradient(180deg, var(--bg) 0%, rgba(240, 242, 248, 0.94) 88%, transparent 100%);
+    background: var(--bg);
     padding: 4px 0 6px;
     gap: 6px;
     flex-shrink: 0;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
   }
 
   .card.topic-header-card {
@@ -425,8 +423,6 @@
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.12);
     padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
   }
 
   .word-collection-scroll {
@@ -463,14 +459,6 @@
 
   .card:has(.word-table-wrap) {
     display: none;
-  }
-
-  :root[color-scheme="dark"] .sticky-controls {
-    background: linear-gradient(180deg, var(--bg) 0%, rgba(10, 15, 31, 0.94) 88%, transparent 100%);
-  }
-
-  :root[color-scheme="dark"] .pagination-bar {
-    background: rgba(26, 32, 44, 0.94);
   }
 
   /* Compact Daily Word Mix header on mobile */

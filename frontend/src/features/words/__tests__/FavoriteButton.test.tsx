@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { afterEach, expect, it, vi } from 'vitest'
 import { FavoriteButton } from '@/features/words/components/FavoriteButton'
 import { updateWord } from '@/features/words/api/wordsApi'
@@ -68,15 +68,44 @@ it.each([false, true])('immediately reflects a delayed save and deduplicates rap
   render(<QueryClientProvider client={client}><FavoriteButton word={{...word, is_favorite: wasFavorite}} /></QueryClientProvider>)
   const button = screen.getByRole('button')
   fireEvent.click(button)
-  fireEvent.click(button)
-  await waitFor(() => expect(updateWord).toHaveBeenCalledTimes(1))
   expect(button.getAttribute('aria-pressed')).toBe(String(!wasFavorite))
   expect(button.getAttribute('aria-busy')).toBe('true')
+  fireEvent.click(button)
+  await waitFor(() => expect(updateWord).toHaveBeenCalledTimes(1))
   complete({...word, is_favorite: !wasFavorite})
   await waitFor(() => expect(button.getAttribute('aria-busy')).toBe('false'))
 })
 
-it('shares a per-word save lock across visible controls and preserves a concurrent rating on rollback', async () => {
+it('keeps the new heart state visible as the list receives a successful save', async () => {
+  const client = new QueryClient({defaultOptions: {mutations: {retry: false}}})
+  const key = [...queryKeys.wordList, {page: 1}]
+  client.setQueryData(key, {words: [word]})
+  let complete!: (value: Word) => void
+  vi.mocked(updateWord).mockImplementationOnce(() => new Promise(resolve => { complete = resolve }))
+
+  function CachedHeart() {
+    const {data} = useQuery<{words: Word[]}>({queryKey: key, enabled: false})
+    return <FavoriteButton word={data!.words[0]} />
+  }
+  render(<QueryClientProvider client={client}><CachedHeart /></QueryClientProvider>)
+  const button = screen.getByRole('button')
+  const previousValues: (string | null)[] = []
+  const observer = new MutationObserver(records => previousValues.push(...records.map(record => record.oldValue)))
+  observer.observe(button, {attributeFilter: ['aria-pressed'], attributeOldValue: true})
+  try {
+    fireEvent.click(button)
+    await waitFor(() => expect(updateWord).toHaveBeenCalledOnce())
+    expect(button.getAttribute('aria-pressed')).toBe('false')
+    complete({...word, is_favorite: false})
+    await waitFor(() => expect(button.getAttribute('aria-busy')).toBe('false'))
+    expect(button.getAttribute('aria-pressed')).toBe('false')
+    expect(previousValues).toEqual(['true'])
+  } finally {
+    observer.disconnect()
+  }
+})
+
+it('shares instant feedback and the save lock without rewriting the list while pending', async () => {
   const client = new QueryClient({defaultOptions: {mutations: {retry: false}}})
   const key = [...queryKeys.wordList, {page: 1}]
   client.setQueryData(key, {words: [word], total: 1})
@@ -87,15 +116,16 @@ it('shares a per-word save lock across visible controls and preserves a concurre
   fireEvent.click(buttons[0])
   fireEvent.click(buttons[1])
   await waitFor(() => expect(updateWord).toHaveBeenCalledTimes(1))
-  await waitFor(() => expect(client.getQueryData<{words: Word[]}>(key)?.words[0].is_favorite).toBe(false))
+  expect(client.getQueryData<{words: Word[]}>(key)?.words[0]).toBe(word)
   for (const button of buttons) {
     expect(button.getAttribute('aria-pressed')).toBe('false')
     expect((button as HTMLButtonElement).disabled).toBe(true)
   }
-  client.setQueryData(key, {words: [{...word, is_favorite: false, knowledge_level: 5}], total: 1})
+  client.setQueryData(key, {words: [{...word, knowledge_level: 5}], total: 1})
   fail(new Error('Save failed'))
   await screen.findByRole('alert')
   expect(client.getQueryData<{words: Word[]}>(key)?.words[0]).toMatchObject({is_favorite: true, knowledge_level: 5})
+  expect(buttons[0].getAttribute('aria-pressed')).toBe('true')
   expect((buttons[0] as HTMLButtonElement).disabled).toBe(false)
   vi.mocked(updateWord).mockResolvedValueOnce({...word, is_favorite: false})
   fireEvent.click(buttons[0])

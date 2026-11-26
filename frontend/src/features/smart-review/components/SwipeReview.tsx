@@ -1,7 +1,7 @@
-import {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import type {CSSProperties} from 'react'
 import {Link} from 'react-router-dom'
-import type {StudyQueue} from '../types/studyQueueTypes'
+import type {StudyQueue, StudyQueueItem} from '../types/studyQueueTypes'
 import type {Word} from '@/features/words/types/wordTypes'
 import {languageProfile, languagePreferences} from '@/features/languages/api'
 import {LEVEL_LABELS} from '@/features/words/model/wordDomain'
@@ -53,12 +53,13 @@ function PronounceButton({word}: {word: Word}) {
   </div>
 }
 
-export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToList: () => void}) {
-  const language = queue.items[0]?.word.language ?? languagePreferences().language
+function SwipeCard({item, navigation, onAction, disabled}: {
+  item: StudyQueueItem
+  navigation: ReturnType<typeof useWordListNavigation>
+  onAction: (action: SwipeRating | 'skip') => void
+  disabled: boolean
+}) {
   const preferences = usePreferences()
-  const navigation = useWordListNavigation(undefined, {ids: queue.items.map(item => item.word_id), offset: 0, total: queue.items.length})
-  const s = useSwipeSession(queue, language)
-  const {session, item} = s
   const readingRef = useRef<HTMLDivElement>(null)
   const [readingScrollable, setReadingScrollable] = useState(false)
   useLayoutEffect(() => {
@@ -71,28 +72,65 @@ export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToL
     for (const child of element.children) observer?.observe(child)
     window.addEventListener('resize', measure, {passive: true})
     return () => { observer?.disconnect(); window.removeEventListener('resize', measure) }
-  }, [item?.id, preferences.translations])
-  function act(action: SwipeRating | 'skip') {
-    if (action === 'skip') s.skip()
-    else void s.rate(action)
-  }
-  const swipe = useMixSwipe(act, s.blocked || !preferences.swipes || !item)
+  }, [preferences.translations])
+  const swipeDisabled = disabled || !preferences.swipes
+  const swipe = useMixSwipe(onAction, swipeDisabled)
   const distance = Math.max(Math.abs(swipe.drag.x), Math.abs(swipe.drag.y))
   const direction = Math.abs(swipe.drag.x) > Math.abs(swipe.drag.y) ? (swipe.drag.x > 0 ? 4 : 5) : (swipe.drag.y > 0 ? 'skip' : 3)
   const preview = ACTIONS.find(action => action.value === direction)!
   const hasDrag = distance > 10
-  const skipped = queue.items.filter(entry => session.decisions[entry.id] === 'skip').map(entry => entry.id)
-  const unvisited = queue.items.filter(entry => !session.decisions[entry.id] && !entry.is_completed).map(entry => entry.id)
+  return <>
+    <div className="mix-card-stage">
+      <article {...swipe.events} className={`mix-card${hasDrag ? ` is-dragging mix-${preview.className}` : ''}`}
+        data-swipes-disabled={swipeDisabled || undefined}
+        style={{'--mix-x': `${Math.max(-135, Math.min(135, swipe.drag.x))}px`, '--mix-y': `${Math.max(-100, Math.min(100, swipe.drag.y))}px`, '--mix-angle': `${Math.max(-7, Math.min(7, swipe.drag.x / 25))}deg`} as CSSProperties}>
+        <div className="mix-card-top"><span>{[languageProfile(item.word.language).name, item.word.part_of_speech, item.word.cefr_level].filter(Boolean).join(' · ')}</span><PronounceButton word={item.word} /></div>
+        <div ref={readingRef} className="mix-card-scroll" data-mix-scrollable={readingScrollable} tabIndex={0} role="region" aria-label="Word information">
+          <div className="mix-card-word" data-mix-gesture-surface aria-label="Swipe word card">
+            <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
+            <EasyPronunciation word={item.word} />
+          </div>
+          {preferences.translations && <div className="mix-translations" lang={item.word.translation_language ?? 'ru'}>
+            {item.word.translation_entries.length ? item.word.translation_entries.join(' · ') : 'No translation saved'}
+          </div>}
+          {item.word.example_entries[0] && <div className="mix-card-example">
+            <span>Example</span><p>{item.word.example_entries[0]}</p>
+          </div>}
+        </div>
+        <div className="mix-card-footer"><span>{LEVEL_LABELS[item.word.knowledge_level ?? 0] ?? 'Not rated'}</span><Link to={routes.word(item.word_id)} state={navigation.state} onClick={event => navigation.openWord(event, item.word_id)}>Word details ↗</Link></div>
+        {hasDrag && <div className="mix-swipe-preview" aria-live="polite">{preview.arrow} {preview.label}<small>{swipe.action !== null ? 'Release to apply' : 'Keep swiping · Move back to cancel'}</small></div>}
+      </article>
+    </div>
+    <div className="mix-swipe-threshold" aria-hidden="true"><span style={{transform: `scaleX(${Math.min(1, distance / SWIPE_DISTANCE)})`}} /></div>
+  </>
+}
+
+export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToList: () => void}) {
+  const language = queue.items[0]?.word.language ?? languagePreferences().language
+  const wordList = useMemo(() => ({
+    ids: queue.items.map(item => item.word_id), offset: 0, total: queue.items.length,
+  }), [queue.items])
+  const navigation = useWordListNavigation(undefined, wordList)
+  const s = useSwipeSession(queue, language)
+  const {session, nextItem} = s
+  const item = nextItem ?? s.item
   const finished = !item
-  const position = finished ? session.order.length : session.cursor + 1
+  const position = finished ? session.order.length : session.cursor + (nextItem ? 2 : 1)
+  const skipped = finished ? queue.items.filter(entry => session.decisions[entry.id] === 'skip').map(entry => entry.id) : []
+  const unvisited = finished ? queue.items.filter(entry => !session.decisions[entry.id] && !entry.is_completed).map(entry => entry.id) : []
+  function act(action: SwipeRating | 'skip') {
+    if (action === 'skip') s.skip()
+    else void s.rate(action)
+  }
 
   return <section className="mix-swipe" aria-label="Daily Word Mix swipe review" aria-busy={s.busy}>
     <div className="mix-position">
       <progress aria-label="Mix position" value={position} max={session.order.length || 1} />
+      {s.busy && <span role="status">Saving rating…</span>}
       <span aria-live="polite">{position} / {session.order.length}</span>
     </div>
     <p className="mix-resume">Your place is saved on this device</p>
-    {(s.error || s.hasRecovery) && <div className="mix-error" role="alert">
+    {!s.busy && (s.error || s.hasRecovery) && <div className="mix-error" role="alert">
       {s.error || 'Your rating was saved. Retry to finish saving review progress.'}
       <button type="button" disabled={s.busy} onClick={s.retry}>Retry</button>
     </div>}
@@ -111,27 +149,7 @@ export function SwipeReview({queue, onBackToList}: {queue: StudyQueue; onBackToL
         {unvisited.length > 0 && <button type="button" className="mix-primary" onClick={() => s.revisit(unvisited)}>Review remaining ({unvisited.length})</button>}
         <button type="button" className="mix-secondary" onClick={onBackToList}>Back to word mix</button>
       </div> : <>
-        <div className="mix-card-stage">
-          <article {...swipe.events} className={`mix-card${hasDrag ? ` is-dragging mix-${preview.className}` : ''}`}
-            style={{'--mix-x': `${Math.max(-135, Math.min(135, swipe.drag.x))}px`, '--mix-y': `${Math.max(-100, Math.min(100, swipe.drag.y))}px`, '--mix-angle': `${Math.max(-7, Math.min(7, swipe.drag.x / 25))}deg`} as CSSProperties}>
-            <div className="mix-card-top"><span>{[languageProfile(item.word.language).name, item.word.part_of_speech, item.word.cefr_level].filter(Boolean).join(' · ')}</span><PronounceButton key={item.id} word={item.word} /></div>
-            <div ref={readingRef} key={item.id} className="mix-card-scroll" data-mix-scrollable={readingScrollable} tabIndex={0} role="region" aria-label="Word information">
-              <div className="mix-card-word" data-mix-gesture-surface aria-label="Swipe word card">
-                <h2><bdi lang={item.word.language} dir={item.word.language === 'ar' ? 'rtl' : 'ltr'}>{item.word.term}</bdi></h2>
-                <EasyPronunciation word={item.word} />
-              </div>
-              {preferences.translations && <div className="mix-translations" lang={item.word.translation_language ?? 'ru'}>
-                {item.word.translation_entries.length ? item.word.translation_entries.join(' · ') : 'No translation saved'}
-              </div>}
-              {item.word.example_entries[0] && <div className="mix-card-example">
-                <span>Example</span><p>{item.word.example_entries[0]}</p>
-              </div>}
-            </div>
-            <div className="mix-card-footer"><span>{LEVEL_LABELS[item.word.knowledge_level ?? 0] ?? 'Not rated'}</span><Link to={routes.word(item.word_id)} state={navigation.state} onClick={event => navigation.openWord(event, item.word_id)}>Word details ↗</Link></div>
-            {hasDrag && <div className="mix-swipe-preview" aria-live="polite">{preview.arrow} {preview.label}<small>{swipe.action !== null ? 'Release to apply' : 'Keep swiping · Move back to cancel'}</small></div>}
-          </article>
-        </div>
-        <div className="mix-swipe-threshold" aria-hidden="true"><span style={{width: `${Math.min(100, distance / SWIPE_DISTANCE * 100)}%`}} /></div>
+        <SwipeCard key={item.id} item={item} navigation={navigation} onAction={act} disabled={s.blocked} />
         <div className="mix-actions" aria-label="Rate or skip this word">
           {ACTIONS.map(action => <button type="button" key={action.label} className={`mix-action mix-${action.className}`} disabled={s.blocked}
             aria-label={action.label === 'Skip' ? 'Skip for now' : `Mark ${action.label}`} onClick={() => act(action.value)}>

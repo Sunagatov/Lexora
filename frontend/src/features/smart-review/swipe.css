@@ -22,6 +22,7 @@
 .mix-card-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pinch-zoom; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-gutter: stable; }
 .mix-card-scroll[data-mix-scrollable="true"] { touch-action: pan-y pinch-zoom; }
 .mix-card-word { touch-action: pinch-zoom; user-select: none; padding-top: 2px; color: var(--text); overflow-wrap: anywhere; }
+.mix-card[data-swipes-disabled] :is(.mix-card-top, .mix-card-footer, .mix-card-scroll, .mix-card-word) { touch-action: manipulation; }
 .mix-card-word h2 { font-size: clamp(1.5rem, 7vw, 2.15rem); line-height: 1.2; letter-spacing: -.025em; margin-bottom: 10px; }
 .mix-card-word .word-easy-pronunciation { color: var(--text-2); font-size: .85rem; margin-bottom: 10px; }
 .mix-translations { font-size: 1rem; font-weight: 450; line-height: 1.5; }
@@ -33,7 +34,7 @@
 .mix-swipe-preview { position: absolute; top: 14px; left: 12px; right: 12px; padding: 14px; border: 2px solid currentColor; border-radius: 14px; background: var(--surface); text-align: center; pointer-events: none; font-size: 1.2rem; font-weight: 750; box-shadow: var(--shadow-sm); }
 .mix-swipe-preview small { display: block; font-size: .68rem; font-weight: 500; margin-top: 4px; }
 .mix-swipe-threshold { height: 3px; border-radius: 3px; background: var(--surface-2); margin: 8px 12px 12px; flex-shrink: 0; }
-.mix-swipe-threshold span { display: block; height: 100%; background: var(--mix-lavender); border-radius: 3px; }
+.mix-swipe-threshold span { display: block; height: 100%; background: var(--mix-lavender); border-radius: 3px; transform-origin: left; }
 .mix-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; flex-shrink: 0; }
 .mix-action { border: 0; border-radius: 13px; min-height: 66px; padding: 7px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: .77rem; font-weight: 650; cursor: pointer; }
 .mix-action > span { font-size: 1.5rem; line-height: 1.1; }

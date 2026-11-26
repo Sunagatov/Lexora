@@ -585,14 +585,19 @@
   margin-top: 6px;
 }
 
-.word-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
-  border-color: rgba(99, 102, 241, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .word-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.12);
+  }
+  .word-card:active { transform: translateY(-1px); }
 }
 
-.word-card:active {
-  transform: translateY(-1px);
+@media (hover: none), (pointer: coarse) {
+  /* Keep touch hit targets still between a swipe release and the next tap. */
+  .word-card { transition: none; }
+  .word-card button:active { transform: none; }
 }
 
 .word-card-header {

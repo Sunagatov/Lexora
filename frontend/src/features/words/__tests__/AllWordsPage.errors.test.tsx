@@ -1,7 +1,7 @@
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {AllWordsPage} from '@/features/words/routes/AllWordsPage'
-import {fetchWordList, fetchWordKnowledgeSummary, batchUpdateWords} from '@/features/words/api/wordsApi'
+import {fetchWordList, fetchWordKnowledgeSummary, batchUpdateWords, updateWordKnowledgeLevel} from '@/features/words/api/wordsApi'
 import {fetchTopics} from '@/features/topics/api/topicsApi'
 import type {Word} from '@/features/words/types/wordTypes'
 import type {WordListResponse} from '@/features/words/api/wordsApi'
@@ -45,6 +45,7 @@ it('renders word cards at tablet widths where CSS hides the table', async () => 
   }))
   const {container} = render(<AllWordsPage />, {wrapper: Wrapper})
   await waitFor(() => expect(container.querySelector('.word-card .word-term')?.textContent).toBe('alpha'))
+  expect(container.querySelector('table')).toBeNull()
 })
 
 it('keeps the latest search results when an older request finishes later', async () => {
@@ -71,7 +72,7 @@ it('shows a load error instead of presenting a failed search as an empty library
 })
 
 it('reports a failed level update and preserves the previous word level', async () => {
-  vi.mocked(batchUpdateWords).mockRejectedValue(new Error('Network down'))
+  vi.mocked(updateWordKnowledgeLevel).mockRejectedValue(new Error('Network down'))
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
   fireEvent.click(screen.getByRole('button', {name: 'Okay'}))
@@ -81,7 +82,8 @@ it('reports a failed level update and preserves the previous word level', async 
 })
 
 it('refreshes other views after a successful level update', async () => {
-  vi.mocked(batchUpdateWords).mockResolvedValue({updated: 1})
+  vi.mocked(updateWordKnowledgeLevel).mockResolvedValue({...alpha, knowledge_level: 4})
+  queryClient.setQueryData(queryKeys.word(alpha.id), alpha)
   const invalidate = vi.spyOn(queryClient, 'invalidateQueries')
   render(<AllWordsPage />, {wrapper: Wrapper})
   await screen.findByRole('link', {name: 'alpha'})
@@ -89,15 +91,15 @@ it('refreshes other views after a successful level update', async () => {
   fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
   await waitFor(() => {
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.words})
-    expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.smartReview})
-    expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.word(1)})
+    expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.stats})
     expect(invalidate).toHaveBeenCalledWith({queryKey: queryKeys.wordList, refetchType: 'none'})
+    expect(queryClient.getQueryData<Word>(queryKeys.word(alpha.id))?.knowledge_level).toBe(4)
   })
 })
 
 it('keeps selected words when another word rating changes', async () => {
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha, bravo]))
-  vi.mocked(batchUpdateWords).mockResolvedValue({updated: 1})
+  vi.mocked(updateWordKnowledgeLevel).mockResolvedValue({...bravo, knowledge_level: 4})
   render(<AllWordsPage />, {wrapper: Wrapper})
   fireEvent.click(await screen.findByRole('checkbox', {name: 'Select alpha'}))
   const row = screen.getByRole('link', {name: 'bravo'}).closest('tr')!
@@ -114,10 +116,10 @@ it.each([false, true])('keeps each word locked until its own rating save finishe
     vi.spyOn(window, 'matchMedia').mockImplementation(query => ({...original, media: query, matches: true}))
   }
   vi.mocked(fetchWordList).mockResolvedValue(page([alpha, bravo]))
-  let finishAlpha!: (value: {updated: number}) => void
-  let finishBravo!: (value: {updated: number}) => void
-  vi.mocked(batchUpdateWords).mockImplementation(payload => new Promise(resolve => {
-    if (payload.word_ids[0] === alpha.id) finishAlpha = resolve
+  let finishAlpha!: (value: Word) => void
+  let finishBravo!: (value: Word) => void
+  vi.mocked(updateWordKnowledgeLevel).mockImplementation(wordId => new Promise(resolve => {
+    if (wordId === alpha.id) finishAlpha = resolve
     else finishBravo = resolve
   }))
   const {container} = render(<AllWordsPage />, {wrapper: Wrapper})
@@ -128,14 +130,17 @@ it.each([false, true])('keeps each word locked until its own rating save finishe
     fireEvent.click(within(row).getByRole('button', {name: 'Okay'}))
     fireEvent.click(screen.getByRole('button', {name: 'Strong'}))
   }
-  expect((within(rows[0]).getByRole('button', {name: 'Okay'}) as HTMLButtonElement).disabled).toBe(true)
-  await act(async () => { finishBravo({updated: 1}) })
-  expect((within(rows[0]).getByRole('button', {name: 'Okay'}) as HTMLButtonElement).disabled).toBe(true)
+  const alphaRating = await within(rows[0]).findByRole('button', {name: 'Strong'})
+  expect((alphaRating as HTMLButtonElement).disabled).toBe(true)
+  await waitFor(() => expect(updateWordKnowledgeLevel).toHaveBeenCalledWith(bravo.id, 4, 'manual'))
+  await act(async () => { finishBravo({...bravo, knowledge_level: 4}) })
+  expect((alphaRating as HTMLButtonElement).disabled).toBe(true)
   expect((within(rows[1]).getByRole('button', {name: 'Strong'}) as HTMLButtonElement).disabled).toBe(false)
-  fireEvent.click(within(rows[0]).getByRole('button', {name: 'Okay'}))
+  fireEvent.click(alphaRating)
   expect(screen.queryByRole('group', {name: 'Knowledge level'})).toBeNull()
-  expect(batchUpdateWords).toHaveBeenCalledTimes(2)
-  await act(async () => { finishAlpha({updated: 1}) })
+  expect(updateWordKnowledgeLevel).toHaveBeenCalledTimes(2)
+  expect(batchUpdateWords).not.toHaveBeenCalled()
+  await act(async () => { finishAlpha({...alpha, knowledge_level: 4}) })
   expect((within(rows[0]).getByRole('button', {name: 'Strong'}) as HTMLButtonElement).disabled).toBe(false)
 })
 

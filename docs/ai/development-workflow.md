@@ -23,9 +23,9 @@ and pagination. The All Words page continues to use server-side pagination.
 
 Mobile word-card gestures that start sideways and then turn vertical scroll the
 nearest list instead of remaining stuck in swipe mode. Ordinary vertical pans
-stay native; the fallback follows the finger only when the browser continues
+stay native. The fallback measures the scroller only when the browser continues
 sending pointer events after a sideways start. Once a gesture becomes scrolling,
-it cannot rate the word. Card hover/focus colours remain unchanged.
+it cannot rate the word. Touch and keyboard focus still highlight the card.
 Topic loading failures expose Retry and preserve the requested page. Failed topic
 ratings roll back and offer retrying the chosen level. Daily Word Mix disables
 every word with a pending rating, even when another word is saved concurrently.
@@ -114,12 +114,11 @@ Do not run Docker, deployment, SSH, backup, restore, production, or secret comma
 Pagination resets the owning list container after the requested rows are committed,
 including cached pages, page-size and filter changes. Returning from word details
 restores the saved position once per navigation, not on background refetches.
-Favorites update their heart state immediately, share a per-word pending lock across
-visible controls, and roll back only the flag on failure. Taps during a pending save
-are ignored; once it finishes, the next tap can reverse the saved state. Captured
-card gestures leave the next independent button tap available. Deliberate drags
-starting over the card’s heart/speaker actions can rate the word; taps retain their
-action, and the knowledge picker/menu remain outside that gesture start area. Daily Mix capture
-transfer from a child is not cancellation; cancellation/loss of the active surface's
-own pointer still is. English defaults to saved IPA when no notation was selected;
-see `easy-pronunciation.md` for coverage diagnostics and safe missing-data follow-up.
+Favorites update the heart immediately and share a per-word pending lock across
+visible controls. Confirmation updates the cached flag. Failure restores the saved
+heart state and exposes a retry. Deliberate drags can start on the heart, speaker,
+level or actions button. Taps activate those controls and open dialogs are excluded.
+Daily Mix capture transfer from a child preserves the gesture. Cancellation or
+loss of the active surface's own pointer clears it. English defaults to saved IPA
+when no notation was selected. See `easy-pronunciation.md` for coverage diagnostics
+and missing-data follow-up.

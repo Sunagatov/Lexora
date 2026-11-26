@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {MemoryRouter} from 'react-router-dom'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {SwipeReview} from '../components/SwipeReview'
@@ -169,6 +169,27 @@ describe('swipe review', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
     await screen.findByRole('heading', {name: 'adapt'})
     expect(update).toHaveBeenLastCalledWith(1, 5)
+  })
+
+  it('shows the next word while saving and advances the stored cursor only after both writes', async () => {
+    let acknowledgeLevel!: () => void, acknowledgeReview!: () => void
+    update.mockImplementationOnce(() => new Promise<void>(resolve => { acknowledgeLevel = resolve }))
+    complete.mockImplementationOnce(() => new Promise<void>(resolve => { acknowledgeReview = resolve }))
+    const q = queue()
+    open(q)
+    fireEvent.click(screen.getByRole('button', {name: 'Mark Strong'}))
+    expect(screen.getByRole('heading', {name: 'adapt'})).toBeTruthy()
+    expect(screen.getByRole('status').textContent).toBe('Saving rating…')
+    expect(loadSwipeSession(q, 'en').cursor).toBe(0)
+    expect((screen.getByRole('button', {name: 'Mark Strong'}) as HTMLButtonElement).disabled).toBe(true)
+    await act(async () => { acknowledgeLevel() })
+    expect(complete).toHaveBeenCalledExactlyOnceWith(101)
+    expect(loadSwipeSession(q, 'en').pending?.id).toBe(101)
+    expect(screen.queryByRole('alert')).toBeNull()
+    await act(async () => { acknowledgeReview() })
+    expect(loadSwipeSession(q, 'en').cursor).toBe(1)
+    expect(screen.getByRole('heading', {name: 'adapt'})).toBeTruthy()
+    expect((screen.getByRole('button', {name: 'Mark Strong'}) as HTMLButtonElement).disabled).toBe(false)
   })
 
   it('retries only completion after a rating saved successfully', async () => {

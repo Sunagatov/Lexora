@@ -12,28 +12,52 @@ const WORD_DEPENDENT_QUERY_KEYS = [
   queryKeys.stats,
 ] as const
 
-export function patchWordLevel(
+function patchCachedItems<T>(
+  items: T[] | undefined,
+  matches: (item: T) => boolean,
+  update: (item: T) => T,
+): T[] | undefined {
+  if (!items) return
+  const index = items.findIndex(matches)
+  if (index < 0) return
+  const item = update(items[index])
+  if (item === items[index]) return
+  const next = items.slice()
+  next[index] = item
+  return next
+}
+
+function patchWordCollections(
   queryClient: QueryClient,
   wordId: number,
-  level: WordKnowledgeLevel,
+  update: (word: Word) => Word,
 ): void {
-  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, (cur = []) =>
-    cur.map((w) => w.id === wordId ? {...w, knowledge_level: level} : w),
-  )
-  queryClient.setQueriesData<WordListResponse>({queryKey: queryKeys.wordList}, current =>
-    current ? {...current, words: current.words.map(word => word.id === wordId ? {...word, knowledge_level: level} : word)} : current,
-  )
-  queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, (cur) => {
-    if (!cur) return cur
-    return {
-      ...cur,
-      items: cur.items.map((item) =>
-        item.word.id === wordId
-          ? {...item, word: {...item.word, knowledge_level: level}}
-          : item,
-      ),
-    }
+  const matches = (word: Word) => word.id === wordId
+  // An undefined updater result leaves caches untouched, including their freshness.
+  queryClient.setQueriesData<Word[]>({queryKey: queryKeys.words}, current => patchCachedItems(current, matches, update))
+  queryClient.setQueriesData<WordListResponse>({queryKey: queryKeys.wordList}, current => {
+    const words = patchCachedItems(current?.words, matches, update)
+    return current && words ? {...current, words} : undefined
   })
+  queryClient.setQueryData<StudyQueue>(queryKeys.smartReview, current => {
+    const items = patchCachedItems(current?.items, item => item.word_id === wordId, item => {
+      const word = update(item.word)
+      return word === item.word ? item : {...item, word}
+    })
+    return current && items ? {...current, items} : undefined
+  })
+}
+
+export function patchWordLevel(queryClient: QueryClient, wordId: number, level: WordKnowledgeLevel) {
+  patchWordCollections(queryClient, wordId, word => word.knowledge_level === level ? word : {...word, knowledge_level: level})
+}
+
+export function patchWordFavorite(queryClient: QueryClient, wordId: number, isFavorite: boolean) {
+  const update = (word: Word) => !!word.is_favorite === isFavorite ? word : {...word, is_favorite: isFavorite}
+  queryClient.setQueryData<Word>(queryKeys.word(wordId), current =>
+    current && !!current.is_favorite !== isFavorite ? update(current) : undefined,
+  )
+  patchWordCollections(queryClient, wordId, update)
 }
 
 export function replaceWordInLists(queryClient: QueryClient, updated: Word): void {
