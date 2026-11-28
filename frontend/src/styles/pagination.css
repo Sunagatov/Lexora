@@ -51,6 +51,13 @@
   overflow: visible;
 }
 
+@media (max-width: 860px), (hover: none) and (pointer: coarse) {
+  .word-collection-layout:has(.toolbar-actions-row.is-searching) > .pagination-bar,
+  .all-words-page:has(.toolbar-actions-row.is-searching) > .pagination-shell {
+    display: none;
+  }
+}
+
 .pagination {
   display: flex;
   align-items: center;

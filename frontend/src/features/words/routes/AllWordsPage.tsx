@@ -266,7 +266,7 @@ export function AllWordsPage() {
         </div>
       )}
 
-      <WordPagination page={page} totalPages={totalPages} pageSize={pageSize} onPage={s.setPage} onPageSize={s.setPageSize} />
+      {total > 0 && <WordPagination page={page} totalPages={totalPages} pageSize={pageSize} onPage={s.setPage} onPageSize={s.setPageSize} />}
 
       {/* Bulk action bar */}
       {selected.size > 0 && (

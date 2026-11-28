@@ -1,12 +1,13 @@
 import {useState} from 'react'
-import {act, fireEvent, render, screen} from '@testing-library/react'
+import {act, fireEvent, render, screen, within} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 import {WordCollectionToolbar} from '../components/WordCollectionToolbar'
 
-function Toolbar() {
+function Toolbar({headingTarget, showProgress = true}: {headingTarget?: HTMLElement; showProgress?: boolean}) {
   const [search, setSearch] = useState('')
   const change = vi.fn()
   return <WordCollectionToolbar
+    headingSlot={headingTarget ? {target: headingTarget, showProgress} : undefined}
     wordSearch={search} setWordSearch={setSearch} sortBy="level-asc" setSortBy={change}
     levelFilter="all" setLevelFilter={change} posFilter={null} setPosFilter={change}
     cefrFilter={null} setCefrFilter={change} completeness="all" setCompleteness={change}
@@ -16,6 +17,27 @@ function Toolbar() {
 }
 
 describe('permanent vocabulary search', () => {
+  it('places the vocabulary heading in the shared header and shows progress above the search controls', () => {
+    const header = document.createElement('header')
+    render(<Toolbar headingTarget={header} />)
+
+    expect(within(header).getByRole('heading', {name: 'All words'})).toBeTruthy()
+    expect(within(header).getByLabelText('100 matching words').tagName).toBe('SPAN')
+    const progress = screen.getByRole('progressbar', {name: 'Topic progress'})
+    const search = screen.getByRole('searchbox', {name: 'Search words'})
+    expect(progress.compareDocumentPosition(search) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(screen.getByText('100.00%')).toBeTruthy()
+  })
+
+  it('keeps the count in the shared header when progress summaries are disabled', () => {
+    const header = document.createElement('header')
+    render(<Toolbar headingTarget={header} showProgress={false} />)
+
+    expect(within(header).getByLabelText('100 matching words')).toBeTruthy()
+    expect(within(header).queryByRole('button', {name: /progress/i})).toBeNull()
+    expect(screen.queryByRole('progressbar')).toBeNull()
+  })
+
   it('keeps sorting inside the visible viewport as its height changes', () => {
     const viewport = Object.assign(new EventTarget(), {height: 390, offsetTop: 0})
     vi.stubGlobal('visualViewport', viewport)

@@ -1,5 +1,9 @@
 import type {Replica} from '../types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import {act, render, waitFor} from '@testing-library/react'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {createElement} from 'react'
+import {createMemoryRouter, RouterProvider} from 'react-router-dom'
 
 const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
@@ -205,6 +209,43 @@ it('opens the saved copy during a server outage but still rejects an expired ses
   expect(fake.network.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal)
   fake.network.mockRejectedValueOnce(new ApiError(401, 'Not authenticated'))
   await expect(request('/auth/session')).rejects.toMatchObject({status: 401})
+})
+
+it.each([
+  {name: 'refreshes failed settings when a manual sync succeeds after a server outage', path: '/account/offline', editing: false},
+  {name: 'defers the recovery refresh until the user leaves the word editor', path: '/words/-2/edit', editing: true},
+])('$name', async ({path, editing}) => {
+  const {request, offline} = await setup()
+  const {DEFAULT_PREFERENCES, loadPreferences, preferencesSnapshot} = await import('@/features/preferences/api')
+  const {PreferencesEffects} = await import('@/features/preferences/PreferencesEffects')
+  await request('/api/words/-2', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+
+  // A server outage can leave the browser online, so recovery never fires an online event.
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  fake.network.mockRejectedValue(new TypeError('Could not reach Lexora'))
+  await request('/auth/session')
+  await loadPreferences()
+  expect(preferencesSnapshot()).toMatchObject({status: 'error', error: expect.stringContaining('Could not load settings')})
+  expect(offline.offlineStatus()).toMatchObject({offline: true, pending: 1})
+  const router = createMemoryRouter([{path: '*', element: createElement(PreferencesEffects)}], {initialEntries: [path]})
+  render(createElement(QueryClientProvider, {client: new QueryClient()},
+    createElement(RouterProvider, {router})))
+
+  fake.network.mockImplementation(async (path: string) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/changes') return {entity_id: -2}
+    if (path === '/api/offline/snapshot') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
+    if (path === '/api/preferences') return {...DEFAULT_PREFERENCES, page_size: 100}
+    throw new Error(`Unexpected path: ${path}`)
+  })
+
+  await act(() => offline.syncOffline(true))
+  expect(offline.offlineStatus()).toMatchObject({offline: false, pending: 0})
+  if (editing) {
+    expect(preferencesSnapshot()).toMatchObject({status: 'error', values: {page_size: 50}})
+    await act(() => router.navigate('/account/offline'))
+  }
+  await waitFor(() => expect(preferencesSnapshot()).toMatchObject({status: 'saved', error: '', values: {page_size: 100}}))
 })
 
 it('keeps local edits responsive during a slow snapshot and never overwrites those edits', async () => {

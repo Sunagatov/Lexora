@@ -41,12 +41,17 @@ until the server acknowledges them, including nested mix and pronunciation edits
 Daily Word Mix completion claims an item once and increments its count atomically,
 so concurrent completions and retries cannot lose or duplicate progress.
 
+On iOS, sign-in waits for the user to tap the password field. The form stays
+centered in the visible area as the keyboard opens, moves, or closes.
+
 The `/` homepage is My Vocabulary: all non-deleted words, server-side sorting
 and pagination, default 50 per page, Weak first then A1–C2 within each knowledge
 level. Its Strong (level 4) count and knowledge distribution cover all matching
 words after search and filters, independent of the current page. Server-paginated
 views use the summary response's own total for percentage calculations so separately
-loading word pages cannot distort the percentages. Topic lists and Daily Word Mix
+loading word pages cannot distort the percentages. On mobile, All Words and
+Favorites show the knowledge bar and its percentages below the compact header
+when summaries are enabled. Topic lists and Daily Word Mix
 summarize their complete filtered collections before pagination. `/smart-review`
 remains the separate Daily Word Mix, showing one knowledge bar and a New set
 action beside its breadcrumb heading. Session completion is still tracked.

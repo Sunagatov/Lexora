@@ -76,6 +76,44 @@
   .mix-action { min-height: 52px; }
   .mix-resume { display: none; }
 }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .mix-view-bar { padding: 6px 16px 2px; }
+
+  .mix-swipe:has(.mix-card-stage) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(104px, 27%);
+    grid-template-rows: auto auto minmax(155px, 1fr) auto auto;
+    grid-template-areas:
+      "position position"
+      "error error"
+      "card actions"
+      "threshold actions"
+      "navigation navigation";
+    column-gap: 10px;
+    padding: 4px 16px max(4px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  .mix-position { grid-area: position; }
+  .mix-resume { display: none; }
+  .mix-error { grid-area: error; }
+  .mix-card-stage { grid-area: card; padding: 4px 0; }
+  .mix-card { padding: 8px 12px; }
+  .mix-card-word h2 { font-size: 1.4rem; margin-bottom: 4px; }
+  .mix-card-footer { padding-top: 4px; }
+  .mix-swipe-threshold { grid-area: threshold; margin: 5px 8px 3px; }
+  .mix-actions {
+    grid-area: actions;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    gap: 5px;
+  }
+  .mix-action { min-height: 44px; justify-content: center; padding: 3px 2px; }
+  .mix-action > span { font-size: 1.15rem; }
+  .mix-navigation { grid-area: navigation; }
+}
+
 @media (prefers-reduced-motion: reduce) { .mix-card { transition: none; } }
 [data-reduced-motion] .mix-card { transition: none; }
 :root[color-scheme="dark"] .mix-actions .mix-action { background: var(--surface-2); }

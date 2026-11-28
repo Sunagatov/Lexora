@@ -53,8 +53,18 @@
 }
 
 /* ── Quick-add overlay ──────────────────────────────────────── */
-.quick-add-overlay {
+.quick-add-layer {
   position: fixed;
+  inset: var(--visual-viewport-top, 0px) 0 auto;
+  height: 100vh;
+  height: var(--visual-viewport-height, 100dvh);
+  overflow: hidden;
+  container-type: size;
+  z-index: 110;
+}
+
+.quick-add-overlay {
+  position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.35);
   backdrop-filter: blur(6px);
@@ -79,10 +89,10 @@
 
 /* ── Quick-add sheet ────────────────────────────────────────── */
 .quick-add-sheet {
-  position: fixed;
+  position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: env(safe-area-inset-left, 0px);
+  right: env(safe-area-inset-right, 0px);
   background: var(--surface);
   backdrop-filter: blur(0px);
   border: 1px solid var(--border);
@@ -90,15 +100,13 @@
   z-index: 51;
   display: flex;
   flex-direction: column;
-  max-height: 92vh;
+  max-height: 92%;
   animation: qa-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 767px) {
   .quick-add-sheet {
-    max-height: 88vh;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
     border-radius: 24px 24px 0 0;
   }
 }
@@ -108,11 +116,23 @@
     width: 480px;
     height: 360px;
     left: auto;
-    right: 24px;
+    right: max(24px, env(safe-area-inset-right, 0px));
     bottom: 24px;
     border-radius: 20px;
-    max-height: 80vh;
+    max-height: calc(100% - 32px);
   }
+}
+
+@container (max-height: 260px) {
+  .quick-add-sheet {
+    bottom: 0;
+    display: block;
+    height: auto;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .quick-add-sheet .quick-add-body { overflow: visible; }
 }
 
 .quick-add-sheet.is-closing {
@@ -193,11 +213,15 @@
 .quick-add-body {
   padding: 14px 20px 8px;
   overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
+
+.quick-add-body > * { flex-shrink: 0; }
 
 .quick-add-field-topline {
   display: flex;
@@ -549,6 +573,11 @@
     -webkit-backdrop-filter: blur(10px);
   }
 
+  /* iOS can show the keyboard toolbar without shrinking the visual viewport. */
+  .quick-add-sheet:has(input:focus) .quick-add-footer {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
   :root[color-scheme="dark"] .quick-add-footer {
     background: linear-gradient(180deg, rgba(26, 32, 44, 0.82) 0%, rgba(26, 32, 44, 0.98) 36%);
   }
@@ -699,20 +728,6 @@
 /* Desktop: position FAB above footer */
 @media (min-width: 768px) {
   .fab { bottom: 56px; right: 32px; }
-}
-
-@media (max-width: 640px) {
-  .fab {
-    width: 52px;
-    height: 52px;
-    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
-    right: 16px;
-    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.3);
-  }
-
-  .fab-tooltip {
-    display: none;
-  }
 }
 
 /* Ensure last word card is never hidden behind FAB */

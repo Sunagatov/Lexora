@@ -1,13 +1,14 @@
 /* ── Desktop App Header ─────────────────────────────────── */
 .app-header {
+  --header-height: 48px;
   display: flex;
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-  height: 48px;
+  padding: env(safe-area-inset-top, 0px) 20px 0;
+  height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
@@ -83,6 +84,54 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.app-header-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--accent-light);
+  color: var(--header-text);
+  font-size: .8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.app-header-add-icon { display: grid; place-items: center; }
+
+.app-header-collection { border-bottom: 0; }
+.app-header-collection-title { flex: 1; min-width: 0; }
+.app-header-collection .app-header-left { gap: 5px; }
+.app-header-collection .app-header-language-flag { flex: none; }
+.app-header-collection-back {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: -6px;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--header-text);
+}
+.app-header-collection .app-header-actions { gap: 2px; }
+.app-header-collection .app-header-add {
+  width: 44px;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.app-header-collection .app-header-add-icon {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--accent-light);
 }
 
 .app-header-logout {
@@ -193,7 +242,7 @@
 
 /* ── Show on desktop ────────────────────────────────────── */
 @media (min-width: 861px) {
-  .app-header { padding: 0 32px; height: 52px; }
+  .app-header { --header-height: 52px; padding-inline: 32px; }
   .app-footer { display: flex; }
 
   .app-shell {
@@ -204,8 +253,8 @@
 /* ── Word page footer mobile ────────────────────────────── */
 @media (max-width: 860px) {
   .app-header {
-    padding: 0 12px;
-    height: 44px;
+    --header-height: 44px;
+    padding-inline: 12px;
     gap: 10px;
   }
 
@@ -252,7 +301,7 @@
     background: var(--sidebar-subtle);
   }
 
-  .app-header-burger { background: transparent; }
+  .app-header-burger { width: 44px; height: 44px; background: transparent; }
 
   .app-header-logout {
     padding: 8px 10px;
@@ -270,7 +319,7 @@
 
 @media (max-width: 480px) {
   .app-header {
-    padding: 0 10px;
+    padding-inline: 10px;
   }
 
   .app-header-left {

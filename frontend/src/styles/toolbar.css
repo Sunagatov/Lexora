@@ -20,6 +20,18 @@
 .toolbar-list-heading { flex: 1; flex-wrap: wrap; gap: 2px 6px; }
 .toolbar-card .toolbar-list-heading h1 { margin: 0; font-size: 0.95rem; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
 .toolbar-list-count { color: var(--text-3); font-size: 0.78rem; white-space: nowrap; }
+.app-header-collection .toolbar-heading-row { width: 100%; }
+.app-header-collection .toolbar-list-heading { flex-wrap: nowrap; gap: 6px; }
+.app-header-collection h1 {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--header-text);
+  font-size: 1.05rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-header-collection .toolbar-list-count { color: var(--text-2); }
 .toolbar-list-heading .breadcrumb { font-size: 0.8rem; gap: 4px; }
 .toolbar-list-heading .breadcrumb-item { min-width: 0; gap: 4px; }
 .toolbar-list-heading .breadcrumb-item > span:not(.breadcrumb-separator) { overflow-wrap: anywhere; }
@@ -559,6 +571,17 @@
 
 @media (max-width: 860px) {
   .toolbar-card { padding: 8px 12px; }
+  .word-collection-layout > .sticky-controls.sticky-controls-compact {
+    padding: 0;
+    background: var(--surface);
+  }
+  .toolbar-card.toolbar-card-compact { padding: 2px 10px 6px; }
+  .toolbar-card-compact .toolbar-knowledge-progress { padding: 0 2px; }
+  .toolbar-card-compact .toolbar-progress-legend { margin-top: 3px; }
+  .toolbar-card-compact .toolbar-actions-row .word-list-control,
+  .toolbar-card-compact .toolbar-inline-search { height: 44px; }
+  .toolbar-card-compact .toolbar-search-clear,
+  .toolbar-card-compact .toolbar-search-done { min-height: 44px; }
   .toolbar-progress-legend { flex-wrap: nowrap; justify-content: space-between; gap: 4px; }
   .toolbar-progress-legend-item { gap: 2px; white-space: nowrap; }
   .toolbar-progress-dot { width: 5px; height: 5px; }

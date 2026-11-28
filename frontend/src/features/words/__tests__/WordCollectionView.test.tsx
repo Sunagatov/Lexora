@@ -20,6 +20,18 @@ function view(overrides: Partial<typeof defaults> = {}, scrollTop?: number) {
   </MemoryRouter>
 }
 
+it('hides pagination when the search returns no matching words', () => {
+  const {rerender} = render(view())
+  expect(screen.getByText('Page 3 of 12')).toBeTruthy()
+
+  rerender(view({wordSearch: 'no match', filteredCount: 0, page: 1, totalPages: 1, pageStart: 0, pageEnd: 0}))
+
+  expect(screen.getByText('No words match the current filters.')).toBeTruthy()
+  expect(screen.queryByText('Page 1 of 1')).toBeNull()
+  expect(screen.queryByRole('button', {name: 'Next page'})).toBeNull()
+  expect(screen.queryAllByRole('combobox', {name: 'Words per page'})).toHaveLength(0)
+})
+
 it.each([50, 100, 200])('resets next/previous cached and delayed pages after rows commit (size=%s)', pageSize => {
   const setPage = vi.fn()
   const {container, rerender} = render(view({pageSize, setPage}))

@@ -121,6 +121,7 @@ select option:disabled { color: var(--text-2); }
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
   overflow: hidden;
 }
 
@@ -298,10 +299,18 @@ select option:disabled { color: var(--text-2); }
 
 /* Login */
 .login-page {
+  position: fixed;
+  inset: var(--visual-viewport-top, 0px) 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   height: 100vh;
+  height: var(--visual-viewport-height, 100dvh);
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
   background: var(--bg);
 }
 
@@ -311,6 +320,11 @@ select option:disabled { color: var(--text-2); }
   gap: 14px;
   width: 100%;
   max-width: 340px;
+  flex-shrink: 0;
+}
+
+.login-page > .login-card {
+  margin-block: auto;
 }
 
 .login-title {

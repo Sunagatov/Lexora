@@ -22,7 +22,7 @@ function numericMap(values: Record<number, number> = {}) {
 
 export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean}) {
   const navigate = useNavigate()
-  const {drawerOpen, setDrawerOpen} = useOutletContext<AppLayoutOutletContext>()
+  const {drawerOpen, setDrawerOpen, collectionHeadingSlot} = useOutletContext<AppLayoutOutletContext>()
   const {sidebarWidth, isResizing, handleSidebarResizeDown} = useResizableSidebarWidth()
   const {collapsed, setCollapsed} = useSidebarCollapsedPref()
   const isMobile = useIsMobile()
@@ -84,6 +84,7 @@ export function VocabularyPage({favoritesOnly = false}: {favoritesOnly?: boolean
           <div className={`word-collection-split${panelWordId !== null && !isMobile ? ' has-panel' : ''}`}>
             <WordCollectionView
               collectionTitle={favoritesOnly ? 'Favorites' : 'All words'}
+              headingSlot={collectionHeadingSlot}
               wordSearch={s.wordSearch} setWordSearch={s.setWordSearch}
               sortBy={s.sortBy} setSortBy={s.setSortBy}
               thenSortBy={s.thenSortBy} setThenSortBy={s.setThenSortBy}

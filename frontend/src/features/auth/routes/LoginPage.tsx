@@ -1,16 +1,20 @@
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import type {SubmitEvent} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {login} from '@/features/auth/api/authApi'
 import {ApiError} from '@/shared/api/apiError'
 import {routes} from '@/app/routes'
 import {loadPreferences} from '@/features/preferences/api'
+import {useVisualViewport} from '@/shared/hooks/useVisualViewport'
+import {isIOSApp} from '@/shared/platform'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError]       = useState<string | null>(null)
   const [loading, setLoading]   = useState(false)
+  const pageRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+  useVisualViewport(pageRef)
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -30,7 +34,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="login-page">
+    <div className="login-page" ref={pageRef}>
       <form className="login-card card" onSubmit={handleSubmit}>
         <h1 className="login-title">Lexora</h1>
         <input
@@ -43,7 +47,7 @@ export function LoginPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          autoFocus
+          autoFocus={!isIOSApp}
         />
         {error && <p className="login-error" role="alert">{error}</p>}
         <button className="login-btn" type="submit" disabled={loading || !password}>

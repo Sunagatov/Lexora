@@ -107,6 +107,26 @@ function Shell() {
 }
 
 describe('StudyPage drawer lifecycle', () => {
+  it('opens Add word from the mobile header without using the word list as its hit area', () => {
+    const queryClient = new QueryClient()
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <Routes>
+            <Route path="/" element={<AppLayout />}>
+              <Route index element={<StudyPage />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    const addWord = screen.getByRole('button', {name: 'Add word'})
+    expect(addWord.closest('header')).not.toBeNull()
+    fireEvent.click(addWord)
+    expect(screen.getByTestId('quick-add')).toBeTruthy()
+  })
+
   it('closes the drawer when leaving and re-entering the study page', async () => {
     const queryClient = new QueryClient({
       defaultOptions: {queries: {retry: false}, mutations: {retry: false}},

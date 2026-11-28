@@ -1,12 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useIsMutating } from '@tanstack/react-query'
-import { usePreferences, loadPreferences } from './api'
+import { offlineStatus, subscribeOffline } from '@/features/offline/offline'
+import { usePreferences, loadPreferences, preferencesSnapshot } from './api'
+
+const isOffline = () => offlineStatus().offline
 
 export function PreferencesEffects() {
   const preferences = usePreferences()
   const location = useLocation()
   const pending = useIsMutating() > 0
+  const offline = useSyncExternalStore(subscribeOffline, isOffline)
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const apply = () =>
@@ -24,12 +28,14 @@ export function PreferencesEffects() {
       if (pending || location.pathname.endsWith('/edit') || document.querySelector('[role="dialog"], dialog[open]')) return
       void loadPreferences()
     }
+    // Server recovery can happen without a browser online event.
+    if (!offline && preferencesSnapshot().status === 'error') refresh()
     window.addEventListener('focus', refresh)
     window.addEventListener('online', refresh)
     return () => {
       window.removeEventListener('focus', refresh)
       window.removeEventListener('online', refresh)
     }
-  }, [pending, location.pathname])
+  }, [offline, pending, location.pathname])
   return null
 }

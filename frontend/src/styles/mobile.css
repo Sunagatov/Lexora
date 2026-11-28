@@ -58,6 +58,7 @@
   bottom: 0;
   padding-top: calc(52px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
   width: 100%;
   background: var(--sidebar-bg);
   z-index: 26;
@@ -156,11 +157,6 @@
 }
 
 @media (max-width: 860px) {
-  .fab-obstructed {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
   /* ── iOS Safari zoom prevention ─────────────────────────────
      iOS zooms the viewport when any focused input has font-size < 16px.
      Force 16px on all interactive inputs to prevent this.
@@ -429,8 +425,7 @@
     padding-bottom: 0;
   }
 
-  /* Leave a clear Add position after the last card, even in a dense list. */
-  .word-collection-scroll > .main-inner { padding-bottom: 88px; }
+  .word-collection-scroll > .main-inner { padding-bottom: 12px; }
 
   /* Hide table, show cards */
   .word-table-wrap {
@@ -547,14 +542,4 @@
     min-width: 48px;
   }
 
-  .fab {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
-    right: 12px;
-    width: 50px;
-    height: 50px;
-  }
-
-  .fab-hidden {
-    transform: translateY(10px) scale(0.95);
-  }
 }

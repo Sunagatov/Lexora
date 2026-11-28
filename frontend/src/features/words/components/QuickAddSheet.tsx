@@ -3,15 +3,18 @@ import {createPortal} from 'react-dom'
 import {useQuickAdd} from '@/features/words/hooks/useQuickAdd'
 import {Toast} from '@/shared/components/Toast'
 import {createTopicLabeler} from '@/features/topics/model/topicLabels'
+import {useVisualViewport} from '@/shared/hooks/useVisualViewport'
 
 type Props = {onClose: () => void}
 
 export function QuickAddSheet({onClose}: Props) {
   const fieldId = useId()
   const q = useQuickAdd()
+  const layerRef = useRef<HTMLDivElement>(null)
   const sheetRef = useRef<HTMLDivElement>(null)
   const wasAddingTopic = useRef(false)
   const [toastFeedback, setToastFeedback] = useState<{ok: boolean; msg: string} | null>(null)
+  useVisualViewport(layerRef)
 
   useEffect(() => {
     const id = window.requestAnimationFrame(() => q.termRef.current?.focus())
@@ -66,7 +69,7 @@ export function QuickAddSheet({onClose}: Props) {
   const topicLabel = createTopicLabeler(q.sortedTopics)
 
   return createPortal(
-    <>
+    <div className="quick-add-layer" ref={layerRef}>
       <div className="quick-add-overlay" onClick={onClose} />
       <div className="quick-add-sheet" ref={sheetRef} role="dialog" aria-modal="true" aria-labelledby="quick-add-title" onKeyDown={handleSheetKeyDown} onKeyDownCapture={containTabFocus}>
         <button type="button" className="quick-add-handle-hitbox" aria-label="Close quick add sheet" onClick={onClose}>
@@ -210,7 +213,7 @@ export function QuickAddSheet({onClose}: Props) {
           />
         )}
       </div>
-    </>,
+    </div>,
     document.body,
   )
 }

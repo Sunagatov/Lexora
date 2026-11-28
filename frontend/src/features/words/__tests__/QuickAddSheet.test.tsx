@@ -1,5 +1,5 @@
-import {fireEvent, render, screen} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
+import {fireEvent, render, screen, within} from '@testing-library/react'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {QuickAddSheet} from '@/features/words/components/QuickAddSheet'
 import * as quickAddHook from '@/features/words/hooks/useQuickAdd'
@@ -7,6 +7,8 @@ import * as quickAddHook from '@/features/words/hooks/useQuickAdd'
 vi.mock('@/features/words/hooks/useQuickAdd', () => ({
   useQuickAdd: vi.fn(),
 }))
+
+afterEach(() => vi.unstubAllGlobals())
 
 function mockQuickAdd(overrides: Record<string, unknown> = {}) {
   const base = {
@@ -39,6 +41,25 @@ function mockQuickAdd(overrides: Record<string, unknown> = {}) {
 }
 
 describe('QuickAddSheet', () => {
+  it('keeps the form and its save action inside the viewport when the keyboard pans and resizes it', () => {
+    vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd() as never)
+    const viewport = Object.assign(new EventTarget(), {height: 800, offsetTop: 0, scale: 1})
+    vi.stubGlobal('visualViewport', viewport)
+    render(<QuickAddSheet onClose={vi.fn()} />)
+    const dialog = screen.getByRole('dialog', {name: 'Add word'})
+    const layer = dialog.parentElement!
+    expect(layer.style.getPropertyValue('--visual-viewport-height')).toBe('800px')
+
+    viewport.height = 315
+    viewport.dispatchEvent(new Event('resize'))
+    viewport.offsetTop = 56
+    viewport.dispatchEvent(new Event('scroll'))
+
+    expect(layer.style.getPropertyValue('--visual-viewport-height')).toBe('315px')
+    expect(layer.style.getPropertyValue('--visual-viewport-top')).toBe('56px')
+    expect(within(dialog).getByRole('button', {name: 'Save word'})).toBeTruthy()
+  })
+
   it.each([false, true])('cycles both Tab directions with save disabled=%s', (disabled) => {
     vi.mocked(quickAddHook.useQuickAdd).mockReturnValue(mockQuickAdd({canSave: !disabled}) as never)
     const onClose = vi.fn()

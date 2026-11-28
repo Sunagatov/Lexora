@@ -64,6 +64,22 @@ it('keeps the latest search results when an older request finishes later', async
   expect(screen.queryByRole('link', {name: 'alpha'})).toBeNull()
 })
 
+it('shows the search empty state without pagination and restores pagination after reset', async () => {
+  vi.mocked(fetchWordList).mockImplementation(params => Promise.resolve(page(params?.search ? [] : [alpha])))
+  render(<AllWordsPage />, {wrapper: Wrapper})
+  await screen.findByRole('link', {name: 'alpha'})
+  expect(screen.getByText('Page 1 of 1')).toBeTruthy()
+
+  fireEvent.change(screen.getByRole('searchbox', {name: 'Search words'}), {target: {value: 'no match'}})
+  await screen.findByText('No words match these filters')
+  expect(screen.queryByText('Page 1 of 1')).toBeNull()
+  expect(screen.queryAllByRole('combobox', {name: 'Words per page'})).toHaveLength(0)
+
+  fireEvent.click(screen.getByRole('button', {name: 'Reset filters'}))
+  await screen.findByRole('link', {name: 'alpha'})
+  expect(screen.getByText('Page 1 of 1')).toBeTruthy()
+})
+
 it('shows a load error instead of presenting a failed search as an empty library', async () => {
   vi.mocked(fetchWordList).mockRejectedValue(new Error('Network down'))
   render(<AllWordsPage />, {wrapper: Wrapper})

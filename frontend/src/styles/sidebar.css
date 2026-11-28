@@ -1068,13 +1068,6 @@
   to   { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-/* ── FAB hidden when drawer open ─────────────────────────────────────────── */
-.fab-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.8);
-}
-
 /* ── Mobile: switch search to toggle ─────────────────────────────────────── */
 @media (max-width: 860px) {
 

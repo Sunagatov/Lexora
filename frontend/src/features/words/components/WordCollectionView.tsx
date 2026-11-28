@@ -18,6 +18,7 @@ import type {SortOption, CefrLevel, PosValue, CompletenessFilter, KnowledgeFilte
 import type {Topic} from '@/features/topics/types/topicTypes'
 import type {WordListParams} from '@/features/words/api/wordsApi'
 import {WordCollectionToolbar} from '@/features/words/components/WordCollectionToolbar'
+import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import {WordPagination} from '@/features/words/components/WordPagination'
 import {WordTable} from '@/features/words/components/WordTable'
 import {WordCardList} from '@/features/words/components/WordCardList'
@@ -26,6 +27,7 @@ import {useIsMobile} from '@/shared/hooks/useIsMobile'
 
 type Props = {
   collectionTitle?: string
+  headingSlot?: AppLayoutOutletContext['collectionHeadingSlot']
   collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
@@ -64,7 +66,7 @@ type Props = {
 }
 
 export function WordCollectionView({
-  collectionTitle, collectionBreadcrumb, collectionAction,
+  collectionTitle, headingSlot, collectionBreadcrumb, collectionAction,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, totalWordsOverall, topicTotalCount, filteredCount,
@@ -110,9 +112,9 @@ export function WordCollectionView({
 
   return (
     <div className="word-collection-layout">
-      <div className="sticky-controls">
+      <div className={`sticky-controls${headingSlot ? ' sticky-controls-compact' : ''}`}>
         <WordCollectionToolbar
-          collectionTitle={collectionTitle} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction}
+          collectionTitle={collectionTitle} headingSlot={headingSlot} collectionBreadcrumb={collectionBreadcrumb} collectionAction={collectionAction}
           wordSearch={wordSearch} setWordSearch={setWordSearch}
           sortBy={sortBy} setSortBy={setSortBy}
           levelFilter={levelFilter} setLevelFilter={setLevelFilter}
@@ -147,13 +149,15 @@ export function WordCollectionView({
         </div>
       </div>
 
-      <div className="pagination-bar">
-        <WordPagination
-          page={page} totalPages={totalPages}
-          pageSize={pageSize} onPageSize={handlePageSize}
-          onPage={handlePage}
-        />
-      </div>
+      {filteredCount > 0 && (
+        <div className="pagination-bar">
+          <WordPagination
+            page={page} totalPages={totalPages}
+            pageSize={pageSize} onPageSize={handlePageSize}
+            onPage={handlePage}
+          />
+        </div>
+      )}
     </div>
   )
 }

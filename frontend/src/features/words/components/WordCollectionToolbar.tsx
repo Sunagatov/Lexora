@@ -1,4 +1,6 @@
 import {useEffect, useLayoutEffect, useRef, useState, type ReactNode} from 'react'
+import {createPortal} from 'react-dom'
+import type {AppLayoutOutletContext} from '@/app/layout/AppLayout'
 import type {WordKnowledgeLevel} from '@/features/words/types/wordTypes'
 import {
   ACTIVE_LEVELS,
@@ -21,6 +23,7 @@ import {createTopicLabeler} from '@/features/topics/model/topicLabels'
 
 type Props = {
   collectionTitle?: string
+  headingSlot?: AppLayoutOutletContext['collectionHeadingSlot']
   collectionBreadcrumb?: ReactNode
   collectionAction?: ReactNode
   wordSearch: string; setWordSearch: (v: string) => void
@@ -77,7 +80,7 @@ function toggleValue<T>(values: T[], value: T): T[] {
 }
 
 export function WordCollectionToolbar({
-  collectionTitle = 'All words', collectionBreadcrumb, collectionAction,
+  collectionTitle = 'All words', headingSlot, collectionBreadcrumb, collectionAction,
   wordSearch, setWordSearch, sortBy, setSortBy, levelFilter, setLevelFilter,
   posFilter, setPosFilter, cefrFilter, setCefrFilter, completeness, setCompleteness,
   onReset, filteredCount, pageStart, pageEnd, levelSummary, progressLabel = 'Topic progress', progressCount, progressReady = true,
@@ -168,17 +171,22 @@ export function WordCollectionToolbar({
     ...(searchActive ? [{key: 'search', label: `Search: ${wordSearch}`, remove: () => setWordSearch('')}] : []),
   ]
 
-  return (
-    <div className="card toolbar-card">
-      <div className="toolbar-heading-row">
-        <div className="toolbar-list-heading">
-          {collectionBreadcrumb ?? <h1>{collectionTitle}</h1>}
-          <span className="toolbar-list-count" aria-label={`${filteredCount} matching words`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
-        </div>
-        {collectionAction}
+  const showProgress = progressReady && (headingSlot?.showProgress ?? true)
+  const heading = (
+    <div className="toolbar-heading-row">
+      <div className="toolbar-list-heading">
+        {collectionBreadcrumb ?? <h1>{collectionTitle}</h1>}
+        <span className="toolbar-list-count" aria-label={`${filteredCount} matching words`} title={`Showing ${showingLabel} of ${filteredCount} matching words`}>· {countLabel}</span>
       </div>
+      {collectionAction}
+    </div>
+  )
 
-      {progressReady && <div className="toolbar-knowledge-progress">
+  return (
+    <div className={headingSlot ? 'toolbar-card toolbar-card-compact' : 'card toolbar-card'}>
+      {headingSlot ? createPortal(heading, headingSlot.target) : heading}
+
+      {showProgress && <div className="toolbar-knowledge-progress">
         <div className="toolbar-progress-bar" role="progressbar" aria-label={progressLabel}
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number((levelSummary[4] / progressTotal * 100).toFixed(2))}
           aria-valuetext={`${(levelSummary[4] / progressTotal * 100).toFixed(2)}% strong`}>
