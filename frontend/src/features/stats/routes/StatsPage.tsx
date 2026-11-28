@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
-import {fetchRevisitWords} from '@/features/stats/api/statsApi'
+import {fetchRevisitPractice, fetchRevisitWords} from '@/features/stats/api/statsApi'
 import {InsightsStrip} from '@/features/stats/components/StatsInsights'
 import {StatsEntryExplorer} from '@/features/stats/components/StatsEntryExplorer'
 import {
@@ -105,8 +105,8 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
         <KnowledgeDistributionSection stats={stats} />
 
         <section className="stats-section">
-          <SectionTitle icon="🧭" subtitle="Open word details or record a rating here. Repeated setbacks cover the last 30 days.">Words to revisit</SectionTitle>
-          <StatsEntryExplorer scope="revisit" load={fetchRevisitWords} options={[
+          <SectionTitle icon="🧭" subtitle="Practice up to 10 words or open a word to rate it. Repeated setbacks cover the last 30 days.">Words to revisit</SectionTitle>
+          <StatsEntryExplorer scope="revisit" load={fetchRevisitWords} loadPractice={fetchRevisitPractice} options={[
             {value: 'weak', label: 'Weak'},
             {value: 'unreviewed', label: 'Never reviewed'},
             {value: 'downgraded', label: 'Repeated setbacks'},

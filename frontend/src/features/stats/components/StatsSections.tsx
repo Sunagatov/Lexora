@@ -4,7 +4,8 @@ import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {queryKeys} from '@/app/queryKeys'
 import {languagePreferences, subscribeLanguages} from '@/features/languages/api'
-import {offlineStatus, readSavedMixProgress, subscribeOffline} from '@/features/offline/offline'
+import {offlineStatus, subscribeOffline} from '@/features/offline/offline'
+import {readMixProgress} from '@/features/offline/storage'
 import type {DailyActivity, LearningStatsResponse, LearningTopicStat, LibraryStatsResponse, LibraryTopicStat} from '@/features/stats/types/statsTypes'
 import {BarChart, DonutChart, PeriodTabs, QualityBars, SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
 import {
@@ -102,7 +103,7 @@ export function DailyMixActivitySection({stats}: {stats: LearningStatsResponse})
   const {language} = useSyncExternalStore(subscribeLanguages, languagePreferences)
   const {data: deviceMix} = useQuery({
     queryKey: [...queryKeys.stats, 'device-mix', language],
-    queryFn: () => readSavedMixProgress(language),
+    queryFn: () => readMixProgress(language),
     enabled: saved,
   })
   return (

@@ -7,10 +7,12 @@ from sqlalchemy.orm import Session
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.stats.schemas import StatsEntry, StatsEntryPage
 from app.features.topics.model import Topic
+from app.features.words.api import with_word_details
 from app.features.words.constants import STUDY_PROGRESS_SOURCES
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import Word, WordExample, WordTranslation, word_topics
 from app.features.words.progress import WordProgressEvent
+from app.features.words.schemas import WordResponse
 
 LibraryGap = Literal["translation", "no-examples", "needs-examples", "no-topic", "multiple-topics"]
 RevisitGroup = Literal["weak", "downgraded", "unreviewed"]
@@ -56,7 +58,7 @@ def list_library_gap(db: Session, gap: LibraryGap, page: int) -> StatsEntryPage:
     return _entry_page(db, stmt.where(predicate), page)
 
 
-def list_revisit_words(db: Session, group: RevisitGroup, page: int) -> StatsEntryPage:
+def _revisit_entries(db: Session, group: RevisitGroup) -> Select:
     stmt = _active_entries(db)
     match group:
         case "weak":
@@ -82,4 +84,26 @@ def list_revisit_words(db: Session, group: RevisitGroup, page: int) -> StatsEntr
             stmt = stmt.where(
                 or_(Word.knowledge_level.is_(None), Word.knowledge_level != 5), Word.id.in_(regressed_ids),
             )
-    return _entry_page(db, stmt, page)
+    return stmt
+
+
+def list_revisit_words(db: Session, group: RevisitGroup, page: int) -> StatsEntryPage:
+    return _entry_page(db, _revisit_entries(db, group), page)
+
+
+def load_revisit_practice(db: Session, group: RevisitGroup, page: int) -> list[WordResponse]:
+    target = translation_language(db)
+    review_ids = (
+        _revisit_entries(db, group)
+        .with_only_columns(Word.id)
+        .order_by(func.lower(Word.term), Word.id)
+        .limit(20)
+        .offset((page - 1) * 20)
+    )
+    words = db.scalars(with_word_details(
+        select(Word)
+        .where(Word.id.in_(review_ids), Word.translation_items.any(WordTranslation.language == target))
+        .order_by(func.lower(Word.term), Word.id)
+        .limit(10)
+    ))
+    return [WordResponse.from_word(word) for word in words]

@@ -11,11 +11,18 @@ from sqlalchemy.orm import Session
 
 from app.features.offline.model import OfflineReceipt
 from app.features.offline.router import sync_change
-from app.features.offline.service import OfflineChange, apply_change, snapshot, word_data
+from app.features.offline.service import (
+    OfflineChange,
+    OfflineRevisions,
+    apply_change,
+    delta,
+    snapshot,
+    word_data,
+)
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic
-from app.features.words.model import Word
+from app.features.words.model import Word, WordExample
 from app.features.words.progress import WordProgressEvent
 from app.features.words.repository import create_word, update_word
 from app.features.words.schemas import WordCreate, WordUpdate
@@ -52,6 +59,78 @@ def change(db, **values):
         "data": {"knowledge_level": 4},
     }
     return OfflineChange(**(defaults | values))
+
+
+def test_snapshot_opt_in_preserves_legacy_shape_and_has_empty_delta_when_current(db):
+    legacy = snapshot(db)
+    assert set(legacy) == {"version", "words", "topics", "public_config"}
+    versioned = snapshot(db, include_revisions=True)
+    revisions = OfflineRevisions.model_validate(versioned.pop("revisions"))
+    assert versioned == legacy
+    assert set(revisions.word_hashes) == {str(word["id"]) for word in legacy["words"]}
+    assert set(revisions.topic_hashes) == {str(topic["id"]) for topic in legacy["topics"]}
+
+    assert delta(db, revisions) == {
+        "version": 1,
+        "words": [],
+        "topics": [],
+        "removed_word_ids": [],
+        "removed_topic_ids": [],
+        "revisions": {"version": 1, "word_hashes": {}, "topic_hashes": {}},
+        "public_config": legacy["public_config"],
+    }
+
+
+def test_delta_includes_child_only_update_without_a_word_timestamp_change(db):
+    baseline = snapshot(db, include_revisions=True)
+    word = baseline["words"][0]
+    db.add(WordExample(word_id=word["id"], position=0, value="Please be patient."))
+    db.commit()
+    db.expire_all()
+
+    updated = delta(db, OfflineRevisions.model_validate(baseline["revisions"]))
+    assert [row["id"] for row in updated["words"]] == [word["id"]]
+    assert updated["words"][0]["updated_at"] == word["updated_at"]
+    assert updated["words"][0]["example_entries"] == ["Please be patient."]
+    assert updated["revisions"]["word_hashes"][str(word["id"])] != baseline["revisions"]["word_hashes"][str(word["id"])]
+    assert updated["topics"] == []
+    assert updated["removed_word_ids"] == []
+
+
+def test_delta_reports_purged_words_and_topics(db):
+    baseline = snapshot(db, include_revisions=True)
+    word_id = baseline["words"][0]["id"]
+    topic_id = baseline["topics"][0]["id"]
+    db.delete(db.get(Word, word_id))
+    db.flush()
+    db.delete(db.get(Topic, topic_id))
+    db.commit()
+
+    removed = delta(db, OfflineRevisions.model_validate(baseline["revisions"]))
+    assert removed["words"] == []
+    assert removed["topics"] == []
+    assert removed["removed_word_ids"] == [word_id]
+    assert removed["removed_topic_ids"] == [topic_id]
+    assert removed["revisions"] == {"version": 1, "word_hashes": {}, "topic_hashes": {}}
+
+
+def test_empty_revision_forces_authoritative_refresh_or_removal(db):
+    baseline = snapshot(db, include_revisions=True)
+    word = baseline["words"][0]
+    topic = baseline["topics"][0]
+    unknown_word_id = word["id"] + 100
+    revisions = OfflineRevisions.model_validate({
+        "version": 1,
+        "word_hashes": {str(word["id"]): "", str(unknown_word_id): ""},
+        "topic_hashes": {str(topic["id"]): ""},
+    })
+
+    refreshed = delta(db, revisions)
+    assert refreshed["words"] == [word]
+    assert refreshed["topics"] == [topic]
+    assert refreshed["removed_word_ids"] == [unknown_word_id]
+    assert refreshed["removed_topic_ids"] == []
+    assert refreshed["revisions"] == baseline["revisions"]
 
 
 def test_retry_does_not_duplicate_progress_or_receipts(db):
@@ -347,14 +426,21 @@ def test_offline_routes_require_both_session_and_csrf(db, auth_db):
         client = TestClient(app)
         assert client.get("/api/offline/snapshot").status_code == 401
         assert client.post("/api/offline/changes", json={}).status_code == 401
+        assert client.post("/api/offline/delta", json={}).status_code == 401
         token = create_session(auth_db)
         client.cookies.set("session", token)
         assert client.get("/api/offline/snapshot").status_code == 403
+        assert client.post("/api/offline/delta", json={}).status_code == 403
+        headers = {"X-CSRF-Token": build_csrf_token(settings.secret_key, token)}
         response = client.get(
-            "/api/offline/snapshot",
-            headers={"X-CSRF-Token": build_csrf_token(settings.secret_key, token)},
+            "/api/offline/snapshot?include_revisions=true",
+            headers=headers,
         )
         assert response.status_code == 200
         assert response.json()["words"][0]["term"] == "patient"
+        revisions = response.json()["revisions"]
+        response = client.post("/api/offline/delta", headers=headers, json=revisions)
+        assert response.status_code == 200
+        assert response.json()["words"] == []
     finally:
         app.dependency_overrides.pop(get_db, None)

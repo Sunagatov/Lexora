@@ -4,7 +4,23 @@ import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 
 export type OfflineWord = Word & {deleted_via_topic_id?: number | null}
 export type OfflineTopic = Topic & {deleted_at?: string | null}
-export type Snapshot = {version: 1; words: OfflineWord[]; topics: OfflineTopic[]; public_config?: {trash_retention_days: number}}
+export type SnapshotRevisions = {
+  version: 1
+  word_hashes: Record<string, string>
+  topic_hashes: Record<string, string>
+}
+export type Snapshot = {
+  version: 1
+  words: OfflineWord[]
+  topics: OfflineTopic[]
+  public_config?: {trash_retention_days: number}
+  revisions?: SnapshotRevisions
+}
+export type SnapshotDelta = Snapshot & {
+  removed_word_ids: number[]
+  removed_topic_ids: number[]
+  revisions: SnapshotRevisions
+}
 export type Change = {
   id: string
   occurred_at?: string
@@ -20,6 +36,7 @@ export type Replica = Snapshot & {
   nextId: number
   changes: Change[]
   revision?: string
+  restorePaused?: boolean
   wordAliases?: Record<number, number>
   topicAliases?: Record<number, number>
   mix?: StudyQueue

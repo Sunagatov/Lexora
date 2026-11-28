@@ -91,6 +91,11 @@ Protected router groups:
 
 - `GET /api/offline/snapshot` returns version 1 of the complete word/topic copy,
   including Trash, all topic relationships and public retention settings.
+- `GET /api/offline/snapshot?include_revisions=true` also returns a versioned inventory of
+  server-issued word and topic digests. `POST /api/offline/delta` accepts this inventory
+  and returns changed rows with their new digests plus IDs permanently removed from the library.
+  An empty digest requests the canonical row after an acknowledged local edit. The client
+  merges the response after its outbox drains and falls back to a full snapshot when needed.
 - `POST /api/offline/changes` applies one word/topic create, update, soft-delete
   or restore. Requires a UUID operation ID, entity type, action, entity ID,
   data and previous values. Creates use a temporary negative ID; the response
@@ -103,7 +108,7 @@ Protected router groups:
   the same UUID and payload returns the original result; reusing the UUID for a
   different payload is rejected. Migration `20261017_0012` adds the receipt table.
   Preserve receipts during image rollback; deleting them loses retry protection.
-- Both endpoints keep normal session and CSRF protection. Offline data never
+- Both POST routes keep normal session and CSRF protection. Offline data never
   supplies authentication to the server. A fresh sign-in may be needed to sync.
 
 The frontend's My Lexora → Offline control explicitly saves the complete
@@ -293,6 +298,7 @@ The deleted topic and its words remain in Trash on conflict.
 
 - `GET /api/stats/learning` — current knowledge ratings, app usage, Study List and Daily Mix rating history, distinct words and attempts by UTC period, and server-recorded Daily Mix activity. Okay or better uses the Weak, Okay, and Strong groups as its denominator.
 - `GET /api/stats/learning/revisit?group=weak|unreviewed|downgraded&page=1` — active entries to revisit. Repeated setbacks count two or more downgrades in the last 30 UTC days.
+- `GET /api/stats/learning/revisit/practice?group=weak|unreviewed|downgraded&page=1` — up to ten entries on the selected revisit page with translations in the selected language. Recall outcomes are saved on the device.
 - `GET /api/stats/library` — vocabulary and topic counts, enrichment in the selected translation language, active entries by creation month, and recorded-study coverage. Both topic views roll up linked descendants without double-counting within a parent.
 - `GET /api/stats/library/entries?gap=translation|no-examples|needs-examples|no-topic|multiple-topics&page=1` — active entries matching a readiness or topic metric.
 - `GET /api/stats` — combined statistics for earlier clients.

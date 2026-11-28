@@ -9,12 +9,14 @@ const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
   ios: false,
   adapter: undefined as undefined | ((path: string, init: RequestInit, network: (path: string, init: RequestInit) => Promise<unknown>) => Promise<unknown>),
-  network: vi.fn(), write: vi.fn(), writeMix: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
+  network: vi.fn(), read: vi.fn(), write: vi.fn(), writeMix: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
 }))
 vi.mock('@/shared/api/http', () => ({networkRequest: fake.network, setRequestAdapter: (adapter: typeof fake.adapter) => { fake.adapter = adapter }}))
 vi.mock('@/shared/platform', () => ({get isIOSApp() { return fake.ios }}))
 vi.mock('../storage', () => ({
-  readReplica: async () => structuredClone(fake.replica),
+  readReplica: async () => { fake.read(); return structuredClone(fake.replica) },
+  initializeMixProgress: async () => {},
+  deleteOfflineValue: async () => {},
   writeReplica: async (replica: Replica) => { fake.write(); fake.replica = structuredClone(replica) },
   writeMixState: async ({mixes, mixReviewedAt, nextId}: Replica) => {
     fake.writeMix()
@@ -27,13 +29,13 @@ vi.mock('../storage', () => ({
   },
 }))
 
-async function setup() {
+async function setup(online = false) {
   vi.resetModules()
   vi.stubGlobal('indexedDB', {})
   vi.stubGlobal('BroadcastChannel', class { onmessage = null; postMessage() {} })
   vi.spyOn(window, 'setInterval').mockReturnValue(1)
-  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
-  fake.network.mockReset(); fake.write.mockClear(); fake.writeMix.mockClear(); fake.lock = Promise.resolve()
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(online)
+  fake.network.mockReset(); fake.read.mockClear(); fake.write.mockClear(); fake.writeMix.mockClear(); fake.lock = Promise.resolve()
   fake.replica = {version: 1, words: [], topics: [], changes: [], nextId: -1, savedAt: new Date().toISOString()}
   const {changeItem} = await import('../changes')
   changeItem(fake.replica, 'topic', 'create', -1, {name: 'People'})
@@ -62,7 +64,7 @@ it('saves the library in the packaged iOS app without a service worker', async (
   fake.network.mockResolvedValueOnce(structuredClone(fake.replica!)).mockResolvedValueOnce(undefined)
   await offline.saveOffline()
   expect(offline.offlineStatus()).toMatchObject({saved: true, words: 1})
-  expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/api/offline/snapshot', '/api/smart-review'])
+  expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/api/offline/snapshot?include_revisions=true', '/api/smart-review'])
 })
 
 it('opens a saved iOS library immediately when the phone is offline', async () => {
@@ -71,6 +73,63 @@ it('opens a saved iOS library immediately when the phone is offline', async () =
   const {request} = await setup()
   await expect(request('/auth/session')).resolves.toEqual({authenticated: true, csrf_token: ''})
   expect(fake.network).not.toHaveBeenCalled()
+})
+
+it('keeps online-only statistics and usage requests out of saved-library storage', async () => {
+  const {request} = await setup(true)
+  fake.read.mockClear()
+  fake.network.mockResolvedValue({ok: true})
+  await expect(request('/api/stats/learning')).resolves.toEqual({ok: true})
+  await expect(request('/api/stats/library/entries?gap=translation')).resolves.toEqual({ok: true})
+  await expect(request('/api/stats/usage', {method: 'POST', body: '{}'})).resolves.toEqual({ok: true})
+  expect(fake.read).not.toHaveBeenCalled()
+})
+
+it('merges changed records and purges while keeping the authoritative revision inventory', async () => {
+  const {offline} = await setup()
+  const latest = fake.replica!
+  latest.words[0] = {...latest.words[0], id: 21, topic_ids: [5]}
+  latest.topics[0] = {...latest.topics[0], id: 5}
+  latest.revisions = {version: 1, word_hashes: {'21': 'old', '22': 'removed'}, topic_hashes: {'5': 'retained'}}
+  latest.words.push({...latest.words[0], id: 22, term: 'removed'})
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  fake.network.mockImplementation(async (path: string, init: RequestInit) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/delta') {
+      expect(JSON.parse(String(init.body))).toEqual(latest.revisions)
+      return {version: 1, words: [{...latest.words[0], term: 'updated'}], topics: [],
+        removed_word_ids: [22], removed_topic_ids: [],
+        revisions: {version: 1, word_hashes: {'21': 'new'}, topic_hashes: {}}}
+    }
+    throw Error(`Unexpected request ${path}`)
+  })
+  await offline.syncOffline(true)
+  expect(fake.replica?.words.map(({id, term}) => [id, term])).toEqual([[21, 'updated']])
+  expect(fake.replica?.topics.map(topic => topic.id)).toEqual([5])
+  expect(fake.replica?.revisions).toEqual({version: 1, word_hashes: {'21': 'new'}, topic_hashes: {'5': 'retained'}})
+  expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/auth/session', '/api/offline/delta'])
+})
+
+it('restores a backup locally and waits for explicit sync, while protecting current pending edits', async () => {
+  const {offline, request} = await setup()
+  const backup = structuredClone(fake.replica!)
+  backup.words[0].term = 'from backup'
+  backup.revisions = {version: 1, word_hashes: {}, topic_hashes: {}}
+  await request('/api/words/-2', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  await expect(offline.restoreOfflineBackup(backup)).rejects.toThrow('Sync your current edits')
+  fake.replica!.changes = []
+  await offline.restoreOfflineBackup(backup)
+  expect(fake.replica?.words[0].term).toBe('from backup')
+  expect(fake.replica?.revisions).toBeUndefined()
+  expect(offline.offlineStatus().restorePaused).toBe(true)
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  await offline.syncOffline(true)
+  expect(fake.network).not.toHaveBeenCalled()
+  fake.network.mockResolvedValueOnce({csrf_token: 'test-only'})
+    .mockResolvedValueOnce({version: 1, words: backup.words, topics: backup.topics})
+  await offline.resumeOfflineSync()
+  expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/auth/session', '/api/offline/snapshot?include_revisions=true'])
+  expect(offline.offlineStatus().restorePaused).toBeUndefined()
 })
 
 it('retries deferred iOS sign-out with the session CSRF token', async () => {
@@ -137,7 +196,7 @@ it('copies the current practice set and its progress when saving all words offli
   const snapshot = structuredClone(fake.replica!)
   const mix: StudyQueue = {id: 40, generated_at: '2026-10-17', expires_at: '2026-10-18', is_active: true,
     total_count: 1, completed_count: 1, items: [{id: 50, word_id: -2, position: 0, word: snapshot.words[0], is_completed: true, completed_at: '2026-10-17'}]}
-  fake.network.mockImplementation(async (path: string) => path === '/api/offline/snapshot' ? snapshot : mix)
+  fake.network.mockImplementation(async (path: string) => path === '/api/offline/snapshot?include_revisions=true' ? snapshot : mix)
   await offline.saveOffline()
   expect(fake.replica!.mixes!.en).toEqual(mix)
   const savedMix = await request('/api/smart-review') as StudyQueue
@@ -189,7 +248,7 @@ it('retains an unchanged operation after a lost response, then remaps dependenci
   let dropped = false
   fake.network.mockImplementation(async (path: string, init: RequestInit) => {
     if (path === '/auth/session') return {csrf_token: 'test-only'}
-    if (path === '/api/offline/snapshot') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
+    if (path === '/api/offline/snapshot?include_revisions=true') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
     sent.push(String(init.body))
     const edit = JSON.parse(String(init.body))
     if (!dropped) { dropped = true; throw new TypeError('Response lost after server commit') }
@@ -220,7 +279,7 @@ it.each(['study_list', 'smart_review'])('retries a saved %s rating with its orig
   const sent: string[] = []
   fake.network.mockImplementation(async (path: string, init: RequestInit) => {
     if (path === '/auth/session') return {csrf_token: 'test-only'}
-    if (path === '/api/offline/snapshot') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
+    if (path === '/api/offline/snapshot?include_revisions=true') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
     sent.push(String(init.body))
     if (sent.length === 1) throw new TypeError('Response lost after server commit')
     return {entity_id: 2}
@@ -283,7 +342,7 @@ it.each([
   fake.network.mockImplementation(async (path: string) => {
     if (path === '/auth/session') return {csrf_token: 'test-only'}
     if (path === '/api/offline/changes') return {entity_id: -2}
-    if (path === '/api/offline/snapshot') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
+    if (path === '/api/offline/snapshot?include_revisions=true') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
     if (path === '/api/preferences') return {...DEFAULT_PREFERENCES, page_size: 100}
     throw new Error(`Unexpected path: ${path}`)
   })
@@ -310,7 +369,7 @@ it('keeps local edits responsive during a slow snapshot and never overwrites tho
   let firstSnapshot = true
   fake.network.mockImplementation(async (path: string, init: RequestInit) => {
     if (path === '/auth/session') return {csrf_token: 'test-only'}
-    if (path === '/api/offline/snapshot') {
+    if (path === '/api/offline/snapshot?include_revisions=true') {
       const copy = structuredClone(server)
       if (firstSnapshot) { firstSnapshot = false; snapshotStarted(); await slowSnapshot }
       return copy
@@ -344,7 +403,7 @@ it('retains a second local edit made while the first change is uploading', async
   const beforeLevels: number[] = []
   fake.network.mockImplementation(async (path: string, init: RequestInit) => {
     if (path === '/auth/session') return {csrf_token: 'test-only'}
-    if (path === '/api/offline/snapshot') return structuredClone(fake.replica)
+    if (path === '/api/offline/snapshot?include_revisions=true') return structuredClone(fake.replica)
     const edit = JSON.parse(String(init.body))
     beforeLevels.push(edit.before.knowledge_level)
     if (beforeLevels.length === 1) { uploadStarted(); await slowUpload }

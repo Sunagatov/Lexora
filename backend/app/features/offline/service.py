@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -46,6 +46,19 @@ class OfflineChange(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+RevisionId = Annotated[str, Field(pattern=r"^[1-9][0-9]{0,14}$")]
+# An empty digest asks for a fresh copy while still tracking permanent removal.
+RevisionDigest = Annotated[str, Field(pattern=r"^(?:[a-f0-9]{64})?$")]
+
+
+class OfflineRevisions(BaseModel):
+    version: int = Field(strict=True, ge=1, le=1)
+    word_hashes: dict[RevisionId, RevisionDigest] = Field(max_length=250_000)
+    topic_hashes: dict[RevisionId, RevisionDigest] = Field(max_length=250_000)
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+
 def word_data(word: Word) -> dict:
     data = WordResponse.from_word(word).model_dump(mode="json")
     # Retain trashed topic relationships in the replica; normal APIs hide them.
@@ -58,18 +71,59 @@ def topic_data(topic: Topic) -> dict:
     return TopicResponse.model_validate(topic).model_dump(mode="json")
 
 
-def snapshot(db: Session, *, all_languages: bool = False) -> dict:
+def _row_revision(row: dict) -> str:
+    content = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def snapshot(db: Session, *, all_languages: bool = False, include_revisions: bool = False) -> dict:
     word_query, topic_query = select(Word), select(Topic)
     if not all_languages:
         word_query = word_query.where(Word.language == learning_language(db))
         topic_query = topic_query.where(Topic.language == learning_language(db))
     words = db.scalars(with_word_details(word_query.order_by(Word.id))).all()
     topics = db.scalars(topic_query.order_by(Topic.id)).all()
-    return {
+    result = {
         "version": 1,
         "words": [word_data(w) for w in words],
         "topics": [topic_data(t) for t in topics],
         "public_config": {"trash_retention_days": settings.trash_retention_days},
+    }
+    if include_revisions:
+        result["revisions"] = {
+            "version": 1,
+            "word_hashes": {str(row["id"]): _row_revision(row) for row in result["words"]},
+            "topic_hashes": {str(row["id"]): _row_revision(row) for row in result["topics"]},
+        }
+    return result
+
+
+def _diff_rows(rows: list[dict], previous: dict[str, str]) -> tuple[list[dict], list[int], dict[str, str]]:
+    removed = set(previous)
+    changed = []
+    revisions = {}
+    for row in rows:
+        id_ = str(row["id"])
+        removed.discard(id_)
+        digest = _row_revision(row)
+        if digest != previous.get(id_):
+            changed.append(row)
+            revisions[id_] = digest
+    return changed, sorted(map(int, removed)), revisions
+
+
+def delta(db: Session, revisions: OfflineRevisions, *, all_languages: bool = False) -> dict:
+    current = snapshot(db, all_languages=all_languages)
+    words, removed_words, word_hashes = _diff_rows(current["words"], revisions.word_hashes)
+    topics, removed_topics, topic_hashes = _diff_rows(current["topics"], revisions.topic_hashes)
+    return {
+        "version": 1,
+        "words": words,
+        "topics": topics,
+        "removed_word_ids": removed_words,
+        "removed_topic_ids": removed_topics,
+        "revisions": {"version": 1, "word_hashes": word_hashes, "topic_hashes": topic_hashes},
+        "public_config": current["public_config"],
     }
 
 

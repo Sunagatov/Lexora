@@ -44,6 +44,26 @@ def test_retention_counts_only_current_words_but_keeps_historical_activity(db):
     assert stats.daily_activity[0].reviewed == 2
 
 
+def test_revisit_practice_loads_at_most_ten_translated_words_from_the_selected_group(db):
+    db.add_all([
+        Word(term=f'practice-{i:02}', knowledge_level=1, translation_items=[
+            WordTranslation(position=0, value=f'answer-{i}', language='en'),
+        ]) for i in range(12)
+    ])
+    db.add_all([
+        Word(term='a-junk', knowledge_level=1),
+        Word(term='a-parked', knowledge_level=5, translation_items=[WordTranslation(position=0, value='answer', language='en')]),
+        Word(term='a-other-language', language='es', knowledge_level=1,
+             translation_items=[WordTranslation(position=0, value='answer', language='en')]),
+    ])
+    db.commit()
+    assert stats_router.get_revisit_practice(db, 'weak', 1) == []
+    configure_language(db, 'en', 'en')
+    practice = stats_router.get_revisit_practice(db, 'weak', 1)
+    assert [word.term for word in practice] == [f'practice-{i:02}' for i in range(10)]
+    assert practice[0].translation_groups == {'en': ['answer-0']}
+
+
 def test_learning_stats_summarizes_usage_and_reviews_without_loading_orm_events(db):
     word = Word(term='one')
     db.add(word)

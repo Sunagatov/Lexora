@@ -8,6 +8,7 @@ from app.features.stats.entries import (
     RevisitGroup,
     list_library_gap,
     list_revisit_words,
+    load_revisit_practice,
 )
 from app.features.stats.schemas import (
     LearningStatsResponse,
@@ -22,6 +23,7 @@ from app.features.stats.service import (
     compute_stats,
     record_usage_event,
 )
+from app.features.words.schemas import WordResponse
 from app.shared.deps import get_db
 
 router = APIRouter(prefix="/api/stats", tags=["stats"])
@@ -51,6 +53,11 @@ def get_library_entries(db: StatsDB, gap: LibraryGap, page: Annotated[int, Query
 @router.get("/learning/revisit", response_model=StatsEntryPage)
 def get_revisit_entries(db: StatsDB, group: RevisitGroup, page: Annotated[int, Query(ge=1, le=100_000)] = 1) -> StatsEntryPage:
     return list_revisit_words(db, group, page)
+
+
+@router.get("/learning/revisit/practice", response_model=list[WordResponse])
+def get_revisit_practice(db: StatsDB, group: RevisitGroup, page: Annotated[int, Query(ge=1, le=100_000)] = 1) -> list[WordResponse]:
+    return load_revisit_practice(db, group, page)
 
 
 @router.post("/usage", status_code=204)

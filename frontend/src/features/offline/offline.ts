@@ -1,18 +1,20 @@
 import {ApiError} from '@/shared/api/apiError'
 import {networkRequest, setRequestAdapter} from '@/shared/api/http'
-import {readReplica, withOfflineLock, writeMixState, writeReplica} from './storage'
+import {initializeMixProgress, readReplica, withOfflineLock, writeMixState, writeReplica} from './storage'
 import {changeItem, remapId} from './changes'
+import {applySnapshotUpdate, fetchSnapshot, fetchSnapshotUpdate, refreshAcceptedEdit} from './snapshotSync'
 import {languagePreferences} from '@/features/languages/api'
 import {activeTopicIds, inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
-import type {Replica, Snapshot} from './types'
+import type {Replica} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 import {preferencesSnapshot} from '@/features/preferences/api'
 import {selectWordMix} from '@/features/smart-review/model/selectWordMix'
+import {clearRecallHistory} from '@/features/stats/model/recallHistory'
 import {isIOSApp} from '@/shared/platform'
 import {saveFile} from '@/shared/saveFile'
 
-type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; topicAliases?: Record<number, number>}
+type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; restorePaused?: boolean; topicAliases?: Record<number, number>}
 let status: Status = {saved: false, pending: 0, busy: false, offline: !navigator.onLine, words: 0, topics: 0}
 const listeners = new Set<() => void>()
 let channel: BroadcastChannel | undefined
@@ -24,7 +26,7 @@ export const subscribeOffline = (listener: () => void) => { listeners.add(listen
 export const offlineStatus = () => status
 function notify(patch: Partial<Status>) { status = {...status, ...patch}; listeners.forEach(fn => fn()) }
 function report(replica?: Replica) {
-  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, topicAliases: replica?.topicAliases})
+  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, restorePaused: replica?.restorePaused, topicAliases: replica?.topicAliases})
 }
 
 async function persist(replica?: Replica, resetLists = false) {
@@ -71,28 +73,34 @@ function readMix(replica: Replica, mix: StudyQueue): StudyQueue {
   return {...mix, items, total_count: items.length, completed_count: items.filter(item => item.is_completed).length}
 }
 
-export async function readSavedMixProgress(language: string) {
-  const replica = await readReplica()
-  const mix = replica?.mixes?.[language] ?? (language === 'en' ? replica?.mix : undefined)
-  if (!replica || !mix) return null
-  const activeIds = new Set(replica.words.filter((word) => !word.deleted_at).map((word) => word.id))
-  const activeItems = mix.items.filter((item) => activeIds.has(item.word_id))
-  return {
-    completed: activeItems.filter((item) => item.is_completed).length,
-    total: activeItems.length,
+const replicaReads = new Set(['/api/config/public', '/api/words', '/api/topics', '/api/topics/sidebar-stats',
+  '/api/words/summary', '/api/trash/words', '/api/trash/topics', '/api/smart-review'])
+const entryPath = /^\/api\/(words|topics)\/(-?\d+)$/
+const collectionPath = /^\/api\/(words|topics)$/
+const restorePath = /^\/api\/trash\/(words|topics)\/(-?\d+)\/restore$/
+const mixCompletionPath = /^\/api\/smart-review\/items\/(-?\d+)\/complete$/
+
+function usesSavedReplica(route: string, method: string) {
+  switch (method) {
+    case 'GET': return replicaReads.has(route) || entryPath.test(route)
+    case 'POST': return collectionPath.test(route) || restorePath.test(route)
+      || route === '/api/smart-review/refresh' || mixCompletionPath.test(route)
+    case 'PATCH': return route === '/api/words/batch'
+    case 'PUT':
+    case 'DELETE': return entryPath.test(route)
+    default: return false
   }
 }
 
-async function localRequest(replica: Replica, path: string, init: RequestInit) {
-  const url = new URL(path, window.location.href), route = url.pathname, params = url.searchParams
-  const method = init.method?.toUpperCase() ?? 'GET'
+async function localRequest(replica: Replica, url: URL, method: string, init: RequestInit) {
+  const {pathname: route, searchParams: params} = url
   if (route === '/api/smart-review' || route.startsWith('/api/smart-review/')) {
     const mixes = replica.mixes ??= replica.mix ? {en: replica.mix} : {}
     const language = languagePreferences().language
     const existing = mixes[language]
     const refresh = route.endsWith('/refresh') && method === 'POST'
     const mix = !existing || refresh ? newMix(replica) : readMix(replica, existing)
-    const match = route.match(/\/items\/(-?\d+)\/complete$/)
+    const match = route.match(mixCompletionPath)
     if (match && method === 'POST') {
       const item = mix.items.find(item => item.id === Number(match[1]))
       if (!item) throw new ApiError(404, 'Practice item not found')
@@ -121,7 +129,7 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
     if (route === '/api/words/summary') return wordSummary(replica, params)
     if (route === '/api/trash/words') return scope.words.filter(w => w.deleted_at).map(w => visibleWord(replica, w))
     if (route === '/api/trash/topics') return scope.topics.filter(t => t.deleted_at)
-    const match = route.match(/^\/api\/(words|topics)\/(-?\d+)$/)
+    const match = route.match(entryPath)
     if (match) {
       const isWord = match[1] === 'words'
       const aliases = isWord ? replica.wordAliases : replica.topicAliases
@@ -151,9 +159,9 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
     if (resetLists) refreshQueries(true)
     return {updated}
   }
-  const create = route.match(/^\/api\/(words|topics)$/)
-  const edit = route.match(/^\/api\/(words|topics)\/(-?\d+)$/)
-  const restore = route.match(/^\/api\/trash\/(words|topics)\/(-?\d+)\/restore$/)
+  const create = route.match(collectionPath)
+  const edit = route.match(entryPath)
+  const restore = route.match(restorePath)
   if ((create && method === 'POST') || (edit && ['PUT', 'DELETE'].includes(method)) || (restore && method === 'POST')) {
     const match = (create ?? edit ?? restore)!
     const action = create ? 'create' : restore ? 'restore' : method === 'DELETE' ? 'delete' : 'update'
@@ -173,7 +181,11 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
   refreshQueries = onRefresh
   initialized ??= (async () => {
     if (!('indexedDB' in window) || (isIOSApp && !supportsIOSOffline())) return
-    try { report(await readReplica()) } catch { return }
+    try {
+      const replica = await readReplica()
+      report(replica)
+      if (replica) await initializeMixProgress(replica)
+    } catch { return }
     if ('BroadcastChannel' in window) {
       channel = new BroadcastChannel('lexora-offline')
       channel.onmessage = event => { void readReplica().then(report); refreshQueries(event.data?.resetLists === true) }
@@ -214,20 +226,25 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
           if (path === '/auth/logout-all' || error instanceof ApiError) throw error
           localStorage.setItem('lexora-offline-logout', '1')
         }
-        await withOfflineLock(() => persist())
+        await withOfflineLock(async () => {
+          await persist()
+          await clearRecallHistory()
+        })
         return {ok: true}
       }
       if (!status.saved || !path.startsWith('/api/')) return network(path, init)
-      const result = await withOfflineLock(async () => {
+      const url = new URL(path, window.location.href)
+      const method = init.method?.toUpperCase() ?? 'GET'
+      const result = usesSavedReplica(url.pathname, method) ? await withOfflineLock(async () => {
         const replica = await readReplica()
-        return replica ? localRequest(replica, path, init) : UNHANDLED
-      })
+        return replica ? localRequest(replica, url, method, init) : UNHANDLED
+      }) : UNHANDLED
       if (result !== UNHANDLED) {
         if (init.method && navigator.onLine) void syncOffline()
         return result
       }
       if (!navigator.onLine || status.offline) throw new ApiError(503, 'This feature needs internet. Words, topics, search, practice and knowledge changes are available offline.')
-      if (status.pending && init.method && init.method !== 'GET') throw new ApiError(409, 'Sync your saved edits before using this online feature.')
+      if (status.pending && method !== 'GET') throw new ApiError(409, 'Sync your saved edits before using this online feature.')
       const value = await network(path, init)
       if (init.method && (path.startsWith('/api/words/import/') || path.startsWith('/api/trash/purge'))) await syncOffline(true)
       return value
@@ -264,7 +281,7 @@ export async function saveOffline() {
       })
       await navigator.serviceWorker.ready
     }
-    const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {headers: {'X-Lexora-All-Languages': 'true'}, signal: AbortSignal.timeout(60_000)})
+    const snapshot = await fetchSnapshot()
     if (snapshot.version !== 1) throw new Error('Update the page before saving offline.')
     let mix: StudyQueue | undefined
     try { mix = await networkRequest<StudyQueue>('/api/smart-review', {headers: {'X-Lexora-Language': language}, signal: AbortSignal.timeout(20_000)}) }
@@ -282,7 +299,7 @@ export async function saveOffline() {
 
 export function syncOffline(forceRefresh = false): Promise<void> {
   if (syncing) return syncing
-  if (!navigator.onLine || !status.saved) return Promise.resolve()
+  if (!navigator.onLine || !status.saved || status.restorePaused) return Promise.resolve()
   if (!forceRefresh && !status.pending && !status.error && !status.offline && status.savedAt && Date.now() - Date.parse(status.savedAt) < 5 * 60_000) return Promise.resolve()
   syncing = (async () => {
     notify({busy: true, error: undefined})
@@ -292,7 +309,7 @@ export function syncOffline(forceRefresh = false): Promise<void> {
       localStorage.setItem(CSRF_TOKEN_STORAGE_KEY, session.csrf_token)
       while (true) {
         const replica = await withOfflineLock(readReplica)
-        if (!replica) break
+        if (!replica || replica.restorePaused) return
         if (replica.changes.length) {
           const change = replica.changes[0]
           const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {method: 'POST', headers: {'X-Lexora-Language': String(change.data.language ?? change.before.language ?? 'en')}, body: JSON.stringify(change), signal: AbortSignal.timeout(20_000)})
@@ -302,18 +319,19 @@ export function syncOffline(forceRefresh = false): Promise<void> {
             if (latest?.changes[0]?.id !== change.id) return
             latest.changes.shift()
             if (change.action === 'create') remapId(latest, change.entity, change.entity_id, result.entity_id)
+            refreshAcceptedEdit(latest, change, result.entity_id)
             await persist(latest)
           })
           continue
         }
         // Network waits must not hold the storage lock needed by local edits.
-        const snapshot = await networkRequest<Snapshot>('/api/offline/snapshot', {headers: {'X-Lexora-All-Languages': 'true'}, signal: AbortSignal.timeout(60_000)})
+        const snapshot = await fetchSnapshotUpdate(replica)
         const refreshed = await withOfflineLock(async () => {
           const latest = await readReplica()
           if (!latest) return true
           // Discard an outdated download if any tab edited the copy meanwhile.
           if (latest.changes.length || latest.revision !== replica.revision) return false
-          await persist({...latest, ...snapshot, savedAt: new Date().toISOString()})
+          await persist(applySnapshotUpdate(latest, snapshot))
           return true
         })
         if (refreshed) break
@@ -334,6 +352,27 @@ export async function removeOffline() {
   await withOfflineLock(() => persist())
   notify({error: undefined})
   refreshQueries(true)
+}
+
+export async function restoreOfflineBackup(replica: Replica) {
+  await withOfflineLock(async () => {
+    if ((await readReplica())?.changes.length) {
+      throw new Error('Sync your current edits before replacing this saved copy.')
+    }
+    await persist({...replica, revisions: undefined, restorePaused: true}, true)
+  })
+  notify({error: undefined})
+  refreshQueries(true)
+}
+
+export async function resumeOfflineSync() {
+  if (!navigator.onLine) throw new Error('Connect to Lexora before resuming sync.')
+  if (syncing) await syncing
+  await withOfflineLock(async () => {
+    const replica = await readReplica()
+    if (replica?.restorePaused) await persist({...replica, restorePaused: undefined})
+  })
+  await syncOffline(true)
 }
 
 export async function exportOfflineBackup() {

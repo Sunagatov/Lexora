@@ -2,10 +2,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import ValidationError
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.features.offline.service import OfflineChange, apply_change, snapshot
+from app.features.offline.service import (
+    OfflineChange,
+    OfflineRevisions,
+    apply_change,
+    delta,
+    snapshot,
+)
 from app.features.topics.exceptions import (
     InvalidTopicNameError,
     InvalidTopicParentError,
@@ -20,9 +27,31 @@ from app.shared.deps import get_db
 router = APIRouter(prefix="/api/offline", tags=["offline"])
 
 
+def _begin_consistent_read(db: Session) -> None:
+    # Snapshot rows and their select-in relationships must see the same commit.
+    if db.get_bind().dialect.name == "postgresql":
+        db.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))
+
+
 @router.get("/snapshot")
-def get_snapshot(db: Annotated[Session, Depends(get_db)], all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False):
-    return snapshot(db, all_languages=all_languages)
+def get_snapshot(
+    db: Annotated[Session, Depends(get_db)],
+    all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False,
+    include_revisions: bool = False,
+):
+    if include_revisions:
+        _begin_consistent_read(db)
+    return snapshot(db, all_languages=all_languages, include_revisions=include_revisions)
+
+
+@router.post("/delta")
+def get_delta(
+    revisions: OfflineRevisions,
+    db: Annotated[Session, Depends(get_db)],
+    all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False,
+):
+    _begin_consistent_read(db)
+    return delta(db, revisions, all_languages=all_languages)
 
 
 @router.post("/changes")
