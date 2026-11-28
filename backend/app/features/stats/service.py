@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session, load_only
 
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.stats.activity_metrics import (
+    ProgressEvent,
     _build_consistency_stats,
     _build_daily_activity,
     _build_efficiency_stats,
@@ -30,6 +31,7 @@ from app.features.stats.content_metrics import (
     _build_words_added_by_month,
     build_library_topic,
     list_active_word_stats,
+    load_active_library_topic_word_ids,
     load_topic_word_ids,
     okay_or_better_pct,
     roll_up_topic_words,
@@ -48,12 +50,10 @@ from app.features.stats.schemas import (
     UsageEventCreate,
 )
 from app.features.topics.model import Topic
-from app.features.words.constants import PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST
+from app.features.words.constants import STUDY_PROGRESS_SOURCES
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import Word
 from app.features.words.progress import WordProgressEvent
-
-STUDY_SOURCES = (PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST)
 
 
 @dataclass(frozen=True)
@@ -93,24 +93,23 @@ def _load_active_topics(db: Session) -> list[Topic]:
     )
 
 
-def _load_progress_events(db: Session, *, study_only: bool = False) -> list[WordProgressEvent]:
+def _load_progress_events(db: Session, *, study_only: bool = False) -> list[ProgressEvent]:
     stmt = (
-        select(WordProgressEvent)
-        .join(Word, Word.id == WordProgressEvent.word_id)
-        .where(Word.language == learning_language(db))
-        .options(load_only(
+        select(
             WordProgressEvent.word_id, WordProgressEvent.old_level,
             WordProgressEvent.new_level, WordProgressEvent.created_at,
-        ))
+        )
+        .join(Word, Word.id == WordProgressEvent.word_id)
+        .where(Word.language == learning_language(db))
         .order_by(WordProgressEvent.created_at, WordProgressEvent.id)
     )
     if study_only:
-        stmt = stmt.where(WordProgressEvent.source.in_(STUDY_SOURCES))
-    return list(db.scalars(stmt))
+        stmt = stmt.where(WordProgressEvent.source.in_(STUDY_PROGRESS_SOURCES))
+    return [ProgressEvent(*row) for row in db.execute(stmt)]
 
 
 def _summarize_progress_events(
-    progress_events: list[WordProgressEvent], *, merge_basic: bool = False
+    progress_events: list[ProgressEvent], *, merge_basic: bool = False
 ) -> ProgressEventSummary:
     reviewed_word_ids: set[int] = set()
     improved_word_ids: set[int] = set()
@@ -137,7 +136,7 @@ def _summarize_progress_events(
     )
 
 
-def _build_review_periods(events: list[WordProgressEvent], today: date) -> dict[str, ReviewPeriod]:
+def _build_review_periods(events: list[ProgressEvent], today: date) -> dict[str, ReviewPeriod]:
     windows = {
         str(span): (today - timedelta(days=span - 1), today)
         for span in (7, 30, 90, 365)
@@ -229,25 +228,16 @@ def compute_learning_stats(db: Session) -> LearningStatsResponse:
 
 def compute_library_stats(db: Session) -> LibraryStatsResponse:
     translations = translation_language(db)
-    words = list_active_word_stats(db, translations=translations)
+    words = list_active_word_stats(db, translations=translations, include_study_coverage=True)
     topics = _load_active_topics(db)
     word_map = {word.id: word for word in words}
-    direct_links = load_topic_word_ids(db, set(word_map))
+    direct_links = load_active_library_topic_word_ids(db, word_map)
     topic_words = roll_up_topic_words(topics, direct_links)
     topic_counts: dict[int, int] = defaultdict(int)
     for topic in topics:
         for word_id in direct_links.get(topic.id, ()):
             topic_counts[word_id] += 1
-    reviewed_ids = db.scalars(
-        select(WordProgressEvent.word_id)
-        .join(Word, Word.id == WordProgressEvent.word_id)
-        .where(
-            Word.language == learning_language(db), Word.deleted_at.is_(None),
-            WordProgressEvent.source.in_(STUDY_SOURCES),
-        )
-        .distinct()
-    )
-    reviewed = len(set(reviewed_ids).intersection(word_map))
+    reviewed = sum(word.has_study_review for word in words)
     total = len(words)
     return LibraryStatsResponse(
         overview=_build_library_overview(words, total_topics=len(topics)),

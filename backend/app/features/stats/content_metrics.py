@@ -17,8 +17,10 @@ from app.features.stats.schemas import (
     VocabularyOverview,
 )
 from app.features.topics.model import Topic
+from app.features.words.constants import STUDY_PROGRESS_SOURCES
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import PartsOfSpeech, Word, WordExample, WordTranslation, word_topics
+from app.features.words.progress import WordProgressEvent
 
 
 @dataclass(frozen=True)
@@ -38,6 +40,7 @@ class WordStatsSnapshot:
     has_antonym: bool = False
     has_collocation: bool = False
     has_confusable: bool = False
+    has_study_review: bool = False
 
 
 def _build_library_overview(words: list[WordStatsSnapshot], total_topics: int = 0) -> VocabularyOverview:
@@ -196,13 +199,20 @@ def _build_enrichment_coverage(words: list[WordStatsSnapshot]) -> EnrichmentCove
     )
 
 
-def list_active_word_stats(db: Session, *, translations: str | None = None) -> list[WordStatsSnapshot]:
+def list_active_word_stats(
+    db: Session, *, translations: str | None = None, include_study_coverage: bool = False
+) -> list[WordStatsSnapshot]:
     translation = (
         Word.translation_items.any()
         if translations is None
         else Word.translation_items.any(WordTranslation.language == translations)
     )
     example_count = select(func.count()).where(WordExample.word_id == Word.id).scalar_subquery()
+    study_coverage = (
+        [Word.progress_events.any(WordProgressEvent.source.in_(STUDY_PROGRESS_SOURCES)).label("has_study_review")]
+        if include_study_coverage
+        else []
+    )
     rows = db.execute(
         select(
             Word.id,
@@ -220,11 +230,31 @@ def list_active_word_stats(db: Session, *, translations: str | None = None) -> l
             Word.antonym_items.any().label("has_antonym"),
             Word.collocation_items.any().label("has_collocation"),
             Word.confusable_items.any().label("has_confusable"),
+            *study_coverage,
         )
         .outerjoin(PartsOfSpeech, PartsOfSpeech.id == Word.part_of_speech_id)
         .where(Word.deleted_at.is_(None), Word.language == learning_language(db))
     )
     return [WordStatsSnapshot(**row) for row in rows.mappings()]
+
+
+def load_active_library_topic_word_ids(
+    db: Session, words: dict[int, WordStatsSnapshot]
+) -> dict[int, list[int]]:
+    if not words:
+        return {}
+    rows = db.execute(
+        select(word_topics.c.topic_id, word_topics.c.word_id)
+        .join(Word, Word.id == word_topics.c.word_id)
+        .join(Topic, Topic.id == word_topics.c.topic_id)
+        .where(Word.language == learning_language(db), Word.deleted_at.is_(None))
+        .where(Topic.language == Word.language, Topic.deleted_at.is_(None))
+    )
+    topic_word_ids: dict[int, list[int]] = {}
+    for topic_id, word_id in rows:
+        if word_id in words:
+            topic_word_ids.setdefault(topic_id, []).append(word_id)
+    return topic_word_ids
 
 
 def load_topic_word_ids(db: Session, word_ids: set[int] | list[int]) -> dict[int, list[int]]:

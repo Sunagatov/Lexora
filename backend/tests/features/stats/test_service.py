@@ -302,46 +302,6 @@ def test_build_queue_stats_aggregates_completion_and_duration() -> None:
     assert result.avg_completion_seconds == 1800
 
 
-def test_build_usage_stats_groups_by_day_and_session() -> None:
-    db = MagicMock()
-    db.scalars.return_value.all.return_value = [
-        SimpleNamespace(
-            session_key="session-a",
-            active_seconds=30,
-            route="/smart-review",
-            created_at=datetime(2026, 1, 10, 10, 0, tzinfo=timezone.utc),
-        ),
-        SimpleNamespace(
-            session_key="session-a",
-            active_seconds=45,
-            route="/topics/travel",
-            created_at=datetime(2026, 1, 10, 11, 0, tzinfo=timezone.utc),
-        ),
-        SimpleNamespace(
-            session_key="session-b",
-            active_seconds=15,
-            route="/stats",
-            created_at=datetime(2026, 1, 11, 9, 0, tzinfo=timezone.utc),
-        ),
-    ]
-
-    summary, daily, started_at = stats_service._build_usage_stats(db)
-
-    assert started_at == "2026-01-10"
-    assert summary.total_active_seconds == 90
-    assert summary.active_days == 2
-    assert summary.sessions == 2
-    assert summary.avg_session_seconds == 45
-    assert summary.longest_session_seconds == 75
-    assert summary.today_active_seconds >= 0
-    assert summary.last_7d_active_seconds >= 0
-
-    assert daily[0].date == "2026-01-11"
-    assert daily[0].active_seconds == 15
-    assert daily[1].date == "2026-01-10"
-    assert daily[1].active_seconds == 75
-
-
 def test_build_words_added_by_month_includes_imports_and_other_sources() -> None:
     words = [
         _word_stub(id=1, source="manual", created_at=datetime(2026, 4, 1, tzinfo=UTC)),

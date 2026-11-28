@@ -13,13 +13,12 @@ it('shows the final statistic immediately when account animations are disabled',
   expect(frame).not.toHaveBeenCalled()
 })
 
-it('stops an active counter when animations are switched off', () => {
+it('shows the final statistic immediately when account animations are enabled', () => {
   preferences.animations = true
-  vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(123)
-  const cancel = vi.spyOn(window, 'cancelAnimationFrame')
+  const frame = vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(123)
   const {rerender} = render(<StatCard label="Total words" value={130} />)
-  preferences.animations = false
-  rerender(<StatCard label="Total words" value={130} />)
   expect(screen.getByText('130')).toBeTruthy()
-  expect(cancel).toHaveBeenCalledWith(123)
+  rerender(<StatCard label="Total words" value={131} />)
+  expect(screen.getByText('131')).toBeTruthy()
+  expect(frame).not.toHaveBeenCalled()
 })

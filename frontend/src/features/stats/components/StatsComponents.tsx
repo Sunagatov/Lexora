@@ -1,5 +1,4 @@
-import {useEffect, useState, type ReactNode} from 'react'
-import {usePreferences} from '@/features/preferences/api'
+import type {ReactNode} from 'react'
 import {SkeletonHero} from '@/shared/components/Skeletons'
 
 // Shared chart components for the Stats page
@@ -99,29 +98,6 @@ const STAT_META: Record<string, {icon: string; tone: string}> = {
   'Need 3+ examples': {icon: '✏️', tone: 'amber'},
   'Missing POS': {icon: '🏷️', tone: 'rose'},
   'No level set': {icon: '⚪', tone: 'slate'},
-}
-
-function CountUpValue({value, duration = 850}: {value: number; duration?: number}) {
-  const [displayValue, setDisplayValue] = useState(0)
-  const {animations} = usePreferences()
-
-  useEffect(() => {
-    if (!animations) return
-    let frame = 0
-    const start = performance.now()
-
-    function tick(now: number) {
-      const progress = Math.min((now - start) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplayValue(Math.round(value * eased))
-      if (progress < 1) frame = window.requestAnimationFrame(tick)
-    }
-
-    frame = window.requestAnimationFrame(tick)
-    return () => window.cancelAnimationFrame(frame)
-  }, [value, duration, animations])
-
-  return <>{(animations ? displayValue : value).toLocaleString()}</>
 }
 
 export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
@@ -226,7 +202,7 @@ export function StatCard({
           </span>
         )}
       </div>
-      <span className="stats-card-value">{typeof value === 'number' ? <CountUpValue value={value} /> : value}</span>
+      <span className="stats-card-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
       <span className="stats-card-label">{label}</span>
       {sub && <span className="stats-card-sub">{sub}</span>}
       {sparkline && sparkline.length > 1 && <StatSparkline values={sparkline} />}

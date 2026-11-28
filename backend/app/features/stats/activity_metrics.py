@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import UTC, date, datetime, timedelta
+from typing import NamedTuple
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, true
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.languages.catalog import learning_language
@@ -20,7 +21,13 @@ from app.features.stats.schemas import (
     UsageDay,
     UsageSummary,
 )
-from app.features.words.progress import WordProgressEvent
+
+
+class ProgressEvent(NamedTuple):
+    word_id: int
+    old_level: int | None
+    new_level: int
+    created_at: datetime
 
 
 def _knowledge_change(old_level: int | None, new_level: int, *, merge_basic: bool = False) -> int:
@@ -35,7 +42,7 @@ def _knowledge_change(old_level: int | None, new_level: int, *, merge_basic: boo
 
 
 def _build_daily_activity(
-    events: list[WordProgressEvent], *, merge_basic: bool = False
+    events: list[ProgressEvent], *, merge_basic: bool = False
 ) -> tuple[list[DailyActivity], str | None]:
     daily: dict[str, dict[str, int]] = defaultdict(lambda: {"reviewed": 0, "improved": 0, "downgraded": 0})
     seen_per_day: dict[str, set[int]] = defaultdict(set)
@@ -136,46 +143,51 @@ def _build_consistency_stats(
 
 
 def _build_usage_stats(db: Session, now: datetime | None = None) -> tuple[UsageSummary, list[UsageDay], str | None]:
-    events = db.scalars(select(AppUsageEvent).where(AppUsageEvent.language == learning_language(db)).order_by(AppUsageEvent.created_at.asc())).all()
-    if not events:
-        return (
-            UsageSummary(
-                total_active_seconds=0,
-                active_days=0,
-                sessions=0,
-                avg_session_seconds=0,
-                longest_session_seconds=0,
-                today_active_seconds=0,
-                last_7d_active_seconds=0,
-            ),
-            [],
-            None,
-        )
+    language_filter = AppUsageEvent.language == learning_language(db)
+    created_at = AppUsageEvent.created_at
+    if db.get_bind().dialect.name == "postgresql":
+        created_at = func.timezone("UTC", created_at)
+    day = func.date(created_at)
+    totals = (
+        select(func.sum(AppUsageEvent.active_seconds).label("seconds"))
+        .where(language_filter)
+        .group_by(AppUsageEvent.session_key)
+        .subquery()
+    )
+    sessions = select(func.count().label("count"), func.max(totals.c.seconds).label("longest")).subquery()
+    # Use one statement so concurrent usage writes cannot skew session and daily totals.
+    rows = db.execute(
+        select(day, func.sum(AppUsageEvent.active_seconds), sessions.c.count, sessions.c.longest)
+        .select_from(AppUsageEvent)
+        .join(sessions, true())
+        .where(language_filter)
+        .group_by(day, sessions.c.count, sessions.c.longest)
+        .order_by(day.desc())
+    ).all()
+    if not rows:
+        return UsageSummary(), [], None
 
-    daily_seconds, per_session_seconds = _collect_usage_totals(events)
+    _, _, session_count, longest_session = rows[0]
     today = (now or datetime.now(UTC)).date()
-    last_7d_cutoff = today - timedelta(days=6)
+    today_key = today.isoformat()
+    last_7d_cutoff = (today - timedelta(days=6)).isoformat()
+    daily_seconds = {str(value): seconds for value, seconds, _, _ in rows}
     total_active_seconds = sum(daily_seconds.values())
-    sessions = len(per_session_seconds)
-
-    usage_daily = [
-        UsageDay(date=day, active_seconds=seconds)
-        for day, seconds in sorted(daily_seconds.items(), reverse=True)
-    ]
+    usage_daily = [UsageDay(date=key, active_seconds=seconds) for key, seconds in daily_seconds.items()]
     summary = UsageSummary(
         total_active_seconds=total_active_seconds,
         active_days=len(daily_seconds),
-        sessions=sessions,
-        avg_session_seconds=round(total_active_seconds / sessions) if sessions > 0 else 0,
-        longest_session_seconds=max(per_session_seconds.values(), default=0),
-        today_active_seconds=daily_seconds.get(today.isoformat(), 0),
+        sessions=session_count,
+        avg_session_seconds=round(total_active_seconds / session_count),
+        longest_session_seconds=longest_session,
+        today_active_seconds=daily_seconds.get(today_key, 0),
         last_7d_active_seconds=sum(
             seconds
-            for day, seconds in daily_seconds.items()
-            if last_7d_cutoff.isoformat() <= day <= today.isoformat()
+            for key, seconds in daily_seconds.items()
+            if last_7d_cutoff <= key <= today_key
         ),
     )
-    return summary, usage_daily, min(daily_seconds.keys())
+    return summary, usage_daily, usage_daily[-1].date
 
 
 def _build_queue_stats(db: Session, now: datetime | None = None) -> QueueSummary:
@@ -298,13 +310,3 @@ def _longest_streak(days: set[date]) -> int:
 def _count_recent_days(days: set[date], today: date, span_days: int) -> int:
     cutoff = today - timedelta(days=span_days - 1)
     return sum(1 for day in days if day >= cutoff)
-
-
-def _collect_usage_totals(events: list[AppUsageEvent]) -> tuple[dict[str, int], dict[str, int]]:
-    daily_seconds: dict[str, int] = defaultdict(int)
-    per_session_seconds: dict[str, int] = defaultdict(int)
-    for event in events:
-        day = _utc_timestamp(event.created_at).date().isoformat()
-        daily_seconds[day] += event.active_seconds
-        per_session_seconds[event.session_key] += event.active_seconds
-    return daily_seconds, per_session_seconds

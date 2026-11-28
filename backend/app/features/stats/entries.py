@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import learning_language, translation_language
 from app.features.stats.schemas import StatsEntry, StatsEntryPage
-from app.features.stats.service import STUDY_SOURCES
 from app.features.topics.model import Topic
+from app.features.words.constants import STUDY_PROGRESS_SOURCES
 from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import Word, WordExample, WordTranslation, word_topics
 from app.features.words.progress import WordProgressEvent
@@ -64,14 +64,14 @@ def list_revisit_words(db: Session, group: RevisitGroup, page: int) -> StatsEntr
         case "unreviewed":
             stmt = stmt.where(
                 or_(Word.knowledge_level.is_(None), Word.knowledge_level != 5),
-                ~Word.progress_events.any(WordProgressEvent.source.in_(STUDY_SOURCES)),
+                ~Word.progress_events.any(WordProgressEvent.source.in_(STUDY_PROGRESS_SOURCES)),
             )
         case "downgraded":
             cutoff = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=29)
             regressed_ids = (
                 select(WordProgressEvent.word_id)
                 .where(
-                    WordProgressEvent.source.in_(STUDY_SOURCES), WordProgressEvent.created_at >= cutoff,
+                    WordProgressEvent.source.in_(STUDY_PROGRESS_SOURCES), WordProgressEvent.created_at >= cutoff,
                     WordProgressEvent.old_level.between(1, 4), WordProgressEvent.new_level.between(1, 3),
                     WordProgressEvent.new_level < WordProgressEvent.old_level,
                     or_(WordProgressEvent.old_level != 3, WordProgressEvent.new_level != 2),

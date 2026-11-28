@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import create_engine, null
+from sqlalchemy import create_engine, event, null
 from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import configure_language
@@ -9,6 +9,7 @@ from app.features.smart_review.lifecycle import complete_queue_item
 from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.stats import router as stats_router
 from app.features.stats import service as stats_service
+from app.features.stats.model import AppUsageEvent
 from app.features.stats.service import compute_stats
 from app.features.topics.model import Topic
 from app.features.words.model import Word, WordExample, WordTranslation
@@ -41,6 +42,41 @@ def test_retention_counts_only_current_words_but_keeps_historical_activity(db):
     assert stats.retention_summary.never_reviewed_words == 1
     assert stats.retention_summary.reviewed_word_share_pct == 50
     assert stats.daily_activity[0].reviewed == 2
+
+
+def test_learning_stats_summarizes_usage_and_reviews_without_loading_orm_events(db):
+    word = Word(term='one')
+    db.add(word)
+    db.flush()
+    now = datetime.now(UTC).replace(hour=12)
+    yesterday = now - timedelta(days=1)
+    db.add_all([
+        AppUsageEvent(event_key='test-use-1', session_key='day-spanning', active_seconds=30, created_at=yesterday),
+        AppUsageEvent(event_key='test-use-2', session_key='day-spanning', active_seconds=45, created_at=now),
+        AppUsageEvent(event_key='test-use-3', session_key='first', active_seconds=15, created_at=now),
+        AppUsageEvent(event_key='test-use-4', session_key='first', active_seconds=600, created_at=now, language='es'),
+        WordProgressEvent(word_id=word.id, old_level=1, new_level=3, source='study_list', created_at=yesterday),
+        WordProgressEvent(word_id=word.id, old_level=3, new_level=3, source='study_list', created_at=now),
+    ])
+    db.commit()
+    loaded = []
+
+    @event.listens_for(db, 'loaded_as_persistent')
+    def track_event_loads(_db, instance):
+        if isinstance(instance, (AppUsageEvent, WordProgressEvent)):
+            loaded.append(instance)
+
+    stats = stats_router.get_learning_stats(db)
+    assert stats.usage_summary.model_dump() == {
+        'total_active_seconds': 90, 'active_days': 2, 'sessions': 2, 'avg_session_seconds': 45,
+        'longest_session_seconds': 75, 'today_active_seconds': 60, 'last_7d_active_seconds': 90,
+    }
+    assert [(day.date, day.active_seconds) for day in stats.usage_daily] == [
+        (now.date().isoformat(), 60), (yesterday.date().isoformat(), 30),
+    ]
+    assert stats.review_periods['all'].attempts == 2
+    assert stats.review_periods['all'].unique_words == 1
+    assert not loaded
 
 
 def test_split_stats_keep_current_knowledge_and_review_history_in_learning(db, monkeypatch):

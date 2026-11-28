@@ -140,6 +140,7 @@
 
 .stats-hero-card-value {
   font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -429,7 +430,6 @@
 
 .stats-donut {
   flex-shrink: 0;
-  animation: chart-appear 0.5s ease-out 0.2s both;
 }
 
 .stats-donut-label {
@@ -583,7 +583,6 @@
   height: 120px;
   overflow-x: auto;
   padding-bottom: 2px;
-  animation: chart-appear 0.5s ease-out 0.2s both;
 }
 
 .stats-chart-col {

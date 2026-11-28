@@ -1,4 +1,3 @@
-import {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
 import {fetchRevisitWords} from '@/features/stats/api/statsApi'
@@ -18,38 +17,6 @@ import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
 import {LEARNING_TOPIC_SORT_OPTIONS, formatDuration} from '@/features/stats/model/statsPageModel'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
-import {usePreferences} from '@/features/preferences/api'
-
-function AnimatedNumber({
-  value,
-  duration = 850,
-  formatter = (next: number) => next.toLocaleString(),
-}: {
-  value: number
-  duration?: number
-  formatter?: (value: number) => string
-}) {
-  const [displayValue, setDisplayValue] = useState(0)
-  const {animations} = usePreferences()
-
-  useEffect(() => {
-    let frame = 0
-    const start = performance.now()
-
-    function tick(now: number) {
-      const progress = Math.min((now - start) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplayValue(Math.round(value * eased))
-      if (progress < 1) frame = window.requestAnimationFrame(tick)
-    }
-
-    if (!animations) return
-    frame = window.requestAnimationFrame(tick)
-    return () => window.cancelAnimationFrame(frame)
-  }, [value, duration, animations])
-
-  return <span className="number-display">{formatter(animations ? displayValue : value)}</span>
-}
 
 function HeroBanner({reviewedWords, strongPct, streak, activeSeconds}: {
   reviewedWords: number
@@ -65,22 +32,22 @@ function HeroBanner({reviewedWords, strongPct, streak, activeSeconds}: {
       <div className="stats-hero-cards">
         <div className="stats-hero-card stats-hero-card-words" data-card="words">
           <span className="stats-hero-card-icon">📚</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={reviewedWords} /></span>
+          <span className="stats-hero-card-value">{reviewedWords.toLocaleString()}</span>
           <span className="stats-hero-card-label">Words reviewed</span>
         </div>
         <div className="stats-hero-card stats-hero-card-strong" data-card="strong">
           <span className="stats-hero-card-icon">💪</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={strongPct} formatter={(next) => `${next}%`} /></span>
+          <span className="stats-hero-card-value">{strongPct}%</span>
           <span className="stats-hero-card-label">Okay or better</span>
         </div>
         <div className="stats-hero-card stats-hero-card-streak" data-card="streak">
           <span className="stats-hero-card-icon">🔥</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={streak} /></span>
+          <span className="stats-hero-card-value">{streak.toLocaleString()}</span>
           <span className="stats-hero-card-label">Study streak</span>
         </div>
         <div className="stats-hero-card stats-hero-card-time" data-card="time">
           <span className="stats-hero-card-icon">⏱️</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={activeSeconds} formatter={formatDuration} /></span>
+          <span className="stats-hero-card-value">{formatDuration(activeSeconds)}</span>
           <span className="stats-hero-card-label">Active time</span>
         </div>
       </div>
