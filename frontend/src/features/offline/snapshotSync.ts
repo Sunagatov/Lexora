@@ -3,7 +3,7 @@ import {networkRequest} from '@/shared/api/http'
 import type {Change, Replica, Snapshot, SnapshotDelta} from './types'
 
 export function fetchSnapshot() {
-  return networkRequest<Snapshot>('/api/offline/snapshot?include_revisions=true', {
+  return networkRequest<Snapshot>('/api/offline/snapshot?include_revisions=true&include_cursor=true', {
     headers: {'X-Lexora-All-Languages': 'true'},
     signal: AbortSignal.timeout(60_000),
   })
@@ -11,33 +11,48 @@ export function fetchSnapshot() {
 
 /** Force a canonical copy after an accepted edit, including canonical no-op edits. */
 export function refreshAcceptedEdit(replica: Replica, change: Change, id: number) {
+  if (id <= 0) return
+  const words = new Set(replica.forceWordIds), topics = new Set(replica.forceTopicIds)
   const revisions = replica.revisions
-  if (!revisions || id <= 0) return
-  const hashes = change.entity === 'word' ? revisions.word_hashes : revisions.topic_hashes
-  hashes[id] = ''
+  if (replica.cursor) (change.entity === 'word' ? words : topics).add(id)
+  if (revisions) (change.entity === 'word' ? revisions.word_hashes : revisions.topic_hashes)[id] = ''
   for (const word of change.affected_words) {
     const serverId = replica.wordAliases?.[word.id] ?? word.id
-    if (serverId > 0) revisions.word_hashes[serverId] = ''
+    if (serverId <= 0) continue
+    if (replica.cursor) words.add(serverId)
+    if (revisions) revisions.word_hashes[serverId] = ''
+  }
+  if (replica.cursor) {
+    replica.forceWordIds = [...words]
+    replica.forceTopicIds = [...topics]
   }
 }
 
-function applyDelta<T extends {id: number}>(
-  current: T[], changed: T[], removed: number[], hashes: Record<string, string>, revised: Record<string, string>,
-) {
+function applyDelta<T extends {id: number}>(current: T[], changed: T[], removed: number[]) {
+  if (!changed.length && !removed.length) return current
   const items = new Map(current.map(item => [item.id, item]))
-  const nextHashes = {...hashes, ...revised}
-  for (const id of removed) {
-    items.delete(id)
-    delete nextHashes[id]
-  }
+  for (const id of removed) items.delete(id)
   for (const item of changed) items.set(item.id, item)
-  return {items: [...items.values()].sort((a, b) => a.id - b.id), hashes: nextHashes}
+  return [...items.values()].sort((a, b) => a.id - b.id)
 }
 
 export async function fetchSnapshotUpdate(replica: Replica): Promise<Snapshot | SnapshotDelta> {
+  if (replica.cursor?.version === 1) {
+    try {
+      const update = await networkRequest<SnapshotDelta>('/api/offline/cursor', {
+        method: 'POST',
+        body: JSON.stringify({cursor: replica.cursor, force_word_ids: replica.forceWordIds, force_topic_ids: replica.forceTopicIds}),
+        signal: AbortSignal.timeout(30_000),
+      })
+      if (update.version === 1 && update.cursor?.version === 1) return update
+    } catch (error) {
+      if (!(error instanceof ApiError && [404, 405, 409, 413, 422].includes(error.status))) throw error
+    }
+    return fetchSnapshot()
+  }
   if (replica.revisions?.version === 1) {
     try {
-      const update = await networkRequest<SnapshotDelta>('/api/offline/delta', {
+      const update = await networkRequest<SnapshotDelta>('/api/offline/delta?include_cursor=true', {
         method: 'POST',
         headers: {'X-Lexora-All-Languages': 'true'},
         body: JSON.stringify(replica.revisions),
@@ -55,13 +70,19 @@ export async function fetchSnapshotUpdate(replica: Replica): Promise<Snapshot | 
 export function applySnapshotUpdate(replica: Replica, update: Snapshot | SnapshotDelta): Replica {
   if (update.version !== 1) throw new Error('Update Lexora before syncing the saved library.')
   const savedAt = new Date().toISOString()
-  if (!('removed_word_ids' in update) || !replica.revisions) {
-    return {...replica, ...update, revisions: update.revisions, savedAt}
+  const syncState = {cursor: update.cursor, forceWordIds: undefined, forceTopicIds: undefined, savedAt}
+  if (!('removed_word_ids' in update)) {
+    return {...replica, ...update, ...syncState, revisions: update.revisions}
   }
-  const words = applyDelta(replica.words, update.words, update.removed_word_ids,
-    replica.revisions.word_hashes, update.revisions.word_hashes)
-  const topics = applyDelta(replica.topics, update.topics, update.removed_topic_ids,
-    replica.revisions.topic_hashes, update.revisions.topic_hashes)
-  return {...replica, words: words.items, topics: topics.items, savedAt, public_config: update.public_config,
-    revisions: {version: 1, word_hashes: words.hashes, topic_hashes: topics.hashes}}
+  const words = applyDelta(replica.words, update.words, update.removed_word_ids)
+  const topics = applyDelta(replica.topics, update.topics, update.removed_topic_ids)
+  let revisions: Replica['revisions']
+  if (!update.cursor && replica.revisions && update.revisions) {
+    const wordHashes = {...replica.revisions.word_hashes, ...update.revisions.word_hashes}
+    const topicHashes = {...replica.revisions.topic_hashes, ...update.revisions.topic_hashes}
+    for (const id of update.removed_word_ids) delete wordHashes[id]
+    for (const id of update.removed_topic_ids) delete topicHashes[id]
+    revisions = {version: 1, word_hashes: wordHashes, topic_hashes: topicHashes}
+  }
+  return {...replica, words, topics, ...syncState, public_config: update.public_config, revisions}
 }

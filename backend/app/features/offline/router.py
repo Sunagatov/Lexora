@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.features.offline.cursor import CatalogChangeRequest, catalog_changes, read_catalog_cursor
 from app.features.offline.service import (
     OfflineChange,
     OfflineRevisions,
@@ -38,10 +39,15 @@ def get_snapshot(
     db: Annotated[Session, Depends(get_db)],
     all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False,
     include_revisions: bool = False,
+    include_cursor: bool = False,
 ):
-    if include_revisions:
+    if include_revisions or include_cursor:
         _begin_consistent_read(db)
-    return snapshot(db, all_languages=all_languages, include_revisions=include_revisions)
+    cursor = read_catalog_cursor(db) if include_cursor and all_languages else None
+    result = snapshot(db, all_languages=all_languages, include_revisions=include_revisions and cursor is None)
+    if cursor is not None:
+        result["cursor"] = cursor.model_dump()
+    return result
 
 
 @router.post("/delta")
@@ -49,15 +55,30 @@ def get_delta(
     revisions: OfflineRevisions,
     db: Annotated[Session, Depends(get_db)],
     all_languages: Annotated[bool, Header(alias="X-Lexora-All-Languages")] = False,
+    include_cursor: bool = False,
 ):
     _begin_consistent_read(db)
-    return delta(db, revisions, all_languages=all_languages)
+    cursor = read_catalog_cursor(db) if include_cursor and all_languages else None
+    result = delta(db, revisions, all_languages=all_languages)
+    if cursor is not None:
+        result["cursor"] = cursor.model_dump()
+    return result
+
+
+@router.post("/cursor")
+def get_cursor_changes(payload: CatalogChangeRequest, db: Annotated[Session, Depends(get_db)]):
+    _begin_consistent_read(db)
+    return catalog_changes(db, payload)
 
 
 @router.post("/changes")
-def sync_change(change: OfflineChange, db: Annotated[Session, Depends(get_db)]):
+def sync_change(
+    change: OfflineChange,
+    db: Annotated[Session, Depends(get_db)],
+    conflict_details: Annotated[bool, Header(alias="X-Lexora-Conflict-Details")] = False,
+):
     try:
-        return apply_change(db, change)
+        return apply_change(db, change, include_conflict_details=conflict_details)
     except HTTPException:
         db.rollback()
         raise

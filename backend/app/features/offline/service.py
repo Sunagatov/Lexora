@@ -155,7 +155,8 @@ def comparable(data: dict) -> dict:
     return result
 
 
-def _check_before(current: dict, change: OfflineChange) -> None:
+def _check_before(current: dict, change: OfflineChange, *, include_conflict_details: bool = False) -> None:
+    server_item = current
     current = dict(current)
     if "topic_ids" in change.before and "is_favorite" not in change.before:
         change = change.model_copy(update={"before": {**change.before, "is_favorite": False}})
@@ -183,14 +184,25 @@ def _check_before(current: dict, change: OfflineChange) -> None:
         fields.add("deleted_at")
     else:
         fields = set(actual)
-    if any(expected.get(key) != actual.get(key) for key in fields):
-        raise HTTPException(
-            409,
-            "This item changed on the server. Your offline edits are still saved on this device; review them before syncing.",
-        )
+    mismatches = sorted(key for key in fields if expected.get(key) != actual.get(key))
+    if not mismatches:
+        return
+    message = "This item changed on the server. Your offline edits are still saved on this device; review them before syncing."
+    if include_conflict_details and change.action == "update" and not server_item.get("deleted_at") and "deleted_at" not in mismatches:
+        raise HTTPException(409, {
+            "code": "offline_edit_conflict",
+            "message": message,
+            "change_id": str(change.id),
+            "server_item": server_item,
+            "fields": [
+                {"field": field, "before": expected.get(field), "device": change.data[field], "server": actual.get(field)}
+                for field in mismatches
+            ],
+        })
+    raise HTTPException(409, message)
 
 
-def apply_change(db: Session, change: OfflineChange) -> dict:
+def apply_change(db: Session, change: OfflineChange, *, include_conflict_details: bool = False) -> dict:
     # Preserve hashes for retries of changes accepted before clients sent study time.
     exclude = {"occurred_at"} if change.occurred_at is None else None
     request_hash = hashlib.sha256(
@@ -235,7 +247,7 @@ def apply_change(db: Session, change: OfflineChange) -> dict:
                 409,
                 "This item no longer exists on the server. Offline edits remain on this device.",
             )
-        _check_before(serialize(item), change)
+        _check_before(serialize(item), change, include_conflict_details=include_conflict_details)
         if change.action == "update":
             if is_word:
                 payload = WordUpdate.model_validate(change.data)

@@ -60,14 +60,19 @@ export async function networkRequest<T>(path: string, init: RequestInit = {}): P
   if (response.status === 401) throw new ApiError(401, 'Not authenticated')
 
   if (!response.ok) {
-    let detail = `${response.status} ${response.statusText}`
+    let message = `${response.status} ${response.statusText}`
+    let detail: unknown
     try {
       const body = await response.json()
-      if (body?.detail) detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
+      detail = body?.detail
+      if (typeof detail === 'string') message = detail
+      else if (detail && typeof detail === 'object' && 'message' in detail && typeof detail.message === 'string') {
+        message = detail.message
+      } else if (detail) message = JSON.stringify(detail)
     } catch {
       // ignore parse errors
     }
-    throw new ApiError(response.status, detail)
+    throw new ApiError(response.status, message, detail)
   }
 
   if (response.status === 204 || response.status === 205) return undefined as unknown as T

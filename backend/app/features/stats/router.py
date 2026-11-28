@@ -10,6 +10,12 @@ from app.features.stats.entries import (
     list_revisit_words,
     load_revisit_practice,
 )
+from app.features.stats.recall import (
+    RecallBatch,
+    get_due_recall_words,
+    get_recall_history,
+    save_recall_attempts,
+)
 from app.features.stats.schemas import (
     LearningStatsResponse,
     LibraryStatsResponse,
@@ -58,6 +64,21 @@ def get_revisit_entries(db: StatsDB, group: RevisitGroup, page: Annotated[int, Q
 @router.get("/learning/revisit/practice", response_model=list[WordResponse])
 def get_revisit_practice(db: StatsDB, group: RevisitGroup, page: Annotated[int, Query(ge=1, le=100_000)] = 1) -> list[WordResponse]:
     return load_revisit_practice(db, group, page)
+
+
+@router.get("/learning/recall")
+def get_recall_attempts(db: StatsDB):
+    return get_recall_history(db)
+
+
+@router.post("/learning/recall")
+def post_recall_attempts(payload: RecallBatch, db: StatsDB):
+    return save_recall_attempts(db, payload)
+
+
+@router.get("/learning/recall/due", response_model=list[WordResponse])
+def get_recall_due(db: StatsDB) -> list[WordResponse]:
+    return get_due_recall_words(db)
 
 
 @router.post("/usage", status_code=204)

@@ -6,7 +6,7 @@ import {routes} from '@/app/routes'
 import {languagePreferences, subscribeLanguages} from '@/features/languages/api'
 import {PeriodTabs} from '@/features/stats/components/StatsComponents'
 import {RecallPractice} from '@/features/stats/components/RecallPractice'
-import {readRecallHistory, saveRecallAttempt, summarizeRecallHistory} from '@/features/stats/model/recallHistory'
+import {loadRecallHistory, recallHistoryQueryKey, saveRecallAttempt, summarizeRecallHistory, syncRecallAttempts} from '@/features/stats/model/recallHistory'
 import type {StatsEntry, StatsEntryPage} from '@/features/stats/types/statsTypes'
 import {LevelDropdown} from '@/features/words/components/LevelDropdown'
 import {useWordUpdate} from '@/features/words/hooks/useWordUpdate'
@@ -81,9 +81,7 @@ export function StatsEntryExplorer<T extends string>({options, scope, load, load
   )
 }
 
-const recallHistoryKey = ['device-recall-history'] as const
-
-function SavedRecallPractice({words, language, translationLanguage, onClose}: {
+export function SavedRecallPractice({words, language, translationLanguage, onClose}: {
   words: Word[]
   language: string
   translationLanguage: string
@@ -92,18 +90,24 @@ function SavedRecallPractice({words, language, translationLanguage, onClose}: {
   const client = useQueryClient()
   return <RecallPractice words={words} onClose={onClose} recordOutcome={async (wordId, recalled, occurredAt) => {
     await saveRecallAttempt({wordId, recalled, occurredAt, language, translationLanguage})
-    void client.invalidateQueries({queryKey: recallHistoryKey})
+    void client.invalidateQueries({queryKey: recallHistoryQueryKey})
+    void syncRecallAttempts().then(() => client.invalidateQueries({queryKey: recallHistoryQueryKey}))
   }} />
 }
 
 function RecallSummary({language, translationLanguage}: {language: string; translationLanguage: string}) {
-  const {data} = useQuery({queryKey: recallHistoryKey, queryFn: readRecallHistory, retry: false})
+  const {data} = useQuery({
+    queryKey: [...recallHistoryQueryKey, language, translationLanguage],
+    queryFn: ({signal}) => loadRecallHistory(language, translationLanguage, signal), retry: false,
+  })
   if (!data?.length) return null
-  const {attempts, recalled, delayed, delayedRecalled} = summarizeRecallHistory(data, language, translationLanguage)
+  const {attempts, recalled, scheduled, scheduledRecalled} = summarizeRecallHistory(data, language, translationLanguage)
+  const pending = data.filter(item => item.language === language && item.translationLanguage === translationLanguage && !item.uploaded).length
   if (!attempts) return null
   return <p className="stats-tracking-note">
-    On this device, {recalled.toLocaleString()} of {attempts.toLocaleString()} attempts recalled.
-    {delayed > 0 && <> After at least 24 hours between attempts, {delayedRecalled.toLocaleString()} of {delayed.toLocaleString()} recalled.</>}
+    {recalled.toLocaleString()} of {attempts.toLocaleString()} recall attempts remembered.
+    {scheduled > 0 && <> After a scheduled gap, {scheduledRecalled.toLocaleString()} of {scheduled.toLocaleString()} recalled.</>}
+    {pending > 0 && <> {pending.toLocaleString()} waiting to sync.</>}
   </p>
 }
 

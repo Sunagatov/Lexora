@@ -11,6 +11,10 @@ it('counts delayed attempts from the previous attempt in the same practice langu
     attempt(1, '2026-11-27T12:30:00Z', false),
     attempt(2, '2026-11-27T13:00:00Z', true),
   ]
-  expect(summarizeRecallHistory(history, 'en', 'ru')).toEqual({attempts: 5, recalled: 3, delayed: 2, delayedRecalled: 1})
-  expect(summarizeRecallHistory(history, 'en', 'en')).toEqual({attempts: 1, recalled: 1, delayed: 0, delayedRecalled: 0})
+  expect(summarizeRecallHistory(history, 'en', 'ru')).toEqual({
+    attempts: 5, recalled: 3, delayed: 2, delayedRecalled: 1, scheduled: 1, scheduledRecalled: 1,
+  })
+  expect(summarizeRecallHistory(history, 'en', 'en')).toEqual({
+    attempts: 1, recalled: 1, delayed: 0, delayedRecalled: 0, scheduled: 0, scheduledRecalled: 0,
+  })
 })

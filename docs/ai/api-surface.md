@@ -96,6 +96,11 @@ Protected router groups:
   and returns changed rows with their new digests plus IDs permanently removed from the library.
   An empty digest requests the canonical row after an acknowledged local edit. The client
   merges the response after its outbox drains and falls back to a full snapshot when needed.
+- `include_cursor=true` requests an all-language PostgreSQL catalog cursor from the snapshot or
+  legacy delta endpoint. Once saved, the client sends it to `POST /api/offline/cursor` with optional
+  `force_word_ids` and `force_topic_ids` for locally edited rows. Responses contain an updated
+  cursor, changed rows, permanent removal IDs and public config. A stale or unsupported cursor
+  returns `409 offline_cursor_reseed` and the client fetches a fresh snapshot.
 - `POST /api/offline/changes` applies one word/topic create, update, soft-delete
   or restore. Requires a UUID operation ID, entity type, action, entity ID,
   data and previous values. Creates use a temporary negative ID; the response
@@ -104,11 +109,13 @@ Protected router groups:
   Deletion/restoration compares the complete item. Topic deletion/restoration
   also checks its affected words, so newer server edits are not silently lost.
   Conflicts return `409` and leave local edits queued. Invalid payloads return `422`.
+  With `X-Lexora-Conflict-Details: true`, eligible update conflicts include
+  `offline_edit_conflict`, the canonical item and the base/device/server values of conflicting fields.
 - Content, learning history and an idempotency receipt commit together. Retrying
   the same UUID and payload returns the original result; reusing the UUID for a
   different payload is rejected. Migration `20261017_0012` adds the receipt table.
   Preserve receipts during image rollback; deleting them loses retry protection.
-- Both POST routes keep normal session and CSRF protection. Offline data never
+- These POST routes keep normal session and CSRF protection. Offline data never
   supplies authentication to the server. A fresh sign-in may be needed to sync.
 
 The frontend's My Lexora → Offline control explicitly saves the complete
@@ -149,6 +156,16 @@ replica has an optional local revision token: discard a downloaded snapshot if a
 tab changed the copy during that download, then sync the newer changes first.
 Undo remains available for eight seconds. Visible review pages stay stable after
 knowledge changes; sorting/filtering refreshes on the next explicit navigation.
+
+## Recall Practice
+
+- `GET /api/stats/learning/recall` returns attempt history for the selected language pair.
+- `POST /api/stats/learning/recall` accepts up to 100 UUID-keyed outcomes across language pairs.
+  Identical retries return the same acknowledgments. Attempts for permanently removed words
+  are discarded. Local outcomes remain queued until acknowledged.
+- `GET /api/stats/learning/recall/due` returns up to ten active, translated, non-Parked cards.
+  It prioritizes due attempts before new Weak or unrated cards. Successive correct answers
+  schedule 1, 3, 7, 14 and 30 day gaps. A missed answer resets the gap to one day.
 
 ## Auth
 

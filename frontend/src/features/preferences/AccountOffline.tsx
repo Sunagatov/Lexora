@@ -4,6 +4,7 @@ import {
   exportOfflineBackup,
   offlineStatus,
   removeOffline,
+  resolveOfflineConflict,
   restoreOfflineBackup,
   resumeOfflineSync,
   saveOffline,
@@ -11,12 +12,14 @@ import {
   syncOffline,
 } from '@/features/offline/offline'
 import type {Replica} from '@/features/offline/types'
+import {OfflineConflict} from './OfflineConflict'
 
 export function AccountOffline() {
   const state = useSyncExternalStore(subscribeOffline, offlineStatus)
   const [error, setError] = useState('')
   const [preview, setPreview] = useState<{fileName: string; replica: Replica} | null>(null)
   const [backupBusy, setBackupBusy] = useState(false)
+  const [resolving, setResolving] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const run = async (action: () => Promise<void>) => {
     setError('')
@@ -49,7 +52,16 @@ export function AccountOffline() {
     }
   }
 
-  const busy = state.busy || backupBusy
+  async function chooseConflictVersion(choice: 'server' | 'device') {
+    setResolving(true)
+    try {
+      await run(() => resolveOfflineConflict(choice))
+    } finally {
+      setResolving(false)
+    }
+  }
+
+  const busy = state.busy || backupBusy || resolving
   return (
     <>
       <div className="account-surface">
@@ -135,6 +147,9 @@ export function AccountOffline() {
           )}
         </div>
       </div>
+      {state.conflict && (
+        <OfflineConflict conflict={state.conflict} busy={busy} onResolve={(choice) => void chooseConflictVersion(choice)} />
+      )}
       {preview && (
         <section className="account-surface" aria-label="Offline backup preview">
           <div className="account-row">

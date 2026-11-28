@@ -41,6 +41,7 @@ import {EmptyState} from '@/shared/components/EmptyState'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {preferencesSnapshot, subscribePreferences} from '@/features/preferences/api'
 import {useWordMixView} from '@/features/preferences/useWordMixView'
+import {DueRecall} from '@/features/smart-review/components/DueRecall'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import {SwipeReview} from './SwipeReview'
 import {languagePreferences} from '@/features/languages/api'
@@ -73,6 +74,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
     () => filter.setFrozenIds((cur) => cur ?? filter.filteredWords.map((w) => w.id)),
     'smart_review',
   )
+  const [dueRecallOpen, setDueRecallOpen] = useState(false)
 
   async function handleUpdate(wordId: number, level: WordKnowledgeLevel) {
     setFailedLevel(null)
@@ -88,10 +90,14 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
     }
   }
 
-  if (isLoading) return <SmartReviewSkeleton />
+  const dueRecallButton = 'indexedDB' in window && <button type="button" className="btn btn-ghost"
+    onClick={() => setDueRecallOpen(true)}>Review 10 due words</button>
+  if (dueRecallOpen) return <DueRecall onClose={() => setDueRecallOpen(false)} />
+  if (isLoading) return <>{dueRecallButton}<SmartReviewSkeleton /></>
   if (!queue) {
     return (
       <div className="main-inner">
+        {dueRecallButton}
         <EmptyState
           icon="✨"
           title="Daily Word Mix unavailable"
@@ -110,6 +116,7 @@ export function SmartReviewView({queue, isLoading, topics = []}: Props) {
 
   return (
     <div className="study-topic-panel">
+      {dueRecallButton && <div className="mix-view-bar">{dueRecallButton}</div>}
       {view === 'swipe' && <div className="mix-view-bar"><h1>Daily Word Mix</h1></div>}
       {view === 'swipe' ? <SwipeReview key={`${languagePreferences().language}:${queue.id}:${queue.generated_at}`} queue={queue} onBackToList={() => selectView('list')} /> : <>
       {failedLevel && <div role="alert" className="wp-save-error">

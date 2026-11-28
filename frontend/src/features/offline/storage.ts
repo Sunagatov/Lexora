@@ -98,11 +98,16 @@ export async function readOfflineValue<T>(key: string): Promise<T | undefined> {
 }
 
 export function appendOfflineValue<T>(key: string, value: T, exists: (item: T) => boolean) {
+  return mutateOfflineValue<T>(key, items => items.some(exists) ? items : [...items, value])
+}
+
+export function mutateOfflineValue<T>(key: string, update: (items: T[]) => T[]) {
   return updateData(store => {
     const entry = store.get(key)
     entry.onsuccess = () => {
       const items: T[] = entry.result ?? []
-      if (!items.some(exists)) store.put([...items, value], key)
+      const updated = update(items)
+      if (updated !== items) store.put(updated, key)
     }
   })
 }

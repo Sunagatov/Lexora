@@ -222,6 +222,33 @@ def test_newer_server_rating_is_not_overwritten(db):
     assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 0
 
 
+def test_update_conflict_can_include_field_values_and_a_canonical_edit_base(db):
+    edit = change(db, data={"translation_entries": ["терпеливый с детьми"], "translation_language": "ru"})
+    update_word(db, db.get(Word, 1), WordUpdate(translation_entries=["терпеливый человек"]))
+
+    with pytest.raises(HTTPException) as legacy:
+        apply_change(db, edit)
+    assert legacy.value.status_code == 409
+    assert isinstance(legacy.value.detail, str)
+    with pytest.raises(HTTPException) as conflict:
+        apply_change(db, edit, include_conflict_details=True)
+    assert conflict.value.status_code == 409
+    detail = conflict.value.detail
+    assert detail["code"] == "offline_edit_conflict"
+    assert detail["change_id"] == str(edit.id)
+    assert detail["server_item"]["id"] == edit.entity_id
+    assert detail["fields"] == [{
+        "field": "translation_entries",
+        "before": ["терпеливый", "выдержанный"],
+        "device": ["терпеливый с детьми"],
+        "server": ["терпеливый человек"],
+    }]
+    assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 0
+    retry = edit.model_copy(update={"id": uuid4(), "before": detail["server_item"]})
+    assert apply_change(db, retry)["entity_id"] == edit.entity_id
+    assert snapshot(db)["words"][0]["translation_entries"] == ["терпеливый с детьми"]
+
+
 def test_unrelated_server_edit_does_not_block_rating(db):
     edit = change(db)
     update_word(db, db.get(Word, 1), WordUpdate(notes="New server note"))

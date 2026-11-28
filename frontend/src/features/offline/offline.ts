@@ -5,28 +5,30 @@ import {changeItem, remapId} from './changes'
 import {applySnapshotUpdate, fetchSnapshot, fetchSnapshotUpdate, refreshAcceptedEdit} from './snapshotSync'
 import {languagePreferences} from '@/features/languages/api'
 import {activeTopicIds, inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
-import type {Replica} from './types'
+import type {Change, OfflineConflict, Replica} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 import {preferencesSnapshot} from '@/features/preferences/api'
 import {selectWordMix} from '@/features/smart-review/model/selectWordMix'
-import {clearRecallHistory} from '@/features/stats/model/recallHistory'
+import {clearRecallHistory, pendingRecallCount, syncRecallAttempts} from '@/features/stats/model/recallHistory'
 import {isIOSApp} from '@/shared/platform'
 import {saveFile} from '@/shared/saveFile'
 
-type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; restorePaused?: boolean; topicAliases?: Record<number, number>}
+type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; restorePaused?: boolean; topicAliases?: Record<number, number>; conflict?: OfflineConflict}
 let status: Status = {saved: false, pending: 0, busy: false, offline: !navigator.onLine, words: 0, topics: 0}
 const listeners = new Set<() => void>()
 let channel: BroadcastChannel | undefined
 let initialized: Promise<void> | undefined
 let syncing: Promise<void> | undefined
+let blockedEdit: {conflict: OfflineConflict; before: Record<string, unknown>} | undefined
 let refreshQueries = (_resetLists = false) => {}
 
 export const subscribeOffline = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener) } }
 export const offlineStatus = () => status
 function notify(patch: Partial<Status>) { status = {...status, ...patch}; listeners.forEach(fn => fn()) }
 function report(replica?: Replica) {
-  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, restorePaused: replica?.restorePaused, topicAliases: replica?.topicAliases})
+  if (replica?.changes[0]?.id !== blockedEdit?.conflict.changeId) blockedEdit = undefined
+  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, restorePaused: replica?.restorePaused, topicAliases: replica?.topicAliases, conflict: blockedEdit?.conflict})
 }
 
 async function persist(replica?: Replica, resetLists = false) {
@@ -40,6 +42,19 @@ function isNetworkFailure(error: unknown) {
   return error instanceof TypeError
     || (error instanceof DOMException && ['TimeoutError', 'AbortError'].includes(error.name))
     || (error instanceof ApiError && error.status >= 500)
+}
+
+function readConflict(error: unknown, change?: Change) {
+  if (!(error instanceof ApiError) || error.status !== 409 || change?.action !== 'update') return
+  const detail = error.detail as {
+    code?: string; change_id?: string; server_item?: Record<string, unknown>; fields?: OfflineConflict['fields']
+  } | undefined
+  if (detail?.code !== 'offline_edit_conflict' || detail.change_id !== change.id ||
+    detail.server_item?.id !== change.entity_id || !Array.isArray(detail.fields) || !detail.fields.length) return
+  const before = detail.server_item
+  const label = change.entity === 'word' ? before.term : before.name
+  return {before, conflict: {changeId: change.id, entity: change.entity,
+    label: typeof label === 'string' ? label : `Item ${change.entity_id}`, fields: detail.fields}}
 }
 
 function supportsIOSOffline() {
@@ -220,7 +235,9 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
         }
       }
       if (path === '/auth/logout' || path === '/auth/logout-all') {
-        if (status.pending && !window.confirm('You have unsynced changes. Signing out will remove them from this device. Export an offline backup first if you want to keep them. Sign out anyway?')) throw new ApiError(499, 'Sign-out cancelled')
+        await syncRecallAttempts()
+        const recallPending = await pendingRecallCount().catch(() => 0)
+        if ((status.pending || recallPending) && !window.confirm('You have unsynced edits or recall attempts. Signing out will remove them from this device. Sign out anyway?')) throw new ApiError(499, 'Sign-out cancelled')
         try { await network(path, init) }
         catch (error) {
           if (path === '/auth/logout-all' || error instanceof ApiError) throw error
@@ -300,9 +317,12 @@ export async function saveOffline() {
 export function syncOffline(forceRefresh = false): Promise<void> {
   if (syncing) return syncing
   if (!navigator.onLine || !status.saved || status.restorePaused) return Promise.resolve()
+  if (blockedEdit && !forceRefresh) return Promise.resolve()
   if (!forceRefresh && !status.pending && !status.error && !status.offline && status.savedAt && Date.now() - Date.parse(status.savedAt) < 5 * 60_000) return Promise.resolve()
   syncing = (async () => {
-    notify({busy: true, error: undefined})
+    let uploading: Change | undefined
+    blockedEdit = undefined
+    notify({busy: true, error: undefined, conflict: undefined})
     try {
       // Refresh CSRF after a new sign-in; do not sync against an expired session.
       const session = await networkRequest<{csrf_token: string}>('/auth/session', {signal: AbortSignal.timeout(15_000)})
@@ -312,7 +332,13 @@ export function syncOffline(forceRefresh = false): Promise<void> {
         if (!replica || replica.restorePaused) return
         if (replica.changes.length) {
           const change = replica.changes[0]
-          const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {method: 'POST', headers: {'X-Lexora-Language': String(change.data.language ?? change.before.language ?? 'en')}, body: JSON.stringify(change), signal: AbortSignal.timeout(20_000)})
+          uploading = change
+          const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {
+            method: 'POST', headers: {'X-Lexora-Language': String(change.data.language ?? change.before.language ?? 'en'),
+              'X-Lexora-Conflict-Details': 'true'},
+            body: JSON.stringify(change), signal: AbortSignal.timeout(20_000),
+          })
+          uploading = undefined
           await withOfflineLock(async () => {
             const latest = await readReplica()
             // Another tab may have already recorded the same server receipt.
@@ -339,13 +365,36 @@ export function syncOffline(forceRefresh = false): Promise<void> {
       notify({offline: false})
       refreshQueries(forceRefresh)
     } catch (error) {
+      blockedEdit = readConflict(error, uploading)
       const networkFailure = isNetworkFailure(error)
       const message = error instanceof ApiError && error.status === 401 ? 'Sign in again to sync. Your offline changes are saved.'
         : error instanceof ApiError ? error.message : error instanceof Error ? error.message : 'Could not sync. Your local changes are preserved.'
-      notify({error: networkFailure ? undefined : message, offline: networkFailure})
+      notify({error: networkFailure || blockedEdit ? undefined : message, offline: networkFailure, conflict: blockedEdit?.conflict})
     } finally { notify({busy: false}); syncing = undefined }
   })()
   return syncing
+}
+
+export async function resolveOfflineConflict(choice: 'server' | 'device') {
+  if (!navigator.onLine) throw new Error('Connect to Lexora to resolve the conflict.')
+  if (syncing) await syncing
+  await withOfflineLock(async () => {
+    const replica = await readReplica()
+    const conflict = blockedEdit
+    const head = replica?.changes[0]
+    if (!replica || !head || !conflict || head.id !== conflict.conflict.changeId || replica.restorePaused) {
+      throw new Error('This edit changed. Sync again to review the current version.')
+    }
+    if (choice === 'device') {
+      // A new receipt identifies the changed baseline; later edits keep their own guards.
+      replica.changes[0] = {...head, id: crypto.randomUUID(), before: conflict.before}
+    } else {
+      replica.changes.shift()
+      refreshAcceptedEdit(replica, head, head.entity_id)
+    }
+    await persist(replica)
+  })
+  await syncOffline(true)
 }
 
 export async function removeOffline() {
@@ -359,7 +408,7 @@ export async function restoreOfflineBackup(replica: Replica) {
     if ((await readReplica())?.changes.length) {
       throw new Error('Sync your current edits before replacing this saved copy.')
     }
-    await persist({...replica, revisions: undefined, restorePaused: true}, true)
+    await persist({...replica, revisions: undefined, cursor: undefined, forceWordIds: undefined, forceTopicIds: undefined, restorePaused: true}, true)
   })
   notify({error: undefined})
   refreshQueries(true)

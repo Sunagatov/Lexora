@@ -9,17 +9,18 @@ export type SnapshotRevisions = {
   word_hashes: Record<string, string>
   topic_hashes: Record<string, string>
 }
+export type CatalogCursor = {version: 1; epoch: string; revision: string}
 export type Snapshot = {
   version: 1
   words: OfflineWord[]
   topics: OfflineTopic[]
   public_config?: {trash_retention_days: number}
   revisions?: SnapshotRevisions
+  cursor?: CatalogCursor
 }
 export type SnapshotDelta = Snapshot & {
   removed_word_ids: number[]
   removed_topic_ids: number[]
-  revisions: SnapshotRevisions
 }
 export type Change = {
   id: string
@@ -31,12 +32,20 @@ export type Change = {
   before: Record<string, unknown>
   affected_words: OfflineWord[]
 }
+export type OfflineConflict = {
+  changeId: string
+  entity: 'word' | 'topic'
+  label: string
+  fields: {field: string; before: unknown; device: unknown; server: unknown}[]
+}
 export type Replica = Snapshot & {
   savedAt: string
   nextId: number
   changes: Change[]
   revision?: string
   restorePaused?: boolean
+  forceWordIds?: number[]
+  forceTopicIds?: number[]
   wordAliases?: Record<number, number>
   topicAliases?: Record<number, number>
   mix?: StudyQueue

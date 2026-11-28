@@ -9,6 +9,7 @@ import {initializeOffline, syncOffline} from '@/features/offline/offline'
 import {displayTranslations, languagePreferences, languageProfile, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
 import {setRequestContext} from '@/shared/api/http'
 import {loadPreferences} from '@/features/preferences/api'
+import {recallHistoryQueryKey, syncRecallAttempts} from '@/features/stats/model/recallHistory'
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -53,6 +54,10 @@ export function Providers({children}: PropsWithChildren) {
 
   useEffect(() => {
     let cancelled = false
+    const syncRecall = () => { void syncRecallAttempts().then(() => {
+      if (!cancelled) void queryClient.invalidateQueries({queryKey: recallHistoryQueryKey})
+    }) }
+    window.addEventListener('online', syncRecall)
     const bootstrapPromise = initializeOffline((resetLists = false) => {
       // Keep the visible page stable after a rating; navigation can load fresh data.
       void queryClient.invalidateQueries({predicate: query => resetLists || query.queryKey[0] !== 'word-list'})
@@ -70,13 +75,17 @@ export function Providers({children}: PropsWithChildren) {
         replaceRoute(routes.login)
       }
       setAuthReady(true)
-      if (authenticated) void syncOffline()
+      if (authenticated) {
+        void syncOffline()
+        syncRecall()
+      }
     }).catch(() => {
       if (!cancelled) setAuthReady(true)
     })
 
     return () => {
       cancelled = true
+      window.removeEventListener('online', syncRecall)
     }
   }, [])
 
