@@ -5,8 +5,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from app.features.languages.catalog import learning_language
 from app.features.stats.schemas import (
@@ -17,8 +17,8 @@ from app.features.stats.schemas import (
     VocabularyOverview,
 )
 from app.features.topics.model import Topic
-from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
-from app.features.words.model import Word, word_topics
+from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
+from app.features.words.model import PartsOfSpeech, Word, WordExample, WordTranslation, word_topics
 
 
 @dataclass(frozen=True)
@@ -26,24 +26,23 @@ class WordStatsSnapshot:
     id: int
     knowledge_level: int | None
     has_pos: bool
-    example_items: tuple[object, ...]
+    example_count: int
     created_at: datetime
-    source: str = "manual"
     pos_name: str | None = None
     cefr_level: str | None = None
     register: str | None = None
     has_definition: bool = False
     has_ipa: bool = False
-    translation_count: int = 0
-    synonym_count: int = 0
-    antonym_count: int = 0
-    collocation_count: int = 0
-    confusable_count: int = 0
+    has_translation: bool = False
+    has_synonym: bool = False
+    has_antonym: bool = False
+    has_collocation: bool = False
+    has_confusable: bool = False
 
 
 def _build_library_overview(words: list[WordStatsSnapshot], total_topics: int = 0) -> VocabularyOverview:
     total = len(words)
-    example_counts = [example_count(word) for word in words]
+    example_counts = [word.example_count for word in words]
     with_example = sum(1 for count in example_counts if count > 0)
     with_examples_3plus = sum(1 for count in example_counts if count >= EXAMPLE_TARGET_COUNT)
     with_pos = sum(1 for word in words if word.has_pos)
@@ -57,7 +56,7 @@ def _build_library_overview(words: list[WordStatsSnapshot], total_topics: int = 
         missing_example=total - with_example,
         needs_example_enrichment=total - with_examples_3plus,
         missing_pos=total - with_pos,
-        needs_enrichment=sum(1 for word in words if not word.example_items or not word.has_pos),
+        needs_enrichment=sum(1 for word in words if not word.example_count or not word.has_pos),
     )
 
 
@@ -128,8 +127,8 @@ def build_library_topic(topic: Topic, words: list[WordStatsSnapshot]) -> Library
         name=topic.name,
         slug=topic.slug,
         total=len(words),
-        missing_example=sum(1 for word in words if not word.example_items),
-        needs_example_enrichment=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
+        missing_example=sum(1 for word in words if not word.example_count),
+        needs_example_enrichment=sum(1 for word in words if word.example_count < EXAMPLE_TARGET_COUNT),
         missing_pos=sum(1 for word in words if not word.has_pos),
     )
 
@@ -186,53 +185,46 @@ def _build_enrichment_coverage(words: list[WordStatsSnapshot]) -> EnrichmentCove
         total_words=total,
         with_definition=sum(1 for w in words if w.has_definition),
         with_ipa=sum(1 for w in words if w.has_ipa),
-        with_translation=sum(1 for w in words if w.translation_count > 0),
-        with_examples=sum(1 for w in words if w.example_items),
-        with_synonyms=sum(1 for w in words if w.synonym_count > 0),
-        with_antonyms=sum(1 for w in words if w.antonym_count > 0),
-        with_collocations=sum(1 for w in words if w.collocation_count > 0),
-        with_confusables=sum(1 for w in words if w.confusable_count > 0),
+        with_translation=sum(1 for w in words if w.has_translation),
+        with_examples=sum(1 for w in words if w.example_count),
+        with_synonyms=sum(1 for w in words if w.has_synonym),
+        with_antonyms=sum(1 for w in words if w.has_antonym),
+        with_collocations=sum(1 for w in words if w.has_collocation),
+        with_confusables=sum(1 for w in words if w.has_confusable),
         with_cefr=sum(1 for w in words if w.cefr_level),
         with_register=sum(1 for w in words if w.register),
     )
 
 
 def list_active_word_stats(db: Session, *, translations: str | None = None) -> list[WordStatsSnapshot]:
-    words = db.scalars(
-        select(Word).options(
-            selectinload(Word.example_items),
-            selectinload(Word.part_of_speech),
-            selectinload(Word.translation_items),
-            selectinload(Word.synonym_items),
-            selectinload(Word.antonym_items),
-            selectinload(Word.collocation_items),
-            selectinload(Word.confusable_items),
-        ).where(Word.deleted_at.is_(None), Word.language == learning_language(db))
-    ).all()
-    return [
-        WordStatsSnapshot(
-            id=int(word.id),
-            knowledge_level=word.knowledge_level,
-            has_pos=word.part_of_speech_id is not None,
-            pos_name=word.part_of_speech.name if word.part_of_speech else None,
-            example_items=tuple(getattr(word, "example_items", ()) or ()),
-            created_at=word.created_at,
-            source=word.source,
-            cefr_level=word.cefr_level,
-            register=word.register,
-            has_definition=bool(word.definition),
-            has_ipa=bool(word.pronunciation_ipa),
-            translation_count=sum(
-                1 for item in word.translation_items
-                if translations is None or item.language == translations
-            ),
-            synonym_count=len(word.synonym_items),
-            antonym_count=len(word.antonym_items),
-            collocation_count=len(word.collocation_items),
-            confusable_count=len(word.confusable_items),
+    translation = (
+        Word.translation_items.any()
+        if translations is None
+        else Word.translation_items.any(WordTranslation.language == translations)
+    )
+    example_count = select(func.count()).where(WordExample.word_id == Word.id).scalar_subquery()
+    rows = db.execute(
+        select(
+            Word.id,
+            Word.knowledge_level,
+            Word.part_of_speech_id.is_not(None).label("has_pos"),
+            example_count.label("example_count"),
+            Word.created_at,
+            PartsOfSpeech.name.label("pos_name"),
+            Word.cefr_level,
+            Word.register,
+            (func.coalesce(Word.definition, "") != "").label("has_definition"),
+            (func.coalesce(Word.pronunciation_ipa, "") != "").label("has_ipa"),
+            translation.label("has_translation"),
+            Word.synonym_items.any().label("has_synonym"),
+            Word.antonym_items.any().label("has_antonym"),
+            Word.collocation_items.any().label("has_collocation"),
+            Word.confusable_items.any().label("has_confusable"),
         )
-        for word in words
-    ]
+        .outerjoin(PartsOfSpeech, PartsOfSpeech.id == Word.part_of_speech_id)
+        .where(Word.deleted_at.is_(None), Word.language == learning_language(db))
+    )
+    return [WordStatsSnapshot(**row) for row in rows.mappings()]
 
 
 def load_topic_word_ids(db: Session, word_ids: set[int] | list[int]) -> dict[int, list[int]]:

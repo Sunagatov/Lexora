@@ -65,11 +65,11 @@ def test_record_usage_event_is_idempotent() -> None:
 def test_build_overview_counts_completeness_and_okay_percentage(make_word) -> None:
     now = datetime(2026, 1, 1, tzinfo=timezone.utc)
     words = [
-        WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_items=(SimpleNamespace(value="ex"),), created_at=now),
-        WordStatsSnapshot(id=2, knowledge_level=3, has_pos=False, example_items=(SimpleNamespace(value="ex"),), created_at=now),
-        WordStatsSnapshot(id=3, knowledge_level=4, has_pos=True, example_items=(), created_at=now),
-        WordStatsSnapshot(id=4, knowledge_level=5, has_pos=False, example_items=(), created_at=now),
-        WordStatsSnapshot(id=5, knowledge_level=None, has_pos=False, example_items=(), created_at=now),
+        WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_count=1, created_at=now),
+        WordStatsSnapshot(id=2, knowledge_level=3, has_pos=False, example_count=1, created_at=now),
+        WordStatsSnapshot(id=3, knowledge_level=4, has_pos=True, example_count=0, created_at=now),
+        WordStatsSnapshot(id=4, knowledge_level=5, has_pos=False, example_count=0, created_at=now),
+        WordStatsSnapshot(id=5, knowledge_level=None, has_pos=False, example_count=0, created_at=now),
     ]
 
     overview, level_counts, okay_pct = stats_service._build_overview(words)
@@ -102,9 +102,9 @@ def test_build_topic_stats_computes_progress_and_sorts_by_progress() -> None:
 
     topics = [_topic_stub(id=1, name="Travel", slug="travel"), _topic_stub(id=2, name="Work", slug="work")]
     word_map = {
-        1: WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_items=(), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
-        2: WordStatsSnapshot(id=2, knowledge_level=4, has_pos=True, example_items=(SimpleNamespace(value="ex"),), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
-        3: WordStatsSnapshot(id=3, knowledge_level=1, has_pos=False, example_items=(), created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
+        1: WordStatsSnapshot(id=1, knowledge_level=1, has_pos=True, example_count=0, created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
+        2: WordStatsSnapshot(id=2, knowledge_level=4, has_pos=True, example_count=1, created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
+        3: WordStatsSnapshot(id=3, knowledge_level=1, has_pos=False, example_count=0, created_at=datetime(2026, 1, 1, tzinfo=timezone.utc)),
     }
 
     result = stats_service._build_topic_stats(
@@ -389,49 +389,18 @@ def test_compute_stats_words_added_by_month_excludes_deleted_words() -> None:
     # End-to-end proof: compute_stats must only count active words in monthly totals.
     # The deleted word was created in January; the active word was created in March.
     # After the fix, January must be absent from words_added_by_month.
-    active_word = SimpleNamespace(
-        id=1,
-        deleted_at=None,
-        created_at=datetime(2026, 3, 15, tzinfo=timezone.utc),
-        knowledge_level=3,
-        part_of_speech_id=1,
-        part_of_speech=SimpleNamespace(name="noun"),
-        definition="a definition",
-        pronunciation_ipa=None,
-        source="manual",
-        translation_items=[],
-        example_items=[SimpleNamespace(value="ex")],
-        synonym_items=[],
-        antonym_items=[],
-        collocation_items=[],
-        confusable_items=[],
-        cefr_level=None,
-        register=None,
-    )
-    deleted_word_january = SimpleNamespace(
-        id=2,
-        deleted_at=datetime(2026, 3, 20, tzinfo=timezone.utc),
-        created_at=datetime(2026, 1, 5, tzinfo=timezone.utc),
-        knowledge_level=1,
-        part_of_speech_id=None,
-        example_items=[],
-    )
-    _ = deleted_word_january  # not returned by the active-words query — that's the invariant
-
+    active_word = {
+        "id": 1,
+        "created_at": datetime(2026, 3, 15, tzinfo=UTC),
+        "knowledge_level": 3,
+        "has_pos": True,
+        "pos_name": "noun",
+        "example_count": 1,
+    }
     db = MagicMock()
-    # compute_stats calls db.scalars four times in order:
-    #   1. active words   (deleted_at IS NULL)
-    #   2. active topics  (deleted_at IS NULL)
-    #   3. AppUsageEvent in _build_usage_stats
-    #   4. WordProgressEvent in _build_daily_activity
-    db.scalars.side_effect = [
-        MagicMock(**{"all.return_value": [active_word]}),
-        MagicMock(**{"all.return_value": []}),
-        MagicMock(**{"all.return_value": []}),
-        MagicMock(**{"all.return_value": []}),
-        MagicMock(**{"all.return_value": []}),
-    ]
-    db.execute.return_value.all.return_value = []  # word_topics join in _build_topic_stats
+    db.execute.return_value.mappings.return_value = [active_word]
+    db.execute.return_value.all.return_value = []
+    db.scalars.return_value.all.return_value = []
 
     result = stats_service.compute_stats(db)
 

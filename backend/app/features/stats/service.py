@@ -49,7 +49,7 @@ from app.features.stats.schemas import (
 )
 from app.features.topics.model import Topic
 from app.features.words.constants import PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST
-from app.features.words.enrichment import EXAMPLE_TARGET_COUNT, example_count
+from app.features.words.enrichment import EXAMPLE_TARGET_COUNT
 from app.features.words.model import Word
 from app.features.words.progress import WordProgressEvent
 
@@ -262,10 +262,10 @@ def compute_library_stats(db: Session) -> LibraryStatsResponse:
         ),
         readiness=LibraryReadiness(
             translation_language=translations,
-            ready=sum(1 for word in words if word.translation_count and example_count(word)),
-            missing_translation=sum(1 for word in words if not word.translation_count),
-            no_examples=sum(1 for word in words if not example_count(word)),
-            needs_examples=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
+            ready=sum(1 for word in words if word.has_translation and word.example_count),
+            missing_translation=sum(1 for word in words if not word.has_translation),
+            no_examples=sum(1 for word in words if not word.example_count),
+            needs_examples=sum(1 for word in words if word.example_count < EXAMPLE_TARGET_COUNT),
             no_topic=total - len(topic_counts),
             multiple_topics=sum(1 for count in topic_counts.values() if count > 1),
         ),
