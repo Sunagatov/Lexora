@@ -7,6 +7,8 @@ import {routes} from '@/app/routes'
 import {loadPreferences} from '@/features/preferences/api'
 import {useVisualViewport} from '@/shared/hooks/useVisualViewport'
 import {isIOSApp} from '@/shared/platform'
+import {syncOffline} from '@/features/offline/offline'
+import {syncRecallAttempts} from '@/features/stats/model/recallHistory'
 
 export function LoginPage() {
   const [password, setPassword] = useState('')
@@ -24,6 +26,8 @@ export function LoginPage() {
       await login(password)
       await loadPreferences()
       navigate(routes.home)
+      void syncOffline()
+      void syncRecallAttempts()
     } catch (err) {
       setError(err instanceof ApiError && err.status === 401 ? 'Wrong password.'
         : err instanceof ApiError && err.status === 429 ? err.message

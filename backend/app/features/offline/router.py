@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -26,6 +26,21 @@ from app.features.words.exceptions import DuplicateWordInTopicError
 from app.shared.deps import get_db
 
 router = APIRouter(prefix="/api/offline", tags=["offline"])
+
+
+class OfflineChangeBatch(BaseModel):
+    changes: list[OfflineChange] = Field(min_length=1, max_length=24)
+
+    @field_validator("changes")
+    @classmethod
+    def independent_updates(cls, changes: list[OfflineChange]) -> list[OfflineChange]:
+        if any(change.entity != "word" or change.action != "update" or change.entity_id <= 0 for change in changes):
+            raise ValueError("Only updates to existing words can be batched")
+        if len({change.entity_id for change in changes}) != len(changes):
+            raise ValueError("A batch can only contain one edit per word")
+        if len({change.id for change in changes}) != len(changes):
+            raise ValueError("A batch cannot reuse an operation ID")
+        return changes
 
 
 def _begin_consistent_read(db: Session) -> None:
@@ -103,3 +118,18 @@ def sync_change(
         raise HTTPException(
             409, "This edit conflicts with existing content. Local changes are preserved."
         )
+
+
+@router.post("/changes/batch")
+def sync_change_batch(payload: OfflineChangeBatch, db: Annotated[Session, Depends(get_db)]):
+    results = []
+    for change in payload.changes:
+        try:
+            result = sync_change(change, db, conflict_details=True)
+        except HTTPException as error:
+            if error.status_code not in (400, 404, 409, 422):
+                raise
+            results.append({"change_id": str(change.id), "status": error.status_code, "detail": error.detail})
+        else:
+            results.append({"change_id": str(change.id), "status": 200, "result": result})
+    return {"results": results}

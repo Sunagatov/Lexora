@@ -1,6 +1,7 @@
 import type {Word} from '@/features/words/types/wordTypes'
 import type {Topic} from '@/features/topics/types/topicTypes'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import type {RecallAttempt} from '@/features/stats/model/recallHistory'
 
 export type OfflineWord = Word & {deleted_via_topic_id?: number | null}
 export type OfflineTopic = Topic & {deleted_at?: string | null}
@@ -38,6 +39,12 @@ export type OfflineConflict = {
   label: string
   fields: {field: string; before: unknown; device: unknown; server: unknown}[]
 }
+export type BlockedChange = {
+  message: string
+  missingLocalDependency?: boolean
+  serverItem?: Record<string, unknown>
+  conflict?: OfflineConflict
+}
 export type Replica = Snapshot & {
   savedAt: string
   nextId: number
@@ -46,9 +53,12 @@ export type Replica = Snapshot & {
   restorePaused?: boolean
   forceWordIds?: number[]
   forceTopicIds?: number[]
+  blockedChanges?: Record<string, BlockedChange>
+  refreshPending?: boolean
   wordAliases?: Record<number, number>
   topicAliases?: Record<number, number>
   mix?: StudyQueue
   mixes?: Record<string, StudyQueue>
   mixReviewedAt?: Record<number, string>
 }
+export type OfflineBackup = Replica & {recallAttempts?: RecallAttempt[]}

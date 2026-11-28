@@ -105,12 +105,18 @@ Protected router groups:
   or restore. Requires a UUID operation ID, entity type, action, entity ID,
   data and previous values. Creates use a temporary negative ID; the response
   supplies the real server ID for dependent edits.
+- `POST /api/offline/changes/batch` accepts up to 24 updates to distinct existing
+  words in one learning language. Each operation commits with its own receipt
+  and returns its own status, so a rejected edit leaves independent edits eligible
+  to sync. Creates, same-item dependencies, and topic operations use the single endpoint.
 - Updates compare previous values for every edited field (and deletion state).
   Deletion/restoration compares the complete item. Topic deletion/restoration
   also checks its affected words, so newer server edits are not silently lost.
   Conflicts return `409` and leave local edits queued. Invalid payloads return `422`.
   With `X-Lexora-Conflict-Details: true`, eligible update conflicts include
   `offline_edit_conflict`, the canonical item and the base/device/server values of conflicting fields.
+  When an edited value already matches the normalized server value, the server accepts that
+  field without a conflict. Other edited fields keep their usual checks.
 - Content, learning history and an idempotency receipt commit together. Retrying
   the same UUID and payload returns the original result; reusing the UUID for a
   different payload is rejected. Migration `20261017_0012` adds the receipt table.
@@ -157,12 +163,21 @@ tab changed the copy during that download, then sync the newer changes first.
 Undo remains available for eight seconds. Visible review pages stay stable after
 knowledge changes; sorting/filtering refreshes on the next explicit navigation.
 
+The Offline screen shows uploads, rejected edits and pending library refreshes.
+Rejected edits stay saved until retried or explicitly discarded. Keeping the server's
+version updates the cached item from the conflict response before refreshing the library.
+The client saves receipt and cursor metadata separately from cached rows when the rows
+did not change.
+
 ## Recall Practice
 
 - `GET /api/stats/learning/recall` returns attempt history for the selected language pair.
 - `POST /api/stats/learning/recall` accepts up to 100 UUID-keyed outcomes across language pairs.
   Identical retries return the same acknowledgments. Attempts for permanently removed words
   are discarded. Local outcomes remain queued until acknowledged.
+- The Offline screen shows unsent and rejected recall attempts. A rejected attempt is kept
+  for manual retry while valid attempts continue. JSON backups include unsent recall IDs,
+  and restored attempts wait for the user to resume sync.
 - `GET /api/stats/learning/recall/due` returns up to ten active, translated, non-Parked cards.
   It prioritizes due attempts before new Weak or unrated cards. Successive correct answers
   schedule 1, 3, 7, 14 and 30 day gaps. A missed answer resets the gap to one day.

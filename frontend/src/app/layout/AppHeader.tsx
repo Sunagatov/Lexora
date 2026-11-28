@@ -4,6 +4,7 @@ import {routes} from '@/app/routes'
 import {WordRouteBreadcrumb} from '@/features/words/components/WordRouteBreadcrumb'
 import {languagePreferences, languageProfile, subscribeLanguages} from '@/features/languages/api'
 import {accountReturnTarget} from '@/features/preferences/accountNavigation'
+import {OfflineStatus} from '@/features/offline/OfflineButton'
 
 type Props = {
   hasDrawer?: boolean
@@ -46,6 +47,7 @@ export function AppHeader({hasDrawer = false, drawerOpen = false, onOpenDrawer, 
         </>}
       </div>
       <div className="app-header-actions">
+        {!inAccount && <OfflineStatus />}
         {onAddWord && (
           <button type="button" className="app-header-add" onClick={onAddWord} aria-label="Add word" title="Add word">
             <span className="app-header-add-icon" aria-hidden="true">

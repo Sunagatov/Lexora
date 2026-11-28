@@ -9,7 +9,7 @@ import {initializeOffline, syncOffline} from '@/features/offline/offline'
 import {displayTranslations, languagePreferences, languageProfile, onLanguageChange, subscribeLanguages} from '@/features/languages/api'
 import {setRequestContext} from '@/shared/api/http'
 import {loadPreferences} from '@/features/preferences/api'
-import {recallHistoryQueryKey, syncRecallAttempts} from '@/features/stats/model/recallHistory'
+import {recallHistoryQueryKey, recallSyncStatus, refreshRecallSyncStatus, syncRecallAttempts} from '@/features/stats/model/recallHistory'
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -57,7 +57,15 @@ export function Providers({children}: PropsWithChildren) {
     const syncRecall = () => { void syncRecallAttempts().then(() => {
       if (!cancelled) void queryClient.invalidateQueries({queryKey: recallHistoryQueryKey})
     }) }
+    const retryRecall = () => {
+      if (navigator.onLine && recallSyncStatus().pending) syncRecall()
+    }
+    void refreshRecallSyncStatus()
     window.addEventListener('online', syncRecall)
+    window.addEventListener('focus', retryRecall)
+    const recallRetryTimer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') retryRecall()
+    }, 60_000)
     const bootstrapPromise = initializeOffline((resetLists = false) => {
       // Keep the visible page stable after a rating; navigation can load fresh data.
       void queryClient.invalidateQueries({predicate: query => resetLists || query.queryKey[0] !== 'word-list'})
@@ -86,6 +94,8 @@ export function Providers({children}: PropsWithChildren) {
     return () => {
       cancelled = true
       window.removeEventListener('online', syncRecall)
+      window.removeEventListener('focus', retryRecall)
+      window.clearInterval(recallRetryTimer)
     }
   }, [])
 

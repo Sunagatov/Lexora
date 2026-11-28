@@ -1,5 +1,7 @@
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
-import type {Change, OfflineTopic, OfflineWord, Replica} from './types'
+import {LEARNING_LANGUAGES} from '@/features/languages/api'
+import type {RecallAttempt} from '@/features/stats/model/recallHistory'
+import type {Change, OfflineBackup, OfflineTopic, OfflineWord, Replica} from './types'
 
 const MAX_BACKUP_BYTES = 128 * 1024 * 1024
 const unsafeKeys = ['__proto__', 'constructor', 'prototype']
@@ -146,7 +148,14 @@ function readText(file: File): Promise<string> {
   })
 }
 
-export async function parseOfflineBackup(file: File): Promise<Replica> {
+function pendingRecall(value: unknown): value is RecallAttempt & {id: string} {
+  return record(value) && typeof value.id === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value.id) &&
+    id(value.wordId) && value.wordId > 0 && date(value.occurredAt) && /(?:Z|[+-]\d{2}:\d{2})$/i.test(value.occurredAt) &&
+    typeof value.recalled === 'boolean' && !value.uploaded && LEARNING_LANGUAGES.some(item => item.code === value.language) &&
+    (value.translationLanguage === 'en' || value.translationLanguage === 'ru')
+}
+
+export async function parseOfflineBackup(file: File): Promise<OfflineBackup> {
   if (file.size > MAX_BACKUP_BYTES) throw new Error('Choose a backup file smaller than 128 MB.')
   const source = await readText(file)
   let value: unknown
@@ -159,7 +168,7 @@ export async function parseOfflineBackup(file: File): Promise<Replica> {
     || !Array.isArray(value.words) || !Array.isArray(value.topics) || !Array.isArray(value.changes)) {
     throw new Error('Choose a version 1 offline backup exported from Lexora.')
   }
-  const {words, topics, changes, nextId, savedAt, public_config, wordAliases, topicAliases, mix: legacyMix, mixes, mixReviewedAt} = value
+  const {words, topics, changes, nextId, savedAt, public_config, wordAliases, topicAliases, mix: legacyMix, mixes, mixReviewedAt, recallAttempts} = value
   if (!words.every(word) || !topics.every(topic) || !distinct(words.map((entry) => entry.id))
     || !distinct(topics.map((entry) => entry.id)) || !topicTree(topics)) {
     throw new Error('The backup contains invalid words or topics.')
@@ -188,11 +197,17 @@ export async function parseOfflineBackup(file: File): Promise<Replica> {
   if (queues.some((queue) => queue.id <= nextId || queue.items.some((item) => item.id <= nextId))) {
     throw new Error('The backup contains invalid Daily Mix references.')
   }
+  if (recallAttempts !== undefined && (!Array.isArray(recallAttempts) || !recallAttempts.every(pendingRecall) ||
+    !distinct(recallAttempts.map(attempt => attempt.id.toLowerCase())))) {
+    throw new Error('The backup contains invalid recall attempts.')
+  }
 
   return {
     // Re-establish local storage and server revision metadata when the owner restores the backup.
     version: 1, savedAt, nextId, words, topics, changes, wordAliases, topicAliases, mix: legacyMix,
     mixes: mixes as Replica['mixes'], mixReviewedAt: mixReviewedAt as Replica['mixReviewedAt'],
     public_config: public_config as Replica['public_config'],
+    recallAttempts: recallAttempts?.map(({id, wordId, occurredAt, recalled, language, translationLanguage}) =>
+      ({id: id.toLowerCase(), wordId, occurredAt, recalled, language, translationLanguage})),
   }
 }

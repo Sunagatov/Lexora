@@ -9,20 +9,30 @@ const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
   ios: false,
   adapter: undefined as undefined | ((path: string, init: RequestInit, network: (path: string, init: RequestInit) => Promise<unknown>) => Promise<unknown>),
-  network: vi.fn(), read: vi.fn(), write: vi.fn(), writeMix: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
+  network: vi.fn(), read: vi.fn(), write: vi.fn(), writeMix: vi.fn(), writeSync: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
 }))
 vi.mock('@/shared/api/http', () => ({networkRequest: fake.network, setRequestAdapter: (adapter: typeof fake.adapter) => { fake.adapter = adapter }}))
 vi.mock('@/shared/platform', () => ({get isIOSApp() { return fake.ios }}))
-vi.mock('../storage', () => ({
+vi.mock('../storage', async importOriginal => ({
+  ...await importOriginal<typeof import('../storage')>(),
   readReplica: async () => { fake.read(); return structuredClone(fake.replica) },
   initializeMixProgress: async () => {},
   deleteOfflineValue: async () => {},
+  readOfflineValue: async () => undefined,
+  readRecallUploadState: async () => ({attempts: [], paused: false, hasReplica: !!fake.replica}),
+  mutateOfflineValue: async () => {},
   writeReplica: async (replica: Replica) => { fake.write(); fake.replica = structuredClone(replica) },
+  writeSyncState: async ({changes, cursor, forceWordIds, forceTopicIds, revisions, revision, savedAt, public_config, blockedChanges, refreshPending}: Replica) => {
+    fake.writeSync()
+    Object.assign(fake.replica!, structuredClone({changes, cursor, forceWordIds, forceTopicIds, revisions, revision,
+      savedAt, public_config, blockedChanges, refreshPending}))
+  },
   writeMixState: async ({mixes, mixReviewedAt, nextId}: Replica) => {
     fake.writeMix()
     Object.assign(fake.replica!, structuredClone({mixes, mixReviewedAt, nextId}))
   },
-  withOfflineLock: (work: () => Promise<unknown>) => {
+  withOfflineLock: (work: () => Promise<unknown>, name?: string) => {
+    if (name === 'lexora-offline-sync') return work()
     const result = fake.lock.then(work)
     fake.lock = result.catch(() => {})
     return result
@@ -35,7 +45,7 @@ async function setup(online = false) {
   vi.stubGlobal('BroadcastChannel', class { onmessage = null; postMessage() {} })
   vi.spyOn(window, 'setInterval').mockReturnValue(1)
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(online)
-  fake.network.mockReset(); fake.read.mockClear(); fake.write.mockClear(); fake.writeMix.mockClear(); fake.lock = Promise.resolve()
+  fake.network.mockReset(); fake.read.mockClear(); fake.write.mockClear(); fake.writeMix.mockClear(); fake.writeSync.mockClear(); fake.lock = Promise.resolve()
   fake.replica = {version: 1, words: [], topics: [], changes: [], nextId: -1, savedAt: new Date().toISOString()}
   const {changeItem} = await import('../changes')
   changeItem(fake.replica, 'topic', 'create', -1, {name: 'People'})
@@ -134,6 +144,56 @@ it('uses the catalog cursor and requests the canonical word after an accepted ed
   expect(fake.replica!.cursor?.revision).toBe('12')
   expect(fake.replica!.forceWordIds).toBeUndefined()
   expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/auth/session', '/api/offline/changes', '/api/offline/cursor'])
+})
+
+it('uploads independent words in one request and keeps a rejected word without blocking the rest', async () => {
+  const {request, offline} = await setup()
+  const {remapId} = await import('../changes')
+  remapId(fake.replica!, 'topic', -1, 1)
+  remapId(fake.replica!, 'word', -2, 21)
+  fake.replica!.words.push({...fake.replica!.words[0], id: 22, term: 'unrelated'})
+  for (const id of [21, 22]) await request(`/api/words/${id}`, {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  const [rejected, valid] = fake.replica!.changes
+  fake.write.mockClear()
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  fake.network.mockImplementation(async (path: string, init: RequestInit) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    expect(path).toBe('/api/offline/changes/batch')
+    expect(JSON.parse(String(init.body)).changes.map((edit: {id: string}) => edit.id)).toEqual([rejected.id, valid.id])
+    return {results: [
+      {change_id: rejected.id, status: 409, detail: 'This word no longer exists'},
+      {change_id: valid.id, status: 200, result: {entity_id: 22}},
+    ]}
+  })
+  await offline.syncOffline(true)
+  expect(fake.replica!.changes.map(edit => edit.id)).toEqual([rejected.id])
+  expect(offline.offlineStatus()).toMatchObject({pending: 1, issues: [{changeId: rejected.id, message: 'This word no longer exists'}]})
+  expect(fake.write).not.toHaveBeenCalled()
+  expect(fake.writeSync).toHaveBeenCalledTimes(1)
+})
+
+it('shows the chosen server value immediately if downloading the catalog fails', async () => {
+  const {request, offline} = await setup()
+  const {remapId} = await import('../changes')
+  const {ApiError} = await import('@/shared/api/apiError')
+  remapId(fake.replica!, 'topic', -1, 1)
+  remapId(fake.replica!, 'word', -2, 21)
+  const serverWord = {...fake.replica!.words[0], knowledge_level: 3}
+  await request('/api/words/21', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  const edit = fake.replica!.changes[0]
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  fake.network.mockImplementation(async (path: string) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/changes') throw new ApiError(409, 'Conflict', {
+      code: 'offline_edit_conflict', change_id: edit.id, server_item: serverWord,
+      fields: [{field: 'knowledge_level', before: 1, device: 4, server: 3}],
+    })
+    throw new TypeError('Connection interrupted during download')
+  })
+  await offline.syncOffline(true)
+  await offline.resolveOfflineConflict('server')
+  expect(offline.offlineStatus()).toMatchObject({pending: 0, conflict: undefined, offline: true, refreshPending: true})
+  await expect(request('/api/words/21')).resolves.toMatchObject({knowledge_level: 3})
 })
 
 it.each(['server', 'device'] as const)('resolves a queued conflict using the %s version and keeps later edits', async choice => {
@@ -370,7 +430,7 @@ it('keeps the saved copy and edits available when synchronization hits a conflic
     throw new ApiError(409, 'Changed on the server')
   })
   await offline.syncOffline()
-  expect(offline.offlineStatus().error).toBe('Changed on the server')
+  expect(offline.offlineStatus().issues).toMatchObject([{message: 'Changed on the server'}])
   expect(fake.replica!.changes).toHaveLength(1)
   expect((await request('/api/words/-2') as {knowledge_level: number}).knowledge_level).toBe(4)
 })

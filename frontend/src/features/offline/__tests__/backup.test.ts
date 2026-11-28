@@ -29,6 +29,15 @@ it('restores a v1 export with pending edit IDs, original checks and temporary re
   expect(restored.changes[2].occurred_at).toBe(original.changes[2].occurred_at)
 })
 
+it('round-trips unsent recall answers while clearing a device-specific rejection', async () => {
+  const recall = {id: crypto.randomUUID(), wordId: 21, language: 'en', translationLanguage: 'ru',
+    occurredAt: savedAt, recalled: true}
+  const original = {...exportedReplica(), recallAttempts: [{...recall, syncError: 'Rejected on previous device'}]}
+  expect((await parseOfflineBackup(backup(original))).recallAttempts).toEqual([recall])
+  await expect(parseOfflineBackup(backup({...original, recallAttempts: [{...recall, wordId: -21}]})))
+    .rejects.toThrow('invalid recall attempts')
+})
+
 it('keeps legacy Daily Mix progress and aliases when rebuilding replica metadata', async () => {
   const original = exportedReplica()
   original.nextId = -5

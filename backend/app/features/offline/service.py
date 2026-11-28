@@ -15,11 +15,13 @@ from app.features.languages.catalog import learning_language
 from app.features.offline.model import OfflineReceipt
 from app.features.topics.api import create_topic, restore_topic, update_topic
 from app.features.topics.api import delete_topic_checked as delete_topic
+from app.features.topics.constants import TOPIC_SLUG_MAX_LEN
 from app.features.topics.model import Topic
 from app.features.topics.rules import assert_topics_exist
 from app.features.topics.schemas import TopicCreate, TopicResponse, TopicUpdate
 from app.features.words.api import (
     assert_word_restore_allowed,
+    clean_word_entries,
     create_word,
     restore_word,
     soft_delete_word,
@@ -30,6 +32,7 @@ from app.features.words.constants import PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordResponse, WordUpdate
 from app.shared.config import settings
+from app.shared.text import slugify
 
 
 class OfflineChange(BaseModel):
@@ -155,38 +158,73 @@ def comparable(data: dict) -> dict:
     return result
 
 
-def _check_before(current: dict, change: OfflineChange, *, include_conflict_details: bool = False) -> None:
-    server_item = current
-    current = dict(current)
-    if "topic_ids" in change.before and "is_favorite" not in change.before:
-        change = change.model_copy(update={"before": {**change.before, "is_favorite": False}})
-    if "transliteration" in change.data and "transliteration" not in change.before:
-        change = change.model_copy(update={"before": {**change.before, "transliteration": None}})
-    target = change.data.get("translation_language", "ru")
-    if target == "en":
-        for field in ("definition", "notes"):
-            if field in change.data:
-                current[field] = current.get("explanation_groups", {}).get("en", {}).get(field)
-                change = change.model_copy(update={"before": {**change.before, field: change.before.get("explanation_groups", {}).get("en", {}).get(field)}})
-    if target != "ru" and "translation_entries" in change.data:
-        current["translation_entries"] = current.get("translation_groups", {}).get(target, [])
-        before = dict(change.before)
-        before["translation_entries"] = before.get("translation_groups", {}).get(target, [])
-        change = change.model_copy(update={"before": before})
-    expected = comparable(change.before)
+def _desired_update_values(payload: WordUpdate | TopicUpdate) -> dict:
+    desired = payload.model_dump(exclude_unset=True, exclude={"progress_source", "translation_language"})
+    if isinstance(payload, TopicUpdate):
+        if payload.slug is not None:
+            desired["slug"] = slugify(payload.slug, max_len=TOPIC_SLUG_MAX_LEN) or payload.slug
+        return desired
+
+    for field in ("translation_entries", "example_entries", "synonym_entries", "antonym_entries", "collocation_entries"):
+        if field in desired:
+            desired[field] = clean_word_entries(desired[field] or [])
+    if "confusable_entries" in desired:
+        desired["confusable_entries"] = [entry.model_dump() for entry in payload.confusable_entries or []]
+    if payload.verb_form is not None:
+        desired["verb_form"] = payload.verb_form.model_dump()
+    if payload.topic_ids is not None:
+        desired["topic_ids"] = sorted(set(payload.topic_ids))
+    if "part_of_speech" in desired:
+        desired["part_of_speech"] = payload.part_of_speech.lower() if payload.part_of_speech else None
+    return desired
+
+
+def _english_edit_values(row: dict, fields: set[str]) -> dict:
+    localized = dict(row)
+    if "translation_entries" in fields:
+        translations = row.get("translation_groups", {})
+        if not isinstance(translations, dict):
+            raise HTTPException(422, "Invalid previous translation values")
+        localized["translation_entries"] = translations.get("en", [])
+    explanation_fields = fields & {"definition", "notes"}
+    if explanation_fields:
+        groups = row.get("explanation_groups", {})
+        english = groups.get("en", {}) if isinstance(groups, dict) else None
+        if not isinstance(english, dict):
+            raise HTTPException(422, "Invalid previous explanation values")
+        localized.update({name: english.get(name) for name in explanation_fields})
+    return localized
+
+
+def _check_before(
+    server_item: dict,
+    change: OfflineChange,
+    payload: WordUpdate | TopicUpdate | None = None,
+    *,
+    include_conflict_details: bool = False,
+) -> set[str]:
+    before = dict(change.before)
+    if "topic_ids" in before:
+        before.setdefault("is_favorite", False)
+        if "transliteration" in change.data:
+            before.setdefault("transliteration", None)
+    desired = _desired_update_values(payload) if payload is not None else {}
+    edited_fields = set(desired)
+    if payload is not None and (not edited_fields or not edited_fields <= before.keys()):
+        raise HTTPException(422, "Offline update must include previous values for every edited field")
+
+    current = server_item
+    if isinstance(payload, WordUpdate) and payload.translation_language == "en":
+        before = _english_edit_values(before, edited_fields)
+        current = _english_edit_values(current, edited_fields)
+
+    expected = comparable(before)
     actual = comparable(current)
-    if change.action == "update":
-        fields = set(change.data) - {"progress_source", "translation_language"}
-        if not fields or not fields <= change.before.keys():
-            raise HTTPException(
-                422, "Offline update must include previous values for every edited field"
-            )
-        fields.add("deleted_at")
-    else:
-        fields = set(actual)
+    pending = {key for key in edited_fields if desired[key] != actual.get(key)}
+    fields = pending | {"deleted_at"} if payload is not None else set(actual)
     mismatches = sorted(key for key in fields if expected.get(key) != actual.get(key))
     if not mismatches:
-        return
+        return pending
     message = "This item changed on the server. Your offline edits are still saved on this device; review them before syncing."
     if include_conflict_details and change.action == "update" and not server_item.get("deleted_at") and "deleted_at" not in mismatches:
         raise HTTPException(409, {
@@ -247,25 +285,35 @@ def apply_change(db: Session, change: OfflineChange, *, include_conflict_details
                 409,
                 "This item no longer exists on the server. Offline edits remain on this device.",
             )
-        _check_before(serialize(item), change, include_conflict_details=include_conflict_details)
+        update = None
         if change.action == "update":
-            if is_word:
-                payload = WordUpdate.model_validate(change.data)
-                if payload.language is not None and payload.language != item.language:
-                    raise HTTPException(400, "Words cannot be moved between languages")
-                if payload.topic_ids is not None:
-                    assert_topics_exist(db, payload.topic_ids)
-                occurred_at = None
-                if (
-                    change.occurred_at is not None
-                    and payload.knowledge_level is not None
-                    and payload.progress_source in (PROGRESS_SOURCE_STUDY_LIST, PROGRESS_SOURCE_SMART_REVIEW)
-                ):
-                    # Sync the review even if the device clock was ahead of the server.
+            update = (WordUpdate if is_word else TopicUpdate).model_validate(change.data)
+        fields = _check_before(serialize(item), change, update, include_conflict_details=include_conflict_details)
+        if isinstance(update, WordUpdate):
+            if update.language is not None and update.language != item.language:
+                raise HTTPException(400, "Words cannot be moved between languages")
+            if "topic_ids" in fields and update.topic_ids is not None:
+                assert_topics_exist(db, update.topic_ids)
+            occurred_at = None
+            if update.knowledge_level is not None and update.progress_source in (
+                PROGRESS_SOURCE_STUDY_LIST, PROGRESS_SOURCE_SMART_REVIEW
+            ):
+                # A separate study operation is an attempt, even when the rating already matches.
+                fields.add("knowledge_level")
+                if change.occurred_at is not None:
                     occurred_at = min(change.occurred_at.astimezone(UTC), datetime.now(UTC))
-                item = update_word(db, item, payload, commit=False, occurred_at=occurred_at)
-            else:
-                item = update_topic(db, item, TopicUpdate.model_validate(change.data), commit=False)
+            if fields:
+                word_update = WordUpdate.model_validate(update.model_dump(
+                    include=fields | {"progress_source", "translation_language"}, exclude_unset=True,
+                ))
+                item = update_word(db, item, word_update, commit=False, occurred_at=occurred_at)
+        elif isinstance(update, TopicUpdate):
+            if "name" in fields and update.slug is not None:
+                # An explicit slug suppresses the rename's automatic slug generation.
+                fields.add("slug")
+            if fields:
+                topic_update = TopicUpdate.model_validate(update.model_dump(include=fields, exclude_unset=True))
+                item = update_topic(db, item, topic_update, commit=False)
         elif is_word:
             if change.data:
                 raise HTTPException(422, "Unexpected word delete/restore options")

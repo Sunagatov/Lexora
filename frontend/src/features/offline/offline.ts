@@ -1,39 +1,48 @@
 import {ApiError} from '@/shared/api/apiError'
 import {networkRequest, setRequestAdapter} from '@/shared/api/http'
-import {initializeMixProgress, readReplica, withOfflineLock, writeMixState, writeReplica} from './storage'
+import {initializeMixProgress, readReplica, withOfflineLock, writeMixState, writeReplica, writeSyncState} from './storage'
 import {changeItem, remapId} from './changes'
 import {applySnapshotUpdate, fetchSnapshot, fetchSnapshotUpdate, refreshAcceptedEdit} from './snapshotSync'
 import {languagePreferences} from '@/features/languages/api'
 import {activeTopicIds, inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
-import type {Change, OfflineConflict, Replica} from './types'
+import type {Change, OfflineBackup, OfflineConflict, Replica} from './types'
+import {changeLabel, chooseUploads, describeRejected, undoRejected, uploadChanges} from './queuedChanges'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
 import {preferencesSnapshot} from '@/features/preferences/api'
 import {selectWordMix} from '@/features/smart-review/model/selectWordMix'
-import {clearRecallHistory, pendingRecallCount, syncRecallAttempts} from '@/features/stats/model/recallHistory'
+import {clearRecallHistory, exportPendingRecallAttempts, pendingRecallCount, refreshRecallSyncStatus, syncRecallAttempts} from '@/features/stats/model/recallHistory'
+import type {RecallAttempt} from '@/features/stats/model/recallHistory'
 import {isIOSApp} from '@/shared/platform'
 import {saveFile} from '@/shared/saveFile'
 
-type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; restorePaused?: boolean; topicAliases?: Record<number, number>; conflict?: OfflineConflict}
+type Status = {saved: boolean; savedAt?: string; pending: number; busy: boolean; error?: string; offline: boolean; words: number; topics: number; restorePaused?: boolean; topicAliases?: Record<number, number>; conflict?: OfflineConflict; issues?: {changeId: string; entity: Change['entity']; label: string; message: string}[]; refreshPending?: boolean}
 let status: Status = {saved: false, pending: 0, busy: false, offline: !navigator.onLine, words: 0, topics: 0}
 const listeners = new Set<() => void>()
 let channel: BroadcastChannel | undefined
 let initialized: Promise<void> | undefined
 let syncing: Promise<void> | undefined
-let blockedEdit: {conflict: OfflineConflict; before: Record<string, unknown>} | undefined
 let refreshQueries = (_resetLists = false) => {}
 
 export const subscribeOffline = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener) } }
 export const offlineStatus = () => status
 function notify(patch: Partial<Status>) { status = {...status, ...patch}; listeners.forEach(fn => fn()) }
 function report(replica?: Replica) {
-  if (replica?.changes[0]?.id !== blockedEdit?.conflict.changeId) blockedEdit = undefined
-  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, restorePaused: replica?.restorePaused, topicAliases: replica?.topicAliases, conflict: blockedEdit?.conflict})
+  const issues: NonNullable<Status['issues']> = []
+  let conflict: OfflineConflict | undefined
+  for (const change of replica?.changes ?? []) {
+    const blocked = replica?.blockedChanges?.[change.id]
+    if (!blocked) continue
+    if (blocked.conflict) conflict ??= blocked.conflict
+    else issues.push({changeId: change.id, entity: change.entity, label: changeLabel(change), message: blocked.message})
+  }
+  notify({saved: !!replica, savedAt: replica?.savedAt, pending: replica?.changes.length ?? 0, words: replica?.words.filter(w => !w.deleted_at).length ?? 0, topics: replica?.topics.filter(t => !t.deleted_at).length ?? 0, restorePaused: replica?.restorePaused, topicAliases: replica?.topicAliases, conflict, issues, refreshPending: replica?.refreshPending || !!conflict || !!issues.length})
 }
 
-async function persist(replica?: Replica, resetLists = false) {
+async function persist(replica?: Replica, resetLists = false, metadataOnly = false, restoredRecall?: RecallAttempt[]) {
   const saved = replica ? {...replica, revision: crypto.randomUUID()} : undefined
-  await writeReplica(saved)
+  if (saved && metadataOnly) await writeSyncState(saved)
+  else await writeReplica(saved, restoredRecall)
   report(saved)
   channel?.postMessage({resetLists})
 }
@@ -42,19 +51,6 @@ function isNetworkFailure(error: unknown) {
   return error instanceof TypeError
     || (error instanceof DOMException && ['TimeoutError', 'AbortError'].includes(error.name))
     || (error instanceof ApiError && error.status >= 500)
-}
-
-function readConflict(error: unknown, change?: Change) {
-  if (!(error instanceof ApiError) || error.status !== 409 || change?.action !== 'update') return
-  const detail = error.detail as {
-    code?: string; change_id?: string; server_item?: Record<string, unknown>; fields?: OfflineConflict['fields']
-  } | undefined
-  if (detail?.code !== 'offline_edit_conflict' || detail.change_id !== change.id ||
-    detail.server_item?.id !== change.entity_id || !Array.isArray(detail.fields) || !detail.fields.length) return
-  const before = detail.server_item
-  const label = change.entity === 'word' ? before.term : before.name
-  return {before, conflict: {changeId: change.id, entity: change.entity,
-    label: typeof label === 'string' ? label : `Item ${change.entity_id}`, fields: detail.fields}}
 }
 
 function supportsIOSOffline() {
@@ -314,15 +310,15 @@ export async function saveOffline() {
   finally { notify({busy: false}) }
 }
 
-export function syncOffline(forceRefresh = false): Promise<void> {
+export function syncOffline(forceRefresh = false, retryBlocked = forceRefresh): Promise<void> {
   if (syncing) return syncing
   if (!navigator.onLine || !status.saved || status.restorePaused) return Promise.resolve()
-  if (blockedEdit && !forceRefresh) return Promise.resolve()
-  if (!forceRefresh && !status.pending && !status.error && !status.offline && status.savedAt && Date.now() - Date.parse(status.savedAt) < 5 * 60_000) return Promise.resolve()
-  syncing = (async () => {
-    let uploading: Change | undefined
-    blockedEdit = undefined
-    notify({busy: true, error: undefined, conflict: undefined})
+  if (!forceRefresh && !status.pending && !status.error && !status.offline && !status.refreshPending &&
+    status.savedAt && Date.now() - Date.parse(status.savedAt) < 5 * 60_000) return Promise.resolve()
+  syncing = withOfflineLock(async () => {
+    const attempted = new Set<string>()
+    let batchSupported = true
+    notify({busy: true, error: undefined})
     try {
       // Refresh CSRF after a new sign-in; do not sync against an expired session.
       const session = await networkRequest<{csrf_token: string}>('/auth/session', {signal: AbortSignal.timeout(15_000)})
@@ -330,34 +326,63 @@ export function syncOffline(forceRefresh = false): Promise<void> {
       while (true) {
         const replica = await withOfflineLock(readReplica)
         if (!replica || replica.restorePaused) return
-        if (replica.changes.length) {
-          const change = replica.changes[0]
-          uploading = change
-          const result = await networkRequest<{entity_id: number}>('/api/offline/changes', {
-            method: 'POST', headers: {'X-Lexora-Language': String(change.data.language ?? change.before.language ?? 'en'),
-              'X-Lexora-Conflict-Details': 'true'},
-            body: JSON.stringify(change), signal: AbortSignal.timeout(20_000),
-          })
-          uploading = undefined
+        const selected = chooseUploads(replica, attempted, retryBlocked)
+        if (selected.length) {
+          const changes = batchSupported ? selected : selected.slice(0, 1)
+          let results
+          try { results = await uploadChanges(changes) } catch (error) {
+            if (changes.length === 1 || !(error instanceof ApiError) || ![404, 405, 413, 422].includes(error.status)) throw error
+            batchSupported = false
+            continue
+          }
+          changes.forEach(change => attempted.add(change.id))
           await withOfflineLock(async () => {
             const latest = await readReplica()
-            // Another tab may have already recorded the same server receipt.
-            if (latest?.changes[0]?.id !== change.id) return
-            latest.changes.shift()
-            if (change.action === 'create') remapId(latest, change.entity, change.entity_id, result.entity_id)
-            refreshAcceptedEdit(latest, change, result.entity_id)
-            await persist(latest)
+            if (!latest || latest.restorePaused) return
+            let remapped = false, changed = false
+            for (const outcome of results) {
+              const index = latest.changes.findIndex(change => change.id === outcome.change_id)
+              // Another tab may have already recorded the receipt or resolved the conflict.
+              if (index < 0) continue
+              const change = latest.changes[index]
+              changed = true
+              if (outcome.status !== 200) {
+                (latest.blockedChanges ??= {})[change.id] = describeRejected(change, outcome.detail)
+                continue
+              }
+              const id = outcome.result?.entity_id
+              if (typeof id !== 'number' || !Number.isSafeInteger(id) || !id || (change.action !== 'create' && id !== change.entity_id)) {
+                throw new Error('Lexora could not verify the upload receipt. Your edits are saved on this device.')
+              }
+              latest.changes.splice(index, 1)
+              if (latest.blockedChanges) delete latest.blockedChanges[change.id]
+              if (change.action === 'create') {
+                remapId(latest, change.entity, change.entity_id, id)
+                remapped = true
+              }
+              refreshAcceptedEdit(latest, change, id)
+              latest.refreshPending = true
+            }
+            if (changed) await persist(latest, false, !remapped)
           })
           continue
         }
+        if (replica.changes.length) {
+          // Keep blocked edits visible in the saved library until the user resolves them.
+          notify({offline: false, refreshPending: true})
+          refreshQueries(forceRefresh)
+          return
+        }
         // Network waits must not hold the storage lock needed by local edits.
+        notify({refreshPending: true})
         const snapshot = await fetchSnapshotUpdate(replica)
         const refreshed = await withOfflineLock(async () => {
           const latest = await readReplica()
           if (!latest) return true
           // Discard an outdated download if any tab edited the copy meanwhile.
           if (latest.changes.length || latest.revision !== replica.revision) return false
-          await persist(applySnapshotUpdate(latest, snapshot))
+          const updated = {...applySnapshotUpdate(latest, snapshot), refreshPending: undefined}
+          await persist(updated, false, updated.words === latest.words && updated.topics === latest.topics)
           return true
         })
         if (refreshed) break
@@ -365,36 +390,54 @@ export function syncOffline(forceRefresh = false): Promise<void> {
       notify({offline: false})
       refreshQueries(forceRefresh)
     } catch (error) {
-      blockedEdit = readConflict(error, uploading)
       const networkFailure = isNetworkFailure(error)
       const message = error instanceof ApiError && error.status === 401 ? 'Sign in again to sync. Your offline changes are saved.'
         : error instanceof ApiError ? error.message : error instanceof Error ? error.message : 'Could not sync. Your local changes are preserved.'
-      notify({error: networkFailure || blockedEdit ? undefined : message, offline: networkFailure, conflict: blockedEdit?.conflict})
+      notify({error: networkFailure ? undefined : message, offline: networkFailure})
+      if (status.refreshPending) await withOfflineLock(async () => {
+        const replica = await readReplica()
+        if (replica && !replica.refreshPending && !replica.restorePaused) {
+          await persist({...replica, refreshPending: true}, false, true)
+        }
+      }).catch(() => { /* keep the current status if device storage is unavailable */ })
     } finally { notify({busy: false}); syncing = undefined }
-  })()
+  }, 'lexora-offline-sync')
   return syncing
 }
 
-export async function resolveOfflineConflict(choice: 'server' | 'device') {
-  if (!navigator.onLine) throw new Error('Connect to Lexora to resolve the conflict.')
+export async function resolveOfflineConflict(choice: 'server' | 'device', changeId = status.conflict?.changeId) {
+  if (!changeId) throw new Error('This edit changed. Review the current version.')
+  await settleOfflineChange(changeId, choice, true)
+}
+
+export async function discardOfflineChange(changeId: string) {
+  await settleOfflineChange(changeId, 'server', false)
+}
+
+async function settleOfflineChange(changeId: string, choice: 'server' | 'device', conflictOnly: boolean) {
   if (syncing) await syncing
-  await withOfflineLock(async () => {
+  await withOfflineLock(() => withOfflineLock(async () => {
     const replica = await readReplica()
-    const conflict = blockedEdit
-    const head = replica?.changes[0]
-    if (!replica || !head || !conflict || head.id !== conflict.conflict.changeId || replica.restorePaused) {
-      throw new Error('This edit changed. Sync again to review the current version.')
+    const blocked = replica?.blockedChanges?.[changeId]
+    const index = replica?.changes.findIndex(change => change.id === changeId) ?? -1
+    if (!replica || index < 0 || !blocked || (conflictOnly && !blocked.conflict) || replica.restorePaused) {
+      throw new Error('This edit changed. Review the current version.')
     }
+    const change = replica.changes[index]
     if (choice === 'device') {
-      // A new receipt identifies the changed baseline; later edits keep their own guards.
-      replica.changes[0] = {...head, id: crypto.randomUUID(), before: conflict.before}
+      if (!blocked.serverItem) throw new Error('The server has no current version for this edit.')
+      replica.changes[index] = {...change, id: crypto.randomUUID(), before: blocked.serverItem}
     } else {
-      replica.changes.shift()
-      refreshAcceptedEdit(replica, head, head.entity_id)
+      replica.changes.splice(index, 1)
+      undoRejected(replica, change, replica.changes.slice(index), blocked.serverItem)
+      refreshAcceptedEdit(replica, change, change.entity_id)
+      replica.refreshPending = true
     }
-    await persist(replica)
-  })
-  await syncOffline(true)
+    delete replica.blockedChanges?.[changeId]
+    await persist(replica, choice === 'server', choice === 'device')
+  }), 'lexora-offline-sync')
+  if (choice === 'server') refreshQueries(true)
+  await syncOffline(true, false)
 }
 
 export async function removeOffline() {
@@ -403,13 +446,15 @@ export async function removeOffline() {
   refreshQueries(true)
 }
 
-export async function restoreOfflineBackup(replica: Replica) {
+export async function restoreOfflineBackup({recallAttempts, ...replica}: OfflineBackup) {
   await withOfflineLock(async () => {
     if ((await readReplica())?.changes.length) {
       throw new Error('Sync your current edits before replacing this saved copy.')
     }
-    await persist({...replica, revisions: undefined, cursor: undefined, forceWordIds: undefined, forceTopicIds: undefined, restorePaused: true}, true)
+    await persist({...replica, revisions: undefined, cursor: undefined, forceWordIds: undefined, forceTopicIds: undefined,
+      blockedChanges: undefined, restorePaused: true}, true, false, recallAttempts)
   })
+  if (recallAttempts?.length) await refreshRecallSyncStatus()
   notify({error: undefined})
   refreshQueries(true)
 }
@@ -425,8 +470,8 @@ export async function resumeOfflineSync() {
 }
 
 export async function exportOfflineBackup() {
-  const replica = await withOfflineLock(readReplica)
+  const [replica, recallAttempts] = await withOfflineLock(async () => Promise.all([readReplica(), exportPendingRecallAttempts()]))
   if (!replica) return
-  await saveFile(new Blob([JSON.stringify(replica, null, 2)], {type: 'application/json'}),
+  await saveFile(new Blob([JSON.stringify({...replica, blockedChanges: undefined, recallAttempts}, null, 2)], {type: 'application/json'}),
     `lexora-offline-${new Date().toISOString().slice(0, 10)}.json`)
 }

@@ -1,7 +1,10 @@
 import type {Replica} from './types'
+import type {RecallAttempt} from '@/features/stats/model/recallHistory'
 
 const DATABASE = 'lexora-offline-v1'
 const MIX_PROGRESS = 'mix-progress'
+export const RECALL_HISTORY_KEY = 'recall-history-v1'
+const RECALL_RESTORE_PAUSED = 'recall-restore-paused'
 type MixProgress = {completed: number; total: number}
 type MixProgressByLanguage = Record<string, MixProgress>
 let database: Promise<IDBDatabase> | undefined
@@ -23,7 +26,8 @@ export async function readReplica(): Promise<Replica | undefined> {
     const store = tx.objectStore('data')
     const replica = store.get('replica')
     const mix = store.get('mix-state')
-    tx.oncomplete = () => resolve(replica.result ? {...replica.result, ...mix.result} : undefined)
+    const sync = store.get('sync-state')
+    tx.oncomplete = () => resolve(replica.result ? {...replica.result, ...sync.result, ...mix.result} : undefined)
     tx.onerror = () => reject(tx.error)
     tx.onabort = () => reject(tx.error ?? new Error('Could not read offline data'))
   })
@@ -65,7 +69,19 @@ export function initializeMixProgress(replica: Replica) {
   })
 }
 
-export function writeReplica(replica?: Replica): Promise<void> {
+export function mergeRestoredRecall(rows: RecallAttempt[], attempts: RecallAttempt[]) {
+  const ids = new Set(rows.map(row => row.id).filter(Boolean))
+  const merged = [...rows]
+  for (const attempt of attempts) {
+    if (attempt.uploaded || (attempt.id && ids.has(attempt.id))) continue
+    const id = attempt.id ?? crypto.randomUUID()
+    ids.add(id)
+    merged.push({...attempt, id})
+  }
+  return merged.length > rows.length ? merged : rows
+}
+
+export function writeReplica(replica?: Replica, restoredRecall?: RecallAttempt[]): Promise<void> {
   return updateData(store => {
     if (replica) {
       store.put(replica, 'replica')
@@ -75,7 +91,20 @@ export function writeReplica(replica?: Replica): Promise<void> {
       store.delete(MIX_PROGRESS)
     }
     store.delete('mix-state')
+    store.delete('sync-state')
+    if (replica?.restorePaused) store.put(true, RECALL_RESTORE_PAUSED)
+    else if (replica) store.delete(RECALL_RESTORE_PAUSED)
+    if (restoredRecall?.length) {
+      const request = store.get(RECALL_HISTORY_KEY)
+      request.onsuccess = () => store.put(mergeRestoredRecall(request.result ?? [], restoredRecall), RECALL_HISTORY_KEY)
+    }
   })
+}
+
+export function writeSyncState(replica: Replica): Promise<void> {
+  const {changes, cursor, forceWordIds, forceTopicIds, revisions, revision, savedAt, public_config, blockedChanges, refreshPending} = replica
+  return updateData(store => store.put({changes, cursor, forceWordIds, forceTopicIds, revisions, revision,
+    savedAt, public_config, blockedChanges, refreshPending}, 'sync-state'))
 }
 
 // Review-only writes leave the library and its sync revision intact.
@@ -113,11 +142,27 @@ export function mutateOfflineValue<T>(key: string, update: (items: T[]) => T[]) 
 }
 
 export function deleteOfflineValue(key: string) {
-  return updateData(store => store.delete(key))
+  return updateData(store => {
+    store.delete(key)
+    if (key === RECALL_HISTORY_KEY) store.delete(RECALL_RESTORE_PAUSED)
+  })
+}
+
+export async function readRecallUploadState() {
+  const db = await open()
+  return new Promise<{attempts: RecallAttempt[]; paused: boolean; hasReplica: boolean}>((resolve, reject) => {
+    const tx = db.transaction('data', 'readonly')
+    const store = tx.objectStore('data')
+    const attempts = store.get(RECALL_HISTORY_KEY)
+    const paused = store.get(RECALL_RESTORE_PAUSED)
+    const replica = store.getKey('replica')
+    tx.oncomplete = () => resolve({attempts: attempts.result ?? [], paused: paused.result === true, hasReplica: !!replica.result})
+    tx.onabort = () => reject(tx.error ?? new Error('Could not read recall sync state.'))
+  })
 }
 
 // One writer across tabs prevents an old tab overwriting newer queued edits.
-export async function withOfflineLock<T>(work: () => Promise<T>): Promise<T> {
+export async function withOfflineLock<T>(work: () => Promise<T>, name = 'lexora-offline'): Promise<T> {
   if (!navigator.locks) return Promise.reject(new Error('Offline saving needs a current browser with Web Locks support.'))
-  return await navigator.locks.request('lexora-offline', work)
+  return await navigator.locks.request(name, work)
 }

@@ -1,6 +1,7 @@
 import { useRef, useState, useSyncExternalStore } from 'react'
 import {parseOfflineBackup} from '@/features/offline/backup'
 import {
+  discardOfflineChange,
   exportOfflineBackup,
   offlineStatus,
   removeOffline,
@@ -11,13 +12,15 @@ import {
   subscribeOffline,
   syncOffline,
 } from '@/features/offline/offline'
-import type {Replica} from '@/features/offline/types'
+import type {OfflineBackup} from '@/features/offline/types'
+import {recallSyncStatus, subscribeRecallSync, syncRecallAttempts} from '@/features/stats/model/recallHistory'
 import {OfflineConflict} from './OfflineConflict'
 
 export function AccountOffline() {
   const state = useSyncExternalStore(subscribeOffline, offlineStatus)
+  const recall = useSyncExternalStore(subscribeRecallSync, recallSyncStatus)
   const [error, setError] = useState('')
-  const [preview, setPreview] = useState<{fileName: string; replica: Replica} | null>(null)
+  const [preview, setPreview] = useState<{fileName: string; replica: OfflineBackup} | null>(null)
   const [backupBusy, setBackupBusy] = useState(false)
   const [resolving, setResolving] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
@@ -40,7 +43,7 @@ export function AccountOffline() {
     }
   }
 
-  async function restoreBackup(replica: Replica) {
+  async function restoreBackup(replica: OfflineBackup) {
     setBackupBusy(true)
     try {
       await run(async () => {
@@ -52,16 +55,25 @@ export function AccountOffline() {
     }
   }
 
-  async function chooseConflictVersion(choice: 'server' | 'device') {
+  async function recoverEdit(action: () => Promise<void>) {
     setResolving(true)
     try {
-      await run(() => resolveOfflineConflict(choice))
+      await run(action)
     } finally {
       setResolving(false)
     }
   }
 
-  const busy = state.busy || backupBusy || resolving
+  async function syncNow() {
+    await run(async () => {
+      if (state.restorePaused) await resumeOfflineSync()
+      else if (state.saved) await syncOffline(true)
+      else await saveOffline()
+      await syncRecallAttempts(true)
+    })
+  }
+
+  const busy = state.busy || recall.busy || backupBusy || resolving
   return (
     <>
       <div className="account-surface">
@@ -77,12 +89,19 @@ export function AccountOffline() {
           <span>{state.saved ? 'Saved' : 'Not saved'}</span>
         </div>
         <div className="account-row">
-          <span>Changes waiting to sync</span>
+          <span>Word and topic edits waiting to sync</span>
           <span>{state.pending || 'None'}</span>
+        </div>
+        <div className="account-row">
+          <span>
+            Recall attempts waiting to sync
+            {recall.failed > 0 && <small>{recall.failed.toLocaleString()} need a retry</small>}
+          </span>
+          <span>{recall.pending || 'None'}</span>
         </div>
         {state.savedAt && (
           <div className="account-row">
-            <span>{state.restorePaused ? 'Backup date' : 'Last synced'}</span>
+            <span>{state.restorePaused ? 'Backup date' : 'Last library refresh'}</span>
             <span>{new Date(state.savedAt).toLocaleString()}</span>
           </div>
         )}
@@ -90,12 +109,14 @@ export function AccountOffline() {
           <button
             className="account-button"
             disabled={busy || !navigator.onLine}
-            onClick={() => {
-              void run(state.restorePaused ? resumeOfflineSync : state.saved ? () => syncOffline(true) : saveOffline)
-            }}
+            onClick={() => void syncNow()}
           >
-            {state.busy ? 'Saving…' : state.restorePaused ? 'Sync restored copy' : state.saved ? 'Update offline copy' : 'Save all offline'}
+            {state.busy || recall.busy ? 'Syncing…' : state.restorePaused ? 'Sync restored copy' : state.saved ? 'Sync now' : 'Save all offline'}
           </button>
+          {!state.saved && !!(recall.pending || recall.failed || recall.error) && (
+            <button type="button" className="account-button" disabled={busy || !navigator.onLine}
+              onClick={() => void run(() => syncRecallAttempts(true))}>Sync recall attempts</button>
+          )}
           {state.saved && (
             <button
               className="account-button"
@@ -147,8 +168,37 @@ export function AccountOffline() {
           )}
         </div>
       </div>
+      {state.refreshPending && !state.restorePaused && (
+        <p role="status" className="account-help">
+          The saved library still needs to refresh. Sync now retries the refresh and any pending uploads.
+        </p>
+      )}
       {state.conflict && (
-        <OfflineConflict conflict={state.conflict} busy={busy} onResolve={(choice) => void chooseConflictVersion(choice)} />
+        <OfflineConflict conflict={state.conflict} busy={busy}
+          onResolve={(choice) => {
+            const changeId = state.conflict?.changeId
+            if (changeId) void recoverEdit(() => resolveOfflineConflict(choice, changeId))
+          }} />
+      )}
+      {!!state.issues?.length && (
+        <section className="account-surface" aria-label="Edits that need attention">
+          <h2 className="account-card-title">Edits that need attention</h2>
+          {state.issues.map((issue) => (
+            <div className="account-row" key={issue.changeId}>
+              <span style={{overflowWrap: 'anywhere'}}>
+                {issue.label}
+                <small>{issue.message}</small>
+              </span>
+              <button type="button" className="account-button" disabled={busy}
+                aria-label={`Discard edit for ${issue.label}`}
+                onClick={() => {
+                  if (window.confirm(`Discard the rejected edit for “${issue.label}”?`)) {
+                    void recoverEdit(() => discardOfflineChange(issue.changeId))
+                  }
+                }}>Discard edit</button>
+            </div>
+          ))}
+        </section>
       )}
       {preview && (
         <section className="account-surface" aria-label="Offline backup preview">
@@ -162,6 +212,9 @@ export function AccountOffline() {
             {preview.replica.words.filter((word) => !word.deleted_at).length.toLocaleString()} active words
             {' · '}{preview.replica.topics.filter((topic) => !topic.deleted_at).length.toLocaleString()} active topics
             {' · '}{preview.replica.changes.length.toLocaleString()} pending edits
+            {!!preview.replica.recallAttempts?.length && (
+              <> · {preview.replica.recallAttempts.length.toLocaleString()} pending recall attempts</>
+            )}
           </p>
           <p className="account-help">
             {state.pending
@@ -195,6 +248,7 @@ export function AccountOffline() {
           {error || state.error}
         </p>
       )}
+      {recall.error && <p role="alert" className="account-error">Recall sync needs attention. {recall.error}</p>}
       {state.offline && !state.restorePaused && (
         <p role="status" className="account-help">
           Offline. Sync resumes when Lexora is open and connected.

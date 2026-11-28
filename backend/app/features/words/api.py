@@ -8,6 +8,7 @@ from app.features.words.domain import (
 from app.features.words.multivalue import (
     sync_word_multivalue_fields as sync_word_multivalue_fields,
 )
+from app.features.words.repository import _clean as clean_word_entries  # noqa: F401 - public feature re-export
 from app.features.words.repository import (
     count_active_words as count_active_words,
     create_word as create_word,

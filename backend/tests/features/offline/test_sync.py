@@ -22,7 +22,7 @@ from app.features.offline.service import (
 from app.features.topics.model import Topic
 from app.features.topics.schemas import TopicCreate
 from app.features.topics.service import create_topic
-from app.features.words.model import Word, WordExample
+from app.features.words.model import Word, WordExample, WordSynonym
 from app.features.words.progress import WordProgressEvent
 from app.features.words.repository import create_word, update_word
 from app.features.words.schemas import WordCreate, WordUpdate
@@ -222,6 +222,113 @@ def test_newer_server_rating_is_not_overwritten(db):
     assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 0
 
 
+def test_already_applied_manual_update_returns_canonical_item_without_rewriting_it(db):
+    edit = change(db)
+    word = update_word(db, db.get(Word, 1), WordUpdate(knowledge_level=4))
+    canonical = word_data(word)
+
+    result = apply_change(db, edit)
+    assert result["item"] == canonical
+    assert apply_change(db, edit) == result
+    assert db.scalar(select(func.count()).select_from(WordProgressEvent)) == 1
+    assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 1
+
+
+def test_converged_rating_records_one_distinct_offline_study_attempt(db):
+    occurred_at = datetime(2026, 1, 6, 4, tzinfo=UTC)
+    edit = change(db, data={"knowledge_level": 4, "progress_source": "study_list"}, occurred_at=occurred_at)
+    update_word(db, db.get(Word, 1), WordUpdate(knowledge_level=4))
+
+    result = apply_change(db, edit)
+    assert apply_change(db, edit) == result
+    event = db.scalars(select(WordProgressEvent).where(WordProgressEvent.source == "study_list")).one()
+    assert (event.old_level, event.new_level) == (4, 4)
+    assert event.created_at.replace(tzinfo=UTC) == occurred_at
+
+
+def test_converged_fields_are_excluded_from_other_genuine_conflicts(db):
+    edit = change(db, data={"knowledge_level": 4, "notes": "My note"})
+    update_word(db, db.get(Word, 1), WordUpdate(knowledge_level=4, notes="Different server note"))
+
+    with pytest.raises(HTTPException) as conflict:
+        apply_change(db, edit, include_conflict_details=True)
+    assert conflict.value.status_code == 409
+    assert conflict.value.detail["fields"] == [
+        {"field": "notes", "before": None, "device": "My note", "server": "Different server note"},
+    ]
+    assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 0
+
+
+def test_mixed_update_preserves_the_existing_link_for_an_already_applied_synonym(db):
+    edit = change(db, data={"synonym_entries": ["calm"], "notes": "My note"})
+    target = Word(term="calm")
+    db.add(target)
+    db.flush()
+    target_id = target.id
+    db.get(Word, 1).synonym_items = [WordSynonym(position=0, value="calm", target_word_id=target_id)]
+    db.commit()
+
+    result = apply_change(db, edit)["item"]
+    assert result["notes"] == "My note"
+    assert result["synonym_entries"] == ["calm"]
+    assert db.scalars(select(WordSynonym)).one().target_word_id == target_id
+
+
+@pytest.mark.parametrize("language", ["en", "ru"])
+def test_converged_translation_edits_compare_canonical_values_in_their_language(db, language):
+    edit = change(db, data={
+        "translation_language": language,
+        "translation_entries": ["  New ", "NEW", "  "],
+        "definition": "  New definition ",
+        "notes": "  New note ",
+    })
+    word = update_word(db, db.get(Word, 1), WordUpdate(
+        translation_language=language, translation_entries=["New"], definition="New definition", notes="New note",
+    ))
+    canonical = word_data(word)
+
+    assert apply_change(db, edit)["item"] == canonical
+    assert canonical["translation_groups"][language] == ["New"]
+    assert canonical["explanation_groups"][language] == {"definition": "New definition", "notes": "New note"}
+    if language == "en":
+        assert canonical["translation_groups"]["ru"] == ["терпеливый", "выдержанный"]
+
+
+def test_matching_other_language_does_not_converge_an_english_edit(db):
+    edit = change(db, data={"translation_language": "en", "notes": "Desired note"})
+    word = update_word(db, db.get(Word, 1), WordUpdate(translation_language="ru", notes="Desired note"))
+    update_word(db, word, WordUpdate(translation_language="en", notes="Different English note"))
+
+    with pytest.raises(HTTPException) as conflict:
+        apply_change(db, edit, include_conflict_details=True)
+    assert conflict.value.status_code == 409
+    assert conflict.value.detail["fields"] == [
+        {"field": "notes", "before": None, "device": "Desired note", "server": "Different English note"},
+    ]
+
+
+def test_converged_update_still_conflicts_if_the_word_was_trashed(db):
+    edit = change(db)
+    word = update_word(db, db.get(Word, 1), WordUpdate(knowledge_level=4))
+    word.deleted_at = datetime.now(UTC)
+    db.commit()
+
+    with pytest.raises(HTTPException) as conflict:
+        apply_change(db, edit, include_conflict_details=True)
+    assert conflict.value.status_code == 409
+    assert isinstance(conflict.value.detail, str)
+    assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 0
+
+
+def test_converged_explicit_topic_slug_is_retained_during_rename(db):
+    topic = snapshot(db)["topics"][0]
+    edit = change(db, entity="topic", entity_id=topic["id"], before=topic,
+                  data={"name": "People and places", "slug": " People "})
+
+    result = apply_change(db, edit)["item"]
+    assert (result["name"], result["slug"]) == ("People and places", "people")
+
+
 def test_update_conflict_can_include_field_values_and_a_canonical_edit_base(db):
     edit = change(db, data={"translation_entries": ["терпеливый с детьми"], "translation_language": "ru"})
     update_word(db, db.get(Word, 1), WordUpdate(translation_entries=["терпеливый человек"]))
@@ -259,6 +366,14 @@ def test_unrelated_server_edit_does_not_block_rating(db):
 
 def test_missing_before_values_cannot_bypass_conflict_check(db):
     edit = change(db, before={})
+    with pytest.raises(HTTPException) as error:
+        sync_change(edit, db)
+    assert error.value.status_code == 422
+
+
+@pytest.mark.parametrize("field,value", [("translation_entries", ["new"]), ("definition", "new"), ("notes", "new")])
+def test_scoped_updates_still_require_before_values(db, field, value):
+    edit = change(db, before={}, data={"translation_language": "en", field: value})
     with pytest.raises(HTTPException) as error:
         sync_change(edit, db)
     assert error.value.status_code == 422
@@ -453,11 +568,13 @@ def test_offline_routes_require_both_session_and_csrf(db, auth_db):
         client = TestClient(app)
         assert client.get("/api/offline/snapshot").status_code == 401
         assert client.post("/api/offline/changes", json={}).status_code == 401
+        assert client.post("/api/offline/changes/batch", json={}).status_code == 401
         assert client.post("/api/offline/delta", json={}).status_code == 401
         token = create_session(auth_db)
         client.cookies.set("session", token)
         assert client.get("/api/offline/snapshot").status_code == 403
         assert client.post("/api/offline/delta", json={}).status_code == 403
+        assert client.post("/api/offline/changes/batch", json={}).status_code == 403
         headers = {"X-CSRF-Token": build_csrf_token(settings.secret_key, token)}
         response = client.get(
             "/api/offline/snapshot?include_revisions=true",
@@ -469,5 +586,9 @@ def test_offline_routes_require_both_session_and_csrf(db, auth_db):
         response = client.post("/api/offline/delta", headers=headers, json=revisions)
         assert response.status_code == 200
         assert response.json()["words"] == []
+        edit = change(db).model_dump(mode="json")
+        response = client.post("/api/offline/changes/batch", headers=headers, json={"changes": [edit]})
+        assert response.status_code == 200
+        assert response.json()["results"][0]["status"] == 200
     finally:
         app.dependency_overrides.pop(get_db, None)
