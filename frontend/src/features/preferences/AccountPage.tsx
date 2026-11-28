@@ -7,6 +7,7 @@ import { useLogoutAction } from '@/features/auth/hooks/useLogoutAction'
 import { LEARNING_LANGUAGES, languageProfile } from '@/features/languages/api'
 import { defaultPronunciationMode, type PronunciationMode } from '@/features/languages/pronunciationPreferences'
 import { StatsPage } from '@/features/stats/routes/StatsPage'
+import { LibraryStatsPage } from '@/features/stats/routes/LibraryStatsPage'
 import { TrashPage } from '@/features/trash/routes/TrashPage'
 import { AccountIcon } from './AccountIcon'
 import { AccountData } from './AccountData'
@@ -30,7 +31,8 @@ const SECTIONS = [
   { id: 'study', title: 'Study preferences', description: 'Word lists, cards and gestures' },
   { id: 'appearance', title: 'Appearance', description: 'Theme and display preferences' },
   { id: 'security', title: 'Security', description: 'Manage your sign-in sessions' },
-  { id: 'statistics', title: 'Statistics', description: 'Progress and activity' },
+  { id: 'statistics', title: 'Learning Statistics', description: 'Knowledge, reviews and study time' },
+  { id: 'library-statistics', title: 'Library Statistics', description: 'Word counts, topics and content coverage' },
   { id: 'data', title: 'Library & data', description: 'Import, export and Trash' },
   { id: 'offline', title: 'Offline', description: 'Saved copy and sync' },
 ]
@@ -125,6 +127,7 @@ export function AccountPage() {
         <div className="account-title">
           <h1>{title}</h1>
           {(section === 'study' || section === 'word-mix') && <p>Shared across all learning languages</p>}
+          {(section === 'statistics' || section === 'library-statistics') && <p>{languageProfile(values.language).name}</p>}
           {!section && <p>Your library. Your preferences.</p>}
         </div>
         {!section && (
@@ -322,6 +325,7 @@ export function AccountPage() {
           </div>
         )}
         {section === 'statistics' && <StatsPage embedded />}
+        {section === 'library-statistics' && <LibraryStatsPage />}
         {section === 'trash' && <TrashPage embedded />}
         {section === 'data' && <AccountData />}
         {section === 'offline' && <AccountOffline />}

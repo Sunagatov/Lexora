@@ -1,7 +1,24 @@
 import {useEffect, useState, type ReactNode} from 'react'
 import {usePreferences} from '@/features/preferences/api'
+import {SkeletonHero} from '@/shared/components/Skeletons'
 
 // Shared chart components for the Stats page
+
+export function StatsPageSkeleton() {
+  return (
+    <div className="stats-page" aria-busy="true">
+      <div className="stats-inner">
+        <SkeletonHero />
+        {[180, 140, 100].map((height) => (
+          <div key={height} className="stats-section">
+            <div className="sk" style={{height: 14, width: 150}} />
+            <div className="sk" style={{height, borderRadius: 10}} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export type DonutSlice = {value: number; color: string; label: string}
 
@@ -235,7 +252,7 @@ export function SectionTitle({
 
 export function PeriodTabs<T extends string>({options, value, onChange}: {
   options: {value: T; label: string}[]
-  value: T
+  value?: T
   onChange: (v: T) => void
 }) {
   return (
@@ -243,6 +260,7 @@ export function PeriodTabs<T extends string>({options, value, onChange}: {
       {options.map((p) => (
         <button key={p.value} type="button"
           className={`stats-period-tab ${value === p.value ? 'active' : ''}`}
+          aria-pressed={value === p.value}
           onClick={() => onChange(p.value)}
         >{p.label}</button>
       ))}

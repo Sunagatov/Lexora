@@ -37,6 +37,7 @@ export function AccountIcon({ name }: { name: string }) {
         <path d="M4 20V10m8 10V4m8 16v-7" />
       </>
     ),
+    'library-statistics': <path d="M4 4h4v16H4zm6 0h4v16h-4zm6 2 4-1 3 14-4 1z" />,
     data: (
       <>
         <path d="M3 7V4h7l2 3h9v13H3Z" />

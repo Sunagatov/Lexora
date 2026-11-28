@@ -1,11 +1,11 @@
-import type {DailyActivity, StatsResponse, TopicStat, UsageDay} from '@/features/stats/types/statsTypes'
+import type {DailyActivity, LearningStatsResponse, LearningTopicStat, LibraryTopicStat, UsageDay} from '@/features/stats/types/statsTypes'
 
 export const LEVEL_LABELS: Record<string, string> = {
   level_1: 'Weak',
   level_3: 'Okay',
   level_4: 'Strong',
   level_5: 'Parked',
-  unset: 'Not yet studied',
+  unset: 'Unrated',
 }
 
 export const LEVEL_COLORS: Record<string, string> = {
@@ -36,23 +36,19 @@ export const MONTH_PERIODS: {value: MonthPeriod; label: string}[] = [
   {value: 'all', label: 'All time'},
 ]
 
-export type TopicSort =
-  | 'worst'
-  | 'best'
-  | 'largest'
-  | 'weakest'
-  | 'most-reviewed'
-  | 'least-reviewed'
-  | 'most-regressed'
+export type LearningTopicSort = 'reviewed_count' | 'improved_count' | 'regressed_count'
+export type LibraryTopicSort = 'total' | 'needs_example_enrichment' | 'missing_pos'
 
-export const TOPIC_SORT_OPTIONS: {value: TopicSort; label: string}[] = [
-  {value: 'worst', label: 'Worst first'},
-  {value: 'best', label: 'Best first'},
-  {value: 'largest', label: 'Largest'},
-  {value: 'weakest', label: 'Most weak'},
-  {value: 'most-reviewed', label: 'Most reviewed'},
-  {value: 'least-reviewed', label: 'Least reviewed'},
-  {value: 'most-regressed', label: 'Most regressed'},
+export const LEARNING_TOPIC_SORT_OPTIONS: {value: LearningTopicSort; label: string}[] = [
+  {value: 'reviewed_count', label: 'Most reviewed'},
+  {value: 'improved_count', label: 'Most improved'},
+  {value: 'regressed_count', label: 'Most setbacks'},
+]
+
+export const LIBRARY_TOPIC_SORT_OPTIONS: {value: LibraryTopicSort; label: string}[] = [
+  {value: 'total', label: 'Largest'},
+  {value: 'needs_example_enrichment', label: 'Need examples'},
+  {value: 'missing_pos', label: 'Missing POS'},
 ]
 
 export function toLocalDateKey(date: Date): string {
@@ -62,14 +58,17 @@ export function toLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export function filterByDays<T extends {date: string}>(days: T[], period: ActivityPeriod): T[] {
-  if (period === 'all') return days
-  const windowSize = Number(period)
-  const cutoff = new Date()
-  cutoff.setHours(0, 0, 0, 0)
-  cutoff.setDate(cutoff.getDate() - (windowSize - 1))
-  const cutoffKey = toLocalDateKey(cutoff)
-  return days.filter((day) => day.date >= cutoffKey)
+function dayWindow(period: ActivityPeriod, asOf?: string) {
+  const start = asOf ? new Date(`${asOf}T00:00:00`) : new Date()
+  const end = toLocalDateKey(start)
+  if (period === 'all') return {start: null, end}
+  start.setDate(start.getDate() - (Number(period) - 1))
+  return {start: toLocalDateKey(start), end}
+}
+
+export function filterByDays<T extends {date: string}>(days: T[], period: ActivityPeriod, asOf?: string): T[] {
+  const {start, end} = dayWindow(period, asOf)
+  return days.filter((day) => day.date <= end && (!start || day.date >= start))
 }
 
 export function formatDuration(seconds: number): string {
@@ -100,50 +99,16 @@ export function dayLabel(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString('default', {month: 'short', day: 'numeric'})
 }
 
-export function formatRate(value: number): string {
-  return `${value.toFixed(1)}/min`
-}
-
-export function sortTopics(topics: TopicStat[], sort: TopicSort): TopicStat[] {
-  const next = [...topics]
-  switch (sort) {
-    case 'worst':
-      return next.sort((a, b) => a.progress - b.progress)
-    case 'best':
-      return next.sort((a, b) => b.progress - a.progress)
-    case 'largest':
-      return next.sort((a, b) => b.total - a.total)
-    case 'weakest':
-      return next.sort((a, b) => b.weak_count - a.weak_count)
-    case 'most-reviewed':
-      return next.sort((a, b) => b.reviewed_count - a.reviewed_count)
-    case 'least-reviewed':
-      return next.sort((a, b) => a.reviewed_count - b.reviewed_count)
-    case 'most-regressed':
-      return next.sort((a, b) => b.regressed_count - a.regressed_count)
-  }
-}
-
-export function sumActivity(days: DailyActivity[]) {
-  let reviewed = 0
-  let improved = 0
-  let downgraded = 0
-  let net = 0
-  for (const day of days) {
-    reviewed += day.reviewed
-    improved += day.improved
-    downgraded += day.downgraded
-    net += day.net
-  }
-  return {reviewed, improved, downgraded, net}
+export function sortTopics<T extends LearningTopicStat | LibraryTopicStat>(topics: T[], count: (topic: T) => number): T[] {
+  return [...topics].sort((a, b) => count(b) - count(a) || a.name.localeCompare(b.name))
 }
 
 export function sumUsageSeconds(days: UsageDay[]) {
   return days.reduce((total, day) => total + day.active_seconds, 0)
 }
 
-export function filterPreviousDays<T extends {date: string}>(days: T[], windowSize: number): T[] {
-  const end = new Date()
+export function filterPreviousDays<T extends {date: string}>(days: T[], windowSize: number, asOf?: string): T[] {
+  const end = asOf ? new Date(`${asOf}T00:00:00`) : new Date()
   end.setHours(0, 0, 0, 0)
   end.setDate(end.getDate() - windowSize)
 
@@ -161,22 +126,56 @@ export function percentDelta(current: number, previous: number): number | null {
   return ((current - previous) / previous) * 100
 }
 
-export function buildActivityChartData(days: DailyActivity[]) {
-  return [...days].reverse().slice(-60).map((day) => ({
-    label: dayLabel(day.date),
-    value: day.net,
-  }))
+function buildPeriodChartData<T extends {date: string}>(
+  days: T[],
+  period: ActivityPeriod,
+  trackedFrom: string | null,
+  getValue: (day: T) => number,
+  asOf?: string,
+) {
+  const {start, end} = dayWindow(period, asOf)
+  let firstTrackedDay = trackedFrom?.slice(0, 10) ?? null
+  const dailyValues = new Map<string, number>()
+
+  for (const day of days) {
+    if (day.date > end) continue
+    if (!firstTrackedDay || day.date < firstTrackedDay) firstTrackedDay = day.date
+    if (!start || day.date >= start) {
+      dailyValues.set(day.date, (dailyValues.get(day.date) ?? 0) + getValue(day))
+    }
+  }
+
+  if (!firstTrackedDay || firstTrackedDay > end) return []
+  const firstDay = start && start > firstTrackedDay ? start : firstTrackedDay
+  const date = new Date(`${firstDay}T00:00:00`)
+  const monthly = period === '365' || period === 'all'
+  const weekly = period === '90'
+  const points: {label: string; value: number}[] = []
+  let point: {label: string; value: number} | undefined
+
+  for (let key = firstDay; key <= end; key = toLocalDateKey(date)) {
+    const startsBucket = monthly ? date.getDate() === 1 : !weekly || date.getDay() === 1
+    if (!point || startsBucket) {
+      point = {label: monthly ? monthLabel(key.slice(0, 7)) : dayLabel(key), value: 0}
+      points.push(point)
+    }
+    point.value += dailyValues.get(key) ?? 0
+    date.setDate(date.getDate() + 1)
+  }
+
+  return points
 }
 
-export function buildUsageChartData(days: UsageDay[]) {
-  return [...days].reverse().slice(-60).map((day) => ({
-    label: dayLabel(day.date),
-    value: day.active_seconds,
-  }))
+export function buildActivityChartData(days: DailyActivity[], period: ActivityPeriod, trackedFrom: string | null, asOf?: string) {
+  return buildPeriodChartData(days, period, trackedFrom, (day) => day.net, asOf)
 }
 
-export function buildMonthChartData(stats: StatsResponse, period: MonthPeriod) {
-  const entries = Object.entries(stats.words_added_by_month).sort(([a], [b]) => a.localeCompare(b))
+export function buildUsageChartData(days: UsageDay[], period: ActivityPeriod, trackedFrom: string | null, asOf?: string) {
+  return buildPeriodChartData(days, period, trackedFrom, (day) => day.active_seconds, asOf)
+}
+
+export function buildMonthChartData(wordsByMonth: Record<string, number>, period: MonthPeriod) {
+  const entries = Object.entries(wordsByMonth).sort(([a], [b]) => a.localeCompare(b))
   return filterByMonths(entries, period).map(([key, value]) => ({
     label: monthLabel(key),
     value,
@@ -209,22 +208,13 @@ export type OverviewCard = {
 
 export type StatsPageDerivedData = {
   filteredActivity: DailyActivity[]
-  activityTotals: ReturnType<typeof sumActivity>
+  periodUsage: {seconds: number; days: number}
   activityChartData: ReturnType<typeof buildActivityChartData>
   usageChartData: ReturnType<typeof buildUsageChartData>
-  monthChartData: ReturnType<typeof buildMonthChartData>
-  sortedTopics: TopicStat[]
+  sortedTopics: LearningTopicStat[]
   bestDay: DailyActivity | null
   worstDay: DailyActivity | null
   overviewCards: OverviewCard[]
-}
-
-function monthKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-}
-
-function sparklineValues(values: number[], count = 10): number[] {
-  return values.slice(-count)
 }
 
 export function buildTrendLabel(current: number, previous: number, suffix: string): TrendInfo {
@@ -239,85 +229,58 @@ export function buildTrendLabel(current: number, previous: number, suffix: strin
 }
 
 export function buildOverviewCards(
-  stats: StatsResponse,
-  filteredActivity: DailyActivity[],
-  filteredUsage: UsageDay[],
+  stats: LearningStatsResponse,
 ): OverviewCard[] {
-  const now = new Date()
-  const currentMonthAdds = stats.words_added_by_month[monthKey(now)] ?? 0
-  const previousMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const previousMonthAdds = stats.words_added_by_month[monthKey(previousMonthDate)] ?? 0
-  const monthAddSparkline = sparklineValues(
-    Object.entries(stats.words_added_by_month)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([, value]) => value),
-    8,
-  )
-  const usageSparkline = sparklineValues(filteredUsage.map((day) => day.active_seconds), 12)
-  const activitySparkline = sparklineValues(filteredActivity.map((day) => day.reviewed), 12)
-  const levelDistributionSparkline = [
-    stats.level_counts.level_1,
-    stats.level_counts.level_3,
-    stats.level_counts.level_4,
-    stats.level_counts.level_5,
-    stats.level_counts.unset,
-  ]
-  const weeklyActivityTotals = sumActivity(filterByDays(stats.daily_activity, '7'))
-  const previousWeeklyActivityTotals = sumActivity(filterPreviousDays(stats.daily_activity, 7))
-  const currentWeeklyUsage = sumUsageSeconds(filterByDays(stats.usage_daily, '7'))
-  const previousWeeklyUsage = sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7))
+  const {as_of: asOf, review_periods: periods} = stats
+  const usageSparkline = buildUsageChartData(stats.usage_daily, '7', stats.usage_started_at, asOf).map(({value}) => value)
+  const currentWeeklyUsage = sumUsageSeconds(filterByDays(stats.usage_daily, '7', asOf))
+  const previousWeeklyUsage = sumUsageSeconds(filterPreviousDays(stats.usage_daily, 7, asOf))
+  const week = periods['7']
+  const previous = periods.previous_week
 
   return [
     {
-      value: stats.overview.total_words,
-      label: 'Total words',
-      sub: `${currentMonthAdds.toLocaleString()} added this month`,
-      trend: buildTrendLabel(currentMonthAdds, previousMonthAdds, 'vs last month'),
-      sparkline: monthAddSparkline,
-    },
-    {
-      value: currentWeeklyUsage,
-      label: 'This week',
-      sub: 'active seconds',
+      value: formatDuration(currentWeeklyUsage),
+      label: 'Active time',
+      sub: 'last 7 days',
       trend: buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d'),
       sparkline: usageSparkline,
     },
     {
-      value: weeklyActivityTotals.reviewed,
-      label: 'Word reviews',
-      sub: 'last 7 days; each word once per day',
-      trend: buildTrendLabel(weeklyActivityTotals.reviewed, previousWeeklyActivityTotals.reviewed, 'vs previous 7d'),
-      sparkline: activitySparkline,
+      value: week.unique_words,
+      label: 'Unique words reviewed',
+      sub: 'last 7 days',
+      trend: buildTrendLabel(week.unique_words, previous.unique_words, 'vs previous 7d'),
+      sparkline: [],
     },
     {
-      value: `${stats.okay_or_better_pct}%`,
-      label: 'Okay or better',
-      sub: `${stats.level_counts.level_4.toLocaleString()} strong words`,
-      trend: buildTrendLabel(weeklyActivityTotals.net, previousWeeklyActivityTotals.net, 'net this week'),
-      sparkline: levelDistributionSparkline,
+      value: week.study_days,
+      label: 'Study days',
+      sub: 'last 7 days',
+      trend: buildTrendLabel(week.study_days, previous.study_days, 'vs previous 7d'),
+      sparkline: [],
     },
   ]
 }
 
 export function buildStatsPageDerivedData(
-  stats: StatsResponse,
+  stats: LearningStatsResponse,
   activityPeriod: ActivityPeriod,
   usagePeriod: ActivityPeriod,
-  monthPeriod: MonthPeriod,
-  topicSort: TopicSort,
+  topicSort: LearningTopicSort,
 ): StatsPageDerivedData {
-  const filteredActivity = filterByDays(stats.daily_activity, activityPeriod)
-  const filteredUsage = filterByDays(stats.usage_daily, usagePeriod)
+  const asOf = stats.as_of
+  const filteredActivity = filterByDays(stats.daily_activity, activityPeriod, asOf)
+  const filteredUsage = filterByDays(stats.usage_daily, usagePeriod, asOf)
 
   return {
     filteredActivity,
-    activityTotals: sumActivity(filteredActivity),
-    activityChartData: buildActivityChartData(filteredActivity),
-    usageChartData: buildUsageChartData(filteredUsage),
-    monthChartData: buildMonthChartData(stats, monthPeriod),
-    sortedTopics: sortTopics(stats.topics, topicSort),
+    periodUsage: {seconds: sumUsageSeconds(filteredUsage), days: filteredUsage.length},
+    activityChartData: buildActivityChartData(stats.daily_activity, activityPeriod, stats.tracking_started_at, asOf),
+    usageChartData: buildUsageChartData(stats.usage_daily, usagePeriod, stats.usage_started_at, asOf),
+    sortedTopics: sortTopics(stats.topics, (topic) => topic[topicSort]),
     bestDay: findBestDay(filteredActivity),
     worstDay: findWorstDay(filteredActivity),
-    overviewCards: buildOverviewCards(stats, filteredActivity, filteredUsage),
+    overviewCards: buildOverviewCards(stats),
   }
 }

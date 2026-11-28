@@ -9,6 +9,8 @@ export const queryKeys = {
   trashWords:   ['trash-words']                   as const,
   trashTopics:  ['trash-topics']                  as const,
   stats:        ['stats']                         as const,
+  learningStats: ['stats', 'learning']            as const,
+  libraryStats:  ['stats', 'library']             as const,
   smartReview:  ['smart-review']                  as const,
   publicConfig: ['public-config']                 as const,
 }

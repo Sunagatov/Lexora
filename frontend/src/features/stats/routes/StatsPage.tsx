@@ -1,43 +1,24 @@
 import {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {routes} from '@/app/routes'
+import {fetchRevisitWords} from '@/features/stats/api/statsApi'
 import {InsightsStrip} from '@/features/stats/components/StatsInsights'
+import {StatsEntryExplorer} from '@/features/stats/components/StatsEntryExplorer'
 import {
   AppTimeSection,
   ConsistencySection,
+  DailyMixActivitySection,
   DailyProgressSection,
-  DataQualitySection,
-  EfficiencySection,
   KnowledgeDistributionSection,
-  QueueQualitySection,
-  RetentionSection,
+  ReviewHistorySection,
   TopicsSection,
-  WordsAddedSection,
 } from '@/features/stats/components/StatsSections'
-import {SectionTitle, StatCard} from '@/features/stats/components/StatsComponents'
-import {VocabProfileSection, EnrichmentCoverageSection} from '@/features/stats/components/StatsEnrichment'
+import {PeriodTabs, SectionTitle, StatCard, StatsPageSkeleton} from '@/features/stats/components/StatsComponents'
 import {useStatsPageState} from '@/features/stats/hooks/useStatsPageState'
-import {formatDuration} from '@/features/stats/model/statsPageModel'
+import {LEARNING_TOPIC_SORT_OPTIONS, formatDuration} from '@/features/stats/model/statsPageModel'
 import {Breadcrumb} from '@/shared/components/Breadcrumb'
 import {EmptyState} from '@/shared/components/EmptyState'
-import {SkeletonHero} from '@/shared/components/Skeletons'
 import {usePreferences} from '@/features/preferences/api'
-
-function StatsPageSkeleton() {
-  return (
-    <div className="stats-page">
-      <div className="stats-inner">
-        <SkeletonHero />
-        {[180, 140, 100].map((h, i) => (
-          <div key={i} className="stats-section">
-            <div className="sk" style={{height: 14, width: 150}} />
-            <div className="sk" style={{height: h, borderRadius: 10}} />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 function AnimatedNumber({
   value,
@@ -70,23 +51,22 @@ function AnimatedNumber({
   return <span className="number-display">{formatter(animations ? displayValue : value)}</span>
 }
 
-function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
-  totalWords: number
+function HeroBanner({reviewedWords, strongPct, streak, activeSeconds}: {
+  reviewedWords: number
   strongPct: number
   streak: number
-  activeMinutes: number
+  activeSeconds: number
 }) {
   return (
     <div className="stats-hero">
       <div className="stats-hero-header">
-        <h1 className="stats-hero-title">Your Vocabulary</h1>
-        <p className="stats-hero-subtitle">Progress at a glance</p>
+        <h2 className="stats-hero-title">Learning at a glance</h2>
       </div>
       <div className="stats-hero-cards">
         <div className="stats-hero-card stats-hero-card-words" data-card="words">
           <span className="stats-hero-card-icon">📚</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={totalWords} /></span>
-          <span className="stats-hero-card-label">Words</span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={reviewedWords} /></span>
+          <span className="stats-hero-card-label">Words reviewed</span>
         </div>
         <div className="stats-hero-card stats-hero-card-strong" data-card="strong">
           <span className="stats-hero-card-icon">💪</span>
@@ -96,11 +76,11 @@ function HeroBanner({totalWords, strongPct, streak, activeMinutes}: {
         <div className="stats-hero-card stats-hero-card-streak" data-card="streak">
           <span className="stats-hero-card-icon">🔥</span>
           <span className="stats-hero-card-value"><AnimatedNumber value={streak} /></span>
-          <span className="stats-hero-card-label">Day streak</span>
+          <span className="stats-hero-card-label">Study streak</span>
         </div>
         <div className="stats-hero-card stats-hero-card-time" data-card="time">
           <span className="stats-hero-card-icon">⏱️</span>
-          <span className="stats-hero-card-value"><AnimatedNumber value={activeMinutes} formatter={(next) => formatDuration(next * 60)} /></span>
+          <span className="stats-hero-card-value"><AnimatedNumber value={activeSeconds} formatter={formatDuration} /></span>
           <span className="stats-hero-card-label">Active time</span>
         </div>
       </div>
@@ -117,11 +97,11 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
     return (
       <div className="stats-page">
         <div className="stats-inner">
-          {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />}
+          {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Learning Statistics', isActive: true}]} />}
           <EmptyState
             icon="📈"
-            title="Statistics unavailable"
-            description="We couldn't load your statistics right now. Try again in a moment."
+            title="Learning statistics unavailable"
+            description="Connect to Lexora and try again."
             variant="error"
             actions={[
               {label: 'Retry', onClick: s.retry},
@@ -134,14 +114,11 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
   }
 
   const {stats} = s
-  const overview = stats.overview
-  const totalWords = overview.total_words
-  const activeMinutes = Math.round(stats.usage_summary.total_active_seconds / 60)
 
   return (
     <div className="stats-page">
       <div className="stats-inner">
-        {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Statistics', isActive: true}]} />}
+        {!embedded && <Breadcrumb items={[{label: 'Home', onClick: () => navigate(routes.home)}, {label: 'Learning Statistics', isActive: true}]} />}
         {!embedded && <div className="stats-topbar">
           <button type="button" className="word-page-back-btn" onClick={() => navigate(-1)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -152,62 +129,62 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
         </div>}
 
         <HeroBanner
-          totalWords={totalWords}
+          reviewedWords={stats.review_history.reviewed_words}
           strongPct={stats.okay_or_better_pct}
-          streak={stats.consistency_summary.active_streak_days}
-          activeMinutes={activeMinutes}
+          streak={stats.consistency_summary.study_streak_days}
+          activeSeconds={stats.usage_summary.total_active_seconds}
         />
 
-        <InsightsStrip s={stats} />
+        <KnowledgeDistributionSection stats={stats} />
 
         <section className="stats-section">
-          <SectionTitle icon="🏆" subtitle="Headline metrics with recent movement">
-            Vocabulary overview
-          </SectionTitle>
-          <div className="stats-cards stats-cards-4">
+          <SectionTitle icon="🧭" subtitle="Open word details or record a rating here. Repeated setbacks cover the last 30 days.">Words to revisit</SectionTitle>
+          <StatsEntryExplorer scope="revisit" load={fetchRevisitWords} options={[
+            {value: 'weak', label: 'Weak'},
+            {value: 'unreviewed', label: 'Never reviewed'},
+            {value: 'downgraded', label: 'Repeated setbacks'},
+          ]} />
+        </section>
+
+        <section className="stats-section">
+          <SectionTitle icon="🏆">This week</SectionTitle>
+          <div className="stats-cards stats-cards-3">
             {s.overviewCards.map((card) => <StatCard key={card.label} {...card} />)}
           </div>
         </section>
 
-        <VocabProfileSection profile={stats.vocab_profile} totalWords={totalWords} />
-        <EnrichmentCoverageSection coverage={stats.enrichment_coverage} />
-
+        <ReviewHistorySection history={stats.review_history} />
         <AppTimeSection
           stats={stats}
           usagePeriod={s.usagePeriod}
           onUsagePeriodChange={s.setUsagePeriod}
           usageChartData={s.usageChartData}
+          periodUsage={s.periodUsage}
         />
-        <RetentionSection stats={stats} totalWords={totalWords} />
         <ConsistencySection stats={stats} />
-        <EfficiencySection stats={stats} activeMinutes={activeMinutes} />
-        {stats.queue_summary.total_queues > 0
-          ? <QueueQualitySection stats={stats} />
-          : <section className="stats-section"><SectionTitle>Queue quality</SectionTitle><div className="stats-empty">No smart review queues recorded yet.</div></section>}
-        <KnowledgeDistributionSection stats={stats} totalWords={totalWords} />
+        <DailyMixActivitySection stats={stats} />
         <DailyProgressSection
           stats={stats}
           activityPeriod={s.activityPeriod}
           onActivityPeriodChange={s.setActivityPeriod}
-          activityTotals={s.activityTotals}
           filteredActivity={s.filteredActivity}
           activityChartData={s.activityChartData}
           bestDay={s.bestDay}
           worstDay={s.worstDay}
         />
-        <WordsAddedSection
-          monthPeriod={s.monthPeriod}
-          onMonthPeriodChange={s.setMonthPeriod}
-          monthChartData={s.monthChartData}
-        />
+        <InsightsStrip s={stats} />
         <TopicsSection
           topics={s.sortedTopics}
-          topicSort={s.topicSort}
-          onTopicSortChange={s.setTopicSort}
-          topicExpanded={s.topicExpanded}
-          onTopicExpandedChange={s.setTopicExpanded}
+          title="Topic activity"
+          subtitle="Recorded reviews grouped by current topic links"
+          empty="No topic reviews recorded yet."
+          controls={<PeriodTabs options={LEARNING_TOPIC_SORT_OPTIONS} value={s.topicSort} onChange={s.setTopicSort} />}
+          columns={[
+            {label: 'Reviewed', value: (topic) => topic.reviewed_count},
+            {label: 'Improved', value: (topic) => topic.improved_count},
+            {label: 'Setbacks', value: (topic) => topic.regressed_count},
+          ]}
         />
-        <DataQualitySection stats={stats} totalWords={totalWords} />
       </div>
     </div>
   )

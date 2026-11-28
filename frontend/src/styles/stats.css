@@ -245,6 +245,7 @@
   gap: 10px;
 }
 
+.stats-cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .stats-cards-4 { grid-template-columns: repeat(4, 1fr); }
 .stats-cards-6 { grid-template-columns: repeat(6, 1fr); }
 
@@ -374,6 +375,36 @@
 }
 
 .stats-period-tab:hover { background: var(--surface-2); color: var(--text); }
+
+.stats-entry-explorer { margin-top: 0.75rem; }
+.stats-entry-explorer .stats-period-tabs { flex-wrap: wrap; }
+.stats-entry-explorer .stats-period-tab { min-height: 44px; }
+.stats-entry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.stats-entry-list li + li { border-top: 1px solid var(--border); }
+.stats-entry-list li { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.stats-entry-list a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+  padding: 0.25rem 0.5rem;
+  color: var(--text);
+  text-decoration: underline;
+}
+.stats-entry-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.stats-entry-rating { flex-shrink: 0; text-align: end; }
+.stats-entry-rating button { min-height: 44px; }
+.stats-entry-rating span { display: block; }
 .stats-period-tab.active {
   background: var(--accent);
   border-color: var(--accent);
@@ -690,7 +721,8 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 
 .stats-topic-header {
   display: grid;
-  grid-template-columns: 1fr 56px 56px 80px 130px;
+  grid-template-columns: minmax(0, 1fr) repeat(3, minmax(54px, 18%));
+  column-gap: 4px;
   padding: 0 4px 8px;
   font-size: 0.68rem;
   font-weight: 700;
@@ -708,7 +740,8 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
   font: inherit;
   border: 0;
   display: grid;
-  grid-template-columns: 1fr 56px 56px 80px 130px;
+  grid-template-columns: minmax(0, 1fr) repeat(3, minmax(54px, 18%));
+  column-gap: 4px;
   align-items: center;
   padding: 10px 4px;
   border-bottom: 1px solid var(--border);
@@ -731,46 +764,6 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 }
 
 .stats-topic-count { font-size: 0.82rem; color: var(--text-2); font-weight: 600; }
-
-.stats-topic-weak         { font-size: 0.82rem; color: var(--text-3); }
-.stats-topic-weak.has-weak { color: #ef4444; font-weight: 600; }
-
-.stats-topic-missing             { font-size: 0.82rem; color: var(--text-3); }
-.stats-topic-missing.has-missing { color: #f97316; font-weight: 600; }
-
-.stats-topic-progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.stats-topic-pct {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text);
-  min-width: 36px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.stats-topic-bar {
-  flex: 1;
-  height: 6px;
-  background: var(--bg);
-  border-radius: 999px;
-  overflow: hidden;
-  max-width: 80px;
-}
-
-.stats-topic-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
-  background-size: 1000px 100%;
-  border-radius: 999px;
-  transition: width 0.4s ease;
-  animation: progress-shimmer 3s ease-in-out infinite;
-}
 
 .stats-show-more {
   background: transparent;
@@ -1005,12 +998,6 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
 
   .stats-quality-label { min-width: 120px; }
 
-  /* 4 columns: name | words | weak | progress — hide No-example */
-  .stats-topic-header,
-  .stats-topic-row { grid-template-columns: 1fr 56px 56px 110px; }
-  .stats-topic-missing { display: none; }
-
-  .stats-topic-bar { max-width: 60px; }
 
   .stats-daily-header,
   .stats-daily-row { grid-template-columns: 1fr 60px 60px 70px 50px; }
@@ -1042,12 +1029,6 @@ details[open] .stats-daily-summary::before { content: '▼ '; }
   .stats-cards-4 { grid-template-columns: repeat(2, 1fr); }
   .stats-cards-2 { grid-template-columns: repeat(2, 1fr); }
 
-  /* 3 columns: name | words | progress — hide Weak too */
-  .stats-topic-header,
-  .stats-topic-row { grid-template-columns: 1fr 56px 100px; }
-  .stats-topic-weak { display: none; }
-
-  .stats-topic-bar { max-width: 52px; }
 
   .stats-quality-label { min-width: 100px; font-size: 0.72rem; }
 

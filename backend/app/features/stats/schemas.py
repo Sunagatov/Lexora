@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 
 class LevelCounts(BaseModel):
@@ -152,3 +151,101 @@ class StatsResponse(BaseModel):
     words_added_by_month: dict[str, int] = Field(default_factory=dict)
     tracking_started_at: str | None = None
     usage_started_at: str | None = None
+
+
+class ReviewHistory(BaseModel):
+    reviewed_words: int
+    improved_words: int
+    regressed_words: int
+
+
+class LearningTopicStat(BaseModel):
+    id: int
+    name: str
+    slug: str
+    reviewed_count: int
+    improved_count: int
+    regressed_count: int
+
+
+class LibraryTopicStat(BaseModel):
+    id: int
+    name: str
+    slug: str
+    total: int
+    missing_example: int
+    needs_example_enrichment: int
+    missing_pos: int
+
+
+class StudyCoverage(BaseModel):
+    reviewed_words: int
+    never_reviewed_words: int
+    reviewed_word_share_pct: int
+
+
+class ReviewPeriod(BaseModel):
+    attempts: int = 0
+    unique_words: int = 0
+    first_reviews: int = 0
+    repeat_reviews: int = 0
+    improved_words: int = 0
+    regressed_words: int = 0
+    study_days: int = 0
+
+
+class DailyMixSummary(BaseModel):
+    started: int = 0
+    completed: int = 0
+    in_progress: int = 0
+    unfinished: int = 0
+    completion_rate_pct: int | None = None
+    avg_completion_span_seconds: int | None = None
+
+
+class StatsEntry(BaseModel):
+    id: int
+    term: str
+    knowledge_level: int | None
+
+
+class StatsEntryPage(BaseModel):
+    entries: list[StatsEntry]
+    total: int
+    has_more: bool
+
+
+class LibraryReadiness(BaseModel):
+    translation_language: str
+    ready: int
+    missing_translation: int
+    no_examples: int
+    needs_examples: int
+    no_topic: int
+    multiple_topics: int
+
+
+class LearningStatsResponse(BaseModel):
+    level_counts: LevelCounts
+    okay_or_better_pct: int
+    review_history: ReviewHistory
+    usage_summary: UsageSummary
+    consistency_summary: ConsistencySummary
+    mix_activity: DailyMixSummary
+    review_periods: dict[str, ReviewPeriod]
+    as_of: str
+    usage_daily: list[UsageDay]
+    topics: list[LearningTopicStat]
+    daily_activity: list[DailyActivity]
+    tracking_started_at: str | None
+    usage_started_at: str | None
+
+
+class LibraryStatsResponse(BaseModel):
+    overview: VocabularyOverview
+    vocab_profile: VocabProfileSummary
+    enrichment_coverage: EnrichmentCoverage
+    topics: list[LibraryTopicStat]
+    words_added_by_month: dict[str, int]
+    study_coverage: StudyCoverage
+    readiness: LibraryReadiness

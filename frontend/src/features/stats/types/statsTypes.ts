@@ -7,20 +7,23 @@ export type LevelCounts = {
   level_5: number
 }
 
-export type TopicStat = {
+type TopicIdentity = {
   id: number
   name: string
   slug: string
+}
+
+export type LibraryTopicStat = TopicIdentity & {
   total: number
-  progress: number
-  weak_count: number
-  strong_count: number
   missing_example: number
   needs_example_enrichment: number
   missing_pos: number
+}
+
+export type LearningTopicStat = TopicIdentity & {
   reviewed_count: number
+  improved_count: number
   regressed_count: number
-  never_reviewed_count: number
 }
 
 export type DailyActivity = {
@@ -46,27 +49,26 @@ export type UsageSummary = {
   last_7d_active_seconds: number
 }
 
-export type RetentionSummary = {
-  active_words: number
+export type ReviewHistory = {
   reviewed_words: number
-  never_reviewed_words: number
   improved_words: number
   regressed_words: number
-  strong_words: number
-  weak_words: number
-  parked_words: number
-  reviewed_word_share_pct: number
-  improved_word_share_pct: number
-  regressed_word_share_pct: number
 }
 
-export type EfficiencySummary = {
-  total_review_events: number
-  reviews_per_active_minute: number
-  improved_events_per_active_minute: number
-  net_events_per_active_minute: number
-  reviewed_words_per_session: number
-  improved_words_per_session: number
+export type StudyCoverage = {
+  reviewed_words: number
+  never_reviewed_words: number
+  reviewed_word_share_pct: number
+}
+
+export type ReviewPeriod = {
+  attempts: number
+  unique_words: number
+  first_reviews: number
+  repeat_reviews: number
+  improved_words: number
+  regressed_words: number
+  study_days: number
 }
 
 export type ConsistencySummary = {
@@ -80,15 +82,19 @@ export type ConsistencySummary = {
   study_days_last_90d: number
 }
 
-export type QueueSummary = {
-  total_queues: number
-  active_queues: number
-  completed_queues: number
-  completion_rate_pct: number
-  avg_queue_size: number
-  avg_completion_ratio_pct: number
-  avg_completion_seconds: number
+export type DailyMixSummary = {
+  started: number
+  completed: number
+  in_progress: number
+  unfinished: number
+  completion_rate_pct: number | null
+  avg_completion_span_seconds: number | null
 }
+
+export type LibraryGap = 'translation' | 'no-examples' | 'needs-examples' | 'no-topic' | 'multiple-topics'
+export type RevisitGroup = 'weak' | 'downgraded' | 'unreviewed'
+export type StatsEntry = {id: number; term: string; knowledge_level: number | null}
+export type StatsEntryPage = {entries: StatsEntry[]; total: number; has_more: boolean}
 
 export type VocabularyOverview = {
   total_words: number
@@ -122,21 +128,36 @@ export type EnrichmentCoverage = {
   with_register: number
 }
 
-export type StatsResponse = {
-  overview: VocabularyOverview
+export type LearningStatsResponse = {
   level_counts: LevelCounts
   okay_or_better_pct: number
-  vocab_profile: VocabProfileSummary
-  enrichment_coverage: EnrichmentCoverage
   usage_summary: UsageSummary
-  retention_summary: RetentionSummary
-  efficiency_summary: EfficiencySummary
+  review_history: ReviewHistory
   consistency_summary: ConsistencySummary
-  queue_summary: QueueSummary
+  mix_activity: DailyMixSummary
+  review_periods: Record<'all' | '7' | '30' | '90' | '365' | 'previous_week', ReviewPeriod>
+  as_of: string
   usage_daily: UsageDay[]
-  topics: TopicStat[]
+  topics: LearningTopicStat[]
   daily_activity: DailyActivity[]
-  words_added_by_month: Record<string, number>
   tracking_started_at: string | null
   usage_started_at: string | null
+}
+
+export type LibraryStatsResponse = {
+  overview: VocabularyOverview
+  vocab_profile: VocabProfileSummary
+  enrichment_coverage: EnrichmentCoverage
+  topics: LibraryTopicStat[]
+  words_added_by_month: Record<string, number>
+  study_coverage: StudyCoverage
+  readiness: {
+    translation_language: 'ru' | 'en'
+    ready: number
+    missing_translation: number
+    no_examples: number
+    needs_examples: number
+    no_topic: number
+    multiple_topics: number
+  }
 }

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import UTC, date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.features.languages.catalog import learning_language
-from app.features.smart_review.model import StudyQueue
+from app.features.smart_review.model import StudyQueue, StudyQueueItem
 from app.features.stats.content_metrics import WordStatsSnapshot
 from app.features.stats.model import AppUsageEvent
 from app.features.stats.schemas import (
     ConsistencySummary,
     DailyActivity,
+    DailyMixSummary,
     EfficiencySummary,
     QueueSummary,
     RetentionSummary,
@@ -22,24 +23,29 @@ from app.features.stats.schemas import (
 from app.features.words.progress import WordProgressEvent
 
 
-def _knowledge_change(old_level: int | None, new_level: int) -> int:
+def _knowledge_change(old_level: int | None, new_level: int, *, merge_basic: bool = False) -> int:
     # Parked is a study preference, not a level above Strong.
     if old_level == 5 or new_level == 5:
         return 0
+    if merge_basic:
+        old_level = 3 if old_level == 2 else old_level
+        new_level = 3 if new_level == 2 else new_level
     old_level = old_level or 0
     return (new_level > old_level) - (new_level < old_level)
 
 
-def _build_daily_activity(events: list[WordProgressEvent]) -> tuple[list[DailyActivity], str | None]:
+def _build_daily_activity(
+    events: list[WordProgressEvent], *, merge_basic: bool = False
+) -> tuple[list[DailyActivity], str | None]:
     daily: dict[str, dict[str, int]] = defaultdict(lambda: {"reviewed": 0, "improved": 0, "downgraded": 0})
     seen_per_day: dict[str, set[int]] = defaultdict(set)
     for event in events:
-        day = event.created_at.strftime("%Y-%m-%d")
+        day = _utc_timestamp(event.created_at).date().isoformat()
         if event.word_id not in seen_per_day[day]:
             daily[day]["reviewed"] += 1
             seen_per_day[day].add(event.word_id)
 
-        change = _knowledge_change(event.old_level, event.new_level)
+        change = _knowledge_change(event.old_level, event.new_level, merge_basic=merge_basic)
         if change > 0:
             daily[day]["improved"] += 1
         elif change < 0:
@@ -110,14 +116,16 @@ def _build_consistency_stats(
     usage_daily: list[UsageDay],
     daily_activity: list[DailyActivity],
     now: datetime | None = None,
+    *,
+    allow_yesterday: bool = False,
 ) -> ConsistencySummary:
     today = (now or datetime.now(UTC)).date()
     active_days = {date.fromisoformat(day.date) for day in usage_daily}
     study_days = {date.fromisoformat(day.date) for day in daily_activity}
 
     return ConsistencySummary(
-        active_streak_days=_current_streak(active_days, today),
-        study_streak_days=_current_streak(study_days, today),
+        active_streak_days=_current_streak(active_days, today, allow_yesterday=allow_yesterday),
+        study_streak_days=_current_streak(study_days, today, allow_yesterday=allow_yesterday),
         longest_active_streak_days=_longest_streak(active_days),
         longest_study_streak_days=_longest_streak(study_days),
         active_days_last_30d=_count_recent_days(active_days, today, 30),
@@ -222,9 +230,51 @@ def _utc_timestamp(value: datetime) -> datetime:
     return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
 
 
-def _current_streak(days: set[date], today: date) -> int:
+def build_daily_mix_summary(db: Session, now: datetime) -> DailyMixSummary:
+    completion_spans = (
+        select(
+            StudyQueueItem.queue_id,
+            func.min(StudyQueueItem.completed_at).label("first"),
+            func.max(StudyQueueItem.completed_at).label("last"),
+        )
+        .join(StudyQueue, StudyQueue.id == StudyQueueItem.queue_id)
+        .where(StudyQueue.language == learning_language(db), StudyQueueItem.completed_at.is_not(None))
+        .group_by(StudyQueueItem.queue_id)
+        .subquery()
+    )
+    rows = db.execute(
+        select(StudyQueue, completion_spans.c.first, completion_spans.c.last)
+        .outerjoin(completion_spans, StudyQueue.id == completion_spans.c.queue_id)
+        .where(StudyQueue.language == learning_language(db), StudyQueue.total_count > 0, StudyQueue.completed_count > 0)
+    )
+    stats = DailyMixSummary()
+    durations: list[float] = []
+    for queue, first, last in rows:
+        stats.started += 1
+        if queue.completed_count >= queue.total_count:
+            stats.completed += 1
+            if first and last:
+                # SQLite's aggregates return strings for timezone-aware datetimes.
+                if isinstance(first, str):
+                    first = datetime.fromisoformat(first)
+                if isinstance(last, str):
+                    last = datetime.fromisoformat(last)
+                durations.append((_utc_timestamp(last) - _utc_timestamp(first)).total_seconds())
+        elif queue.is_active and _utc_timestamp(queue.expires_at) > now:
+            stats.in_progress += 1
+        else:
+            stats.unfinished += 1
+    resolved = stats.completed + stats.unfinished
+    if resolved:
+        stats.completion_rate_pct = round(100 * stats.completed / resolved)
+    if durations:
+        stats.avg_completion_span_seconds = round(sum(durations) / len(durations))
+    return stats
+
+
+def _current_streak(days: set[date], today: date, *, allow_yesterday: bool = False) -> int:
     streak = 0
-    cursor = today
+    cursor = today - timedelta(days=1) if allow_yesterday and today not in days else today
     while cursor in days:
         streak += 1
         cursor -= timedelta(days=1)
@@ -254,7 +304,7 @@ def _collect_usage_totals(events: list[AppUsageEvent]) -> tuple[dict[str, int], 
     daily_seconds: dict[str, int] = defaultdict(int)
     per_session_seconds: dict[str, int] = defaultdict(int)
     for event in events:
-        day = event.created_at.date().isoformat()
+        day = _utc_timestamp(event.created_at).date().isoformat()
         daily_seconds[day] += event.active_seconds
         per_session_seconds[event.session_key] += event.active_seconds
     return daily_seconds, per_session_seconds

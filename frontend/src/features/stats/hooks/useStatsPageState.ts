@@ -1,38 +1,37 @@
 import {useMemo, useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {queryKeys} from '@/app/queryKeys'
-import {fetchStats} from '@/features/stats/api/statsApi'
+import {fetchLearningStats} from '@/features/stats/api/statsApi'
 import {
   buildStatsPageDerivedData,
   type ActivityPeriod,
-  type MonthPeriod,
-  type TopicSort,
+  type LearningTopicSort,
 } from '@/features/stats/model/statsPageModel'
 
 export function useStatsPageState() {
-  const {data: stats, isLoading, refetch} = useQuery({queryKey: queryKeys.stats, queryFn: fetchStats})
+  const {data: stats, isLoading, refetch} = useQuery({
+    queryKey: queryKeys.learningStats,
+    queryFn: ({signal}) => fetchLearningStats(signal),
+  })
 
   const [activityPeriod, setActivityPeriod] = useState<ActivityPeriod>('30')
   const [usagePeriod, setUsagePeriod] = useState<ActivityPeriod>('30')
-  const [monthPeriod, setMonthPeriod] = useState<MonthPeriod>('all')
-  const [topicSort, setTopicSort] = useState<TopicSort>('worst')
-  const [topicExpanded, setTopicExpanded] = useState(false)
+  const [topicSort, setTopicSort] = useState<LearningTopicSort>('reviewed_count')
 
   const derived = useMemo(
     () => stats
-      ? buildStatsPageDerivedData(stats, activityPeriod, usagePeriod, monthPeriod, topicSort)
+      ? buildStatsPageDerivedData(stats, activityPeriod, usagePeriod, topicSort)
       : {
         filteredActivity: [],
-        activityTotals: {reviewed: 0, improved: 0, downgraded: 0, net: 0},
+        periodUsage: {seconds: 0, days: 0},
         activityChartData: [],
         usageChartData: [],
-        monthChartData: [],
         sortedTopics: [],
         bestDay: null,
         worstDay: null,
         overviewCards: [],
       },
-    [stats, activityPeriod, usagePeriod, monthPeriod, topicSort],
+    [stats, activityPeriod, usagePeriod, topicSort],
   )
 
   return {
@@ -43,12 +42,8 @@ export function useStatsPageState() {
     setActivityPeriod,
     usagePeriod,
     setUsagePeriod,
-    monthPeriod,
-    setMonthPeriod,
     topicSort,
     setTopicSort,
-    topicExpanded,
-    setTopicExpanded,
     ...derived,
   }
 }

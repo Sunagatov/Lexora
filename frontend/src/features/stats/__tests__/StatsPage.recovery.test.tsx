@@ -11,7 +11,7 @@ beforeEach(() => retry.mockClear())
 
 it('lets account users retry a failed Statistics load without leaving the account', () => {
   render(<MemoryRouter><StatsPage embedded /></MemoryRouter>)
-  expect(screen.getByText('Statistics unavailable')).toBeTruthy()
+  expect(screen.getByText('Learning statistics unavailable')).toBeTruthy()
   fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
   expect(retry).toHaveBeenCalledOnce()
   expect(screen.queryByRole('button', {name: 'Back Home'})).toBeNull()

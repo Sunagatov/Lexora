@@ -1,20 +1,13 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {buildStatsPageDerivedData} from '@/features/stats/model/statsPageModel'
-import type {StatsResponse} from '@/features/stats/types/statsTypes'
+import type {LearningStatsResponse} from '@/features/stats/types/statsTypes'
 
-function makeStats(): StatsResponse {
+function makeStats(): LearningStatsResponse {
+  const period = {attempts: 15, unique_words: 8, first_reviews: 5, repeat_reviews: 10,
+    improved_words: 4, regressed_words: 2, study_days: 5}
   return {
-    overview: {
-      total_words: 120,
-      total_topics: 4,
-      with_example: 90,
-      with_examples_3plus: 70,
-      with_pos: 100,
-      missing_example: 30,
-      needs_example_enrichment: 20,
-      missing_pos: 10,
-      needs_enrichment: 25,
-    },
+    as_of: '2024-03-10',
+    review_periods: {'7': period, '30': period, '90': period, '365': period, all: period, previous_week: period},
     level_counts: {
       unset: 10,
       level_1: 15,
@@ -24,24 +17,6 @@ function makeStats(): StatsResponse {
       level_5: 20,
     },
     okay_or_better_pct: 63,
-    vocab_profile: {
-      cefr_distribution: {B1: 40, B2: 50, C1: 30},
-      register_distribution: {neutral: 80, formal: 20, informal: 20},
-      pos_distribution: {noun: 50, verb: 40, adjective: 30},
-    },
-    enrichment_coverage: {
-      total_words: 120,
-      with_definition: 110,
-      with_ipa: 100,
-      with_translation: 95,
-      with_examples: 90,
-      with_synonyms: 70,
-      with_antonyms: 40,
-      with_collocations: 30,
-      with_confusables: 20,
-      with_cefr: 80,
-      with_register: 75,
-    },
     usage_summary: {
       total_active_seconds: 3600,
       active_days: 9,
@@ -51,27 +26,7 @@ function makeStats(): StatsResponse {
       today_active_seconds: 500,
       last_7d_active_seconds: 1500,
     },
-    retention_summary: {
-      active_words: 100,
-      reviewed_words: 90,
-      never_reviewed_words: 30,
-      improved_words: 20,
-      regressed_words: 5,
-      strong_words: 30,
-      weak_words: 15,
-      parked_words: 20,
-      reviewed_word_share_pct: 75,
-      improved_word_share_pct: 22,
-      regressed_word_share_pct: 6,
-    },
-    efficiency_summary: {
-      total_review_events: 80,
-      reviews_per_active_minute: 2.5,
-      improved_events_per_active_minute: 1.2,
-      net_events_per_active_minute: 0.8,
-      reviewed_words_per_session: 3.5,
-      improved_words_per_session: 1.8,
-    },
+    review_history: {reviewed_words: 90, improved_words: 20, regressed_words: 5},
     consistency_summary: {
       active_streak_days: 4,
       study_streak_days: 3,
@@ -82,15 +37,7 @@ function makeStats(): StatsResponse {
       active_days_last_90d: 30,
       study_days_last_90d: 24,
     },
-    queue_summary: {
-      total_queues: 4,
-      active_queues: 1,
-      completed_queues: 3,
-      completion_rate_pct: 75,
-      avg_queue_size: 12,
-      avg_completion_ratio_pct: 80,
-      avg_completion_seconds: 600,
-    },
+    mix_activity: {started: 4, completed: 3, in_progress: 1, unfinished: 0, completion_rate_pct: 100, avg_completion_span_seconds: 600},
     usage_daily: [
       {date: '2024-03-06', active_seconds: 100},
       {date: '2024-03-07', active_seconds: 120},
@@ -99,36 +46,8 @@ function makeStats(): StatsResponse {
       {date: '2024-03-10', active_seconds: 180},
     ],
     topics: [
-      {
-        id: 1,
-        name: 'Alpha',
-        slug: 'alpha',
-        total: 10,
-        progress: 20,
-        weak_count: 4,
-        strong_count: 1,
-        missing_example: 2,
-        needs_example_enrichment: 3,
-        missing_pos: 1,
-        reviewed_count: 6,
-        regressed_count: 2,
-        never_reviewed_count: 4,
-      },
-      {
-        id: 2,
-        name: 'Beta',
-        slug: 'beta',
-        total: 20,
-        progress: 70,
-        weak_count: 1,
-        strong_count: 10,
-        missing_example: 1,
-        needs_example_enrichment: 1,
-        missing_pos: 0,
-        reviewed_count: 15,
-        regressed_count: 0,
-        never_reviewed_count: 2,
-      },
+      {id: 1, name: 'Alpha', slug: 'alpha', reviewed_count: 6, improved_count: 2, regressed_count: 2},
+      {id: 2, name: 'Beta', slug: 'beta', reviewed_count: 15, improved_count: 4, regressed_count: 0},
     ],
     daily_activity: [
       {date: '2024-03-06', reviewed: 1, improved: 1, downgraded: 0, net: 1},
@@ -137,10 +56,6 @@ function makeStats(): StatsResponse {
       {date: '2024-03-09', reviewed: 4, improved: 1, downgraded: 2, net: -1},
       {date: '2024-03-10', reviewed: 5, improved: 4, downgraded: 0, net: 4},
     ],
-    words_added_by_month: {
-      '2024-02': 8,
-      '2024-03': 12,
-    },
     tracking_started_at: '2024-03-01',
     usage_started_at: '2024-03-01',
   }
@@ -157,23 +72,19 @@ describe('buildStatsPageDerivedData', () => {
   })
 
   it('builds the derived stats page view model from pure inputs', () => {
-    const derived = buildStatsPageDerivedData(makeStats(), '7', '7', 'all', 'worst')
+    const derived = buildStatsPageDerivedData(makeStats(), '7', '7', 'reviewed_count')
 
     expect(derived.filteredActivity).toHaveLength(5)
-    expect(derived.activityTotals).toEqual({reviewed: 15, improved: 10, downgraded: 3, net: 7})
-    expect(derived.sortedTopics.map((topic) => topic.slug)).toEqual(['alpha', 'beta'])
+    expect(derived.periodUsage).toEqual({seconds: 700, days: 5})
+    expect(derived.sortedTopics.map((topic) => topic.slug)).toEqual(['beta', 'alpha'])
     expect(derived.bestDay?.date).toBe('2024-03-10')
     expect(derived.worstDay?.date).toBe('2024-03-09')
-    expect(derived.overviewCards).toHaveLength(4)
-    expect(derived.overviewCards[0]).toMatchObject({
-      label: 'Total words',
-      value: 120,
-      sub: '12 added this month',
+    expect(derived.overviewCards).toHaveLength(3)
+    expect(derived.overviewCards[0]).toMatchObject({label: 'Active time', value: '11m 40s'})
+    expect(derived.overviewCards[1]).toMatchObject({
+      label: 'Unique words reviewed', value: 8, sub: 'last 7 days',
     })
-    expect(derived.overviewCards[2]).toMatchObject({
-      label: 'Word reviews', value: 15, sub: 'last 7 days; each word once per day',
-    })
-    expect(derived.overviewCards[3]).toMatchObject({label: 'Okay or better', value: '63%'})
-    expect(derived.overviewCards[2]?.sparkline).toEqual([1, 2, 3, 4, 5])
+    expect(derived.overviewCards[2]).toMatchObject({label: 'Study days', value: 5})
+    expect(derived.overviewCards[0]?.sparkline).toEqual([0, 0, 100, 120, 140, 160, 180])
   })
 })

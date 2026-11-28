@@ -1,8 +1,13 @@
 import {request} from '@/shared/api/http'
-import type {StatsResponse} from '@/features/stats/types/statsTypes'
+import type {LearningStatsResponse, LibraryGap, LibraryStatsResponse, RevisitGroup, StatsEntryPage} from '@/features/stats/types/statsTypes'
 import {languagePreferences} from '@/features/languages/api'
 
-export const fetchStats = () => request<StatsResponse>('/api/stats')
+export const fetchLearningStats = (signal?: AbortSignal) => request<LearningStatsResponse>('/api/stats/learning', {signal})
+export const fetchLibraryStats = (signal?: AbortSignal) => request<LibraryStatsResponse>('/api/stats/library', {signal})
+export const fetchLibraryGap = (gap: LibraryGap, page: number, signal?: AbortSignal) =>
+  request<StatsEntryPage>(`/api/stats/library/entries?gap=${gap}&page=${page}`, {signal})
+export const fetchRevisitWords = (group: RevisitGroup, page: number, signal?: AbortSignal) =>
+  request<StatsEntryPage>(`/api/stats/learning/revisit?group=${group}&page=${page}`, {signal})
 
 type UsageEventPayload = {
   event_key: string

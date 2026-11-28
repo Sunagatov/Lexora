@@ -123,7 +123,9 @@ a JSON backup of the replica and pending operations. It is not an Excel import.
 Saving first copies the current Daily Word Mix, including its progress. In saved
 mode, New set generates a stable device-local random set of up to 200 active,
 non-Parked words; its completion state stays on that device. Word ratings
-still sync to the server with normal progress events. AI enrichment, server Excel
+still sync to the server with normal progress events. On iOS, creating a set or
+completing a practice item writes only the mix state. Full offline reads and
+backups include that state. AI enrichment, server Excel
 import/export, historical stats and permanent Trash purge require internet.
 Speech uses the device's installed voices. New app builds cache a versioned shell;
 offline use keeps the last downloaded build until an online reload.
@@ -289,7 +291,11 @@ The deleted topic and its words remain in Trash on conflict.
 
 ## Stats
 
-- `GET /api/stats` — aggregate stats.
+- `GET /api/stats/learning` — current knowledge ratings, app usage, Study List and Daily Mix rating history, distinct words and attempts by UTC period, and server-recorded Daily Mix activity. Okay or better uses the Weak, Okay, and Strong groups as its denominator.
+- `GET /api/stats/learning/revisit?group=weak|unreviewed|downgraded&page=1` — active entries to revisit. Repeated setbacks count two or more downgrades in the last 30 UTC days.
+- `GET /api/stats/library` — vocabulary and topic counts, enrichment in the selected translation language, active entries by creation month, and recorded-study coverage. Both topic views roll up linked descendants without double-counting within a parent.
+- `GET /api/stats/library/entries?gap=translation|no-examples|needs-examples|no-topic|multiple-topics&page=1` — active entries matching a readiness or topic metric.
+- `GET /api/stats` — combined statistics for earlier clients.
 - `POST /api/stats/usage` — record usage event.
 
 Monthly additions include every source in the active, language-scoped library,

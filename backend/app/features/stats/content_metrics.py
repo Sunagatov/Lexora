@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -10,6 +11,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.features.languages.catalog import learning_language
 from app.features.stats.schemas import (
     EnrichmentCoverage,
+    LibraryTopicStat,
     TopicStat,
     VocabProfileSummary,
     VocabularyOverview,
@@ -39,23 +41,16 @@ class WordStatsSnapshot:
     confusable_count: int = 0
 
 
-def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
+def _build_library_overview(words: list[WordStatsSnapshot], total_topics: int = 0) -> VocabularyOverview:
     total = len(words)
     example_counts = [example_count(word) for word in words]
     with_example = sum(1 for count in example_counts if count > 0)
     with_examples_3plus = sum(1 for count in example_counts if count >= EXAMPLE_TARGET_COUNT)
     with_pos = sum(1 for word in words if word.has_pos)
 
-    level_counts: dict[int | None, int] = defaultdict(int)
-    for word in words:
-        level_counts[word.knowledge_level] += 1
-
-    active_total = sum(level_counts[level] for level in (1, 3, 4))
-    okay_pct = round(((level_counts[3] + level_counts[4]) / active_total) * 100) if active_total > 0 else 0
-
-    overview = VocabularyOverview(
+    return VocabularyOverview(
         total_words=total,
-        total_topics=0,
+        total_topics=total_topics,
         with_example=with_example,
         with_examples_3plus=with_examples_3plus,
         with_pos=with_pos,
@@ -64,7 +59,19 @@ def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview,
         missing_pos=total - with_pos,
         needs_enrichment=sum(1 for word in words if not word.example_items or not word.has_pos),
     )
-    return overview, level_counts, okay_pct
+
+
+def okay_or_better_pct(level_counts: Mapping[int | None, int]) -> int:
+    okay_or_strong = level_counts.get(3, 0) + level_counts.get(4, 0)
+    active_total = okay_or_strong + level_counts.get(1, 0)
+    return round(okay_or_strong / active_total * 100) if active_total else 0
+
+
+def _build_overview(words: list[WordStatsSnapshot]) -> tuple[VocabularyOverview, dict[int | None, int], int]:
+    level_counts: dict[int | None, int] = defaultdict(int)
+    for word in words:
+        level_counts[word.knowledge_level] += 1
+    return _build_library_overview(words), level_counts, okay_or_better_pct(level_counts)
 
 
 def _build_topic_stats(
@@ -74,16 +81,7 @@ def _build_topic_stats(
     reviewed_word_ids: set[int],
     regressed_word_ids: set[int],
 ) -> list[TopicStat]:
-    direct_links = _load_topic_word_ids(db, word_map)
-    parents = {topic.id: topic.parent_topic_id for topic in topics}
-    topic_word_ids: dict[int, set[int]] = defaultdict(set)
-    for topic_id, word_ids in direct_links.items():
-        seen: set[int] = set()
-        current_id = topic_id
-        while current_id in parents and current_id not in seen:
-            seen.add(current_id)
-            topic_word_ids[current_id].update(word_ids)
-            current_id = parents[current_id]
+    topic_word_ids = roll_up_topic_words(topics, _load_topic_word_ids(db, word_map))
 
     result: list[TopicStat] = []
     for topic in topics:
@@ -97,16 +95,10 @@ def _build_topic_stats(
         regressed_count = sum(1 for word_id in topic_word_id_list if word_id in regressed_word_ids)
         result.append(
             TopicStat(
-                id=topic.id,
-                name=topic.name,
-                slug=topic.slug,
-                total=len(words),
+                **build_library_topic(topic, words).model_dump(),
                 progress=progress,
                 weak_count=weak_count,
                 strong_count=strong_count,
-                missing_example=sum(1 for word in words if not word.example_items),
-                needs_example_enrichment=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
-                missing_pos=sum(1 for word in words if not word.has_pos),
                 reviewed_count=reviewed_count,
                 regressed_count=regressed_count,
                 never_reviewed_count=max(0, len(words) - reviewed_count),
@@ -115,6 +107,31 @@ def _build_topic_stats(
 
     result.sort(key=lambda topic: topic.progress)
     return result
+
+
+def roll_up_topic_words(topics: list[Topic], direct_links: dict[int, list[int]]) -> dict[int, set[int]]:
+    parents = {topic.id: topic.parent_topic_id for topic in topics}
+    topic_word_ids: dict[int, set[int]] = defaultdict(set)
+    for topic_id, word_ids in direct_links.items():
+        seen: set[int] = set()
+        current_id = topic_id
+        while current_id in parents and current_id not in seen:
+            seen.add(current_id)
+            topic_word_ids[current_id].update(word_ids)
+            current_id = parents[current_id]
+    return topic_word_ids
+
+
+def build_library_topic(topic: Topic, words: list[WordStatsSnapshot]) -> LibraryTopicStat:
+    return LibraryTopicStat(
+        id=topic.id,
+        name=topic.name,
+        slug=topic.slug,
+        total=len(words),
+        missing_example=sum(1 for word in words if not word.example_items),
+        needs_example_enrichment=sum(1 for word in words if example_count(word) < EXAMPLE_TARGET_COUNT),
+        missing_pos=sum(1 for word in words if not word.has_pos),
+    )
 
 
 def _build_words_added_by_month(words: list[WordStatsSnapshot]) -> dict[str, int]:
@@ -180,7 +197,7 @@ def _build_enrichment_coverage(words: list[WordStatsSnapshot]) -> EnrichmentCove
     )
 
 
-def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
+def list_active_word_stats(db: Session, *, translations: str | None = None) -> list[WordStatsSnapshot]:
     words = db.scalars(
         select(Word).options(
             selectinload(Word.example_items),
@@ -205,7 +222,10 @@ def list_active_word_stats(db: Session) -> list[WordStatsSnapshot]:
             register=word.register,
             has_definition=bool(word.definition),
             has_ipa=bool(word.pronunciation_ipa),
-            translation_count=len(word.translation_items),
+            translation_count=sum(
+                1 for item in word.translation_items
+                if translations is None or item.language == translations
+            ),
             synonym_count=len(word.synonym_items),
             antonym_count=len(word.antonym_items),
             collocation_count=len(word.collocation_items),
