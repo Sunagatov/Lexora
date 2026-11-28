@@ -147,7 +147,7 @@ export function StatsPage({embedded = false}: {embedded?: boolean}) {
         </section>
 
         <section className="stats-section">
-          <SectionTitle icon="🏆">This week</SectionTitle>
+          <SectionTitle icon="🏆" subtitle="Last 7 days compared with the previous 7">This week</SectionTitle>
           <div className="stats-cards stats-cards-3">
             {s.overviewCards.map((card) => <StatCard key={card.label} {...card} />)}
           </div>

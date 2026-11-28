@@ -82,7 +82,7 @@ describe('buildStatsPageDerivedData', () => {
     expect(derived.overviewCards).toHaveLength(3)
     expect(derived.overviewCards[0]).toMatchObject({label: 'Active time', value: '11m 40s'})
     expect(derived.overviewCards[1]).toMatchObject({
-      label: 'Unique words reviewed', value: 8, sub: 'last 7 days',
+      label: 'Unique words reviewed', value: 8, trend: {value: '0%'},
     })
     expect(derived.overviewCards[2]).toMatchObject({label: 'Study days', value: 5})
     expect(derived.overviewCards[0]?.sparkline).toEqual([0, 0, 100, 120, 140, 160, 180])

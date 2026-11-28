@@ -201,7 +201,6 @@ export type TrendInfo = {
 export type OverviewCard = {
   value: string | number
   label: string
-  sub: string
   trend: TrendInfo
   sparkline: number[]
 }
@@ -217,12 +216,12 @@ export type StatsPageDerivedData = {
   overviewCards: OverviewCard[]
 }
 
-export function buildTrendLabel(current: number, previous: number, suffix: string): TrendInfo {
+function buildTrendLabel(current: number, previous: number): TrendInfo {
   const delta = percentDelta(current, previous)
-  if (delta === null) return {value: `${current.toLocaleString()} ${suffix}`, direction: 'up', tone: 'good'}
-  if (delta === 0) return {value: `0% ${suffix}`, direction: 'flat', tone: 'neutral'}
+  if (delta === null) return {value: 'From 0', direction: 'up', tone: 'good'}
+  if (delta === 0) return {value: '0%', direction: 'flat', tone: 'neutral'}
   return {
-    value: `${delta > 0 ? '+' : ''}${Math.round(delta)}% ${suffix}`,
+    value: `${delta > 0 ? '+' : ''}${Math.round(delta)}%`,
     direction: delta > 0 ? 'up' : 'down',
     tone: delta > 0 ? 'good' : 'bad',
   }
@@ -242,22 +241,19 @@ export function buildOverviewCards(
     {
       value: formatDuration(currentWeeklyUsage),
       label: 'Active time',
-      sub: 'last 7 days',
-      trend: buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage, 'vs previous 7d'),
+      trend: buildTrendLabel(currentWeeklyUsage, previousWeeklyUsage),
       sparkline: usageSparkline,
     },
     {
       value: week.unique_words,
       label: 'Unique words reviewed',
-      sub: 'last 7 days',
-      trend: buildTrendLabel(week.unique_words, previous.unique_words, 'vs previous 7d'),
+      trend: buildTrendLabel(week.unique_words, previous.unique_words),
       sparkline: [],
     },
     {
       value: week.study_days,
       label: 'Study days',
-      sub: 'last 7 days',
-      trend: buildTrendLabel(week.study_days, previous.study_days, 'vs previous 7d'),
+      trend: buildTrendLabel(week.study_days, previous.study_days),
       sparkline: [],
     },
   ]

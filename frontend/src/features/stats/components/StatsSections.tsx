@@ -142,7 +142,7 @@ export function KnowledgeDistributionSection({stats}: {stats: LearningStatsRespo
       </SectionTitle>
       {totalWords > 0 ? (
         <div className="stats-donut-row">
-          <DonutChart slices={ratedLevels} centerLabel={`${stats.okay_or_better_pct}%`} centerSub="Okay or better" size={150} />
+          <DonutChart slices={ratedLevels} centerLabel={`${stats.okay_or_better_pct}%`} centerSub={['Okay or', 'better']} size={150} />
           <div className="stats-dist-detail">
             <div className="stats-dist-bar" aria-label="Knowledge level distribution">
               {levels.filter((level) => level.value > 0).map((level) => (

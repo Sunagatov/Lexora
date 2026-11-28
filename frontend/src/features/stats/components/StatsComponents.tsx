@@ -65,6 +65,7 @@ const STAT_META: Record<string, {icon: string; tone: string}> = {
   'Avg session': {icon: '🕒', tone: 'sky'},
   'Longest session': {icon: '🏁', tone: 'indigo'},
   'Reviewed words': {icon: '🔁', tone: 'sky'},
+  'Unique words reviewed': {icon: '🔁', tone: 'sky'},
   'Never reviewed': {icon: '🆕', tone: 'amber'},
   'Improved words': {icon: '📈', tone: 'emerald'},
   'Regressed words': {icon: '📉', tone: 'rose'},
@@ -126,7 +127,7 @@ function CountUpValue({value, duration = 850}: {value: number; duration?: number
 export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
   slices: DonutSlice[]
   centerLabel: string
-  centerSub?: string
+  centerSub?: string | string[]
   size?: number
 }) {
   const total = slices.reduce((s, d) => s + d.value, 0)
@@ -147,13 +148,16 @@ export function DonutChart({slices, centerLabel, centerSub, size = 140}: {
     offset += dash
     return el
   })
+  const subLines = typeof centerSub === 'string' ? [centerSub] : centerSub ?? []
 
   return (
     <svg width={size} height={size} viewBox="0 0 120 120" className="stats-donut">
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--bg)" strokeWidth={stroke} />
       {paths}
-      <text x={cx} y={cy - 6} textAnchor="middle" className="stats-donut-label">{centerLabel}</text>
-      {centerSub && <text x={cx} y={cy + 12} textAnchor="middle" className="stats-donut-sub">{centerSub}</text>}
+      <text x={cx} y={cy - (subLines.length > 1 ? 8 : 6)} textAnchor="middle" className="stats-donut-label">{centerLabel}</text>
+      {subLines.length > 0 && <text x={cx} y={cy + (subLines.length > 1 ? 5 : 12)} textAnchor="middle" className="stats-donut-sub">
+        {subLines.map((line, index) => <tspan key={line} x={cx} dy={index ? 11 : 0}>{line}</tspan>)}
+      </text>}
     </svg>
   )
 }
