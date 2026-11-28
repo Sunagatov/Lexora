@@ -7,6 +7,7 @@ export type OfflineTopic = Topic & {deleted_at?: string | null}
 export type Snapshot = {version: 1; words: OfflineWord[]; topics: OfflineTopic[]; public_config?: {trash_retention_days: number}}
 export type Change = {
   id: string
+  occurred_at?: string
   entity: 'word' | 'topic'
   action: 'create' | 'update' | 'delete' | 'restore'
   entity_id: number

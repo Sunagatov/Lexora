@@ -9,6 +9,7 @@ import {LanguageRouteContext} from '@/features/languages/LanguageRouteContext'
 import {PreferencesEffects} from '@/features/preferences/PreferencesEffects'
 import {usePreferences} from '@/features/preferences/api'
 import {useIsMobile} from '@/shared/hooks/useIsMobile'
+import {isIOSApp} from '@/shared/platform'
 
 export type AppLayoutOutletContext = {
   drawerOpen: boolean
@@ -34,6 +35,7 @@ export function AppLayout() {
   const hasDrawer = isStudyRoute(location.pathname) || location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)
   const canAddWord = location.pathname === routes.home || location.pathname === routes.allWords || location.pathname === routes.favorites || location.pathname.startsWith('/topics/')
   const showAddWord = canAddWord && !drawerOpen
+  const addWordInHeader = mobile && !isIOSApp
 
   useEffect(() => {
     setDrawerOpen(false)
@@ -41,13 +43,14 @@ export function AppLayout() {
 
   return (
     <div className="app-shell" data-hide-translations={!preferences.translations || undefined} data-hide-badges={!preferences.badges || undefined}
-      data-hide-progress={!preferences.summary || undefined} data-neutral-knowledge={!preferences.colours || undefined} data-reduced-motion={!preferences.animations || undefined}>
+      data-hide-progress={!preferences.summary || undefined} data-neutral-knowledge={!preferences.colours || undefined} data-reduced-motion={!preferences.animations || undefined}
+      data-ios={isIOSApp || undefined}>
       <PreferencesEffects />
       <LanguageRouteContext />
       <UsageTracker />
       <AppHeader hasDrawer={hasDrawer} drawerOpen={drawerOpen}
         onOpenDrawer={hasDrawer ? () => setDrawerOpen(open => !open) : undefined}
-        onAddWord={mobile && showAddWord ? () => setQuickAddOpen(true) : undefined}
+        onAddWord={addWordInHeader && showAddWord ? () => setQuickAddOpen(true) : undefined}
         collectionHeadingRef={compactLibraryHeader ? setCollectionHeadingTarget : undefined} />
       <div className="app-body">
         <div key={location.pathname} className="page-enter">
@@ -56,8 +59,8 @@ export function AppLayout() {
       </div>
       <AppFooter />
 
-      {!mobile && showAddWord && (
-        <button type="button" className="fab" aria-label="Add word" onClick={() => setQuickAddOpen(true)}>
+      {!addWordInHeader && showAddWord && (
+        <button type="button" className={mobile ? 'fab fab-mobile' : 'fab'} aria-label="Add word" onClick={() => setQuickAddOpen(true)}>
           <span className="fab-tooltip">Add word</span>
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
             <path d="M11 3v16M3 11h16" />

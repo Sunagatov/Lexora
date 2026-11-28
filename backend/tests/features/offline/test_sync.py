@@ -1,7 +1,11 @@
+import hashlib
+import json
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
@@ -57,6 +61,52 @@ def test_retry_does_not_duplicate_progress_or_receipts(db):
     assert db.scalar(select(func.count()).select_from(WordProgressEvent)) == 1
     assert db.scalar(select(func.count()).select_from(OfflineReceipt)) == 1
     assert db.get(Word, 1).knowledge_level == 4
+
+
+@pytest.mark.parametrize("source", ["study_list", "smart_review"])
+def test_offline_review_uses_practice_date_after_delayed_sync_and_retry(db, source):
+    edit = change(db, data={"knowledge_level": 1, "progress_source": source},
+                  occurred_at="2026-01-05T23:00:00-05:00")
+
+    result = apply_change(db, edit)
+    assert apply_change(db, edit) == result
+
+    event = db.scalars(select(WordProgressEvent)).one()
+    receipt = db.scalars(select(OfflineReceipt)).one()
+    assert (event.old_level, event.new_level, event.source) == (1, 1, source)
+    assert event.created_at.replace(tzinfo=UTC) == datetime(2026, 1, 6, 4, tzinfo=UTC)
+    assert receipt.created_at > event.created_at
+
+
+@pytest.mark.parametrize(
+    ("source", "client_time_offset"),
+    [("study_list", timedelta(minutes=2)), ("manual", -timedelta(days=2))],
+)
+def test_offline_rating_uses_sync_time_for_forward_clock_or_manual_rating(db, source, client_time_offset):
+    before_sync = datetime.now(UTC)
+    edit = change(db, data={"knowledge_level": 4, "progress_source": source},
+                  occurred_at=before_sync + client_time_offset)
+    apply_change(db, edit)
+
+    event = db.scalars(select(WordProgressEvent)).one()
+    assert before_sync.replace(microsecond=0) <= event.created_at.replace(tzinfo=UTC) <= datetime.now(UTC)
+
+
+def test_offline_change_rejects_timestamp_without_timezone(db):
+    with pytest.raises(ValidationError, match="timezone"):
+        change(db, occurred_at="2026-01-05T23:00:00")
+
+
+def test_offline_retry_accepts_receipt_created_before_client_timestamps(db):
+    edit = change(db)
+    legacy_payload = edit.model_dump(mode="json", exclude={"occurred_at"})
+    legacy_hash = hashlib.sha256(json.dumps(legacy_payload, sort_keys=True).encode()).hexdigest()
+    result = {"entity_id": edit.entity_id}
+    db.add(OfflineReceipt(id=str(edit.id), payload_hash=legacy_hash, result=result))
+    db.commit()
+
+    assert apply_change(db, edit) == result
+    assert db.scalar(select(func.count()).select_from(WordProgressEvent)) == 0
 
 
 def test_retry_of_create_returns_same_server_id(db):

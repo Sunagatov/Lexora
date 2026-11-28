@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import UTC, datetime
 from typing import Any, Literal
 from uuid import UUID
 
 from fastapi import HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session, selectinload
 
@@ -25,6 +26,7 @@ from app.features.words.api import (
     update_word,
     with_word_details,
 )
+from app.features.words.constants import PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST
 from app.features.words.model import Word
 from app.features.words.schemas import WordCreate, WordResponse, WordUpdate
 from app.shared.config import settings
@@ -39,6 +41,7 @@ class OfflineChange(BaseModel):
     before: dict[str, Any] = Field(default_factory=dict)
     # Deleting/restoring a topic can also change its words. Guard those too.
     affected_words: list[dict[str, Any]] = Field(default_factory=list, max_length=100_000)
+    occurred_at: AwareDatetime | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -134,8 +137,10 @@ def _check_before(current: dict, change: OfflineChange) -> None:
 
 
 def apply_change(db: Session, change: OfflineChange) -> dict:
+    # Preserve hashes for retries of changes accepted before clients sent study time.
+    exclude = {"occurred_at"} if change.occurred_at is None else None
     request_hash = hashlib.sha256(
-        json.dumps(change.model_dump(mode="json"), sort_keys=True).encode()
+        json.dumps(change.model_dump(mode="json", exclude=exclude), sort_keys=True).encode()
     ).hexdigest()
     receipt_id = str(change.id)
     # Serialize identical retries even when two tabs reconnect together.
@@ -184,7 +189,15 @@ def apply_change(db: Session, change: OfflineChange) -> dict:
                     raise HTTPException(400, "Words cannot be moved between languages")
                 if payload.topic_ids is not None:
                     assert_topics_exist(db, payload.topic_ids)
-                item = update_word(db, item, payload, commit=False)
+                occurred_at = None
+                if (
+                    change.occurred_at is not None
+                    and payload.knowledge_level is not None
+                    and payload.progress_source in (PROGRESS_SOURCE_STUDY_LIST, PROGRESS_SOURCE_SMART_REVIEW)
+                ):
+                    # Sync the review even if the device clock was ahead of the server.
+                    occurred_at = min(change.occurred_at.astimezone(UTC), datetime.now(UTC))
+                item = update_word(db, item, payload, commit=False, occurred_at=occurred_at)
             else:
                 item = update_topic(db, item, TopicUpdate.model_validate(change.data), commit=False)
         elif is_word:

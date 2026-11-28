@@ -6,6 +6,9 @@ import {languagePreferences, subscribeLanguages} from '@/features/languages/api'
 import {AccountIcon} from '@/features/preferences/AccountIcon'
 import {accountReturnTarget} from '@/features/preferences/accountNavigation'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
+import {isIOSApp} from '@/shared/platform'
+
+const offlineRoute = `${routes.account}/offline`
 
 type Props = {
   topicSearch: string
@@ -31,9 +34,13 @@ export function TopicSidebarHeader({
   const pending = useIsMutating() > 0
   const editingWord = location.pathname.endsWith('/edit')
 
-  function openMyLexora() {
+  function openAccount(destination: string) {
     if (pending || editingWord) return
     if (location.pathname === routes.account || location.pathname.startsWith(`${routes.account}/`)) {
+      if (destination !== routes.account) {
+        if (location.pathname !== destination) navigate(destination, {state: location.state})
+        return
+      }
       const target = accountReturnTarget(location.state, language.language)
       navigate(target.to, {state: target.state})
       return
@@ -43,7 +50,7 @@ export function TopicSidebarHeader({
       '.word-collection-scroll, .all-words-page',
     )?.scrollTop ?? 0
 
-    navigate(routes.account, {
+    navigate(destination, {
       state: {
         returnTo: location.pathname + location.search + location.hash,
         returnLanguage: language.language,
@@ -60,7 +67,7 @@ export function TopicSidebarHeader({
 
   return (
     <>
-      <nav className="sidebar-quicklinks" aria-label="Quick navigation">
+      <nav className={`sidebar-quicklinks${isIOSApp ? ' sidebar-quicklinks-ios' : ''}`} aria-label="Quick navigation">
         <button
           type="button"
           className={`sidebar-quicklink sidebar-smart-review-btn ${isSmartReview ? 'active' : ''}`}
@@ -93,7 +100,7 @@ export function TopicSidebarHeader({
         <button
           type="button"
           className="sidebar-quicklink"
-          onClick={openMyLexora}
+          onClick={() => openAccount(routes.account)}
           disabled={pending || editingWord}
           aria-label="My Lexora"
           data-sidebar-tooltip="My Lexora"
@@ -102,6 +109,19 @@ export function TopicSidebarHeader({
           <AccountIcon name="account" />
           <span>My Lexora</span>
         </button>
+        {isIOSApp && (
+          <button
+            type="button"
+            className={`sidebar-quicklink${location.pathname === offlineRoute ? ' is-active' : ''}`}
+            onClick={() => openAccount(offlineRoute)}
+            disabled={pending || editingWord}
+            aria-current={location.pathname === offlineRoute ? 'page' : undefined}
+            data-sidebar-tooltip="Offline"
+          >
+            <AccountIcon name="offline" />
+            <span>Offline</span>
+          </button>
+        )}
       </nav>
 
       <div className="sidebar-search-row">

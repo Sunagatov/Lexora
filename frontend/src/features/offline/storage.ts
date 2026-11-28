@@ -17,23 +17,38 @@ export async function readReplica(): Promise<Replica | undefined> {
   const db = await open()
   return new Promise((resolve, reject) => {
     const tx = db.transaction('data', 'readonly')
-    const request = tx.objectStore('data').get('replica')
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
+    const store = tx.objectStore('data')
+    const replica = store.get('replica')
+    const mix = store.get('mix-state')
+    tx.oncomplete = () => resolve(replica.result ? {...replica.result, ...mix.result} : undefined)
+    tx.onerror = () => reject(tx.error)
+    tx.onabort = () => reject(tx.error ?? new Error('Could not read offline data'))
   })
 }
 
-export async function writeReplica(replica?: Replica): Promise<void> {
+async function updateData(write: (store: IDBObjectStore) => void): Promise<void> {
   const db = await open()
   return new Promise((resolve, reject) => {
     const tx = db.transaction('data', 'readwrite')
-    if (replica) tx.objectStore('data').put(replica, 'replica')
-    else tx.objectStore('data').delete('replica')
+    write(tx.objectStore('data'))
     // Success only after the transaction is durable, not on request.onsuccess.
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
     tx.onabort = () => reject(tx.error ?? new Error('Could not save offline data'))
   })
+}
+
+export function writeReplica(replica?: Replica): Promise<void> {
+  return updateData(store => {
+    if (replica) store.put(replica, 'replica')
+    else store.delete('replica')
+    store.delete('mix-state')
+  })
+}
+
+// Review-only writes leave the library and its sync revision intact.
+export function writeMixState({mixes, mixReviewedAt, nextId}: Replica): Promise<void> {
+  return updateData(store => store.put({mixes, mixReviewedAt, nextId}, 'mix-state'))
 }
 
 // One writer across tabs prevents an old tab overwriting newer queued edits.

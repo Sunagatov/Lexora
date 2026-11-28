@@ -7,6 +7,8 @@ import {routes} from '@/app/routes'
 import {TopicSidebarHeader} from '@/features/topics/components/TopicSidebarHeader'
 
 const navigate = vi.fn()
+const platform = vi.hoisted(() => ({isIOSApp: false}))
+vi.mock('@/shared/platform', () => ({get isIOSApp() { return platform.isIOSApp }}))
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
@@ -31,7 +33,10 @@ function renderHeader(initialEntries: MemoryRouterProps['initialEntries'] = ['/?
 }
 
 describe('TopicSidebarHeader quick navigation', () => {
-  beforeEach(() => { vi.clearAllMocks() })
+  beforeEach(() => {
+    vi.clearAllMocks()
+    platform.isIOSApp = false
+  })
 
   it('shows Favorites and My Lexora outside the search container', () => {
     renderHeader()
@@ -61,6 +66,15 @@ describe('TopicSidebarHeader quick navigation', () => {
     } finally {
       scrollingList.remove()
     }
+  })
+
+  it('opens Offline directly from the iPhone drawer and preserves the word list', () => {
+    platform.isIOSApp = true
+    renderHeader()
+    fireEvent.click(screen.getByRole('button', {name: 'Offline'}))
+    expect(navigate).toHaveBeenCalledWith(`${routes.account}/offline`, {
+      state: expect.objectContaining({returnTo: '/?page=2&search=word'}),
+    })
   })
 
   it('keeps topic search visible beside the navigation shortcuts', () => {

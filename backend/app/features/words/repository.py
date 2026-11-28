@@ -231,7 +231,9 @@ def create_word(db: Session, payload: WordCreate, *, commit: bool = True) -> Wor
     return word
 
 
-def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = True) -> Word:
+def update_word(
+    db: Session, word: Word, payload: WordUpdate, *, commit: bool = True, occurred_at: datetime | None = None
+) -> Word:
     if payload.language is not None and payload.language != word.language:
         raise HTTPException(400, "Words cannot be moved between languages")
     lock_word_identities(db)
@@ -272,7 +274,7 @@ def update_word(db: Session, word: Word, payload: WordUpdate, *, commit: bool = 
         source = payload.progress_source or PROGRESS_SOURCE_MANUAL
         is_review = source in (PROGRESS_SOURCE_SMART_REVIEW, PROGRESS_SOURCE_STUDY_LIST)
         if payload.knowledge_level is not None and (payload.knowledge_level != old_level or is_review):
-            record_level_change(db, int(word.id), old_level, int(payload.knowledge_level), source)
+            record_level_change(db, int(word.id), old_level, int(payload.knowledge_level), source, occurred_at=occurred_at)
 
     db.add(word)
     _finalize_write(db, word, commit=commit)

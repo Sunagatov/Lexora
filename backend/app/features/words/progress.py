@@ -28,6 +28,11 @@ def record_level_change(
     old_level: int | None,
     new_level: int,
     source: ProgressSource,
+    *,
+    occurred_at: datetime | None = None,
 ) -> None:
     """Append a word-owned progress event without committing the transaction."""
-    db.add(WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source))
+    event = WordProgressEvent(word_id=word_id, old_level=old_level, new_level=new_level, source=source)
+    if occurred_at is not None:
+        event.created_at = occurred_at
+    db.add(event)

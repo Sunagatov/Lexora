@@ -191,7 +191,7 @@ def test_update_word_replaces_topics_and_records_level_change(monkeypatch) -> No
     assert word.knowledge_level == 3
     assert [topic.id for topic in word.topics] == [2, 3]
 
-    record_change.assert_called_once_with(db, 10, 1, 3, PROGRESS_SOURCE_SMART_REVIEW)
+    record_change.assert_called_once_with(db, 10, 1, 3, PROGRESS_SOURCE_SMART_REVIEW, occurred_at=None)
     db.add.assert_called_once_with(word)
     db.commit.assert_called_once()
     db.refresh.assert_called_once_with(word)

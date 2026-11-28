@@ -178,6 +178,23 @@
     flex-direction: column;
   }
 
+  .app-shell[data-ios] > .app-header-collection {
+    /* Use the space under the cutout while keeping the title below the status icons. */
+    --status-bar-overlap: clamp(8px, calc(env(safe-area-inset-top, 0px) - 30px), 22px);
+    --collection-header-inset: max(0px, calc(env(safe-area-inset-top, 0px) - var(--status-bar-overlap)));
+    padding-top: var(--collection-header-inset);
+    height: calc(var(--header-height) + var(--collection-header-inset));
+  }
+
+  .app-shell[data-ios] .toolbar-card-compact {
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+
+  .app-shell[data-ios] .toolbar-card-compact .toolbar-actions-row:not(.is-searching) :is(.word-list-control, .toolbar-inline-search) {
+    height: 36px;
+  }
+
   .app-body {
     flex: 1;
     min-height: 0;
@@ -419,6 +436,39 @@
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.12);
     padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Make room for the iPhone quick-add button beside pagination. */
+  .app-shell:has(> .fab-mobile) {
+    --mobile-fab-size: 50px;
+    --pagination-bottom-padding: max(4px, calc(env(safe-area-inset-bottom, 0px) - 20px));
+  }
+
+  .fab.fab-mobile {
+    width: var(--mobile-fab-size);
+    height: var(--mobile-fab-size);
+    right: calc(13px + env(safe-area-inset-right, 0px));
+    bottom: var(--pagination-bottom-padding);
+  }
+
+  .app-shell:has(> .fab-mobile) .pagination-bar {
+    padding-bottom: var(--pagination-bottom-padding);
+    padding-right: calc(var(--mobile-fab-size) + 12px);
+  }
+
+  .app-shell:has(> .fab-mobile) .pagination-mobile {
+    min-height: var(--mobile-fab-size);
+    padding-inline: 0;
+    gap: 6px;
+  }
+
+  .app-shell:has(> .fab-mobile) .pagination-mobile .page-size-picker {
+    flex-basis: auto;
+    padding-inline: 6px;
+  }
+
+  .app-shell:has(.toolbar-actions-row.is-searching) > .fab-mobile {
+    display: none;
   }
 
   .word-collection-scroll {

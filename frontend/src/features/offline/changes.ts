@@ -74,6 +74,9 @@ export function changeItem(replica: Replica, entity: Change['entity'], action: C
       change.entity_id = id
     } else if (word) {
       if (action === 'update') {
+        if (typeof data.knowledge_level === 'number' && (data.progress_source === 'study_list' || data.progress_source === 'smart_review')) {
+          change.occurred_at = now
+        }
         if (Array.isArray(data.topic_ids)) validateTopics(replica, data.topic_ids as number[])
         const updated = {...word, ...data, updated_at: now} as OfflineWord
         if (updated.term !== word.term) {

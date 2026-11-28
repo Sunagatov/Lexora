@@ -5,6 +5,9 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {AppLayout} from '@/app/layout/AppLayout'
 import {StudyPage} from '@/features/study/routes/StudyPage'
 
+const platform = vi.hoisted(() => ({isIOSApp: false}))
+vi.mock('@/shared/platform', () => ({get isIOSApp() { return platform.isIOSApp }}))
+
 vi.mock('@/features/study/hooks/useStudyState', () => ({
   useStudyState: () => ({
     isSmartReview: false,
@@ -67,6 +70,7 @@ vi.mock('@/features/words/components/WordCollectionView', () => ({
 }))
 
 beforeEach(() => {
+  platform.isIOSApp = false
   const store = new Map<string, string>()
   Object.defineProperty(window, 'localStorage', {
     configurable: true,
@@ -107,7 +111,11 @@ function Shell() {
 }
 
 describe('StudyPage drawer lifecycle', () => {
-  it('opens Add word from the mobile header without using the word list as its hit area', () => {
+  it.each([
+    {name: 'floating button on iPhone', isIOSApp: true},
+    {name: 'header on mobile web', isIOSApp: false},
+  ])('opens Add word from the $name', ({isIOSApp}) => {
+    platform.isIOSApp = isIOSApp
     const queryClient = new QueryClient()
     render(
       <QueryClientProvider client={queryClient}>
@@ -122,7 +130,8 @@ describe('StudyPage drawer lifecycle', () => {
     )
 
     const addWord = screen.getByRole('button', {name: 'Add word'})
-    expect(addWord.closest('header')).not.toBeNull()
+    expect(Boolean(addWord.closest('header'))).toBe(!isIOSApp)
+    expect(addWord.classList.contains('fab')).toBe(isIOSApp)
     fireEvent.click(addWord)
     expect(screen.getByTestId('quick-add')).toBeTruthy()
   })

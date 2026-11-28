@@ -9,13 +9,17 @@ const fake = vi.hoisted(() => ({
   replica: undefined as Replica | undefined,
   ios: false,
   adapter: undefined as undefined | ((path: string, init: RequestInit, network: (path: string, init: RequestInit) => Promise<unknown>) => Promise<unknown>),
-  network: vi.fn(), write: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
+  network: vi.fn(), write: vi.fn(), writeMix: vi.fn(), lock: Promise.resolve() as Promise<unknown>,
 }))
 vi.mock('@/shared/api/http', () => ({networkRequest: fake.network, setRequestAdapter: (adapter: typeof fake.adapter) => { fake.adapter = adapter }}))
 vi.mock('@/shared/platform', () => ({get isIOSApp() { return fake.ios }}))
 vi.mock('../storage', () => ({
   readReplica: async () => structuredClone(fake.replica),
   writeReplica: async (replica: Replica) => { fake.write(); fake.replica = structuredClone(replica) },
+  writeMixState: async ({mixes, mixReviewedAt, nextId}: Replica) => {
+    fake.writeMix()
+    Object.assign(fake.replica!, structuredClone({mixes, mixReviewedAt, nextId}))
+  },
   withOfflineLock: (work: () => Promise<unknown>) => {
     const result = fake.lock.then(work)
     fake.lock = result.catch(() => {})
@@ -29,7 +33,7 @@ async function setup() {
   vi.stubGlobal('BroadcastChannel', class { onmessage = null; postMessage() {} })
   vi.spyOn(window, 'setInterval').mockReturnValue(1)
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
-  fake.network.mockReset(); fake.write.mockClear(); fake.lock = Promise.resolve()
+  fake.network.mockReset(); fake.write.mockClear(); fake.writeMix.mockClear(); fake.lock = Promise.resolve()
   fake.replica = {version: 1, words: [], topics: [], changes: [], nextId: -1, savedAt: new Date().toISOString()}
   const {changeItem} = await import('../changes')
   changeItem(fake.replica, 'topic', 'create', -1, {name: 'People'})
@@ -59,6 +63,14 @@ it('saves the library in the packaged iOS app without a service worker', async (
   await offline.saveOffline()
   expect(offline.offlineStatus()).toMatchObject({saved: true, words: 1})
   expect(fake.network.mock.calls.map(([path]) => path)).toEqual(['/api/offline/snapshot', '/api/smart-review'])
+})
+
+it('opens a saved iOS library immediately when the phone is offline', async () => {
+  fake.ios = true
+  Object.defineProperty(navigator, 'locks', {configurable: true, value: {}})
+  const {request} = await setup()
+  await expect(request('/auth/session')).resolves.toEqual({authenticated: true, csrf_token: ''})
+  expect(fake.network).not.toHaveBeenCalled()
 })
 
 it('retries deferred iOS sign-out with the session CSRF token', async () => {
@@ -133,17 +145,24 @@ it('copies the current practice set and its progress when saving all words offli
   expect(savedMix.completed_count).toBe(1)
 })
 
-it('does not repeatedly write/broadcast on practice reads and gives each new set unique IDs', async () => {
+it('saves only practice state and shares the ID sequence with offline word creation', async () => {
+  fake.ios = true
+  Object.defineProperty(navigator, 'locks', {configurable: true, value: {}})
   const {request} = await setup()
   const first = await request('/api/smart-review') as StudyQueue
   await request('/api/smart-review')
-  expect(fake.write).toHaveBeenCalledTimes(1)
+  expect(fake.writeMix).toHaveBeenCalledTimes(1)
   const next = await request('/api/smart-review/refresh', {method: 'POST'}) as StudyQueue
   expect(next.id).not.toBe(first.id)
   expect(next.items[0].id).not.toBe(first.items[0].id)
   const completed = await request(`/api/smart-review/items/${next.items[0].id}/complete`, {method: 'POST'}) as StudyQueue
   expect(completed.completed_count).toBe(1)
   await expect(request(`/api/smart-review/items/${first.items[0].id}/complete`, {method: 'POST'})).rejects.toThrow('not found')
+  expect(fake.write).not.toHaveBeenCalled()
+  expect(fake.writeMix).toHaveBeenCalledTimes(3)
+  const word = await request('/api/words', {method: 'POST', body: JSON.stringify({term: 'calm', topic_ids: [-1]})}) as {id: number}
+  expect(word.id).toBeLessThan(next.items[0].id)
+  expect(await request('/api/smart-review')).toMatchObject({id: next.id, completed_count: 1})
   expect(fake.network).not.toHaveBeenCalled()
 })
 
@@ -183,6 +202,36 @@ it('retains an unchanged operation after a lost response, then remaps dependenci
   expect(JSON.parse(sent[2]).entity_id).toBe(20)
   expect(fake.replica!.changes).toHaveLength(0)
   expect(fake.replica!.words.find(w => w.term === 'calm')!.id).toBe(20)
+})
+
+it.each(['study_list', 'smart_review'])('retries a saved %s rating with its original practice timestamp', async progressSource => {
+  const {request, offline} = await setup()
+  const {remapId} = await import('../changes')
+  remapId(fake.replica!, 'topic', -1, 1)
+  remapId(fake.replica!, 'word', -2, 2)
+  await request('/api/words/2', {method: 'PUT', body: JSON.stringify({knowledge_level: 1, progress_source: progressSource})})
+  const recordedAt = fake.replica!.changes[0].occurred_at
+  expect(recordedAt).toEqual(expect.stringMatching(/^\d{4}-\d{2}-\d{2}T.*Z$/))
+  expect(recordedAt).toBe(fake.replica!.words[0].updated_at)
+  await request('/api/words/2', {method: 'PUT', body: JSON.stringify({knowledge_level: 4})})
+  expect(fake.replica!.changes[1]).not.toHaveProperty('occurred_at')
+
+  vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
+  const sent: string[] = []
+  fake.network.mockImplementation(async (path: string, init: RequestInit) => {
+    if (path === '/auth/session') return {csrf_token: 'test-only'}
+    if (path === '/api/offline/snapshot') return {version: 1, words: fake.replica!.words, topics: fake.replica!.topics}
+    sent.push(String(init.body))
+    if (sent.length === 1) throw new TypeError('Response lost after server commit')
+    return {entity_id: 2}
+  })
+  await offline.syncOffline()
+  expect(fake.replica!.changes).toHaveLength(2)
+  await offline.syncOffline()
+
+  expect(JSON.parse(sent[0])).toMatchObject({occurred_at: recordedAt, data: {progress_source: progressSource}})
+  expect(sent[1]).toBe(sent[0])
+  expect(fake.replica!.changes).toHaveLength(0)
 })
 
 it('keeps the saved copy and edits available when synchronization hits a conflict', async () => {
@@ -313,6 +362,8 @@ it('retains a second local edit made while the first change is uploading', async
 })
 
 it('preserves a newly completed practice item while refreshing the saved vocabulary', async () => {
+  fake.ios = true
+  Object.defineProperty(navigator, 'locks', {configurable: true, value: {}})
   const {request, offline} = await setup()
   const mix = await request('/api/smart-review') as StudyQueue
   vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true)
@@ -333,5 +384,5 @@ it('preserves a newly completed practice item while refreshing the saved vocabul
     await expect(Promise.race([completing, new Promise(resolve => setTimeout(() => resolve('blocked'), 40))])).resolves.toMatchObject({completed_count: 1})
   } finally { releaseSnapshot(); await syncing; await completing }
   expect(fake.replica!.mixes!.en.completed_count).toBe(1)
-  expect(snapshots).toBe(2)
+  expect(snapshots).toBe(1)
 })

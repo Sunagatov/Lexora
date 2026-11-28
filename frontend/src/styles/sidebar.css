@@ -103,6 +103,10 @@
   flex-shrink: 0;
 }
 
+.sidebar-quicklinks-ios {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .sidebar-quicklink {
   min-width: 0;
   min-height: 44px;
@@ -138,7 +142,7 @@
 .sidebar-quicklink .sidebar-smart-review-emoji { font-size: 20px; line-height: 20px; }
 
 @media (min-width: 360px) and (max-width: 768px) {
-  .mobile-drawer .sidebar-quicklink { flex-direction: row; font-size: 0.78rem; }
+  .mobile-drawer .sidebar-quicklinks:not(.sidebar-quicklinks-ios) .sidebar-quicklink { flex-direction: row; font-size: 0.78rem; }
 }
 
 .sidebar-search-field {

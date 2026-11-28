@@ -21,9 +21,12 @@ export function subtree(replica: Replica, root: number): number[] {
   return [...ids]
 }
 
-export function visibleWord(replica: Replica, word: Word): Word {
-  const active = new Set(replica.topics.filter(t => !t.deleted_at).map(t => t.id))
-  return {...word, topic_ids: word.topic_ids.filter(id => active.has(id))}
+export function activeTopicIds(replica: Replica) {
+  return new Set(replica.topics.filter(t => !t.deleted_at).map(t => t.id))
+}
+
+export function visibleWord(replica: Replica, word: Word, topicIds = activeTopicIds(replica)): Word {
+  return {...word, topic_ids: word.topic_ids.filter(id => topicIds.has(id))}
 }
 
 function matchingWords(replica: Replica, params: URLSearchParams) {

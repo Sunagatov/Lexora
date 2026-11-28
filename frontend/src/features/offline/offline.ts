@@ -1,9 +1,9 @@
 import {ApiError} from '@/shared/api/apiError'
 import {networkRequest, setRequestAdapter} from '@/shared/api/http'
-import {readReplica, withOfflineLock, writeReplica} from './storage'
+import {readReplica, withOfflineLock, writeMixState, writeReplica} from './storage'
 import {changeItem, remapId} from './changes'
 import {languagePreferences} from '@/features/languages/api'
-import {inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
+import {activeTopicIds, inLanguage, scopedReplica, listWords, wordSummary, sidebarStats, visibleWord} from './collections'
 import type {Replica, Snapshot} from './types'
 import type {StudyQueue} from '@/features/smart-review/types/studyQueueTypes'
 import {CSRF_TOKEN_STORAGE_KEY} from '@/shared/auth/storage'
@@ -54,25 +54,63 @@ function newMix(replica: Replica): StudyQueue {
     }
   }
   const words = selectWordMix(replica.words.filter(inLanguage), preferencesSnapshot().values.word_mix, replica.mixReviewedAt)
+  const topicIds = activeTopicIds(replica)
   const now = new Date().toISOString()
   return {id: replica.nextId--, generated_at: now, expires_at: new Date(Date.now() + 86_400_000).toISOString(), is_active: true, total_count: words.length, completed_count: 0,
-    items: words.map((word, position) => ({id: replica.nextId--, word_id: word.id, position, word: visibleWord(replica, word), is_completed: false, completed_at: null}))}
+    items: words.map((word, position) => ({id: replica.nextId--, word_id: word.id, position, word: visibleWord(replica, word, topicIds), is_completed: false, completed_at: null}))}
 }
 
-function readMix(replica: Replica) {
-  replica.mixes ??= replica.mix ? {en: replica.mix} : {}
-  const language = languagePreferences().language
-  const mix = replica.mixes[language] ??= newMix(replica)
-  const words = new Map(replica.words.filter(w => !w.deleted_at).map(w => [w.id, w]))
-  mix.items = mix.items.filter(item => words.has(item.word_id)).map(item => ({...item, word: visibleWord(replica, words.get(item.word_id)!)}))
-  mix.total_count = mix.items.length
-  mix.completed_count = mix.items.filter(item => item.is_completed).length
-  return mix
+function readMix(replica: Replica, mix: StudyQueue): StudyQueue {
+  const itemWordIds = new Set(mix.items.map(item => item.word_id))
+  const words = new Map(replica.words.filter(word => !word.deleted_at && itemWordIds.has(word.id)).map(word => [word.id, word]))
+  const topicIds = activeTopicIds(replica)
+  const items = mix.items.flatMap(item => {
+    const word = words.get(item.word_id)
+    return word ? [{...item, word: visibleWord(replica, word, topicIds)}] : []
+  })
+  return {...mix, items, total_count: items.length, completed_count: items.filter(item => item.is_completed).length}
+}
+
+export async function readSavedMixProgress(language: string) {
+  const replica = await readReplica()
+  const mix = replica?.mixes?.[language] ?? (language === 'en' ? replica?.mix : undefined)
+  if (!replica || !mix) return null
+  const activeIds = new Set(replica.words.filter((word) => !word.deleted_at).map((word) => word.id))
+  const activeItems = mix.items.filter((item) => activeIds.has(item.word_id))
+  return {
+    completed: activeItems.filter((item) => item.is_completed).length,
+    total: activeItems.length,
+  }
 }
 
 async function localRequest(replica: Replica, path: string, init: RequestInit) {
   const url = new URL(path, window.location.href), route = url.pathname, params = url.searchParams
   const method = init.method?.toUpperCase() ?? 'GET'
+  if (route === '/api/smart-review' || route.startsWith('/api/smart-review/')) {
+    const mixes = replica.mixes ??= replica.mix ? {en: replica.mix} : {}
+    const language = languagePreferences().language
+    const existing = mixes[language]
+    const refresh = route.endsWith('/refresh') && method === 'POST'
+    const mix = !existing || refresh ? newMix(replica) : readMix(replica, existing)
+    const match = route.match(/\/items\/(-?\d+)\/complete$/)
+    if (match && method === 'POST') {
+      const item = mix.items.find(item => item.id === Number(match[1]))
+      if (!item) throw new ApiError(404, 'Practice item not found')
+      if (!item.is_completed) {
+        mix.completed_count++
+        item.is_completed = true
+        item.completed_at = new Date().toISOString()
+      }
+    }
+    if (!existing || method !== 'GET') {
+      mixes[language] = mix
+      if (isIOSApp) {
+        await writeMixState(replica)
+        channel?.postMessage({resetLists: false})
+      } else await persist(replica)
+    }
+    return mix
+  }
   const scope = scopedReplica(replica)
   const body = typeof init.body === 'string' ? JSON.parse(init.body) as Record<string, unknown> : {}
   if (method === 'GET') {
@@ -92,22 +130,6 @@ async function localRequest(replica: Replica, path: string, init: RequestInit) {
       if (!item) throw new ApiError(404, 'Item not found')
       return isWord ? visibleWord(replica, item as Replica['words'][number]) : item
     }
-  }
-  if (route === '/api/smart-review' || route.startsWith('/api/smart-review/')) {
-    replica.mixes ??= replica.mix ? {en: replica.mix} : {}
-    const language = languagePreferences().language
-    const hadMix = !!replica.mixes[language]
-    if (route.endsWith('/refresh') && method === 'POST') replica.mixes[language] = newMix(replica)
-    const match = route.match(/\/items\/(-?\d+)\/complete$/)
-    const mix = readMix(replica)
-    if (match && method === 'POST') {
-      const item = mix.items.find(item => item.id === Number(match[1]))
-      if (!item) throw new ApiError(404, 'Practice item not found')
-      item.is_completed = true; item.completed_at = new Date().toISOString()
-    }
-    const result = readMix(replica)
-    if (!hadMix || method !== 'GET') await persist(replica)
-    return result
   }
   if (route === '/api/words/batch' && method === 'PATCH') {
     const ids = body.word_ids as number[]
@@ -174,6 +196,10 @@ export function initializeOffline(onRefresh: (resetLists?: boolean) => void): Pr
             localStorage.removeItem('lexora-offline-logout')
           }
           return {authenticated: false, csrf_token: ''}
+        }
+        if (isIOSApp && !navigator.onLine && status.saved) {
+          notify({offline: true})
+          return {authenticated: true, csrf_token: ''}
         }
         try { return await network(path, {...init, signal: init.signal ?? AbortSignal.timeout(10_000)}) }
         catch (error) {

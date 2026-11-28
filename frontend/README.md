@@ -48,7 +48,8 @@ scrolling and sign-out. Export a workbook and select **Save to Files** in the
 share sheet, then open or import that workbook to verify the file. The app
 already has the web assets bundled, so offline saving only
 downloads library data. It uses the existing device storage where the WebView
-supports it. Test saving, relaunching in airplane mode and syncing after
+supports it. Open **Offline** from the iPhone menu and tap **Save all offline**
+before going offline. Test saving, relaunching in airplane mode and syncing after
 reconnect on the actual device.
 
 Offline mode is available in production builds: `npm run build`, then
